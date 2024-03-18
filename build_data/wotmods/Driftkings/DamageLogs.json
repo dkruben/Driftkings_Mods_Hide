@@ -1,0 +1,20 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_DamageLogs.pyc": "build/scripts/client/gui/mods/mod_DamageLogs.pyc",
+		
+		"res/gui/maps/icons/DamageLogs/efficiency/armor.png": "res/res/maps/icons/DamageLogs/efficiency/armor.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/damage.png": "res/res/maps/icons/DamageLogs/efficiency/damage.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/destruction.png": "res/res/maps/icons/DamageLogs/efficiency/destruction.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/detection.png": "res/res/maps/icons/DamageLogs/efficiency/detection.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/fire.png": "res/res/maps/icons/DamageLogs/efficiency/fire.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/help.png": "res/res/maps/icons/DamageLogs/efficiency/help.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/module.png": "res/res/maps/icons/DamageLogs/efficiency/module.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/ram.png": "res/res/maps/icons/DamageLogs/efficiency/ram.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/stun.png": "res/res/maps/icons/DamageLogs/efficiency/stun.png",
+		"res/gui/maps/icons/DamageLogs/efficiency/wins.png": "res/res/maps/icons/DamageLogs/efficiency/wins.png",
+		
+        "res/gui/flash/DamageLogs.swf": "res/flash/DamageLogs.swf"
+    }
+}

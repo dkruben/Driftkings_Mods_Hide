@@ -1,0 +1,9 @@
+{
+    "UI_description": "AutoAimOptimize",
+    "UI_setting_angle_text": "Set angle to catch target",
+    "UI_setting_angle_value": "x",
+    "UI_setting_catchHiddenTarget_text": "Catch target hidden behind an obstacle",
+    "UI_setting_catchHiddenTarget_tooltip": "",
+    "UI_setting_disableArtyMode_text": "Disable in Arty mode",
+    "UI_setting_disableArtyMode_tooltip": ""
+}

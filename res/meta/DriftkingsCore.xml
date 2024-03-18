@@ -1,0 +1,14 @@
+<root>
+	
+	<!-- Techical MOD ID -->
+	<id>Driftkings.DKmodsCore</id>
+	
+	<!-- Package version -->
+	<version>1.1x.x</version>
+	
+	<!-- Human readable name -->
+	<name>Driftkings mods core</name>
+	
+	<!-- Human readable description -->
+	<description>Shared code archive for Driftkings mods.</description>
+</root>

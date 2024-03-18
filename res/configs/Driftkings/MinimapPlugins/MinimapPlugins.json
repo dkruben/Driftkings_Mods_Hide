@@ -1,0 +1,14 @@
+{
+    "button": [["KEY_LCONTROL", "KEY_RCONTROL"]],
+    "changeColorCircles": true,
+    "colorDrawCircle": "2B28D1",
+    "colorMaxViewCircle": "E02810",
+    "colorMinSpottingCircle": "35DE46",
+    "colorViewCircle": "FF7FFF",
+    "enabled": true,
+    "permanentMinimapDeath": false,
+    "showNames": true,
+    "viewRadius": true,
+    "yaw": true,
+    "zoomFactor": 1.1
+}

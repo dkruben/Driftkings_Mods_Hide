@@ -1,0 +1,31 @@
+﻿{
+    "allowExchangeXPInTechTree": true,
+    "autoLogin": true,
+    "battleCount": true,
+    "buttonStats": true,
+    "clock": true,
+    "crewReturn": true,
+    "enabled": true,
+    "generalChatButton": false,
+    "popUpMessages": true,
+    "promoPremVehicle": true,
+    "referralButton": true,
+    "showCustomizationCounter": true,
+    "showDailyQuestWidget": true,
+    "showEventBanner": true,
+    "showProgressiveDecalsWindow": true,
+    "showRankedBattleResults": false,
+    "showUnreadCounter": false,
+    "showXpToUnlockVeh": true,
+    "widgets": {
+        "format": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='36'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin='85' leading='-2'>%A<br/><font size='15'>%d %b %Y</font></textformat></font>",
+        "position": [1720.0, 46.0],
+        "shadow": true,
+        "textShadow": {
+            "angle": 0,
+            "distance": 0,
+            "quality": 3,
+            "strength": 0.5
+        }
+    }
+}

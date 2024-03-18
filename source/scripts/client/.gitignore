@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/
+
+# Test Mods
+TEST_*/
+TEXT_*.*
+MOD_TEST/
+DriftkingsCore_O/

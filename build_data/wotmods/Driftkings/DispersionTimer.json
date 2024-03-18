@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_DispersionTimer.pyc": "build/scripts/client/gui/mods/mod_DispersionTimer.pyc",
+		
+        "res/gui/flash/DispersionTimer.swf": "res/flash/DispersionTimer.swf"
+    }
+}

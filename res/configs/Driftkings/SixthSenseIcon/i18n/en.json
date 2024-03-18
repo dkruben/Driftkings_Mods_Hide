@@ -1,0 +1,13 @@
+{
+    "UI_description": "SixthSenseIcon",
+    "UI_setting_format_text": "Text Format",
+    "UI_setting_format_tooltip": "Edit text format (!do not remove macro %(timeLeft)s!)",
+    "UI_setting_moveInBattle_text": "Move In Battle",
+    "UI_setting_moveInBattle_tooltip": "Move icon in Battle",
+    "UI_setting_playSound_text": "Play Sound",
+    "UI_setting_playSound_tooltip": "Reproduce SixthSense Sound (if you have a different sound, change field in settings file)",
+    "UI_setting_showTime_text": "Show Time",
+    "UI_setting_showTime_tooltip": "",
+    "UI_setting_timeLeft_text": "Time Left",
+    "UI_setting_timeLeft_tooltip": "Choose value to hide icon (default 2 sec.)"
+}

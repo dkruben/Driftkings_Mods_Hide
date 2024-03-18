@@ -1,0 +1,45 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "meta.xml": "res/meta/DriftkingsCore.xml",
+		"LICENSE": "res/meta/LICENSE",
+
+        "res/scripts/client/DriftkingsCore/__init__.pyc": "build/scripts/client/DriftkingsCore/__init__.pyc",
+
+        "res/scripts/client/DriftkingsCore/config/__init__.pyc"                 : "build/scripts/client/DriftkingsCore/config/__init__.pyc",
+        "res/scripts/client/DriftkingsCore/config/json_reader.pyc"              : "build/scripts/client/DriftkingsCore/config/json_reader.pyc",
+        "res/scripts/client/DriftkingsCore/config/template_builders.pyc"        : "build/scripts/client/DriftkingsCore/config/template_builders.pyc",
+        "res/scripts/client/DriftkingsCore/config/utils.pyc"                    : "build/scripts/client/DriftkingsCore/config/utils.pyc",
+
+        "res/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc"      : "build/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc",
+        "res/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc"         : "build/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc",
+        "res/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc"        : "build/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc",
+
+        "res/scripts/client/DriftkingsCore/utils/delayed/__init__.pyc"				  : "build/scripts/client/DriftkingsCore/utils/delayed/__init__.pyc",
+        "res/scripts/client/DriftkingsCore/utils/delayed/api.pyc"     			      : "build/scripts/client/DriftkingsCore/utils/delayed/api.pyc",
+		"res/scripts/client/DriftkingsCore/utils/delayed/utils/__init__.pyc"            : "build/scripts/client/DriftkingsCore/utils/delayed/utils/__init__.pyc",
+		"res/scripts/client/DriftkingsCore/utils/delayed/utils/dialogs.pyc"             : "build/scripts/client/DriftkingsCore/utils/delayed/utils/dialogs.pyc",
+		"res/scripts/client/DriftkingsCore/utils/delayed/utils/notifications_hooks.pyc" : "build/scripts/client/DriftkingsCore/utils/delayed/utils/notifications_hooks.pyc",
+		"res/scripts/client/DriftkingsCore/utils/delayed/utils/old_dialogs.pyc"         : "build/scripts/client/DriftkingsCore/utils/delayed/utils/old_dialogs.pyc",
+
+        "res/scripts/client/DriftkingsCore/utils/events/__init__.pyc"    : "build/scripts/client/DriftkingsCore/utils/events/__init__.pyc",
+        "res/scripts/client/DriftkingsCore/utils/events/game.pyc"        : "build/scripts/client/DriftkingsCore/utils/events/game.pyc",
+        "res/scripts/client/DriftkingsCore/utils/events/LobbyView.pyc"   : "build/scripts/client/DriftkingsCore/utils/events/LobbyView.pyc",
+        "res/scripts/client/DriftkingsCore/utils/events/LoginView.pyc"   : "build/scripts/client/DriftkingsCore/utils/events/LoginView.pyc",
+        "res/scripts/client/DriftkingsCore/utils/events/PlayerAvatar.pyc": "build/scripts/client/DriftkingsCore/utils/events/PlayerAvatar.pyc",
+
+        "res/scripts/client/DriftkingsCore/utils/__init__.pyc"    : "build/scripts/client/DriftkingsCore/utils/__init__.pyc",
+		"res/scripts/client/DriftkingsCore/utils/abstract.pyc"    : "build/scripts/client/DriftkingsCore/utils/abstract.pyc",
+		"res/scripts/client/DriftkingsCore/utils/analytics.pyc"   : "build/scripts/client/DriftkingsCore/utils/analytics.pyc",
+		"res/scripts/client/DriftkingsCore/utils/chat.pyc"        : "build/scripts/client/DriftkingsCore/utils/chat.pyc",
+		"res/scripts/client/DriftkingsCore/utils/colorRatting.pyc"        : "build/scripts/client/DriftkingsCore/utils/colorRatting.pyc",
+		"res/scripts/client/DriftkingsCore/utils/eventsManager.pyc"        : "build/scripts/client/DriftkingsCore/utils/eventsManager.pyc",
+		"res/scripts/client/DriftkingsCore/utils/game.pyc"        : "build/scripts/client/DriftkingsCore/utils/game.pyc",
+		"res/scripts/client/DriftkingsCore/utils/iter.pyc"        : "build/scripts/client/DriftkingsCore/utils/iter.pyc",
+		"res/scripts/client/DriftkingsCore/utils/logger.pyc"      : "build/scripts/client/DriftkingsCore/utils/logger.pyc",
+		"res/scripts/client/DriftkingsCore/utils/monkeypatch.pyc" : "build/scripts/client/DriftkingsCore/utils/monkeypatch.pyc",
+		"res/scripts/client/DriftkingsCore/utils/timers.pyc"     : "build/scripts/client/DriftkingsCore/utils/timers.pyc",
+        "res/scripts/client/DriftkingsCore/utils/wgUtils.pyc"     : "build/scripts/client/DriftkingsCore/utils/wgUtils.pyc"
+    }
+}

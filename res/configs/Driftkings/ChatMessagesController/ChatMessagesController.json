@@ -1,0 +1,11 @@
+{
+    "button": [
+        "KEY_Z",
+        [
+            "KEY_LCONTROL",
+            "KEY_RCONTROL"
+        ]
+    ],
+    "enabled": false,
+    "enabledChat": false
+}

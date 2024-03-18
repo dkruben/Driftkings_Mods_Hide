@@ -1,0 +1,20 @@
+{
+    "UI_AutoMode_off": "Wheel auto boost OFF",
+    "UI_AutoMode_on": "Wheel auto boost ON",
+    "UI_battle_activateMessage": "'Server Turret Extended': Activated",
+    "UI_description": "ServerTurretExtended",
+    "UI_setting_activateMessage_text": "Show Activation Message",
+    "UI_setting_activateMessage_tooltip": "Show Activation Message in battle",
+    "UI_setting_autoActivateWheelMode_text": "Auto Activate/Deactivate Wheel mode",
+    "UI_setting_autoActivateWheelMode_tooltip": "Try automate wheel mode",
+    "UI_setting_buttonAutoMode_text": "Button: Auto mode",
+    "UI_setting_buttonAutoMode_tooltip": "Button: Auto mode enable or disable",
+    "UI_setting_fixAccuracyInMove_text": "Fix Accuracy",
+    "UI_setting_fixAccuracyInMove_tooltip": "When you tank move and then stop, used fix accuracy to not lost aiming",
+    "UI_setting_fixWheelCruiseControl_text": "Fix Cruise Control on Wheels",
+    "UI_setting_fixWheelCruiseControl_tooltip": "When you activate Wheel mode with Cruise Control, vehicle stopped, this setting disable that",
+    "UI_setting_maxWheelMode_text": "Max Wheel mode",
+    "UI_setting_maxWheelMode_tooltip": "Try automate Max wheel mode",
+    "UI_setting_serverTurret_text": "Server Turret",
+    "UI_setting_serverTurret_tooltip": "Move Turret to Server Aim coordinates (need enabled Server Sight in game settings)"
+}

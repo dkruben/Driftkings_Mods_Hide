@@ -1,0 +1,13 @@
+{
+    "UI_description": "SpottedStatus",
+    "UI_setting_dead_text": "Dead",
+    "UI_setting_dead_tooltip": "",
+    "UI_setting_help_text": "Help:",
+    "UI_setting_help_tooltip": "You can change images to text or icons.\nFor icons go to ../Games/WorldOfTanks_xx/mods/configs/Driftkings/SpottedStatus/icons/*.png and replace names\n! Please don't chang the text in text box if you don't know you doing !",
+    "UI_setting_lost_text": "Lost",
+    "UI_setting_lost_tooltip": "",
+    "UI_setting_neverSeen_text": "Never Seen",
+    "UI_setting_neverSeen_tooltip": "",
+    "UI_setting_spotted_text": "Spotted",
+    "UI_setting_spotted_tooltip": ""
+}

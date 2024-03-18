@@ -1,0 +1,8 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_HangarOptions.pyc": "build/scripts/client/gui/mods/mod_HangarOptions.pyc",
+		"res/gui/flash/DateTimes.swf": "res/flash/DateTimes.swf"
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_setting_noBinoculars_text": "Disable Binoculars.",
+    "UI_setting_noBinoculars_tooltip": "Disable dimming and greening in sniper scope.",
+    "UI_setting_noFlashBang_text": "Disable Red Flash.",
+    "UI_setting_noFlashBang_tooltip": "Disable red flash when enemy hit your tank."
+}

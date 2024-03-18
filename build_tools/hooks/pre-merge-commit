@@ -1,0 +1,3 @@
+#!/bin/bash
+cp build_tools/hooks/* .git/hooks/
+py -2 build_tools/mtimestore.py -r

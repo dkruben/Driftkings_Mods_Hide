@@ -1,0 +1,16 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_ArtySplash.pyc": "build/scripts/client/gui/mods/mod_ArtySplash.pyc",
+
+        "res/objects/artyDot.dds": "res/res/objects/artyDot.dds",
+        "res/objects/artyDot.model": "res/res/objects/artyDot.model",
+        "res/objects/artyDot.primitives": "res/res/objects/artyDot.primitives",
+        "res/objects/artyDot.visual": "res/res/objects/artyDot.visual",
+        "res/objects/artySplash.dds": "res/res/objects/artySplash.dds",
+        "res/objects/artySplash.model": "res/res/objects/artySplash.model",
+        "res/objects/artySplash.primitives": "res/res/objects/artySplash.primitives",
+        "res/objects/artySplash.visual": "res/res/objects/artySplash.visual"
+    }
+}

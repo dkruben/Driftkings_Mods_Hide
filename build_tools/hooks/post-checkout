@@ -1,0 +1,10 @@
+#!/bin/bash
+cp build_tools/hooks/* .git/hooks/
+py -2 build_tools/mtimestore.py -r
+#git update-index --refresh #causes some problems under windows tortoise git
+if [[ -d $(git rev-parse --git-path rebase-merge)\
+      || -d $(git rev-parse --git-path rebase-apply) ]]; then
+    echo "Rebase in progress, compilation skipped"
+else
+    start debug &
+fi

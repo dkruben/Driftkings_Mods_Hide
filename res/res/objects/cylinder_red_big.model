@@ -1,0 +1,7 @@
+<cylinder_red_big.model>
+  <visibilityBox>
+    <min>	-3.44533 0.000000 -3.44533	</min>
+    <max>	3.44533 1.47657 3.44533	</max>
+  </visibilityBox>
+  <nodelessVisual>	../mods/shared_resources/xvm/res/markers/cylinder/cylinder_red_big	</nodelessVisual>
+</cylinder_red_big.model>

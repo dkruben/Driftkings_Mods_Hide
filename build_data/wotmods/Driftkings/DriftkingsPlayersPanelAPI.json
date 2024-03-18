@@ -1,0 +1,8 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/DriftkingsPlayersPanelAPI.pyc": "build/scripts/client/gui/mods/DriftkingsPlayersPanelAPI.pyc",
+        "res/gui/flash/DriftkingsPlayersPanelAPI.swf": "res/flash/DriftkingsPlayersPanelAPI.swf"
+    }
+}

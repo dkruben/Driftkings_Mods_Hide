@@ -1,0 +1,344 @@
+﻿# -*- coding: utf-8 -*-
+import traceback
+from time import strftime
+
+from Avatar import PlayerAvatar
+from PlayerEvents import g_playerEvents
+from adisp import adisp_process
+from constants import ARENA_GUI_TYPE
+from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
+from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
+from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
+from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
+from gui.battle_control.arena_info.arena_vos import VehicleTypeInfoVO
+from gui.battle_control.arena_visitor import _ClientArenaVisitor
+from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
+from gui.battle_control.controllers.arena_border_ctrl import ArenaBorderController
+from gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
+from gui.battle_control.controllers.team_bases_ctrl import BattleTeamsBasesController
+from gui.doc_loaders import GuiColorsLoader
+from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
+from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
+from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
+# from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
+from messenger.storage import storage_getter
+from shared_utils import safeCancelCallback
+
+from DriftkingsCore import SimpleConfigInterface, Analytics, callback, override, logError, logInfo, logDebug, isDisabledByBattleType, isReplay, g_events
+
+_cache = set()
+
+try:
+    from gambiter import g_guiFlash
+    from gambiter.flash import COMPONENT_TYPE
+except ImportError:
+    g_guiFlash = COMPONENT_TYPE = None
+    logError('[%s] Loading mod: Not found \'gambiter.flash\' module, loading stop!' % '%(mod_ID)s')
+except StandardError:
+    g_guiFlash = COMPONENT_TYPE = None
+    traceback.print_exc()
+
+
+class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.updateCallback = None
+        self.__isLobby = True
+        super(ConfigInterface, self).__init__()
+
+    @property
+    def isLobby(self):
+        return self.__isLobby
+
+    @isLobby.setter
+    def isLobby(self, value):
+        self.__isLobby = value
+        if self.updateCallback:
+            self.updateCallback = safeCancelCallback(self.updateCallback)
+        if not value:
+            self.updateCallback = callback(0.5, self.update)
+
+    def init(self):
+        self.ID = '%(mod_ID)s'
+        self.version = '2.1.0 (%(file_compile_date)s)'
+        self.author = 'Maintenance by: _DKRuben_EU'
+        self.modsGroup = 'Driftkings'
+        self.modSettingsID = 'Driftkings_GUI'
+        self.data = {
+            'enabled': True,
+            'showBattleHint': False,
+            'postmortemTips': True,
+            'showPostmortemDogTag': True,
+            'disableSoundCommander': False,
+            'stunSound': False,
+            'muteTeamBaseSound': False,
+            'color': 'FF002A',
+            'inBattle': True,
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
+            'directivesOnlyFromStorage': False,
+            'showFriends': False
+        }
+
+        self.i18n = {
+            'UI_description': self.ID,
+            'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
+            'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
+            'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',
+            'UI_setting_postmortemTips_tooltip': 'Disable pop-up panel at the bottom after death.',
+            'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
+            'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
+            'UI_setting_colorCheck_text': 'Choose Map Border Color:',
+            'UI_setting_color_text': '<font color=\'#%(color)s\'>Current color: #%(color)s</font>',
+            'UI_setting_color_tooltip': 'This color will be applied to all Maps',
+            'UI_setting_disableSoundCommander_text': 'Disable Sound Commander',
+            'UI_setting_disableSoundCommander_tooltip': '',
+            'UI_setting_stunSound_text': 'Stun Sound',
+            'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.',
+            'UI_setting_muteTeamBaseSound_text': 'Mute Team Base Sound',
+            'UI_setting_muteTeamBaseSound_tooltip': '',
+            'UI_setting_inBattle_text': 'Clock In Battle',
+            'UI_setting_inBattle_tooltip': 'Show clock in battle',
+            'UI_setting_showFriends_text': 'Show Friends',
+            'UI_setting_showFriends_tooltip': '',
+            'UI_setting_directivesOnlyFromStorage_text': 'Directives Only From Storage',
+            'UI_setting_directivesOnlyFromStorage_tooltip': '',
+        }
+        super(ConfigInterface, self).init()
+
+    def createTemplate(self):
+        colorLabel = self.tb.createControl('color', self.tb.types.ColorChoice)
+        colorLabel['text'] = self.tb.getLabel('colorCheck')
+        colorLabel['tooltip'] %= {'color': self.data['color']}
+        return {
+            'modDisplayName': self.i18n['UI_description'],
+            'enabled': self.data['enabled'],
+            'column1': [
+                self.tb.createControl('showBattleHint'),
+                self.tb.createControl('showPostmortemDogTag'),
+                self.tb.createControl('stunSound'),
+                self.tb.createControl('muteTeamBaseSound'),
+            ],
+            'column2': [
+                self.tb.createControl('postmortemTips'),
+                colorLabel,
+                self.tb.createControl('inBattle'),
+                self.tb.createControl('disableSoundCommander'),
+                self.tb.createControl('directivesOnlyFromStorage'),
+                self.tb.createControl('showFriends')
+            ]
+        }
+
+    def isEnabled(self):
+        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
+
+    def load(self):
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, {
+            'x': 185,
+            'y': 2,
+            'shadow': {
+                'alpha': 75,
+                'blur': 3,
+                'color': '0x000000',
+                'strength': 1
+            },
+            'text': ''
+        }, True, False)
+        super(ConfigInterface, self).load()
+
+    def update(self):
+        if self.updateCallback:
+            self.updateCallback = safeCancelCallback(self.updateCallback)
+        if not self.isLobby:
+            self.updateCallback = callback(0.5, self.update)
+        g_guiFlash.updateComponent(self.ID, {'text': self.setClock()})
+
+    def setClock(self):
+        time = strftime(config.data['format'])
+        if self.checkDecoder(strftime(config.data['format'])) is not None:
+            time = time.decode(self.checkDecoder(strftime(config.data['format'])))
+        return time
+
+    @staticmethod
+    def checkDecoder(_string):
+        import string
+        for char in _string:
+            if char not in string.printable:
+                import locale
+                return locale.getpreferredencoding()
+        return None
+
+
+config = ConfigInterface()
+statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+
+
+# disable commander voices
+@override(SpecialSoundCtrl, '__setSpecialVoiceByTankmen')
+@override(SpecialSoundCtrl, '__setSpecialVoiceByCommanderSkinID')
+def new_setSoundMode(base, *args, **kwargs):
+    if config.data['enabled'] and config.data['disableSoundCommander']:
+        return False
+    return base(*args, **kwargs)
+
+
+# disable dogTag
+@override(_ClientArenaVisitor, 'hasDogTag')
+def new_hasDogTag(base, *args, **kwargs):
+    return False if config.data['enabled'] and config.data['showPostmortemDogTag'] else base(*args, **kwargs)
+
+
+# disable battle hints
+@override(hint_plugins, 'createPlugins')
+def new_createPlugins(base, *args, **kwargs):
+    result = base(*args, **kwargs)
+    if config.data['enabled'] and config.data['showBattleHint']:
+        result.clear()
+    return result
+
+
+# postmortemTips
+@override(SharedPage, 'as_setPostmortemTipsVisibleS')
+def new_setPostmortemTipsVisibleS(func, self, value):
+    if config.isEnabled:
+        if not config.data['postmortemTips']:
+            value = False
+    func(self, value)
+
+
+@override(SharedPage, '_switchToPostmortem')
+def new_switchToPostmortem(func, *args):
+    if config.isEnabled and config.data['postmortemTips']:
+        func(*args)
+
+
+# force update quests in FullStats
+@override(BattleStatisticsDataController, 'as_setQuestsInfoS')
+def new_setQuestsInfoS(func, self, data, _):
+    func(self, data, True)
+
+
+# disable battle artillery_stun_effect sound
+@override(TimersPanel, '__playStunSoundIfNeed')
+def new_playStunSoundIfNeed(base, *args, **kwargs):
+    if not config.data['enabled'] and not config.data['stunSound']:
+        return base(*args, **kwargs)
+
+
+@override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
+def new_onVehicleStateUpdated(base, eq, state, value):
+    if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
+        return
+    return base(eq, state, value)
+
+
+# mute battle bases
+@override(BattleTeamsBasesController, '__playCaptureSound')
+def new_muteCaptureSound(func, *args):
+    if config.data['enabled'] and config.data['muteTeamBaseSound']:
+        return func(*args)
+
+
+# border color
+@override(ArenaBorderController, '_ArenaBorderController__getCurrentColor')
+def new_getBorderColor(func, self, colorBlind):
+    if not config.isEnabled:
+        colors = GuiColorsLoader.load()
+        scheme = colors.getSubScheme('areaBorder', 'color_blind' if colorBlind else 'default')
+        color = scheme['rgba'] / 255
+        return color
+    elif config.isEnabled:
+        color = int(config.data['color'], 16)
+        alpha = int(100)
+        red = ((color & 0xff0000) >> 16) / 255.0
+        green = ((color & 0x00ff00) >> 8) / 255.0
+        blue = (color & 0x0000ff) / 255.0
+        alpha = (alpha / 100.0)
+        return red, green, blue, alpha
+    func(self, colorBlind)
+
+
+# battle timer clock
+@override(PlayerAvatar, '_PlayerAvatar__startGUI')
+def new_startGui(func, *args):
+    func(*args)
+    if not config.isEnabled and not config.data['inBattle']:
+        return
+    config.isLobby = False
+
+
+@override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
+def new_destroyGUI(func, *args):
+    func(*args)
+    if not config.isEnabled and not config.data['inBattle']:
+        return
+    config.isLobby = False
+
+
+# is friends
+def showFriends():
+    return config.isEnabled and config.data['showFriends'] and not isReplay()
+
+
+@override(VehicleTypeInfoVO, '__init__')
+def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
+    func(self, *args, **kwargs)
+    if showFriends():
+        self.isPremiumIGR |= kwargs.get('accountDBID') in _cache
+
+
+@override(VehicleTypeInfoVO, 'update')
+def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
+    if showFriends():
+        result = func(self, *args, **kwargs)
+        if hasattr(self, 'isPremiumIGR'):
+            self.isPremiumIGR |= kwargs.get('accountDBID') in _cache
+        return result
+    return func(self, *args, **kwargs)
+
+
+# hide badges
+# @override(VehicleArenaInfoVO, '__init__')
+# def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
+#    if kwargs:
+#        if config.data['hideBadges'] and 'badges' in kwargs:
+#            kwargs['badges'] = None
+#            kwargs['overriddenBadge'] = None
+#        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
+#            if kwargs['accountDBID'] == 0:
+#                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
+#        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
+#            kwargs['clanAbbrev'] = ''
+#        if config.data['hideBattlePrestige']:
+#            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = 0
+#    return func(self, *args, **kwargs)
+
+
+@adisp_process
+def changeValue(vehicle, value):
+    yield VehicleAutoBattleBoosterEquipProcessor(vehicle, value).request()
+
+
+def onVehicleChanged(vehicle):
+    if not config.data['enabled'] and not config.data['directivesOnlyFromStorage']:
+        return
+    if vehicle is None or vehicle.isLocked or vehicle.isInBattle:
+        return
+    if not hasattr(vehicle, 'battleBoosters') or vehicle.battleBoosters is None:
+        logDebug('No battle boosters available for this vehicle: {}', vehicle.userName)
+        return
+    isAuto = vehicle.isAutoBattleBoosterEquip()
+    boosters = vehicle.battleBoosters.installed.getItems()
+    for battleBooster in boosters:
+        value = battleBooster.inventoryCount > 0
+        if value != isAuto:
+            changeValue(vehicle, value)
+            logInfo('VehicleAutoBattleBoosterEquipProcessor: value=%s vehicle=%s, booster=%s' % (value, vehicle.userName, battleBooster.userName))
+
+
+def onGuiCacheSyncCompleted(_):
+    _cache.clear()
+    users = storage_getter('users')().getList(_ContactsCategories().getCriteria())
+    _cache.update(user._userID for user in users if not user.isIgnored())
+
+
+g_playerEvents.onGuiCacheSyncCompleted += onGuiCacheSyncCompleted
+g_events.onVehicleChangedDelayed += onVehicleChanged

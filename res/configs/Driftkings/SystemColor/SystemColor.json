@@ -1,0 +1,9 @@
+{
+    "allyAlive": "96FF00",
+    "allyDead": "2C9AFF",
+    "enabled": false,
+    "enemyAlive": "2C9AFF",
+    "enemyDead": "96FF00",
+    "squadmanAlive": "FFB964",
+    "teamKillerAlive": "00EAFF"
+}

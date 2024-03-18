@@ -1,0 +1,8 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_MinimapPlugins.pyc": "build/scripts/client/gui/mods/mod_MinimapPlugins.pyc",
+		"res/gui/flash/MinimapCentred.swf": "res/flash/MinimapCentred.swf"
+    }
+}

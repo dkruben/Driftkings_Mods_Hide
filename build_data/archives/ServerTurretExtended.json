@@ -1,0 +1,12 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/configs/Driftkings/ServerTurretExtended/ServerTurretExtended.json": "res/configs/Driftkings/ServerTurretExtended/ServerTurretExtended.json",
+        "mods/configs/Driftkings/ServerTurretExtended/i18n/en.json": "res/configs/Driftkings/ServerTurretExtended/i18n/en.json",
+        "mods/{GAME_VERSION}/Driftkings/ServerTurretExtended.wotmod": "build/wotmods/Driftkings/ServerTurretExtended.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*"
+    }
+}

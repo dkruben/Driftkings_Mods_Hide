@@ -1,0 +1,16 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_InfoPanel.pyc": "build/scripts/client/gui/mods/mod_InfoPanel.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/__init__.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/__init__.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/_constants.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/_constants.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/configs.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/configs.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/containers.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/containers.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/data.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/data.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/hooks.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/hooks.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/utils.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/utils.pyc",
+		"res/scripts/client/gui/mods/mod_InfoPanel/views.pyc": "build/scripts/client/gui/mods/mod_InfoPanel/views.pyc",
+        "res/gui/flash/InfoPanel.swf": "res/flash/InfoPanel.swf"
+	}
+}

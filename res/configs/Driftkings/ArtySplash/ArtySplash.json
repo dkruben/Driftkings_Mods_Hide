@@ -1,0 +1,24 @@
+{
+    "buttonShowDot": [
+        "KEY_C",
+        [
+            "KEY_LALT",
+            "KEY_RALT"
+        ]
+    ],
+    "buttonShowSplash": [
+        "KEY_Z",
+        [
+            "KEY_LALT",
+            "KEY_RALT"
+        ]
+    ],
+    "enabled": true,
+    "modelPathDot": "objects/artyDot.model",
+    "modelPathSplash": "objects/artySplash.model",
+    "showDotOnDefault": true,
+    "showModeArcade": false,
+    "showModeArty": true,
+    "showModeSniper": true,
+    "showSplashOnDefault": true
+}

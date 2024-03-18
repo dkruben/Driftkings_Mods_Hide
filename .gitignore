@@ -1,0 +1,8 @@
+# Created by .ignore support plugin (hsz.mobi)
+.deprecated
+.idea
+*.iml
+
+# Mod Build Options ans Dettings
+build/
+archive.zip

@@ -1,0 +1,12 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/configs/Driftkings/DispersionCircle/DispersionCircle.json": "res/configs/Driftkings/DispersionCircle/DispersionCircle.json",
+        "mods/configs/Driftkings/DispersionCircle/i18n/en.json": "res/configs/Driftkings/DispersionCircle/i18n/en.json",
+        "mods/{GAME_VERSION}/Driftkings/DispersionCircle.wotmod": "build/wotmods/Driftkings/DispersionCircle.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "UI_description": "SafeShot",
+    "UI_msg_off": "SafeShot: Disabled",
+    "UI_msg_on": "SafeShot: Enabled",
+    "UI_setting_deadShotBlockTimeOut_text": "Dead Shot Block Time Out",
+    "UI_setting_deadShotBlockTimeOut_tooltip": "Time to unlock shot blocked on dead vehicles.",
+    "UI_setting_deadShotBlock_text": "Dead Shot Block.",
+    "UI_setting_deadShotBlock_tooltip": "Blocks shots on destroyed vehicles.",
+    "UI_setting_disableKey_text": "Disable Key",
+    "UI_setting_disableKey_tooltip": "Pressing this button in-battle on/off.",
+    "UI_setting_format_text": "Edit text format",
+    "UI_setting_format_tooltip": "Edit this text to your style and language. Macros: '%(target-name)s'  '%(target-vehicle)s'",
+    "UI_setting_onHold_text": "Hot Key.",
+    "UI_setting_onHold_tooltip": "This option will activate the Hot Key.",
+    "UI_setting_teamKillerShotUnblock_text": "Team Killer Shot Unblock.",
+    "UI_setting_teamKillerShotUnblock_tooltip": "To shoot without blocking, on allies that made 'TeamKiller'.",
+    "UI_setting_teamShotBlock_text": "Team Shot Block.",
+    "UI_setting_teamShotBlock_tooltip": "Blocks fired shots at allied vehicles.",
+    "UI_setting_triggerMessage_text": "Enable Trigger Text.",
+    "UI_setting_triggerMessage_tooltip": "",
+    "UI_setting_wasteShotBlock_text": "Waste Shot Block.",
+    "UI_setting_wasteShotBlock_tooltip": "Blocker of accidental or difficult hits."
+}

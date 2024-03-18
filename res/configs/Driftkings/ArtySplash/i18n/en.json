@@ -1,0 +1,22 @@
+{
+    "UI_artySplash_messageDotOff": "HE Splash: Hide Dot",
+    "UI_artySplash_messageDotOn": "HE Splash: Show Dot",
+    "UI_artySplash_messageSplashOff": "HE Splash: Hide Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Show Splash",
+    "UI_artySplash_name": "HE Splash",
+    "UI_description": "ArtySplash",
+    "UI_setting_buttonShowDot_text": "Button: show|hide Dot",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Button: show|hide Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Show Dot on default",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Arcade mode available",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeArty_text": "Arty mode available",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_setting_showModeSniper_text": "Sniper mode available",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Show Splash on default",
+    "UI_setting_showSplashOnDefault_tooltip": ""
+}

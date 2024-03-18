@@ -1,0 +1,7 @@
+﻿{
+    "UI_HangarStatsEnd": "{c_damageToMark65}, {c_damageToMark85}\n{c_damageToMark95}, {c_damageToMark100}",
+    "UI_HangarStatsStart": "<b>{currentPercent}<font size='14'>[{currentDamage}]</font> </b>",
+    "UI_description": "MarksOnGunTechTree",
+    "UI_setting_showInTechTree_text": "TechTree: enabled",
+    "UI_setting_showInTechTree_tooltip": ""
+}

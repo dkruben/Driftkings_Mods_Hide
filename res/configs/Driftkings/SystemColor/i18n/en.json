@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_allyAlive_text": "<font color='#%(allyAlive)s'>Current color: #%(allyAlive)s</font>",
+    "UI_setting_allyAlive_tooltip": "Color applied to the Tank.",
+    "UI_setting_allyDead_text": "<font color='#%(allyDead)s'>Current color: #%(allyDead)s</font>",
+    "UI_setting_allyDead_tooltip": "Color applied to the Tank.",
+    "UI_setting_colorCheckAllyAlive_text": "Choose Color to Ally Alive:",
+    "UI_setting_colorCheckAllyDead_text": "Choose Color to Ally Dead:",
+    "UI_setting_colorCheckEnemyAlive_text": "Choose Color to Enemy Alive:",
+    "UI_setting_colorCheckEnemyDead_text": "Choose Color to Enemy Dead:",
+    "UI_setting_colorCheckSquadmanAlive_text": "Choose Color to SquadMan Alive:",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Choose Color to TeamKiller:",
+    "UI_setting_enemyAlive_text": "<font color='#%(enemyAlive)s'>Current color: #%(enemyAlive)s</font>",
+    "UI_setting_enemyAlive_tooltip": "Color applied to the Tank.",
+    "UI_setting_enemyDead_text": "<font color='#%(enemyDead)s'>Current color: #%(enemyDead)s</font>",
+    "UI_setting_enemyDead_tooltip": "Color applied to the Tank.",
+    "UI_setting_squadmanAlive_text": "<font color='#%(squadmanAlive)s'>Current color: #%(squadmanAlive)s</font>",
+    "UI_setting_squadmanAlive_tooltip": "Color applied to the Tank.",
+    "UI_setting_teamKillerAlive_text": "<font color='#%(teamKillerAlive)s'>Current color: #%(teamKillerAlive)s</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Color applied to the Tank."
+}

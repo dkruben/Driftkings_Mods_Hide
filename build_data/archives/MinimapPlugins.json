@@ -1,0 +1,13 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/configs/Driftkings/MinimapPlugins/MinimapPlugins.json": "res/configs/Driftkings/MinimapPlugins/MinimapPlugins.json",
+        "mods/configs/Driftkings/MinimapPlugins/i18n/en.json": "res/configs/Driftkings/MinimapPlugins/i18n/en.json",
+        "mods/configs/Driftkings/Driftkings_GUI/i18n/en.json": "res/configs/Driftkings/Driftkings_GUI/i18n/en.json",
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",
+        "mods/{GAME_VERSION}/Driftkings/MinimapPlugins.wotmod": "build/wotmods/Driftkings/MinimapPlugins.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod"
+    }
+}

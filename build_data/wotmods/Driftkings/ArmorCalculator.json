@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_ArmorCalculator.pyc": "build/scripts/client/gui/mods/mod_ArmorCalculator.pyc",
+		
+        "res/gui/flash/ArmorCalculator.swf": "res/flash/ArmorCalculator.swf"
+    }
+}

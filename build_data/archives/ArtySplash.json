@@ -1,0 +1,12 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/configs/Driftkings/ArtySplash/ArtySplash.json": "res/configs/Driftkings/ArtySplash/ArtySplash.json",
+        "mods/configs/Driftkings/ArtySplash/i18n/en.json": "res/configs/Driftkings/ArtySplash/i18n/en.json",
+        "mods/{GAME_VERSION}/Driftkings/ArtySplash.wotmod": "build/wotmods/Driftkings/ArtySplash.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*"
+    }
+}

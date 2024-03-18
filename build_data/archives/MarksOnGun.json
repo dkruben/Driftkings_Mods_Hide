@@ -1,0 +1,17 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/configs/Driftkings/MarksOnGunBattle/MarksOnGunBattle.json": "res/configs/Driftkings/MarksOnGunBattle/MarksOnGunBattle.json",
+        "mods/configs/Driftkings/MarksOnGunBattle/i18n/en.json": "res/configs/Driftkings/MarksOnGunBattle/i18n/en.json",
+        "mods/{GAME_VERSION}/Driftkings/MarksOnGunBattle.wotmod": "build/wotmods/Driftkings/MarksOnGunBattle.wotmod",
+		"mods/configs/Driftkings/MarksOnGunTechTree/MarksOnGunTechTree.json": "res/configs/Driftkings/MarksOnGunTechTree/MarksOnGunTechTree.json",
+        "mods/configs/Driftkings/MarksOnGunTechTree/i18n/en.json": "res/configs/Driftkings/MarksOnGunTechTree/i18n/en.json",
+        "mods/{GAME_VERSION}/Driftkings/MarksOnGunTechTree.wotmod": "build/wotmods/Driftkings/MarksOnGunTechTree.wotmod",
+		"mods/{GAME_VERSION}/Driftkings/MarksOnGunHangar.wotmod": "build/wotmods/Driftkings/MarksOnGunHangar.wotmod",
+		"mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+		"mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*",
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*"
+    }
+}

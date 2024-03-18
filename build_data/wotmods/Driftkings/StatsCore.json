@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/StatsCore/__init__.pyc": "build/scripts/client/StatsCore/__init__.pyc",
+        "res/scripts/client/StatsCore/vehinfo.pyc": "build/scripts/client/StatsCore/vehinfo.pyc",
+        "res/scripts/client/StatsCore/xvm_stats.pyc": "build/scripts/client/StatsCore/xvm_stats.pyc"
+    }
+}

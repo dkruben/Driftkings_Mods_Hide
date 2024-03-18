@@ -1,0 +1,9 @@
+{
+    "IOPoolSize": 8,
+    "debug": false,
+    "defaultPool": 36,
+    "lowEnginePool": 10,
+    "max_voices": 110,
+    "memoryLimit": 250,
+    "streamingPool": 8
+}
