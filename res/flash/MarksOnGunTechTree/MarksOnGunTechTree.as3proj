@@ -4,11 +4,11 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="..\MarksOnGunTechTree.swf" />
+    <movie path="..\marksInTechtree.swf" />
     <movie fps="25" />
     <movie width="25" />
     <movie height="25" />
-    <movie version="26" />
+    <movie version="37" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
@@ -56,15 +56,6 @@
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
-    <element path="swc\base_app-1.0-SNAPSHOT.swc" />
-    <element path="swc\battle.swc" />
-    <element path="swc\common_i18n_library-1.0-SNAPSHOT.swc" />
-    <element path="swc\common-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_base-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_battle-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_lobby-1.0-SNAPSHOT.swc" />
-    <element path="swc\lobby.swc" />
-
     <element path="..\swc\base_app-1.0-SNAPSHOT.swc" />
     <element path="..\swc\battle.swc" />
     <element path="..\swc\common_i18n_library-1.0-SNAPSHOT.swc" />

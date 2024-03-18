@@ -145,23 +145,20 @@ class DispersionTimerInjector(View):
 
 
 class DispersionTimerMeta(BaseDAAPIComponent):
-    sessionProvider = dependency.descriptor(IBattleSessionProvider)
-
     def __init__(self):
         super(DispersionTimerMeta, self).__init__()
-        self._name = config.ID
 
     def _populate(self):
         # noinspection PyProtectedMember
         super(DispersionTimerMeta, self)._populate()
         g_events.onBattleClosed += self.destroy
-        logDebug(True, '\'%s\' is loaded' % self._name)
+        logDebug(True, '\'%s\' is loaded' % config.ID)
 
     def _dispose(self):
         g_events.onBattleClosed -= self.destroy
         # noinspection PyProtectedMember
         super(DispersionTimerMeta, self)._dispose()
-        logDebug(True, '\'%s\' is closed' % self._name)
+        logDebug(True, '\'%s\' is closed' % config.ID)
 
     def destroy(self):
         if self.getState() != EntityState.CREATED:

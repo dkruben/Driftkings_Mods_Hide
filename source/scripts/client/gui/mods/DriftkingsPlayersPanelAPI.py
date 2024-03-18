@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import copy
 
-import Event
+from Event import SafeEvent
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, WindowLayer, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
@@ -45,11 +45,11 @@ class Cache(object):
 
 class Events(object):
     def __init__(self):
-        self.create = Event.Event()
-        self.update = Event.Event()
-        self.delete = Event.Event()
-        self.onUIReady = Event.Event()
-        self.onBattleLoaded = Event.Event()
+        self.create = SafeEvent()
+        self.update = SafeEvent()
+        self.delete = SafeEvent()
+        self.onUIReady = SafeEvent()
+        self.onBattleLoaded = SafeEvent()
         ServicesLocator.appLoader.onGUISpaceEntered += self.__onGUISpaceEntered
 
     def __onGUISpaceEntered(self, spaceID):
@@ -62,6 +62,7 @@ class Events(object):
 
 class PlayersPanelUI(View):
     def _populate(self):
+        # noinspection PyProtectedMember
         super(PlayersPanelUI, self)._populate()
         for linkage, data in g_cache.items.iteritems():
             self.as_createS(linkage, data['config'])
@@ -76,6 +77,7 @@ class PlayersPanelUI(View):
         g_events.create -= self.as_createS
         g_events.update -= self.as_updateS
         g_events.delete -= self.as_deleteS
+        # noinspection PyProtectedMember
         super(PlayersPanelUI, self)._dispose()
 
     def as_createS(self, linkage, config):

@@ -5,7 +5,7 @@ package
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	import net.wg.gui.lobby.techtree.nodes.NationTreeNode;
-
+   
 	public dynamic class NationTreeNodeSkinned extends NationTreeNode
 	{
 		public var __setPropDict:Dictionary;
@@ -28,7 +28,8 @@ package
 				this.__setProp_typeAndLevel_NationTreeNodeSkinned_typeandlevel_0();
 			}
 			catch(e:Error)
-			{}
+			{
+			}
 			addEventListener(Event.FRAME_CONSTRUCTED,this.__setProp_handler,false,0,true);
 		}
 
@@ -107,7 +108,8 @@ package
 					button["componentInspectorSetting"] = true;
 				}
 				catch(e:Error)
-				{}
+				{
+				}
 				button.UIID = 19529729;
 				button.autoRepeat = false;
 				button.autoSize = "center";
@@ -153,7 +155,8 @@ package
 					button["componentInspectorSetting"] = true;
 				}
 				catch(e:Error)
-				{}
+				{
+				}
 				button.UIID = 19529729;
 				button.autoRepeat = false;
 				button.autoSize = "center";
@@ -199,7 +202,8 @@ package
 					button["componentInspectorSetting"] = true;
 				}
 				catch(e:Error)
-				{}
+				{
+				}
 				button.UIID = 19529729;
 				button.autoRepeat = false;
 				button.autoSize = "center";
@@ -226,7 +230,7 @@ package
 				}
 				catch(e:Error)
 				{
-				return;
+					return;
 				}
 			}
 			else
@@ -245,7 +249,8 @@ package
 					button["componentInspectorSetting"] = true;
 				}
 				catch(e:Error)
-				{}
+				{
+				}
 				button.UIID = 19529729;
 				button.autoRepeat = false;
 				button.autoSize = "none";
@@ -283,16 +288,16 @@ package
       
 		internal function __setProp_handler(param1:Object) : *
 		{
-			var frame:int = int(currentFrame);
-			if(this.__lastFrameProp == frame)
+			var _loc2_:int = int(currentFrame);
+			if(this.__lastFrameProp == _loc2_)
 			{
 				return;
 			}
-			this.__lastFrameProp = frame;
-			this.__setProp_button_NationTreeNodeSkinned_button_0(frame);
-			this.__setProp_button_NationTreeNodeSkinned_button_81(frame);
-			this.__setProp_button_NationTreeNodeSkinned_button_161(frame);
-			this.__setProp_button_NationTreeNodeSkinned_button_361(frame);
+			this.__lastFrameProp = _loc2_;
+			this.__setProp_button_NationTreeNodeSkinned_button_0(_loc2_);
+			this.__setProp_button_NationTreeNodeSkinned_button_81(_loc2_);
+			this.__setProp_button_NationTreeNodeSkinned_button_161(_loc2_);
+			this.__setProp_button_NationTreeNodeSkinned_button_361(_loc2_);
 		}
       
 		internal function frame1() : *
@@ -325,260 +330,258 @@ package
 			stop();
 		}
       
-      	internal function frame49() : *
-      	{
-         	stop();
-      	}
+		internal function frame49() : *
+		{
+			stop();
+		}
       
-      	internal function frame57() : *
-      	{
-         	stop();
-      	}
+		internal function frame57() : *
+		{
+			stop();
+		}
       
-      	internal function frame65() : *
-      	{
-         	stop();
-      	}
+		internal function frame65() : *
+		{
+			stop();
+		}
       
-      	internal function frame73() : *
-      	{
-         	stop();
-      	}
+		internal function frame73() : *
+		{
+			stop();
+		}
       
-      	internal function frame81() : *
-      	{
-         	stop();
-      	}
+		internal function frame81() : *
+		{
+			stop();
+		}
       
-      	internal function frame89() : *
-      	{
-         	stop();
-      	}
+		internal function frame89() : *
+		{
+			stop();
+		}
       
-      	internal function frame97() : *
-      	{
-         	stop();
-      	}
+		internal function frame97() : *
+		{
+			stop();
+		}
       
-      	internal function frame105() : *
-      	{
-         	stop();
-      	}
+		internal function frame105() : *
+		{
+			stop();
+		}
       
-      	internal function frame113() : *
-      	{
-         	stop();
-      	}
+		internal function frame113() : *
+		{
+			stop();
+		}
       
-      	internal function frame121() : *
-      	{
-         	stop();
-      	}
+		internal function frame121() : *
+		{
+			stop();
+		}
       
-      	internal function frame129() : *
-      	{
-         	stop();
-      	}
+		internal function frame129() : *
+		{
+			stop();
+		}
       
-      	internal function frame137() : *
-      	{
-         	stop();
-      	}
+		internal function frame137() : *
+		{
+			stop();
+		}
       
-      	internal function frame145() : *
-      	{
-         	stop();
-      	}
+		internal function frame145() : *
+		{
+			stop();
+		}
       
-      	internal function frame153() : *
-      	{
-         	stop();
-      	}
+		internal function frame153() : *
+		{
+			stop();
+		}
       
-      	internal function frame161() : *
-      	{
-         	stop();
-      	}
+		internal function frame161() : *
+		{
+			stop();
+		}
       
-      	internal function frame169() : *
-      	{
-         	stop();
-      	}
+		internal function frame169() : *
+		{
+			stop();
+		}
       
-      	internal function frame177() : *
-      	{
-         	stop();
-      	}
+		internal function frame177() : *
+		{
+			stop();
+		}
       
-      	internal function frame185() : *
-      	{
-         	stop();
-      	}
+		internal function frame185() : *
+		{
+			stop();
+		}
       
-      	internal function frame193() : *
-      	{
-         	stop();
-      	}
+		internal function frame193() : *
+		{
+			stop();
+		}
       
-      	internal function frame201() : *
-      	{
-         	stop();
-      	}
+		internal function frame201() : *
+		{
+			stop();
+		}
       
-      	internal function frame209() : *
-      	{
-         	stop();
-      	}
+		internal function frame209() : *
+		{
+			stop();
+		}
       
-      	internal function frame217() : *
-      	{
-         	stop();
-      	}
+		internal function frame217() : *
+		{
+			stop();
+		}
       
-      	internal function frame225() : *
-      	{
-         	stop();
-      	}
+		internal function frame225() : *
+		{
+			stop();
+		}
       
-      	internal function frame233() : *
-      	{
-         	stop();
-      	}
+		internal function frame233() : *
+		{
+			stop();
+		}
       
-      	internal function frame241() : *
-      	{
-         	stop();
-      	}
+		internal function frame241() : *
+		{
+			stop();
+		}
       
-      	internal function frame249() : *
-      	{
-         	stop();
-      	}
+		internal function frame249() : *
+		{
+			stop();
+		}
       
-      	internal function frame257() : *
-      	{
-         	stop();
-      	}
+		internal function frame257() : *
+		{
+			stop();
+		}
       
-      	internal function frame265() : *
-      	{
-         	stop();
-      	}
+		internal function frame265() : *
+		{
+			stop();
+		}
       
-      	internal function frame273() : *
-      	{
-         	stop();
-      	}
+		internal function frame273() : *
+		{
+			stop();
+		}
       
-      	internal function frame281() : *
-      	{
-         	stop();
-      	}
+		internal function frame281() : *
+		{
+			stop();
+		}
       
-      	internal function frame289() : *
-      	{
-         	stop();
-      	}
+		internal function frame289() : *
+		{
+			stop();
+		}
       
-      	internal function frame297() : *
-      	{
-         	stop();
-      	}
+		internal function frame297() : *
+		{
+			stop();
+		}
       
-      	internal function frame305() : *
-      	{
-         	stop();
-      	}
+		internal function frame305() : *
+		{
+			stop();
+		}
       
-      	internal function frame313() : *
-      	{
-         	stop();
-      	}
+		internal function frame313() : *
+		{
+			stop();
+		}
       
-      	internal function frame321() : *
-      	{
-         	stop();
-      	}
+		internal function frame321() : *
+		{stop();}
       
-      	internal function frame329() : *
-      	{
-         	stop();
-      	}
+		internal function frame329() : *
+		{
+			stop();
+		}
       
-      	internal function frame337() : *
-      	{
-         	stop();
-      	}
+		internal function frame337() : *
+		{
+			stop();
+		}
       
-      	internal function frame345() : *
-      	{
-         	stop();
-      	}
+		internal function frame345() : *
+		{
+			stop();
+		}
       
-      	internal function frame353() : *
-      	{
-         	stop();
-      	}
+		internal function frame353() : *
+		{
+			stop();
+		}
       
-      	internal function frame361() : *
-      	{
-         	stop();
-      	}
+		internal function frame361() : *
+		{
+			stop();
+		}
       
-      	internal function frame369() : *
-      	{
-         	stop();
-      	}
+		internal function frame369() : *
+		{
+			stop();
+		}
       
-      	internal function frame377() : *
-      	{
-         	stop();
-      	}
+		internal function frame377() : *
+		{
+			stop();
+		}
       
-      	internal function frame385() : *
-      	{
-         	stop();
-      	}
+		internal function frame385() : *
+		{
+			stop();
+		}
       
-      	internal function frame393() : *
-      	{
-         	stop();
-      	}
+		internal function frame393() : *
+		{
+			stop();
+		}
       
-      	internal function frame401() : *
-      	{
-         	stop();
-      	}
+		internal function frame401() : *
+		{
+			stop();
+		}
       
-      	internal function frame409() : *
-      	{
-         	stop();
-      	}
+		internal function frame409() : *
+		{
+			stop();
+		}
       
-      	internal function frame417() : *
-      	{
-         	stop();
-      	}
+		internal function frame417() : *
+		{
+			stop();
+		}
       
-      	internal function frame425() : *
-      	{
-         	stop();
-      	}
+		internal function frame425() : *
+		{
+			stop();
+		}
       
-      	internal function frame433() : *
-      	{
-         	stop();
-      	}
+		internal function frame433() : *
+		{
+			stop();
+		}
       
-      	internal function frame441() : *
-      	{
-         	stop();
-      	}
+		internal function frame441() : *
+		{
+			stop();
+		}
       
-      	internal function frame449() : *
-      	{
-         	stop();
-      	}
+		internal function frame449() : *
+		{
+			stop();
+		}
       
 		internal function frame457() : *
 		{

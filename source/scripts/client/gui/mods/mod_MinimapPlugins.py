@@ -209,10 +209,6 @@ class MinimapCentredView(BaseDAAPIComponent):
             self.flashObject.as_minimapCentered(pressed, config.data['zoomFactor'])
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, MinimapCentredInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MinimapCentredView, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
-
-
 class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
 
     def start(self):
@@ -317,3 +313,7 @@ def new_setupPlugins(base, plugin, arenaVisitor):
         logError(repr(err))
     finally:
         return res
+
+
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, MinimapCentredInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MinimapCentredView, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

@@ -34,6 +34,7 @@ FULL_PP_RANGE = (SHELLS.HIGH_EXPLOSIVE, SHELLS.HOLLOW_CHARGE)
 class ConfigInterface(SimpleConfigInterface):
 
     def __init__(self):
+        g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -87,6 +88,13 @@ class ConfigInterface(SimpleConfigInterface):
             'column2': []
         }
 
+    @staticmethod
+    def onBattleLoaded():
+        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
+        if app is None:
+            return
+        app.loadView(SFViewLoadParams(AS_INJECTOR))
+
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
@@ -111,8 +119,6 @@ class ArmorCalculatorInjector(View):
 
 
 class ArmorCalculatorMeta(BaseDAAPIComponent):
-    sessionProvider = dependency.descriptor(IBattleSessionProvider)
-
     def __init__(self):
         super(ArmorCalculatorMeta, self).__init__()
 
@@ -133,8 +139,8 @@ class ArmorCalculatorMeta(BaseDAAPIComponent):
             return
         super(ArmorCalculatorMeta, self).destroy()
 
-    def as_startUpdateS(self, linkage):
-        return self.flashObject.as_startUpdate(linkage) if self._isDAAPIInited() else None
+    def as_startUpdateS(self, *args):
+        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
 
     def as_onCrosshairPositionChangedS(self, x, y):
         return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
@@ -196,11 +202,8 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
         print '=' * 25
-        print 'as_'
-        print self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
-        print '=' * 25
         print 'template'
-        print (config.data['template'] % self.calcMacro)
+        print config.data['template'] % self.calcMacro
         print '=' * 25
 
 
@@ -294,8 +297,6 @@ class ArmorCalculatorAllies(object):
 
 
 g_mod = ArmorCalculatorAllies()
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, ArmorCalculatorInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
 class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
@@ -326,11 +327,5 @@ def createPlugins(base, *args):
     return _plugins
 
 
-def onBattleLoaded():
-    app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-    if app is None:
-        return
-    app.loadView(SFViewLoadParams(AS_INJECTOR))
-
-
-g_events.onBattleLoaded += onBattleLoaded
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, ArmorCalculatorInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

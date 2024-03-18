@@ -16,11 +16,6 @@ package driftkings.views.battle
 		public function ArmorCalculatorUI()
 		{
 			super();
-			this.tabEnabled = false;
-			this.tabChildren = false;
-			this.mouseEnabled = false;
-			this.mouseChildren = false;
-			this.buttonMode = false;
 			this.addEventListener(Event.RESIZE, this._onResizeHandle);
 		}
 		
@@ -38,16 +33,18 @@ package driftkings.views.battle
 				this.removeChildAt(0);
 			}
 			this.armorCalc = null;
-			App.utils.data.cleanupDynamicObject(this.config);
+			//App.utils.data.cleanupDynamicObject(this.config);
 		}
 		
 		public function as_startUpdate(settings:Object): void
 		{
-			this.as_clearScene();
-			this.config = settings
-			this.x = settings.position.x < 0 ? parent.width + settings.position.x : settings.position.x
-			this.y = settings.position.y < 0 ? parent.height + settings.position.y : settings.position.y
-			this.armorCalc = new TextExt(settings.position.x, settings.position.y, Constants.largeText, TextFieldAutoSize.CENTER, this);
+			if (settings.enabled)
+			{
+				this.config = settings;
+				this.x = settings.position.x < 0 ? parent.width + settings.position.x : settings.position.x
+				this.y = settings.position.y < 0 ? parent.height + settings.position.y : settings.position.y
+				this.armorCalc = new TextExt(settings.position.x, settings.position.y, Constants.largeText, TextFieldAutoSize.CENTER, this);
+			}
 		}
 		
 		public function as_onCrosshairPositionChanged(x:Number, y:Number):void
