@@ -11,7 +11,6 @@ from gui.Scaleform.daapi.view.battle.shared.minimap.settings import CIRCLE_TYPE,
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
-from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control import avatar_getter
@@ -19,7 +18,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, g_events, DriftkingsInjector
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
 AS_BATTLE = 'MinimapCentredView'
@@ -168,24 +167,6 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class MinimapCentredInjector(View):
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(MinimapCentredInjector, self)._populate()
-        g_events.onBattleClosed += self.destroy
-
-    def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
-        # noinspection PyProtectedMember
-        super(MinimapCentredInjector, self)._dispose()
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(MinimapCentredInjector, self).destroy()
-
-
 class MinimapCentredView(BaseDAAPIComponent):
     def _populate(self):
         # noinspection PyProtectedMember
@@ -315,5 +296,5 @@ def new_setupPlugins(base, plugin, arenaVisitor):
         return res
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, MinimapCentredInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MinimapCentredView, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

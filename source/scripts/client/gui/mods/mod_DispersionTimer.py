@@ -8,7 +8,6 @@ from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemp
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from VehicleGunRotator import VehicleGunRotator
-from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.avatar_getter import getInputHandler
@@ -16,7 +15,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, g_events, DriftkingsInjector
 
 AS_INJECTOR = 'DispersionTimerInjector'
 AS_BATTLE = 'DispersionTimerView'
@@ -124,24 +123,6 @@ class ConfigInterface(SimpleConfigInterface):
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
-
-class DispersionTimerInjector(View):
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(DispersionTimerInjector, self)._populate()
-        g_events.onBattleClosed += self.destroy
-
-    def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
-        # noinspection PyProtectedMember
-        super(DispersionTimerInjector, self)._dispose()
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(DispersionTimerInjector, self).destroy()
 
 
 class DispersionTimerMeta(BaseDAAPIComponent):
@@ -252,5 +233,5 @@ def new_updateRotationAndGunMarker(func, self, *args, **kwargs):
     g_events.onDispersionAngleChanged(self)
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DispersionTimerInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, DispersionTimer, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

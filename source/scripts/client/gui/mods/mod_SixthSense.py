@@ -14,7 +14,6 @@ from gui.Scaleform.daapi.view.battle.shared.indicators import SixthSenseIndicato
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
-from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -23,7 +22,7 @@ from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, callback, getPlayer, sendChatMessage, SixthSenseTimer, checkNamesList, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, callback, getPlayer, sendChatMessage, SixthSenseTimer, checkNamesList, g_events, DriftkingsInjector
 
 AS_INJECTOR = 'SixthSenseInjector'
 AS_BATTLE = 'SixthSenseView'
@@ -187,24 +186,6 @@ class Messages(object):
 g_messages = Messages()
 
 
-class SixthSenseInjector(View):
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(SixthSenseInjector, self)._populate()
-        g_events.onBattleClosed += self.destroy
-
-    def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
-        # noinspection PyProtectedMember
-        super(SixthSenseInjector, self)._dispose()
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(SixthSenseInjector, self).destroy()
-
-
 class SixthSenseMeta(BaseDAAPIComponent):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
     settingsCore = dependency.descriptor(ISettingsCore)
@@ -315,7 +296,7 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
             self.__visible = False
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, SixthSenseInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, SixthSense, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 

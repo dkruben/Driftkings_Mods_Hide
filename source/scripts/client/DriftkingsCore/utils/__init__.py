@@ -12,7 +12,8 @@ from .monkeypatch import *
 from .wgUtils import *
 from .timers import *
 from .colorRatting import *
-from eventsManager import *
+from .eventsManager import *
+from .view_injector import *
 
 
 def __import_delayed():
