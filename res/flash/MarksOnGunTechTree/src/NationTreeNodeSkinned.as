@@ -501,7 +501,9 @@ package
 		}
       
 		internal function frame321() : *
-		{stop();}
+		{
+			stop();
+		}
       
 		internal function frame329() : *
 		{

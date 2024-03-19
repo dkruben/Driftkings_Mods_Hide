@@ -8,7 +8,7 @@
     <movie fps="25" />
     <movie width="25" />
     <movie height="25" />
-    <movie version="37" />
+    <movie version="27" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
@@ -49,6 +49,7 @@
   </build>
   <!-- SWC Include Libraries -->
   <includeLibraries>
+    <!-- example: <element path="..." /> -->
   </includeLibraries>
   <!-- SWC Libraries -->
   <libraryPaths>

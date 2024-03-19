@@ -5,14 +5,12 @@
 	
 	public class TextExt extends TextField
 	{
-		//public function TextExt(x:Number, y:Number, style:TextFormat, align:String, ui:*)
 		public function TextExt(x:Number, y:Number, align:String, ui:*)
 		{
 			super();
 			this.x = x;
 			this.y = y;
 			this.width = 1;
-			//this.defaultTextFormat = style;
 			this.antiAliasType = AntiAliasType.ADVANCED;
 			this.autoSize = align;
 			this.filters = [new GlowFilter(0, 0.7, 2, 2, 6)];

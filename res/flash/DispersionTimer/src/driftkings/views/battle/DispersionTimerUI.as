@@ -42,18 +42,13 @@ package driftkings.views.battle
 		
 		public function as_startUpdate(settings:Object): void
 		{
-			this.config = settings;
-			var x:int = settings.x;
-			if (x < 0)
+		if (settings.enabled)
 			{
-				x = App.appWidth + x;
+				this.config = settings;
+				this.x = settings.x < 0 ? parent.width + settings.x : settings.x
+				this.y = settings.y < 0 ? parent.height + settings.y : settings.y
+				this.dispersionTime = new TextExt(x, y, Constants.middleText, settings.align, this);
 			}
-			var y:int = settings.y;
-			if (y < 0)
-			{
-				y = App.appHeight + y;
-			}
-			this.dispersionTime = new TextExt(x, y, Constants.middleText, settings.align, this);
 		}
 		
 		public function as_onCrosshairPositionChanged(x:Number, y:Number):void
@@ -69,18 +64,8 @@ package driftkings.views.battle
 		
 		private function _onResizeHandle(event:Event):void
 		{
-			var x:int = config.x;
-			if (x < 0)
-			{
-				x = App.appWidth + x;
-			}
-			var y:int = config.y;
-			if (y < 0)
-			{
-				y = App.appHeight + y;
-			}
-			dispersionTime.x = x;
-			dispersionTime.y = y;
+			this.x = config.x < 0 ? parent.width + config.x : config.x
+			this.y = config.y < 0 ? parent.height + config.y : config.y
 		}
 	}
 }

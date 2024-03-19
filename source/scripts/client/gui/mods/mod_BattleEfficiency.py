@@ -102,25 +102,6 @@ class ConfigInterface(SimpleConfigInterface):
     def isEnabled(self):
         return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 
-    def readCurrentSettings(self, quiet=True):
-        self.color = loadJson(self.ID, 'colorRatting', self.color, self.configPath)
-        loadJson(self.ID, 'colorRatting', self.color, self.configPath, True, quiet=True)
-
-    def createTable(self):
-        self.color = COLOR_TABLES[self.data['colorRatting']]
-        try:
-            if self.data['colorRatting'] == 0:
-                self.color = loadJson(self.ID, 'colorRatting', self.color, self.configPath, True, quiet=False)
-            elif self.data['colorRatting'] == 1:
-                self.color = loadJson(self.ID, 'colorRatting', self.color, self.configPath, True, quiet=False)
-            elif self.data['colorRatting'] == 2:
-                self.color = loadJson(self.ID, 'colorRatting', self.color, self.configPath, True, quiet=False)
-        except StandardError:
-            pass
-        else:
-            if self.color is None:
-                return
-
 
 class Flash(object):
     def __init__(self, ID):
@@ -169,9 +150,6 @@ except ImportError:
 except StandardError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
-
-
-g_config.createTable()
 
 
 def set_text(text):
@@ -272,7 +250,7 @@ class BattleEfficiency(object):
 
     @staticmethod
     def readColors(*args, **kwargs):
-        return getColor(g_config.color['colors'], *args, **kwargs)
+        return getColor(COLOR_TABLES[g_config.data['colorRatting']].get('colors'), *args, **kwargs)
 
     @staticmethod
     def check_macros(macros):

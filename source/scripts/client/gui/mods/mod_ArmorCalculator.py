@@ -139,8 +139,8 @@ class ArmorCalculatorMeta(BaseDAAPIComponent):
             return
         super(ArmorCalculatorMeta, self).destroy()
 
-    def as_startUpdateS(self, *args):
-        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
+    def as_setSettingsS(self, *args):
+        return self.flashObject.as_setSettings(*args) if self._isDAAPIInited() else None
 
     def as_onCrosshairPositionChangedS(self, x, y):
         return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
@@ -158,7 +158,7 @@ class ArmorCalculator(ArmorCalculatorMeta):
 
     def _populate(self):
         super(ArmorCalculator, self)._populate()
-        self.as_startUpdateS(config.data)
+        self.as_setSettingsS(config.data)
         ctrl = self.sessionProvider.shared.crosshair
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged += self.as_onCrosshairPositionChangedS
@@ -201,10 +201,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['piercingReserve'] = piercingPower - armor
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
-        print '=' * 25
-        print 'template'
-        print config.data['template'] % self.calcMacro
-        print '=' * 25
 
 
 class ArmorCalculatorAllies(object):
