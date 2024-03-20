@@ -9,8 +9,6 @@ from constants import SHELL_MECHANICS_TYPE, SHELL_TYPES as SHELLS, SHELL_TYPES
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
-from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.genConsts.CROSSHAIR_VIEW_ID import CROSSHAIR_VIEW_ID
 from gui.app_loader.settings import APP_NAME_SPACE
@@ -20,7 +18,7 @@ from helpers import dependency
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logDebug, logException, g_events, DriftkingsInjector
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException, g_events, DriftkingsInjector, DriftkingsView
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
 AS_BATTLE = 'ArmorCalculatorView'
@@ -99,32 +97,9 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class ArmorCalculatorMeta(BaseDAAPIComponent):
+class ArmorCalculatorMeta(DriftkingsView):
     def __init__(self):
-        super(ArmorCalculatorMeta, self).__init__()
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(ArmorCalculatorMeta, self)._populate()
-        g_events.onBattleClosed += self.destroy
-        logDebug(True, '\'%s\' is loaded' % config.ID)
-
-    def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
-        # noinspection PyProtectedMember
-        super(ArmorCalculatorMeta, self)._dispose()
-        logDebug(True, '\'%s\' is closed' % config.ID)
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(ArmorCalculatorMeta, self).destroy()
-
-    def as_setSettingsS(self, *args):
-        return self.flashObject.as_setSettings(*args) if self._isDAAPIInited() else None
-
-    def as_onCrosshairPositionChangedS(self, x, y):
-        return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
+        super(ArmorCalculatorMeta, self).__init__(config.ID)
 
     def as_armorCalculatorS(self, text):
         return self.flashObject.as_armorCalculator(text) if self._isDAAPIInited() else None
@@ -139,7 +114,7 @@ class ArmorCalculator(ArmorCalculatorMeta):
 
     def _populate(self):
         super(ArmorCalculator, self)._populate()
-        self.as_setSettingsS(config.data)
+        self.as_startUpdateS(config.data)
         ctrl = self.sessionProvider.shared.crosshair
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged += self.as_onCrosshairPositionChangedS

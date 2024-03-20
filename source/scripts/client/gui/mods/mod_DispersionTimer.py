@@ -5,8 +5,6 @@ from math import ceil, log
 from aih_constants import CTRL_MODE_NAME
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
-from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from VehicleGunRotator import VehicleGunRotator
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
@@ -15,7 +13,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, g_events, DriftkingsInjector
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, g_events, DriftkingsInjector, DriftkingsView
 
 AS_INJECTOR = 'DispersionTimerInjector'
 AS_BATTLE = 'DispersionTimerView'
@@ -125,32 +123,9 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DispersionTimerMeta(BaseDAAPIComponent):
+class DispersionTimerMeta(DriftkingsView):
     def __init__(self):
-        super(DispersionTimerMeta, self).__init__()
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(DispersionTimerMeta, self)._populate()
-        g_events.onBattleClosed += self.destroy
-        logDebug(True, '\'%s\' is loaded' % config.ID)
-
-    def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
-        # noinspection PyProtectedMember
-        super(DispersionTimerMeta, self)._dispose()
-        logDebug(True, '\'%s\' is closed' % config.ID)
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(DispersionTimerMeta, self).destroy()
-
-    def as_startUpdateS(self, *args):
-        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
-
-    def as_onCrosshairPositionChangedS(self, x, y):
-        return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
+        super(DispersionTimerMeta, self).__init__(config.ID)
 
     def as_updateTimerTextS(self, text):
         return self.flashObject.as_upateTimerText(text) if self._isDAAPIInited() else None

@@ -2,6 +2,7 @@
     "enabled": true,
     "ext": ".wotmod",
     "files": {
-        "res/scripts/client/gui/mods/mod_BattleOptions_obf.pyc": "build/scripts/client/gui/mods/mod_BattleOptions.pyc"
+        "res/scripts/client/gui/mods/mod_BattleOptions.pyc": "build/scripts/client/gui/mods/mod_BattleOptions.pyc",
+		"res/gui/flash/BattleClock.swf": "res/flash/BattleClock.swf"
     }
 }

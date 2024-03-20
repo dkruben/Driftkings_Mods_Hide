@@ -36,7 +36,7 @@ package driftkings.views.battle
 			//App.utils.data.cleanupDynamicObject(this.config);
 		}
 		
-		public function as_setSettings(settings:Object): void
+		public function as_startUpdate(settings:Object): void
 		{
 			if (settings.enabled)
 			{

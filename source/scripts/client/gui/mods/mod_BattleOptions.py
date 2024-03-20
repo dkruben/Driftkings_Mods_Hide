@@ -1,5 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-import traceback
+import locale
+from string import printable
 from time import strftime
 
 from Avatar import PlayerAvatar
@@ -22,40 +23,24 @@ from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEqui
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 # from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 from messenger.storage import storage_getter
-from shared_utils import safeCancelCallback
+from frameworks.wulf import WindowLayer
+from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.app_loader.settings import APP_NAME_SPACE
+from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, callback, override, logError, logInfo, logDebug, isDisabledByBattleType, isReplay, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isDisabledByBattleType, isReplay, CyclicTimerEvent, g_events, DriftkingsInjector, DriftkingsView
 
+AS_SWF = 'BattleClock.swf'
+AS_BATTLE = 'BattleClockView'
+AS_INJECTOR = 'BattleClockInjector'
 _cache = set()
-
-try:
-    from gambiter import g_guiFlash
-    from gambiter.flash import COMPONENT_TYPE
-except ImportError:
-    g_guiFlash = COMPONENT_TYPE = None
-    logError('[%s] Loading mod: Not found \'gambiter.flash\' module, loading stop!' % '%(mod_ID)s')
-except StandardError:
-    g_guiFlash = COMPONENT_TYPE = None
-    traceback.print_exc()
 
 
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
-        self.updateCallback = None
-        self.__isLobby = True
+        g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
-
-    @property
-    def isLobby(self):
-        return self.__isLobby
-
-    @isLobby.setter
-    def isLobby(self, value):
-        self.__isLobby = value
-        if self.updateCallback:
-            self.updateCallback = safeCancelCallback(self.updateCallback)
-        if not value:
-            self.updateCallback = callback(0.5, self.update)
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -72,10 +57,11 @@ class ConfigInterface(SimpleConfigInterface):
             'stunSound': False,
             'muteTeamBaseSound': False,
             'color': 'FF002A',
+            'showFriends': False,
             'inBattle': True,
             'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
             'directivesOnlyFromStorage': False,
-            'showFriends': False
+            'position': {'x': -870, 'y': 1}
         }
 
         self.i18n = {
@@ -127,48 +113,69 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
+    @staticmethod
+    def onBattleLoaded():
+        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
+        if not app:
+            return
+        app.loadView(SFViewLoadParams(AS_INJECTOR))
+
     def isEnabled(self):
         return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
-
-    def load(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, {
-            'x': 185,
-            'y': 2,
-            'shadow': {
-                'alpha': 75,
-                'blur': 3,
-                'color': '0x000000',
-                'strength': 1
-            },
-            'text': ''
-        }, True, False)
-        super(ConfigInterface, self).load()
-
-    def update(self):
-        if self.updateCallback:
-            self.updateCallback = safeCancelCallback(self.updateCallback)
-        if not self.isLobby:
-            self.updateCallback = callback(0.5, self.update)
-        g_guiFlash.updateComponent(self.ID, {'text': self.setClock()})
-
-    def setClock(self):
-        time = strftime(config.data['format'])
-        if self.checkDecoder(strftime(config.data['format'])) is not None:
-            time = time.decode(self.checkDecoder(strftime(config.data['format'])))
-        return time
-
-    @staticmethod
-    def checkDecoder(_string):
-        import string
-        for char in _string:
-            if char not in string.printable:
-                import locale
-                return locale.getpreferredencoding()
-        return None
 
 
 config = ConfigInterface()
 statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+
+
+class DateTimesMeta(DriftkingsView):
+
+    def __init__(self):
+        super(DateTimesMeta, self).__init__(config.ID)
+
+    def as_setDateTimeS(self, text):
+        return self.flashObject.as_setDateTime(text) if self._isDAAPIInited() else None
+
+
+class DateTimes(DateTimesMeta):
+
+    def __init__(self):
+        super(DateTimes, self).__init__()
+        self.coding = None
+        self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
+
+    def _populate(self):
+        super(DateTimes, self)._populate()
+        g_playerEvents.onAvatarReady += self.updateDecoder
+        #  self.updateDecoder()
+        if config.data['enabled'] and config.data['inBattle']:
+            self.as_startUpdateS(config.data)
+        self.timerEvent.start()
+
+    def _dispose(self):
+        g_playerEvents.onAvatarReady -= self.updateDecoder
+        self.timerEvent.stop()
+        super(DateTimes, self)._dispose()
+
+    @staticmethod
+    def checkDecoder(_string):
+        for char in _string:
+            if char not in printable:
+                return locale.getpreferredencoding()
+        return None
+
+    def updateDecoder(self):
+        self.coding = self.checkDecoder(strftime(config.data['format']))
+
+    def updateTimeData(self):
+        _time = strftime(config.data['format'])
+        if self.coding is not None:
+            _time = _time.decode(self.coding)
+        self.as_setDateTimeS(_time)
+
+
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, DateTimes, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
 # disable commander voices

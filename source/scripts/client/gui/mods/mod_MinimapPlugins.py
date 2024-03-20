@@ -9,8 +9,6 @@ from gui.Scaleform.daapi.view.battle.shared.minimap import plugins
 from gui.Scaleform.daapi.view.battle.shared.minimap.component import MinimapComponent
 from gui.Scaleform.daapi.view.battle.shared.minimap.settings import CIRCLE_TYPE, CIRCLE_STYLE, VIEW_RANGE_CIRCLES_AS3_DESCR
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
-from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control import avatar_getter
@@ -18,7 +16,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, g_events, DriftkingsInjector
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, g_events, DriftkingsInjector, DriftkingsView
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
 AS_BATTLE = 'MinimapCentredView'
@@ -167,23 +165,19 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class MinimapCentredView(BaseDAAPIComponent):
+class MinimapCentredView(DriftkingsView):
+    def __init__(self):
+        super(MinimapCentredView, self).__init__(config.ID)
+
     def _populate(self):
         # noinspection PyProtectedMember
         super(MinimapCentredView, self)._populate()
-        g_events.onBattleClosed += self.destroy
         g_events.onAltKey += self.onAltKey
 
     def _dispose(self):
-        g_events.onBattleClosed -= self.destroy
         g_events.onAltKey -= self.onAltKey
         # noinspection PyProtectedMember
         super(MinimapCentredView, self)._dispose()
-
-    def destroy(self):
-        if self.getState() != EntityState.CREATED:
-            return
-        super(MinimapCentredView, self).destroy()
 
     def onAltKey(self, pressed):
         if config.notEpicBattle and not config.xvmInstalled:

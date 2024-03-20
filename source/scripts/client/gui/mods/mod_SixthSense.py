@@ -12,17 +12,12 @@ from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.indicators import SixthSenseIndicator
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
-from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
-from helpers import dependency
-from skeletons.account_helpers.settings_core import ISettingsCore
-from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, callback, getPlayer, sendChatMessage, SixthSenseTimer, checkNamesList, g_events, DriftkingsInjector
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, SixthSenseTimer, checkNamesList, g_events, DriftkingsInjector, DriftkingsView
 
 AS_INJECTOR = 'SixthSenseInjector'
 AS_BATTLE = 'SixthSenseView'
@@ -186,30 +181,9 @@ class Messages(object):
 g_messages = Messages()
 
 
-class SixthSenseMeta(BaseDAAPIComponent):
-    sessionProvider = dependency.descriptor(IBattleSessionProvider)
-    settingsCore = dependency.descriptor(ISettingsCore)
-
+class SixthSenseMeta(DriftkingsView):
     def __init__(self):
-        super(SixthSenseMeta, self).__init__()
-        self._arenaDP = self.sessionProvider.getArenaDP()
-        self._arenaVisitor = self.sessionProvider.arenaVisitor
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(SixthSenseMeta, self)._populate()
-        logDebug(True, '\'%s\' is loaded' % config.ID)
-
-    def _dispose(self):
-        # noinspection PyProtectedMember
-        super(SixthSenseMeta, self)._dispose()
-        logDebug(True, '\'%s\' is destroyed' % config.ID)
-
-    def as_setComponentVisible(self, param):
-        return self.flashObject.setCompVisible(param) if self._isDAAPIInited() else None
-
-    def as_startUpdateS(self, *args):
-        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
+        super(SixthSenseMeta, self).__init__(config.ID)
 
     def as_showS(self):
         return self.flashObject.as_show() if self._isDAAPIInited() else None

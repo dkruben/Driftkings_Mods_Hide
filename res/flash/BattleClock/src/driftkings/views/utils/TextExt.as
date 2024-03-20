@@ -7,15 +7,20 @@
 	
 	public class TextExt extends TextField
 	{
-		public function TextExt(x:Number, y:Number, align:String, textShadow:Object, ui:*, enabled:Boolean = true)
+		public function TextExt(x:Number, y:Number, style:TextFormat, align:String, ui:*, enabled:Boolean = true)
 		{
 			super();
+			if (style == null)
+			{
+				style = Constants.normalText;
+			}
 			this.x = x;
 			this.y = y;
 			this.width = 1;
+			this.defaultTextFormat = style;
 			this.antiAliasType = AntiAliasType.ADVANCED;
 			this.autoSize = align;
-			this.filters = [new DropShadowFilter(textShadow.distance, textShadow.angle, Utils.colorConvert(textShadow.color), textShadow.alpha, textShadow.blurX, textShadow.blurY, textShadow.strength, textShadow.quality)];
+			//this.filters = [new DropShadowFilter(textShadow.distance, textShadow.angle, Utils.colorConvert(textShadow.color), textShadow.alpha, textShadow.blurX, textShadow.blurY, textShadow.strength, textShadow.quality)];
 			this.selectable = false;
 			this.multiline = true;
 			this.visible = enabled;

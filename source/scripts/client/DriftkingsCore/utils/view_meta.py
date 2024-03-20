@@ -1,0 +1,42 @@
+# -*- coding: utf-8 -*-
+from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
+from gui.Scaleform.framework.entities.DisposableEntity import EntityState
+from helpers import dependency
+from skeletons.account_helpers.settings_core import ISettingsCore
+from skeletons.gui.battle_session import IBattleSessionProvider
+
+from . import logDebug, g_events
+
+
+class DriftkingsView(BaseDAAPIComponent):
+    sessionProvider = dependency.descriptor(IBattleSessionProvider)
+    settingsCore = dependency.descriptor(ISettingsCore)
+
+    def __init__(self, ID):
+        super(DriftkingsView, self).__init__()
+        self.ID = ID
+        self._arenaDP = self.sessionProvider.getArenaDP()
+        self._arenaVisitor = self.sessionProvider.arenaVisitor
+
+    def _populate(self):
+        # noinspection PyProtectedMember
+        super(DriftkingsView, self)._populate()
+        g_events.onBattleClosed += self.destroy
+        logDebug(True, '\'%s\' is loaded' % self.ID)
+
+    def _dispose(self):
+        g_events.onBattleClosed -= self.destroy
+        # noinspection PyProtectedMember
+        super(DriftkingsView, self)._dispose()
+        logDebug(True, '\'%s\' is closed' % self.ID)
+
+    def destroy(self):
+        if self.getState() != EntityState.CREATED:
+            return
+        super(DriftkingsView, self).destroy()
+
+    def as_startUpdateS(self, *args):
+        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
+
+    def as_onCrosshairPositionChangedS(self, x, y):
+        return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
