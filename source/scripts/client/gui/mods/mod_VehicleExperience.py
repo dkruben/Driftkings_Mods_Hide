@@ -355,12 +355,7 @@ class ConfigInterface(SimpleConfigInterface):
                 vehicle = vehicles[compactDescr]
                 if vehicle and not vehicle.isUnlocked:
                     isAvailable, cost, need, fullCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD, vehicle.level)
-                    researchVehicles[compactDescr] = {
-                        'exp': fullCost,
-                        'battles': 1,
-                        'vehicle': vehicle,
-                        'discount': fullCost - cost
-                    }
+                    researchVehicles[compactDescr] = {'exp': fullCost, 'battles': 1, 'vehicle': vehicle, 'discount': fullCost - cost}
                     eliteNeedXP += fullCost
                     eliteDiscountXP += fullCost - cost
                     isEliteReady = True
@@ -396,17 +391,8 @@ g_instance = ConfigInterface()
 analytics = Analytics(g_instance.ID, g_instance.version, 'UA-121940539-1')
 
 
-@override(VehicleParameters, 'onParamClick')
-def new_VehicleParameters_onParamClick(func, self, paramID):
-    try:
-        func(self, paramID)
-    except KeyError:
-        g_instance.setExpanded(paramID, not g_instance.isExpanded(paramID))
-        self._setDPUseAnimAndRebuild(False)
-
-
 @override(VehParamsDataProvider, 'buildList')
-def new_VehParamsDataProvider_buildList(func, self, cache):
+def new_buildList(func, self, cache):
     if not g_instance.data['enabled']:
         return func(self, cache)
     self.clear()
@@ -416,9 +402,14 @@ def new_VehParamsDataProvider_buildList(func, self, cache):
         func(self, cache)
         info.extend(self._list)
     if len(info) == 0:
-        info.append({
-            'state': HANGAR_ALIASES.VEH_PARAM_RENDERER_STATE_SEPARATOR,
-            'isEnabled': False,
-            'tooltip': ''
-        })
+        info.append({'state': HANGAR_ALIASES.VEH_PARAM_RENDERER_STATE_SEPARATOR, 'isEnabled': False, 'tooltip': ''})
     self._list = info
+
+
+@override(VehicleParameters, 'onParamClick')
+def new_onParamClick(func, self, paramID):
+    try:
+        func(self, paramID)
+    except KeyError:
+        g_instance.setExpanded(paramID, not g_instance.isExpanded(paramID))
+        self._setDPUseAnimAndRebuild(False)
