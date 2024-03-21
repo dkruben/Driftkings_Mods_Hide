@@ -1,9 +1,8 @@
 ﻿package driftkings.views.utils
 {
-	import flash.filters.DropShadowFilter;
+	import flash.filters.GlowFilter;
 	import flash.text.*;
 	import driftkings.views.utils.Constants;
-	import driftkings.views.utils.Utils;
 	
 	public class TextExt extends TextField
 	{
@@ -20,7 +19,7 @@
 			this.defaultTextFormat = style;
 			this.antiAliasType = AntiAliasType.ADVANCED;
 			this.autoSize = align;
-			this.filters = [new DropShadowFilter(0, 0, 0, 1, 4, 4, 1, 3)];
+			this.filters = [new GlowFilter(0, 0.55, 2, 2, 4)];
 			this.selectable = false;
 			this.multiline = true;
 			this.visible = enabled;

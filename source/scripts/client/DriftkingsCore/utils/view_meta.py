@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from account_helpers.settings_core.settings_constants import GRAPHICS
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from helpers import dependency
@@ -34,6 +35,21 @@ class DriftkingsView(BaseDAAPIComponent):
         if self.getState() != EntityState.CREATED:
             return
         super(DriftkingsView, self).destroy()
+
+    @property
+    def playerVehicleID(self):
+        return self._arenaDP.getPlayerVehicleID()
+
+    @property
+    def isPlayerVehicle(self):
+        vehicle = self.sessionProvider.shared.vehicleState.getControllingVehicle()
+        if vehicle is not None:
+            return vehicle.id == self.playerVehicleID
+        observed_veh_id = self.sessionProvider.shared.vehicleState.getControllingVehicleID()
+        return self.playerVehicleID == observed_veh_id or observed_veh_id == 0
+
+    def isColorBlind(self):
+        return bool(self.settingsCore.getSetting(GRAPHICS.COLOR_BLIND))
 
     def as_startUpdateS(self, *args):
         return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None

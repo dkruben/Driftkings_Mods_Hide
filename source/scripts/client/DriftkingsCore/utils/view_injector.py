@@ -8,11 +8,13 @@ from .eventsManager import g_events
 class DriftkingsInjector(View):
 
     def _populate(self):
+        # noinspection PyProtectedMember
         super(DriftkingsInjector, self)._populate()
         g_events.onBattleClosed += self.destroy
 
     def _dispose(self):
         g_events.onBattleClosed -= self.destroy
+        # noinspection PyProtectedMember
         super(DriftkingsInjector, self)._dispose()
 
     def destroy(self):

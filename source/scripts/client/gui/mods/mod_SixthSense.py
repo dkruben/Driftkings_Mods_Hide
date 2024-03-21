@@ -21,7 +21,7 @@ from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback,
 
 AS_INJECTOR = 'SixthSenseInjector'
 AS_BATTLE = 'SixthSenseView'
-AS_SWF = 'mod_SixthSense.swf'
+AS_SWF = 'SixthSenseIcon.swf'
 
 _STATES_TO_HIDE = {
     VEHICLE_VIEW_STATE.SWITCHING, VEHICLE_VIEW_STATE.RESPAWNING,
@@ -82,19 +82,19 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Text message remains on screen for this amount of seconds before fading out.',
 
-            'UI_image_driftkings': 'driftkings',
-            'UI_image_sauron': 'sauron',
-            'UI_image_bulb': 'bulb',
-            'UI_image_space': 'space',
-            'UI_image_sexon': 'sexon',
-            'UI_image_flash': 'flash',
-            'UI_image_minion': 'minion',
-            'UI_image_darkTank': 'darkTank',
-            'UI_image_hand': 'hand',
-            'UI_image_potato': 'potato',
-            'UI_image_skull': 'skull',
-            'UI_image_aurora': 'aurora',
-            'UI_image_orangeBlue': 'orangeBlue'
+            # 'UI_image_driftkings': 'driftkings',
+            # 'UI_image_sauron': 'sauron',
+            # 'UI_image_bulb': 'bulb',
+            # 'UI_image_space': 'space',
+            # 'UI_image_sexon': 'sexon',
+            # 'UI_image_flash': 'flash',
+            # 'UI_image_minion': 'minion',
+            # 'UI_image_darkTank': 'darkTank',
+            # 'UI_image_hand': 'hand',
+            # 'UI_image_potato': 'potato',
+            # 'UI_image_skull': 'skull',
+            # 'UI_image_aurora': 'aurora',
+            # 'UI_image_orangeBlue': 'orangeBlue'
         }
         super(ConfigInterface, self).init()
 

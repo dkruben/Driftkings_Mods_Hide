@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_MainGun.pyc": "build/scripts/client/gui/mods/mod_MainGun.pyc",
+		
+        "res/gui/flash/MainGun.swf": "res/flash/MainGun.swf"
+    }
+}

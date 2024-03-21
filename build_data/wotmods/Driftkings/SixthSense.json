@@ -18,6 +18,6 @@
 		"res/gui/maps/icons/SixthSense/12.png": "res/res/maps/icons/SixthSense/12.png",
 		"res/gui/maps/icons/SixthSense/13.png": "res/res/maps/icons/SixthSense/13.png",
 		
-        "res/gui/flash/mod_SixthSense.swf": "res/flash/mod_SixthSense.swf"
+        "res/gui/flash/SixthSenseIcon.swf": "res/flash/SixthSenseIcon.swf"
     }
 }

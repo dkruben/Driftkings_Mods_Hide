@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import math
 import re
 import textwrap
@@ -48,7 +48,6 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-
             'UI_setting_useFreeExp_text': 'Factor Free Experience',
             'UI_setting_useFreeExp_tooltip': '',
             'UI_setting_isTruncateNumbers_text': 'Short numbers',

@@ -16,7 +16,7 @@
     </define>
     <define append="true">
       <name>CONFIG::timeStamp</name>
-      <value>'19/03/2024'</value>
+      <value>'20/03/2024'</value>
     </define>
     <define append="true">
       <name>CONFIG::air</name>
@@ -34,7 +34,7 @@
     <omit-trace-statements>true</omit-trace-statements>
     <verbose-stacktraces>false</verbose-stacktraces>
     <source-path append="true">
-      <path-element>E:\Wot_Mods_\Drift_Kings_ModPack\Driftkings_Mods_Hide\res\flash\ArmorCalculator\src</path-element>
+      <path-element>E:\Wot_Mods_\Drift_Kings_ModPack\Driftkings_Mods_Hide\res\flash\MainGun\src</path-element>
       <path-element>E:\Wot_Mods_\Drift_Kings_ModPack\Driftkings_Mods_Hide\res\flash\swc</path-element>
       <path-element>C:\Program Files (x86)\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
@@ -50,7 +50,7 @@
     </external-library-path>
   </compiler>
   <file-specs>
-    <path-element>E:\Wot_Mods_\Drift_Kings_ModPack\Driftkings_Mods_Hide\res\flash\ArmorCalculator\src\driftkings\ArmorCalculatorInjector.as</path-element>
+    <path-element>E:\Wot_Mods_\Drift_Kings_ModPack\Driftkings_Mods_Hide\res\flash\MainGun\src\driftkings\MainGunInjector.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>30</default-frame-rate>

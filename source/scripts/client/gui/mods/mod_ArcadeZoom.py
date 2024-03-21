@@ -6,7 +6,6 @@ from AvatarInputHandler.DynamicCameras.ArcadeCamera import ArcadeCamera
 from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
 from debug_utils import LOG_CURRENT_EXCEPTION
-from aih_constants import CTRL_MODE_NAME
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback
 
