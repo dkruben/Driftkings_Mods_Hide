@@ -13,7 +13,7 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, isDisabledByBattleType, getColor, COLOR_TABLES, loadJson
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, isDisabledByBattleType, getColor, COLOR_TABLES
 from StatsCore import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']

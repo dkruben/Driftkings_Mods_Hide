@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_DistanceToEnemy.pyc": "build/scripts/client/gui/mods/mod_DistanceToEnemy.pyc",
+		
+        "res/gui/flash/DistanceToEnemy.swf": "res/flash/DistanceToEnemy.swf"
+    }
+}

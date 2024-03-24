@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from collections import defaultdict
 from math import ceil
 
 from Event import SafeEvent
 from frameworks.wulf import WindowLayer
+from constants import ARENA_BONUS_TYPE, ARENA_GUI_TYPE
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
@@ -13,7 +14,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsInjector, DriftkingsView, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsInjector, DriftkingsView, g_events, isDisabledByBattleType
 
 AS_SWF = 'MainGun.swf'
 AS_BATTLE = 'MainGunView'
@@ -33,7 +34,12 @@ class ConfigInterface(SimpleConfigInterface):
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'global': '#ED070A',
+            'colors': {
+                'ally': '#60CB00',
+                'bgColor': '#000000',
+                'enemy': '#ED070A',
+                'enemyColorBlind': "#6F6CD3"
+            },
             'progressBar': True,
             'x': 260,
             'y': 45
@@ -61,8 +67,11 @@ class ConfigInterface(SimpleConfigInterface):
             'column2': []
         }
 
+    def isEnabled(self):
+        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
+
     def onBattleLoaded(self):
-        if self.data['enabled']:
+        if self.isEnabled:
             app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
             if not app:
                 return
@@ -121,9 +130,11 @@ class MainGun(MainGunMeta, IBattleFieldListener):
         self.totalEnemiesHP = 0
         self.playerDamage = 0
 
+    def getSettings(self):
+        return config.data
+
     def _populate(self):
         super(MainGun, self)._populate()
-        self.as_startUpdateS(config.data)
         damage_controller.onPlayerDamaged += self.onPlayerDamaged
         feedback = self.sessionProvider.shared.feedback
         if feedback is not None:
@@ -173,5 +184,6 @@ class MainGun(MainGunMeta, IBattleFieldListener):
                     self.updateMainGun()
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MainGun, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+if config.isEnabled:
+    g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+    g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MainGun, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

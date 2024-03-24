@@ -203,7 +203,7 @@ def new_createPlugins(base, *args, **kwargs):
 
 
 # postmortemTips
-@override(SharedPage, 'as_setPostmortemTipsVisibleS')
+@override(SharedPage, 'as_onPostmortemActiveS')
 def new_setPostmortemTipsVisibleS(func, self, value):
     if config.isEnabled:
         if not config.data['postmortemTips']:

@@ -5,13 +5,14 @@ from math import sin, radians
 from time import strftime
 
 import ResMgr
-import gui.Scaleform.daapi.view.lobby.barracks.barracks_data_provider as barrack
+# 2024-03-24 03:38:47.340: ERROR:   File "scripts/client/gui/mods/mod_HangarOptions.py", line 8, in <module>
+# 2024-03-24 03:38:47.340: ERROR: debug_utils.HandledError: (ImportError('No module named barracks.barracks_data_provider',), ())
+# import gui.Scaleform.daapi.view.lobby.barracks.barracks_data_provider as barrack
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
 import nations
 from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
-from Event import SafeEvent
 from HeroTank import HeroTank
 from constants import ITEM_DEFS_PATH
 from frameworks.wulf import WindowLayer
@@ -510,59 +511,59 @@ def new__setModuleInfoS(func, self, moduleInfo):
 
 # Barracks
 # sorting in the barracks
-@override(barrack.BarracksDataProvider, 'showActiveTankmen')
-def new__showActiveTankmen(func, self, criteria):
+# @override(barrack.BarracksDataProvider, 'showActiveTankmen')
+# def new__showActiveTankmen(func, self, criteria):
 
-    def keySorted(_tankman):
-        keys = {
-            'nation': nations_order.get(_tankman.nationID, nations.NONE_INDEX),
-            'inVehicle': _tankman.isInTank,
-            '-inVehicle': -_tankman.isInTank,
-            'vehicle': _tankman.vehicleNativeDescr.type.userString,
-            'role': roles_order.get(_tankman.descriptor.role, 10),
-            'XP': _tankman.descriptor.totalXP(),
-            '-XP': -_tankman.descriptor.totalXP(),
-            'level': _tankman.vehicleNativeDescr.type.level,
-            '-level': -_tankman.vehicleNativeDescr.type.level,
-            'gender': _tankman.isFemale,
-            '-gender': -_tankman.isFemale
-        }
-        return tuple(keys.get(x, None) for x in sorting_criteria)
+#    def keySorted(_tankman):
+#        keys = {
+#            'nation': nations_order.get(_tankman.nationID, nations.NONE_INDEX),
+#            'inVehicle': _tankman.isInTank,
+#            '-inVehicle': -_tankman.isInTank,
+#            'vehicle': _tankman.vehicleNativeDescr.type.userString,
+#            'role': roles_order.get(_tankman.descriptor.role, 10),
+#            'XP': _tankman.descriptor.totalXP(),
+#            '-XP': -_tankman.descriptor.totalXP(),
+#            'level': _tankman.vehicleNativeDescr.type.level,
+#            '-level': -_tankman.vehicleNativeDescr.type.level,
+#            'gender': _tankman.isFemale,
+#            '-gender': -_tankman.isFemale
+#        }
+#        return tuple(keys.get(x, None) for x in sorting_criteria)
 
-    if not config.data['barracks']:
-        return func(self, criteria)
-    sorting_criteria = config.data['barracks']['sorting_criteria']
-    if not sorting_criteria:
-        return func(self, criteria)
-    sorting_criteria = [criterion.replace(' ', '') for criterion in sorting_criteria]
-    _nations = config.data['barracks']['nations_order']
-    if _nations:
-        nations_order = {nations.INDICES[name]: idx for idx, name in enumerate(_nations)}
-    else:
-        nations_order = {idx: idx for idx, name in enumerate(nations.AVAILABLE_NAMES)}
-    _roles = config.data['barracks']['roles_order']
-    if _roles:
-        roles_order = {name: idx for idx, name in enumerate(_roles)}
-    else:
-        roles_order = Tankman.TANKMEN_ROLES_ORDER
+#    if not config.data['barracks']:
+#        return func(self, criteria)
+#    sorting_criteria = config.data['barracks']['sorting_criteria']
+#    if not sorting_criteria:
+#        return func(self, criteria)
+#    sorting_criteria = [criterion.replace(' ', '') for criterion in sorting_criteria]
+#    _nations = config.data['barracks']['nations_order']
+#    if _nations:
+#        nations_order = {nations.INDICES[name]: idx for idx, name in enumerate(_nations)}
+#    else:
+#        nations_order = {idx: idx for idx, name in enumerate(nations.AVAILABLE_NAMES)}
+#    _roles = config.data['barracks']['roles_order']
+#    if _roles:
+#        roles_order = {name: idx for idx, name in enumerate(_roles)}
+#    else:
+#        roles_order = Tankman.TANKMEN_ROLES_ORDER
 
-    allTankMen = self.itemsCache.items.removeUnsuitableTankmen(self.itemsCache.items.getTankmen().values(), ~REQ_CRITERIA.VEHICLE.BATTLE_ROYALE)
-    self._BarracksDataProvider__totalCount = len(allTankMen)
-    tankMenInBarracks = 0
-    allTankMenList = [barrack._packBuyBerthsSlot()]
-    for tankMan in sorted(allTankMen, key=keySorted):
-        if not tankMan.isInTank:
-            tankMenInBarracks += 1
-        if criteria(tankMan):
-            allTankMenList.append(tankMan)
+#    allTankMen = self.itemsCache.items.removeUnsuitableTankmen(self.itemsCache.items.getTankmen().values(), ~REQ_CRITERIA.VEHICLE.BATTLE_ROYALE)
+#    self._BarracksDataProvider__totalCount = len(allTankMen)
+#    tankMenInBarracks = 0
+#    allTankMenList = [barrack._packBuyBerthsSlot()]
+#    for tankMan in sorted(allTankMen, key=keySorted):
+#        if not tankMan.isInTank:
+#            tankMenInBarracks += 1
+#        if criteria(tankMan):
+#            allTankMenList.append(tankMan)
 
-    self._BarracksDataProvider__filteredCount = len(allTankMenList) - 1
-    slots = self.itemsCache.items.stats.tankmenBerthsCount
-    if tankMenInBarracks < slots:
-        allTankMenList.insert(1, {'empty': True, 'freePlaces': slots - tankMenInBarracks})
-    self._BarracksDataProvider__placeCount = max(slots - tankMenInBarracks, 0)
-    self.setItemWrapper(barrack._packActiveTankman)
-    self.buildList(allTankMenList)
+#    self._BarracksDataProvider__filteredCount = len(allTankMenList) - 1
+#    slots = self.itemsCache.items.stats.tankmenBerthsCount
+#    if tankMenInBarracks < slots:
+#        allTankMenList.insert(1, {'empty': True, 'freePlaces': slots - tankMenInBarracks})
+#    self._BarracksDataProvider__placeCount = max(slots - tankMenInBarracks, 0)
+#    self.setItemWrapper(barrack._packActiveTankman)
+#    self.buildList(allTankMenList)
 
 
 # ToolTips Shell
@@ -642,51 +643,51 @@ def new__buildList(func, self):
 
 
 # barracks: add nation flag and skills for tanksMan
-@override(barrack, '_packActiveTankman')
-def new__packActiveTankMan(_, self):
-    try:
-        if isinstance(self, Tankman):
-            tankManData = barrack._packTankmanData(self)
-            if self.isInTank:
-                actionBtnLabel = MENU.BARRACKS_BTNUNLOAD
-                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_UNLOAD
-            else:
-                actionBtnLabel = MENU.BARRACKS_BTNDISSMISS
-                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_DISMISS
-            tankManData.update({
-                'isRankNameVisible': True,
-                'recoveryPeriodText': None,
-                'actionBtnLabel': actionBtnLabel,
-                'actionBtnTooltip': actionBtnTooltip,
-                'skills': None,
-                'isSkillsVisible': False
-            })
-
-            if config.data['barracksShowFlags'] or config.data['barracksShowSkills']:
-                imgPath = 'img://../mods/configs/Driftkings/%(mod_ID)s/icons/barracks'
-                tankManData['rank'] = tankManData['role']
-                tankMan_role_arr = []
-                if config.data['barracksShowFlags']:
-                    tankMan_role_arr.append('<img src=\'%s/nations/%s.png\' vspace=\'-3\'>' % (imgPath, nations.NAMES[tankManData['nationID']]))
-                if config.data['barracksShowSkills']:
-                    tankMan_role_arr.append('')
-                    itemsCache = dependency.instance(IItemsCache)
-                    tankMan_full_info = itemsCache.items.getTankman(tankManData['tankmanID'])
-                    if tankMan_full_info is not None:
-                        for skill in tankMan_full_info.skills:
-                            tankMan_role_arr[-1] += '<img src=\'%s/skills/%s\' vspace=\'-3\'>' % (imgPath, skill.icon)
-                        if len(tankMan_full_info.skills):
-                            tankMan_role_arr[-1] += '%s%%' % tankMan_full_info.descriptor.lastSkillLevel
-                        if tankMan_full_info.hasNewSkill and tankMan_full_info.newSkillCount[0] > 0:
-                            tankMan_role_arr[-1] += '<img src=\'%s/skills/new_skill.png\' vspace=\'-3\'>x%s' % (imgPath, tankMan_full_info.newSkillCount[0])
-                    if not tankMan_role_arr[-1]:
-                        tankMan_role_arr[-1] = config.i18n['UI_settings_barracks_noSkills']
-                    tankManData['role'] = ' '.join(tankMan_role_arr)
-            return tankManData
-        else:
-            return self
-    except StandardError:
-        traceback.format_exc()
+# @override(barrack, '_packActiveTankman')
+# def new__packActiveTankMan(_, self):
+#    try:
+#        if isinstance(self, Tankman):
+#            tankManData = barrack._packTankmanData(self)
+#            if self.isInTank:
+#                actionBtnLabel = MENU.BARRACKS_BTNUNLOAD
+#                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_UNLOAD
+#            else:
+#                actionBtnLabel = MENU.BARRACKS_BTNDISSMISS
+#                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_DISMISS
+#            tankManData.update({
+#                'isRankNameVisible': True,
+#                'recoveryPeriodText': None,
+#                'actionBtnLabel': actionBtnLabel,
+#                'actionBtnTooltip': actionBtnTooltip,
+#                'skills': None,
+#                'isSkillsVisible': False
+#            })
+#
+#            if config.data['barracksShowFlags'] or config.data['barracksShowSkills']:
+#                imgPath = 'img://../mods/configs/Driftkings/%(mod_ID)s/icons/barracks'
+#                tankManData['rank'] = tankManData['role']
+#                tankMan_role_arr = []
+#                if config.data['barracksShowFlags']:
+#                    tankMan_role_arr.append('<img src=\'%s/nations/%s.png\' vspace=\'-3\'>' % (imgPath, nations.NAMES[tankManData['nationID']]))
+#                if config.data['barracksShowSkills']:
+#                    tankMan_role_arr.append('')
+#                    itemsCache = dependency.instance(IItemsCache)
+#                    tankMan_full_info = itemsCache.items.getTankman(tankManData['tankmanID'])
+#                    if tankMan_full_info is not None:
+#                        for skill in tankMan_full_info.skills:
+#                            tankMan_role_arr[-1] += '<img src=\'%s/skills/%s\' vspace=\'-3\'>' % (imgPath, skill.icon)
+#                        if len(tankMan_full_info.skills):
+#                            tankMan_role_arr[-1] += '%s%%' % tankMan_full_info.descriptor.lastSkillLevel
+#                        if tankMan_full_info.hasNewSkill and tankMan_full_info.newSkillCount[0] > 0:
+#                            tankMan_role_arr[-1] += '<img src=\'%s/skills/new_skill.png\' vspace=\'-3\'>x%s' % (imgPath, tankMan_full_info.newSkillCount[0])
+#                    if not tankMan_role_arr[-1]:
+#                        tankMan_role_arr[-1] = config.i18n['UI_settings_barracks_noSkills']
+#                    tankManData['role'] = ' '.join(tankMan_role_arr)
+#            return tankManData
+#        else:
+#            return self
+#    except StandardError:
+#        traceback.format_exc()
 
 
 @override(PlayerAccount, 'onArenaCreated')

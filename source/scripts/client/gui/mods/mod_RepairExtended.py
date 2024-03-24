@@ -15,14 +15,19 @@ from gui.Scaleform.daapi.view.battle.shared.consumables_panel import Consumables
 from gui.battle_control.battle_constants import DEVICE_STATE_AS_DAMAGE, DEVICE_STATE_DESTROYED, VEHICLE_VIEW_STATE, DEVICE_STATE_NORMAL
 from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
+from helpers import dependency
+from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback, override
 
 
 class ConfigInterface(SimpleConfigInterface):
+    sessionProvider = dependency.descriptor(IBattleSessionProvider)
+
     def __init__(self):
-        self.ctrl = None
+        self.battle_ctrl = self.sessionProvider.shared.vehicleState
         self.consumablesPanel = None
+        self.ctrl = None
         self.items = {
             'extinguisher': [251, 251, None, None],
             'medkit': [763, 1019, None, None],
@@ -158,8 +163,8 @@ class ConfigInterface(SimpleConfigInterface):
         self.ctrl = getPlayer().guiSessionProvider.shared
         InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
         InputHandler.g_instance.onKeyUp += self.onHotkeyPressed
-        if self.ctrl.vehicleState is not None:
-            self.ctrl.vehicleState.onVehicleStateUpdated += self.autoUse
+        if self.battle_ctrl is not None:
+            self.battle_ctrl.onVehicleStateUpdated += self.autoUse
         if self.ctrl.equipments is not None:
             self.ctrl.equipments.onEquipmentUpdated += self.onEquipmentUpdated
         self.checkBattleStarted()
@@ -167,8 +172,8 @@ class ConfigInterface(SimpleConfigInterface):
     def stopBattle(self):
         InputHandler.g_instance.onKeyDown -= self.onHotkeyPressed
         InputHandler.g_instance.onKeyUp -= self.onHotkeyPressed
-        if self.ctrl.vehicleState is not None:
-            self.ctrl.vehicleState.onVehicleStateUpdated -= self.autoUse
+        if self.battle_ctrl is not None:
+            self.battle_ctrl.onVehicleStateUpdated -= self.autoUse
         if self.ctrl.equipments is not None:
             self.ctrl.equipments.onEquipmentUpdated -= self.onEquipmentUpdated
         for equipmentTag in self.items:
@@ -260,8 +265,7 @@ class ConfigInterface(SimpleConfigInterface):
                 self.useItemGold(equipmentTag)
 
     def repair(self, equipmentTag):
-        specific = self.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][
-            equipmentTag]
+        specific = self.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
         if self.data['useGoldKits'] and self.items[equipmentTag][3]:
             equipment = self.items[equipmentTag][3]
             if equipment is not None:
@@ -363,8 +367,7 @@ class ConfigInterface(SimpleConfigInterface):
                     itemName = deviceName
                 equipmentTag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
                 # noinspection PyTypeChecker
-                specific = self.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][
-                    equipmentTag]
+                specific = self.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
                 if itemName in specific:
                     if self.data['healCrew'] and equipmentTag == 'medkit':
                         callback(time, partial(self.useItem, 'medkit', deviceName))

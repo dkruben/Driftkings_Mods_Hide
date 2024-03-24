@@ -19,6 +19,10 @@ class DriftkingsView(BaseDAAPIComponent):
         self._arenaDP = self.sessionProvider.getArenaDP()
         self._arenaVisitor = self.sessionProvider.arenaVisitor
 
+    @property
+    def gui(self):
+        return self._arenaVisitor.gui
+
     def _populate(self):
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._populate()
@@ -30,6 +34,20 @@ class DriftkingsView(BaseDAAPIComponent):
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._dispose()
         logDebug(True, '\'%s\' is closed' % self.ID)
+
+    def getColors(self):
+        pass
+
+    def getSettings(self):
+        pass
+
+    @staticmethod
+    def getVehicleClassColors():
+        pass
+
+    @staticmethod
+    def getVehicleClassColor(classTag):
+        pass
 
     def destroy(self):
         if self.getState() != EntityState.CREATED:
@@ -53,6 +71,9 @@ class DriftkingsView(BaseDAAPIComponent):
 
     def as_startUpdateS(self, *args):
         return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
+
+    def as_colorBlindS(self, enabled):
+        return self.flashObject.as_colorBlind(enabled) if self._isDAAPIInited() else None
 
     def as_onCrosshairPositionChangedS(self, x, y):
         return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None

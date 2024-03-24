@@ -27,33 +27,26 @@ package driftkings.views.battle
 		private var progress:ProgressBar;
 		//
 		public var isColorBlind:Function;
-		private var config:Object;
+		public var getSettings:Function;
 		
 		public function MainGunUI()
 		{
 			super();
-			this.addEventListener(Event.RESIZE, this._onResizeHandle);
 		}
 		
-		override protected function onDispose():void
+		override protected function configUI():void
 		{
-			this.removeEventListener(Event.RESIZE, this._onResizeHandle);
-			this.as_clearScene();
-			super.onDispose();
+			super.configUI();
+			this.tabEnabled = false;
+			this.tabChildren = false;
+			this.mouseEnabled = false;
+			this.mouseChildren = false;
+			this.buttonMode = false;
 		}
 		
-		public function as_clearScene():void
+		override protected function onPopulate():void
 		{
-			while (this.numChildren > 0)
-			{
-				this.removeChildAt(0);
-			}
-			this.mainGun = null;
-			//App.utils.data.cleanupDynamicObject(this.config);
-		}
-		
-		public function as_startUpdate(linkage:Object):void
-		{
+			super.onPopulate();
 			this.icons = new <Bitmap>[new Gun_icon(), new Done_icon(), this.isColorBlind() ? new Warning_icon_cb() : new Warning_icon()];
 			this.icons.fixed = true;
 			
@@ -80,13 +73,12 @@ package driftkings.views.battle
 			warning_icon.visible = false;
 			_icons.addChild(warning_icon);
 			
-			var settings:Object = linkage;
-			this.config = linkage
+			var settings:Object = this.getSettings();
 			this.x = (App.appWidth >> 1) + settings.x;
 			this.y = settings.y;
-			if (settings.progress_bar)
+			if (settings.progressBar)
 			{
-				var colors:Object = linkage.global;
+				var colors:Object = getSettings().colors;
 				this.mainGun = new TextExt(50, 0, Constants.middleText, TextFieldAutoSize.CENTER, this);
 				this.progress = new ProgressBar(30, 24, 42, 4, colors.ally, colors.bgColor, 0.2);
 				this.progress.setNewScale(0);
@@ -132,9 +124,9 @@ package driftkings.views.battle
 			}
 		}
 		
-		public function _onResizeHandle(event:Event):void
+		public function onResizeHandle(event:Event):void
 		{
-			this.x = (App.appWidth >> 1) + this.config.x;
+			this.x = (App.appWidth >> 1) + this.getSettings().x;
 		}
 	}
 }
