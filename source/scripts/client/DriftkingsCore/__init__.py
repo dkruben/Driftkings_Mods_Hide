@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-__MOD_CORE__ = '2.6.7'
+__MOD_CORE__ = '2.7.0'
 __CORE_NAME__ = 'Driftkings_Core'
 __MOD_DATE__ = '(%(file_compile_date)s)'
-__API_VERSION__ = '1.4.5'
 
 import ResMgr
 

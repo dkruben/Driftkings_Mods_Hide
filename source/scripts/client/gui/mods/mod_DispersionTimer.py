@@ -140,9 +140,11 @@ class DispersionTimer(DispersionTimerMeta):
         self.min_angle = 1.0
         self.isPostmortem = False
 
+    def getSettings(self):
+        return config.data
+
     def _populate(self):
         super(DispersionTimer, self)._populate()
-        self.as_startUpdateS(config.data)
         ctrl = self.sessionProvider.shared.crosshair
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged += self.as_onCrosshairPositionChangedS

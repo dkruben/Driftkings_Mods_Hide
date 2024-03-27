@@ -25,7 +25,6 @@ DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun':
 
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
-        self.color = {}
         super(ConfigInterface, self).__init__()
 
     def init(self):

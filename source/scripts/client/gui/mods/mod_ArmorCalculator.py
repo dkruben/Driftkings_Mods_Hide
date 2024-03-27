@@ -112,9 +112,11 @@ class ArmorCalculator(ArmorCalculatorMeta):
         super(ArmorCalculator, self).__init__()
         self.calcMacro = defaultdict(lambda: 'macros not found')
 
+    def getSettings(self):
+        return config.data
+
     def _populate(self):
         super(ArmorCalculator, self)._populate()
-        self.as_startUpdateS(config.data)
         ctrl = self.sessionProvider.shared.crosshair
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged += self.as_onCrosshairPositionChangedS

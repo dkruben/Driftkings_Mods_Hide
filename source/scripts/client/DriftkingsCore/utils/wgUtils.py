@@ -1,7 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
 import importlib
-import string
+import math
 from functools import partial
+from colorsys import hsv_to_rgb
 
 import BigWorld
 import ResMgr
@@ -10,8 +11,8 @@ from gui.battle_control import avatar_getter
 from constants import ARENA_GUI_TYPE
 from gui.shared.utils import getPlayerDatabaseID
 
-__all__ = ('g_macro', 'SafeDict', 'getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD',
-           'getRegion', 'callback', 'cancelCallback', 'hex_to_decimal', 'isReplay', 'getColor', 'isDisabledByBattleType', 'getAccountDBID', 'checkNamesList',)
+__all__ = ('getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback',
+           'cancelCallback', 'hex_to_decimal', 'isReplay', 'getColor', 'isDisabledByBattleType', 'percentToRGB', 'getAccountDBID', 'checkNamesList',)
 
 
 DEFAULT_EXCLUDED_GUI_TYPES = {
@@ -24,87 +25,64 @@ DEFAULT_EXCLUDED_GUI_TYPES = {
 }
 
 
-class SafeFormatter(string.Formatter):
-    def get_value(self, key, *args, **kwargs):
-        try:
-            return super(SafeFormatter, self).get_value(key, *args, **kwargs)
-        except KeyError:
-            return '{%s}' % key
-
-
-g_macro = SafeFormatter()
-
-
-class SafeDict(dict):
-    def __missing__(self, args):
-        return '%({macro})s'.format(macro=args)
-
-
 class Utils(object):
     def __init__(self):
-        self.getAccountDBID = self._getAccountDBID
-        self.isReplay = self._isReplay
-        self.getPlayer = self._getPlayer
-        self.getTarget = self._getTarget
-        self.getEntity = self._getEntity
-        self.getDistanceTo = self._getDistanceTo
-        self.distanceToEntityVehicle = self._distanceToEntityVehicle
-        self.getVehCD = self._getVehCD
-        self.getRegion = self._getRegion
-        self.callback = self._callback
-        self.cancelCallback = self._cancelCallback
-        self.hex_to_decimal = self._hex_to_decimal
-        self.getColor = self._getColor
-        self.isDisabledByBattleType = self._isDisabledByBattleType
+        pass
 
     @staticmethod
-    def _getAccountDBID():
+    def getAccountDBID():
         return getPlayerDatabaseID()
 
     @staticmethod
-    def _isReplay():
+    def isReplay():
         return isPlaying() or isLoading()
 
     @staticmethod
-    def _getPlayer():
+    def getPlayer():
         return BigWorld.player()
 
     @staticmethod
-    def _getTarget():
+    def getTarget():
         return BigWorld.target()
 
     @staticmethod
-    def _getEntity(entity_id):
+    def getEntity(entity_id):
         return BigWorld.entity(entity_id)
 
-    def _getDistanceTo(self, targetPos):
+    def getDistanceTo(self, targetPos):
         return self.getPlayer().position.distTo(targetPos)
 
-    def _distanceToEntityVehicle(self, entityID):
+    def distanceToEntityVehicle(self, entityID):
         entity_vehicle = self.getEntity(entityID)
         if entity_vehicle is not None:
             return self.getDistanceTo(entity_vehicle.position)
         return 0.0
 
     @staticmethod
-    def _getVehCD(vID):
+    def getVehCD(vID):
         return avatar_getter.getArena().vehicles[vID]['vehicleType'].type.compactDescr
 
     # noinspection PyUnresolvedReferences
     @staticmethod
-    def _getRegion():
+    def getRegion():
         return importlib.import_module('constants').AUTH_REALM
 
     @staticmethod
-    def _callback(delay, callMethod, *args, **kwargs):
+    def callback(delay, callMethod, *args, **kwargs):
         return BigWorld.callback(delay, partial(callMethod, *args, **kwargs) if args or kwargs else callMethod)
 
     @staticmethod
-    def _cancelCallback(callbackID):
+    def cancelCallback(callbackID):
         return BigWorld.cancelCallback(callbackID)
 
     @staticmethod
-    def _hex_to_decimal(*args):
+    def percentToRGB(percent, saturation=0.5, brightness=1.0, **__):
+        position = min(0.8333, percent * 0.3333)
+        r, g, b = (int(math.ceil(i * 255)) for i in hsv_to_rgb(position, saturation, brightness))
+        return '#{:02X}{:02X}{:02X}'.format(r, g, b)
+
+    @staticmethod
+    def hex_to_decimal(*args):
         hex_decimal_conversion = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
                                   'A': 10, 'a': 10, 'B': 11, 'b': 11, 'C': 12, 'c': 12, 'D': 13, 'd': 13, 'E': 14, 'e': 14, 'F': 15, 'f': 15}
         p = len(args[0]) - 1
@@ -120,7 +98,7 @@ class Utils(object):
         return sorted(folder.keys())
 
     @staticmethod
-    def _getColor(linkage, *args, **kwargs):
+    def getColor(linkage, *args, **kwargs):
         _var = linkage[args[0]]
         if args[1] is not None and _var is not None:
             for val in _var:
@@ -133,7 +111,7 @@ class Utils(object):
                 if val['value'] > kwargs:
                     return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
 
-    def _isDisabledByBattleType(self, exclude=None, include=tuple()):
+    def isDisabledByBattleType(self, exclude=None, include=tuple()):
         """
         In mod use (false)
         Example: config.data['enabled'] and not isDisabledByBattleType(include=(BATTLE ARENA)))
@@ -148,18 +126,19 @@ class Utils(object):
             return True if self.getPlayer().arena.guiType in exclude and self.getPlayer().arena.guiType not in include else False
 
 
-getAccountDBID = Utils()._getAccountDBID
-isReplay = Utils()._isReplay
-getPlayer = Utils()._getPlayer
-getTarget = Utils()._getTarget
-getEntity = Utils()._getEntity
-getDistanceTo = Utils()._getDistanceTo
-distanceToEntityVehicle = Utils()._distanceToEntityVehicle
-getVehCD = Utils()._getVehCD
-getRegion = Utils()._getRegion
-callback = Utils()._callback
-cancelCallback = Utils()._cancelCallback
-hex_to_decimal = Utils()._hex_to_decimal
-getColor = Utils()._getColor
-isDisabledByBattleType = Utils()._isDisabledByBattleType
+getAccountDBID = Utils().getAccountDBID
+isReplay = Utils().isReplay
+getPlayer = Utils().getPlayer
+getTarget = Utils().getTarget
+getEntity = Utils().getEntity
+getDistanceTo = Utils().getDistanceTo
+distanceToEntityVehicle = Utils().distanceToEntityVehicle
+getVehCD = Utils().getVehCD
+getRegion = Utils().getRegion
+callback = Utils().callback
+cancelCallback = Utils().cancelCallback
+hex_to_decimal = Utils().hex_to_decimal
+getColor = Utils().getColor
+isDisabledByBattleType = Utils().isDisabledByBattleType
 checkNamesList = Utils().checkNamesList
+percentToRGB = Utils().percentToRGB

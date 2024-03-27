@@ -22,6 +22,7 @@ package driftkings.views.battle
 		private var showAnimation:Tween;
 		private var hideAnimation2:Tween;
 		private var posY:Number = (App.appHeight >> 3) + 10;
+		public var getSettings:Function;
 		
 		[Embed(source = "error.png")]
 		private var DefaultIcon:Class;
@@ -34,9 +35,20 @@ package driftkings.views.battle
 			this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.onLoadError);;
 		}
 		
-		public function as_startUpdate(settings:Object):void
+		override protected function configUI():void
 		{
-			this.params = settings;
+			super.configUI();
+			this.tabEnabled = false;
+			this.tabChildren = false;
+			this.mouseEnabled = false;
+			this.mouseChildren = false;
+			this.buttonMode = false;
+		}
+		
+		override protected function onPopulate():void
+		{
+			super.onPopulate();
+			this.params = this.getSettings();
 			this.x = App.appWidth >> 1;
 			this._container = new Sprite()
 			this.addChild(_container);
@@ -49,23 +61,6 @@ package driftkings.views.battle
 			{
 				this.loader.load(new URLRequest('../../../' + this.params.userIcon));
 			}
-		}
-
-		override protected function configUI():void
-		{
-			super.configUI();
-			this.tabEnabled = false;
-			this.tabChildren = false;
-			this.mouseEnabled = false;
-			this.mouseChildren = false;
-			this.buttonMode = false;
-			this.addEventListener(Event.RESIZE, this._onResizeHandle);
-		}
-		
-		override protected function onDispose():void
-		{
-			this.removeEventListener(Event.RESIZE, this._onResizeHandle);
-			super.onDispose();
 		}
 		
 		override protected function onBeforeDispose():void
@@ -137,7 +132,7 @@ package driftkings.views.battle
 			this.loader.unload();
 		}
 		
-		public function _onResizeHandle(event:Event):void
+		private function onResizeHandle(event:Event):void
 		{
 			this.x = App.appWidth >> 1;
 			this.posY = (App.appHeight >> 3) + 10;

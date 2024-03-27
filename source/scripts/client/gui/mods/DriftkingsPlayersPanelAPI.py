@@ -118,7 +118,7 @@ LABEL_CONFIG = {
     'shadow': {
         'distance': 0,
         'angle': 0,
-        'color': 0x000000,
+        'color': "#000000",
         'alpha': 90,
         'blurX': 2,
         'blurY': 2,

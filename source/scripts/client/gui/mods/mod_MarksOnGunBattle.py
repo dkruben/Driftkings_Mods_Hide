@@ -193,6 +193,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_techTreeMarkOfGunPercentSize_value': '',
             'UI_setting_showInHangar_text': 'Hangar: Show MoE mod',
             'UI_setting_showInHangar_tooltip': '',
+
             'UI_setting_UI_text': 'UI in battle',
             'UI_setting_UI_tooltip': '{HEADER}UI in battle{/HEADER}{BODY}Extended:<br/>'
                                      '<img src=\"img://objects/ui_extended.png\"></img><br/>'

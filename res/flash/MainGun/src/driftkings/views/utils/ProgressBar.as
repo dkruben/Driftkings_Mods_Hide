@@ -1,10 +1,9 @@
-﻿package driftkings.views.utils
+package driftkings.views.utils 
 {
-	
 	import flash.display.*;
 	import flash.text.*;
-	import driftkings.views.utils.tween.Tween;
-	
+	import driftkings.views.utils .tween.Tween;
+
 	public class ProgressBar extends Sprite
 	{
 		private var bar:Shape            = new Shape();

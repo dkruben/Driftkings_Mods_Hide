@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_OwnHealth.pyc": "build/scripts/client/gui/mods/mod_OwnHealth.pyc",
+		
+        "res/gui/flash/OwnHealth.swf": "res/flash/OwnHealth.swf"
+    }
+}

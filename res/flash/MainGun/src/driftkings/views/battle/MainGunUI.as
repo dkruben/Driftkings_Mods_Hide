@@ -1,15 +1,12 @@
 package driftkings.views.battle
 {
-	import flash.display.Bitmap;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.text.TextFieldAutoSize;
-	//
+	import flash.display.*;
+	import flash.events.*;
+	import flash.text.*;
 	import mods.common.BattleDisplayable;
-	//
 	import driftkings.views.utils.Constants;
-	import driftkings.views.utils.ProgressBar;
 	import driftkings.views.utils.TextExt;
+	import driftkings.views.utils.ProgressBar;
 	
 	public class MainGunUI extends BattleDisplayable
 	{
@@ -21,40 +18,28 @@ package driftkings.views.battle
 		private var Warning_icon:Class;
 		[Embed(source = "img/warning_2.png")]
 		private var Warning_icon_cb:Class;
-		
 		private var icons:Vector.<Bitmap> = null;
 		private var mainGun:TextExt       = null;
 		private var progress:ProgressBar;
-		//
-		public var isColorBlind:Function;
 		public var getSettings:Function;
-		
+		public var isColorBlind:Function;
+
 		public function MainGunUI()
 		{
 			super();
 		}
-		
-		override protected function configUI():void
-		{
-			super.configUI();
-			this.tabEnabled = false;
-			this.tabChildren = false;
-			this.mouseEnabled = false;
-			this.mouseChildren = false;
-			this.buttonMode = false;
-		}
-		
+
 		override protected function onPopulate():void
 		{
 			super.onPopulate();
 			this.icons = new <Bitmap>[new Gun_icon(), new Done_icon(), this.isColorBlind() ? new Warning_icon_cb() : new Warning_icon()];
 			this.icons.fixed = true;
 			
-			var gun_icon:Bitmap     = this.icons[0];
-			var done_icon:Bitmap    = this.icons[1];
+			var gun_icon:Bitmap = this.icons[0];
+			var done_icon:Bitmap = this.icons[1];
 			var warning_icon:Bitmap = this.icons[2];
 			
-			var _icons:Sprite       = new Sprite();
+			var _icons:Sprite = new Sprite();
 			_icons.y = 2;
 			this.addChild(_icons);
 			
@@ -78,9 +63,8 @@ package driftkings.views.battle
 			this.y = settings.y;
 			if (settings.progressBar)
 			{
-				var colors:Object = getSettings().colors;
 				this.mainGun = new TextExt(50, 0, Constants.middleText, TextFieldAutoSize.CENTER, this);
-				this.progress = new ProgressBar(30, 24, 42, 4, colors.ally, colors.bgColor, 0.2);
+				this.progress = new ProgressBar(30, 24, 42, 4, getSettings().colors.ally, getSettings().colors.bgColor, 0.2);
 				this.progress.setNewScale(0);
 				this.addChild(this.progress);
 			}
@@ -107,6 +91,7 @@ package driftkings.views.battle
 		
 		public function as_gunData(value:int, max_value:int, warning:Boolean):void
 		{
+			
 			var notAchived:Boolean = value > 0;
 			this.icons[2].visible = warning && notAchived;
 			if (notAchived)
@@ -124,7 +109,7 @@ package driftkings.views.battle
 			}
 		}
 		
-		public function onResizeHandle(event:Event):void
+		private function onResizeHandle(event:Event):void
 		{
 			this.x = (App.appWidth >> 1) + this.getSettings().x;
 		}

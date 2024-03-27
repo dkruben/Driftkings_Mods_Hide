@@ -11,7 +11,7 @@ package driftkings.views.utils.tween
 	[Event(name = "motionStart", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionResume", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionLoop", type = "driftkings.views.utils.tween.TweenEvent")]
-	[Event(name = "motionFinish", type = "driftkings.views.utils.tween.TweenEvent")]
+	[Event(name = "motionFinish", type = "driftkings.views.utils.utils.tween.TweenEvent")]
 	[Event(name = "motionChange", type = "driftkings.views.utils.tween.TweenEvent")]
 	public class Tween extends EventDispatcher
 	{

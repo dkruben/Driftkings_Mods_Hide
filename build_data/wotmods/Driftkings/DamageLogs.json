@@ -15,6 +15,12 @@
 		"res/gui/maps/icons/DamageLogs/efficiency/stun.png": "res/res/maps/icons/DamageLogs/efficiency/stun.png",
 		"res/gui/maps/icons/DamageLogs/efficiency/wins.png": "res/res/maps/icons/DamageLogs/efficiency/wins.png",
 		
+		"res/gui/maps/icons/DamageLogs/vehicle_types/AT-SPG.png": "res/res/maps/icons/DamageLogs/vehicle_types/AT-SPG.png",
+		"res/gui/maps/icons/DamageLogs/vehicle_types/heavyTank.png": "res/res/maps/icons/DamageLogs/vehicle_types/heavyTank.png",
+		"res/gui/maps/icons/DamageLogs/vehicle_types/lightTank.png": "res/res/maps/icons/DamageLogs/vehicle_types/lightTank.png",
+		"res/gui/maps/icons/DamageLogs/vehicle_types/mediumTank.png": "res/res/maps/icons/DamageLogs/vehicle_types/mediumTank.png",
+		"res/gui/maps/icons/DamageLogs/vehicle_types/SPG.png": "res/res/maps/icons/DamageLogs/vehicle_types/SPG.png",
+		
         "res/gui/flash/DamageLogs.swf": "res/flash/DamageLogs.swf"
     }
 }

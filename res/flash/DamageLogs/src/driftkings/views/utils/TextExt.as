@@ -1,9 +1,7 @@
 ﻿package driftkings.views.utils
 {
-	// Flassh
 	import flash.filters.GlowFilter;
 	import flash.text.*;
-	// Internal
 	import driftkings.views.utils.Constants;
 	
 	public class TextExt extends TextField

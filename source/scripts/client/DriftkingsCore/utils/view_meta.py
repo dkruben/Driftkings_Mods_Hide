@@ -6,7 +6,7 @@ from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from . import logDebug, g_events
+from . import logDebug, logInfo, g_events
 
 
 class DriftkingsView(BaseDAAPIComponent):
@@ -23,6 +23,33 @@ class DriftkingsView(BaseDAAPIComponent):
     def gui(self):
         return self._arenaVisitor.gui
 
+    def isSPG(self):
+        return self.getVehicleInfo().isSPG()
+
+    def getVehicleInfo(self, vID=None):
+        return self._arenaDP.getVehicleInfo(vID)
+
+    def getColors(self):
+        pass
+
+    def getSettings(self):
+        pass
+
+    def getShadowSettings(self):
+        pass
+
+    @staticmethod
+    def getVehicleClassColors():
+        pass
+
+    @staticmethod
+    def getVehicleClassColor(classTag):
+        pass
+
+    def doLog(self, *args):
+        for arg in args:
+            logInfo('{}:{} - {}'.format(self.getAlias(), arg, dir(arg)))
+
     def _populate(self):
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._populate()
@@ -34,20 +61,6 @@ class DriftkingsView(BaseDAAPIComponent):
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._dispose()
         logDebug(True, '\'%s\' is closed' % self.ID)
-
-    def getColors(self):
-        pass
-
-    def getSettings(self):
-        pass
-
-    @staticmethod
-    def getVehicleClassColors():
-        pass
-
-    @staticmethod
-    def getVehicleClassColor(classTag):
-        pass
 
     def destroy(self):
         if self.getState() != EntityState.CREATED:

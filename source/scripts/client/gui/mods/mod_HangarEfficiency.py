@@ -1,34 +1,24 @@
 # -*- coding: utf-8-*-
-from collections import namedtuple
-
-from dossiers2.ui.achievements import MARK_ON_GUN_RECORD
 from helpers import dependency
 from skeletons.gui.shared import IItemsCache
-from CurrentVehicle import g_currentVehicle
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug
-
-EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate'))
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, cachedVehicleData
 
 
 class ConfigInterface(SimpleConfigInterface):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        default = 2500
-        self.__default = EfficiencyAVGData(default, default, default, 0, 0.0, '', 'Undefined', False, 0.0)
-        self.__EfficiencyAVGData = None
-
         self.place = 'img://gui/maps/icons/HangarEfficiency'
         self.icon_size = 'width=\'18\' height=\'18\' vspace=\'-3\''
         self.icons = {
-            'assistIcon': '<img src=\'{}/help.png\' {}>'.format(self.place, self.icon_size),
-            'blockedIcon': '<img src=\'{}/armor.png\' {}>'.format(self.place, self.icon_size),
-            'damageIcon': '<img src=\'{}/damage.png\' {}>'.format(self.place, self.icon_size),
-            'winRateIcon': '<img src=\'{}/wins.png\' {}>'.format(self.place, self.icon_size),
-            'stunIcon': '<img src=\'{}/stun.png\' {}>'.format(self.place, self.icon_size),
-            'spottedIcon': '<img src=\'{}/detection.png\' {}>'.format(self.place, self.icon_size),
+            'assistIcon': '<img src=\'%s/help.png\' %s>' % (self.place, self.icon_size),
+            'blockedIcon': '<img src=\'%s/armor.png\' %s>' % (self.place, self.icon_size),
+            'damageIcon': '<img src=\'%s/damage.png\' %s>' % (self.place, self.icon_size),
+            'winRateIcon': '<img src=\'%s/wins.png\' %s>' % (self.place, self.icon_size),
+            'stunIcon': '<img src=\'%s/stun.png\' %s>' % (self.place, self.icon_size),
+            'spottedIcon': '<img src=\'%s/detection.png\' %s>' % (self.place, self.icon_size),
         }
         super(ConfigInterface, self).__init__()
 
@@ -81,72 +71,39 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
-    def onVehicleChanged(self):
-        if g_currentVehicle.isPresent():
-            self.setAvgData(g_currentVehicle.intCD, g_currentVehicle.item.userName, g_currentVehicle.item.level)
-        else:
-            self.__EfficiencyAVGData = None
-
-    @staticmethod
-    def getWinsEfficiency(random):
-        win_rate = random.getWinsEfficiency()
-        return round(win_rate * 100, 2) if win_rate is not None else 0.0
-
-    def setAvgData(self, intCD, name, level):
-        dossier = self.itemsCache.items.getVehicleDossier(intCD)
-        random = dossier.getRandomStats()
-        marksOnGun = random.getAchievement(MARK_ON_GUN_RECORD)
-        icon = marksOnGun.getIcons()['95x85'][3:]
-        marksOnGunIcon = '<img src=\'img://gui/{}\' width=\'20\' height=\'18\' vspace=\'-8\'>'.format(icon)
-        self.__EfficiencyAVGData = EfficiencyAVGData(
-            int(random.getAvgDamage() or 0),
-            int(random.getDamageAssistedEfficiency() or 0),
-            int(random.getAvgDamageAssistedStun() or 0),
-            int(random.getAvgDamageBlocked() or 0),
-            round(marksOnGun.getDamageRating(), 2),
-            marksOnGunIcon,
-            name,
-            level > 4,
-            self.getWinsEfficiency(random)
-        )
-        logDebug(False, self.__EfficiencyAVGData)
-
-    @property
-    def efficiencyAvgData(self):
-        return self.__EfficiencyAVGData or self.__default
-
-    def getAvgData(self):
-        data = self.efficiencyAvgData
-        text = []
-        if self.data['avgDamage']:
-            text.append('{damageIcon}{damage}')
-        if self.data['avgAssist']:
-            text.append('{assistIcon}{assist}')
-        if self.data['avgBlocked']:
-            text.append('{blockedIcon}{blocked}')
-        if self.data['avgStun'] and data.stun:
-            text.append('{stunIcon}{stun}')
-        if self.data['winRate']:
-            text.append('{winRateIcon}{winRate}%')
-        if self.data['gunMarks'] and data.marksAvailable:
-            text.append('{marksOnGunIcon}{marksOnGunValue}%')
-        if text:
-            params = data._asdict()
-            params.update(config.icons)
-            return '<font face=\'$TitleFont\' size=\'20\' color=\'#FAFAFA\'>{}</font>'.format('  '.join(text).format(**params))
-        return ''
-
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
+def getAvgData():
+    data = cachedVehicleData.efficiencyAvgData
+    text = []
+    if config.data['avgDamage']:
+        text.append('{damageIcon}{damage}')
+    if config.data['avgAssist']:
+        text.append('{assistIcon}{assist}')
+    if config.data['avgBlocked']:
+        text.append('{blockedIcon}{blocked}')
+    if config.data['avgStun'] and data.stun:
+        text.append('{stunIcon}{stun}')
+    if config.data['winRate']:
+        text.append('{winRateIcon}{winRate}%')
+    if config.data['gunMarks'] and data.marksAvailable:
+        text.append('{marksOnGunIcon}{marksOnGunValue}%')
+    if text:
+        params = data._asdict()
+        params.update(config.icons)
+        return '<font face=\'$TitleFont\' size=\'20\' color=\'#FAFAFA\'>%s</font>' % ('  '.join(text).format(**params))
+    return ''
+
+
 @override(AmmunitionPanel, 'as_updateVehicleStatusS')
 def updateStatus(func, self, data):
-    config.onVehicleChanged()
+    cachedVehicleData.onVehicleChanged()
     if config.data['enabled']:
         if data['message']:
-            data['message'] += '\n' + config.getAvgData()
+            data['message'] += '\n' + getAvgData()
         else:
-            data['message'] = config.getAvgData()
+            data['message'] = getAvgData()
     return func(self, data)

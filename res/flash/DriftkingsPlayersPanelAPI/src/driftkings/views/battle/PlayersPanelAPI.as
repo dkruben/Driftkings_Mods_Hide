@@ -120,7 +120,7 @@
 			textField.width = config.width;
 			textField.autoSize = config.align;
 			textField.selectable = false;
-			textField.filters = [new DropShadowFilter(shadow.distance, shadow.angle, shadow.color, shadow.alpha, shadow.blurX, shadow.blurY, shadow.strength, shadow.quality)]
+			textField.filters = [new DropShadowFilter(shadow.distance, shadow.angle, parseInt("0x" + shadow.color.split("#").join(""), 16), shadow.alpha, shadow.blurX, shadow.blurY, shadow.strength, shadow.quality)]
 			TextFieldEx.setNoTranslate(textField,true);
 			
 			textField.x = playersPanelHolder._listItem.vehicleIcon.x + config.x;

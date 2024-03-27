@@ -3,6 +3,7 @@ import traceback
 from functools import partial
 
 import Event
+
 from DriftkingsCore import loadJson, override
 from DriftkingsCore.config import smart_update
 
@@ -41,6 +42,7 @@ def try_import():
         from gui.modsSettingsApi._constants import MOD_ICON, MOD_NAME, MOD_DESCRIPTION, STATE_TOOLTIP, VIEW_ALIAS
         from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
         from gui.shared.personality import ServicesLocator as SL
+        from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
     except ImportError as e:
         print 'DriftkingsCore: ModsSettingsApi package not loaded:', e
@@ -71,11 +73,13 @@ def try_import():
             self.config = {'templates': {}, 'settings': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
+
             self.onSettingsChanged = Event.Event()
             self.onButtonClicked = Event.Event()
             self.onWindowClosed = Event.Event()
             self.updateHotKeys = Event.Event()
             self.onWindowOpened = Event.Event()
+
             self.hotkeys = HotkeysContoller(self)
             self.hotkeys.onUpdated += self.updateHotKeys
             self.userSettings = {
@@ -100,10 +104,15 @@ def try_import():
             )
             self.onWindowClosed += self.MSADispose
 
+        @staticmethod
+        def MSALoad(api=None):
+            SL.appLoader.getDefLobbyApp().loadView(SFViewLoadParams(VIEW_ALIAS, VIEW_ALIAS), ctx=api)
+
         def MSAPopulate(self):
             self.isMSAWindowOpen = True
             self.onWindowOpened()
-            loadView(self)
+            self.MSALoad(self)
+            # loadView(self)
 
         def MSADispose(self):
             self.isMSAWindowOpen = False

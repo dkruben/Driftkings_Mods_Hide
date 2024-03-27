@@ -2,6 +2,8 @@
 import math
 import traceback
 from functools import partial
+from collections import defaultdict
+
 
 import BigWorld
 import CommandMapping
@@ -9,11 +11,10 @@ import messenger.gui.Scaleform.view.battle.messenger_view as MESSEGER_VIEW
 from Avatar import PlayerAvatar
 from Vehicle import Vehicle
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
-# from gui.Scaleform.daapi.view.battle.shared.indicators import SixthSenseIndicator
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
 from items import vehicles as WG_VEHICLES
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, sendChatMessage, SafeDict, getPlayer, callback, getTarget
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, sendChatMessage, getPlayer, callback, getTarget
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -26,10 +27,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'delay': 4,
-            'spotted': True,
-            'helpMessage': False,
-            'spottedText': 'I\'m Spotted at %(pos)s!',
             'maxLinesCount': 8,
             'artyMessage': True,
             'artyTxt': '(%(player-tank)s, %(player-name)s) shoot me :(',
@@ -48,15 +45,6 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_linesCount_tooltip': 'Enable limit lines in game chat.',
             'UI_setting_maxLinesCount_text': 'Max. Lines Count',
             'UI_setting_maxLinesCount_tooltip': 'Maximum number of lines in chat (maximum value 6).',
-            'UI_setting_infoSpottedMessage_text': 'Spotted Message:',
-            'UI_setting_spotted_text': 'Spotted',
-            'UI_setting_spotted_tooltip': 'Enable spotted text in battle.',
-            'UI_setting_delay_text': 'Delay',
-            'UI_setting_delay_tooltip': 'Text message remains on screen for this amount of seconds before fading out.',
-            'UI_setting_helpMessage_text': 'Help Message',
-            'UI_setting_helpMessage_tooltip': 'Send for chat (Help me) message automatically',
-            'UI_setting_spottedText_text': 'Text Format',
-            'UI_setting_spottedText_tooltip': 'Use macros to edit the message\n(macro:\'%(pos)s\')',
             'UI_setting_infoArtyMessage_text': 'Arty Damage:',
             'UI_setting_artyMessage_text': 'Arty Damage Message',
             'UI_setting_artyMessage_tooltip': 'Arty Damage Massage',
@@ -114,7 +102,7 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 class Worker(object):
 
     def __init__(self):
-        self.macro = SafeDict()
+        self.macro = defaultdict(lambda: 'Macros does not exist')
         self.__time = 0.5
         self.lastAttackCommandTime = 0
 

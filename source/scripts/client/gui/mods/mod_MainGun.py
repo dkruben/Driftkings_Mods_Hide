@@ -3,8 +3,8 @@ from collections import defaultdict
 from math import ceil
 
 from Event import SafeEvent
+from constants import ARENA_GUI_TYPE
 from frameworks.wulf import WindowLayer
-from constants import ARENA_BONUS_TYPE, ARENA_GUI_TYPE
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
@@ -33,20 +33,18 @@ class ConfigInterface(SimpleConfigInterface):
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
-            'enabled': True,
+            'enabled': False,
+            'progressBar': False,
             'colors': {
                 'ally': '#60CB00',
-                'bgColor': '#000000',
-                'enemy': '#ED070A',
-                'enemyColorBlind': "#6F6CD3"
+                'bgColor': '#000000'
             },
-            'progressBar': True,
-            'x': 260,
-            'y': 45
+            'x': 600,
+            'y': 30
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_setting_progressBar_text': 'Progress Bar',
+            'UI_setting_progressBar_text': 'ProgressBar',
             'UI_setting_progressBar_tooltip': '',
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': '',
@@ -61,21 +59,23 @@ class ConfigInterface(SimpleConfigInterface):
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('progressBar'),
+            ],
+            'column2': [
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
                 self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
-            ],
-            'column2': []
+            ]
         }
 
     def isEnabled(self):
         return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 
     def onBattleLoaded(self):
-        if self.isEnabled:
-            app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-            if not app:
-                return
-            app.loadView(SFViewLoadParams(AS_INJECTOR))
+        if not self.isEnabled:
+            return
+        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
+        if not app:
+            return
+        app.loadView(SFViewLoadParams(AS_INJECTOR))
 
 
 config = ConfigInterface()
@@ -164,7 +164,7 @@ class MainGun(MainGunMeta, IBattleFieldListener):
             self.updateMainGun()
         if self.totalEnemiesHP != totalEnemiesHP:
             self.totalEnemiesHP = totalEnemiesHP
-            self.gunScore = max(1000, int(ceil(totalEnemiesHP * 0.5)))
+            self.gunScore = max(1000, int(ceil(totalEnemiesHP * 0.2)))
             self.updateMainGun()
 
     def updateMainGun(self):
@@ -184,6 +184,5 @@ class MainGun(MainGunMeta, IBattleFieldListener):
                     self.updateMainGun()
 
 
-if config.isEnabled:
-    g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-    g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MainGun, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MainGun, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))

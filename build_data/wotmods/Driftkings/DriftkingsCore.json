@@ -40,6 +40,7 @@
 		"res/scripts/client/DriftkingsCore/utils/logger.pyc"      	: "build/scripts/client/DriftkingsCore/utils/logger.pyc",
 		"res/scripts/client/DriftkingsCore/utils/monkeypatch.pyc" 	: "build/scripts/client/DriftkingsCore/utils/monkeypatch.pyc",
 		"res/scripts/client/DriftkingsCore/utils/timers.pyc"     	: "build/scripts/client/DriftkingsCore/utils/timers.pyc",
+		"res/scripts/client/DriftkingsCore/utils/vehicle_cache.pyc" : "build/scripts/client/DriftkingsCore/utils/vehicle_cache.pyc",
 		"res/scripts/client/DriftkingsCore/utils/view_injector.pyc" : "build/scripts/client/DriftkingsCore/utils/view_injector.pyc",
 		"res/scripts/client/DriftkingsCore/utils/view_meta.pyc" : "build/scripts/client/DriftkingsCore/utils/view_meta.pyc",
         "res/scripts/client/DriftkingsCore/utils/wgUtils.pyc"     	: "build/scripts/client/DriftkingsCore/utils/wgUtils.pyc"

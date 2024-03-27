@@ -144,13 +144,14 @@ class DateTimes(DateTimesMeta):
         self.coding = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
 
+    def getSettings(self):
+        return config.data
+
     def _populate(self):
         super(DateTimes, self)._populate()
         g_playerEvents.onAvatarReady += self.updateDecoder
-        #  self.updateDecoder()
         if config.data['enabled'] and config.data['inBattle']:
-            self.as_startUpdateS(config.data)
-        self.timerEvent.start()
+            self.timerEvent.start()
 
     def _dispose(self):
         g_playerEvents.onAvatarReady -= self.updateDecoder
@@ -263,15 +264,6 @@ def new_getBorderColor(func, self, colorBlind):
     func(self, colorBlind)
 
 
-# battle timer clock
-@override(PlayerAvatar, '_PlayerAvatar__startGUI')
-def new_startGui(func, *args):
-    func(*args)
-    if not config.isEnabled and not config.data['inBattle']:
-        return
-    config.isLobby = False
-
-
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
@@ -315,7 +307,7 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 #        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
 #            kwargs['clanAbbrev'] = ''
 #        if config.data['hideBattlePrestige']:
-#            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = 0
+#            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = None
 #    return func(self, *args, **kwargs)
 
 

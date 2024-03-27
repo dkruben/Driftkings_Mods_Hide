@@ -15,6 +15,7 @@ from .colorRatting import *
 from .eventsManager import *
 from .view_injector import *
 from .view_meta import *
+from vehicle_cache import *
 
 
 def __import_delayed():

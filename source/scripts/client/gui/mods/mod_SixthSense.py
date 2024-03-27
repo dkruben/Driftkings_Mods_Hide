@@ -48,12 +48,12 @@ class ConfigInterface(SimpleConfigInterface):
         self.data = {
             'enabled': True,
             'defaultIcon': True,
-            'lampShowTime': 10,
+            'lampShowTime': 1,
             'playTickSound': False,
             'userSound': True,
             'spottedMessage': True,
             'helpMessage': False,
-            'defaultIconName': 1,
+            'defaultIconName': checkNamesList('gui/maps/icons/SixthSense/'),
             'userIcon': 'mods/configs/Driftkings/' + self.ID + '/SixthSenseIcon.png',
             'spottedText': 'I\'m Spotted at %(pos)s!',
             'delay': 4,
@@ -81,27 +81,10 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_helpMessage_tooltip': 'Send for chat (Help me) message automatically.',
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Text message remains on screen for this amount of seconds before fading out.',
-
-            # 'UI_image_driftkings': 'driftkings',
-            # 'UI_image_sauron': 'sauron',
-            # 'UI_image_bulb': 'bulb',
-            # 'UI_image_space': 'space',
-            # 'UI_image_sexon': 'sexon',
-            # 'UI_image_flash': 'flash',
-            # 'UI_image_minion': 'minion',
-            # 'UI_image_darkTank': 'darkTank',
-            # 'UI_image_hand': 'hand',
-            # 'UI_image_potato': 'potato',
-            # 'UI_image_skull': 'skull',
-            # 'UI_image_aurora': 'aurora',
-            # 'UI_image_orangeBlue': 'orangeBlue'
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
-        # UI_KEY = 'UI_image_'
-        # UI_LIST = ('driftkings', 'sauron', 'bulb', 'space', 'sexon', 'flash', 'minion', 'darkTank', 'hand', 'potato', 'skull', 'aurora', 'orangeBlue')
-        # [self.i18n[UI_KEY + x] for x in UI_LIST]
         infoSLabel = self.tb.createLabel('infoSpottedMessage')
         infoSLabel['text'] += ''
         return {
@@ -203,9 +186,11 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
         self.__visible = False
         self.__message = None
 
+    def getSettings(self):
+        return config.data
+
     def _populate(self):
         super(SixthSense, self)._populate()
-        self.as_startUpdateS(config.data)
         if config.data['playTickSound']:
             self.setSound(self._arenaVisitor.type.getCountdownTimerSound())
         g_playerEvents.onRoundFinished += self._onRoundFinished
