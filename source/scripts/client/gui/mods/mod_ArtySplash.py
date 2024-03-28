@@ -24,6 +24,7 @@ class ConfigInterface(SimpleConfigInterface):
         self.modelDotKeyPressed = False
         self.scaleSplash = None
         self.player = None
+        self.version_int = 1.45
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -77,6 +78,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.ID,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showSplashOnDefault'),

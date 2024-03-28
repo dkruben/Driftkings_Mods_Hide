@@ -13,7 +13,8 @@ from gui.Scaleform.daapi.view.battle.shared.formatters import getHealthPercent, 
 from PlayerEvents import g_playerEvents
 from aih_constants import CTRL_MODE_NAME
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsView, DriftkingsInjector, percentToRGB, g_events, isDisabledByBattleType
+from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, isDisabledByBattleType
+from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
 
 
 AS_SWF = 'OwnHealth.swf'
@@ -59,6 +60,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
@@ -83,21 +85,9 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class OwnHealthMeta(DriftkingsView):
-
-    def __init__(self):
-        super(OwnHealthMeta, self).__init__(config.ID)
-
-    def as_setOwnHealthS(self, scale, text, color):
-        return self.flashObject.as_setOwnHealth(scale, text, color) if self._isDAAPIInited() else None
-
-    def as_BarVisibleS(self, visible):
-        return self.flashObject.as_BarVisible(visible) if self._isDAAPIInited() else None
-
-
 class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
     def __init__(self):
-        super(OwnHealth, self).__init__()
+        super(OwnHealth, self).__init__(config.ID)
         self.isAliveMode = True
         self.isBattlePeriod = False
         self.__maxHealth = 0
@@ -155,7 +145,8 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         self.isAliveMode = ctrlMode not in {CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
         self.as_BarVisibleS(self.isBattlePeriod and self.isAliveMode)
 
-    def getAVGColor(self, percent=1.0):
+    @staticmethod
+    def getAVGColor(percent=1.0):
         return percentToRGB(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):

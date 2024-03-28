@@ -14,7 +14,8 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsInjector, DriftkingsView, g_events, isDisabledByBattleType
+from DriftkingsCore import SimpleConfigInterface, Analytics, isDisabledByBattleType
+from DriftkingsInject import DriftkingsInjector, MainGunMeta, g_events
 
 AS_SWF = 'MainGun.swf'
 AS_BATTLE = 'MainGunView'
@@ -56,6 +57,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('progressBar'),
@@ -111,19 +113,10 @@ class PlayersDamageController(object):
 damage_controller = PlayersDamageController()
 
 
-class MainGunMeta(DriftkingsView):
-
-    def __init__(self):
-        super(MainGunMeta, self).__init__(config.ID)
-
-    def as_gunDataS(self, value, max_value, warning):
-        return self.flashObject.as_gunData(value, max_value, warning) if self._isDAAPIInited() else None
-
-
 class MainGun(MainGunMeta, IBattleFieldListener):
 
     def __init__(self):
-        super(MainGun, self).__init__()
+        super(MainGun, self).__init__(config.ID)
         self.gunScore = 0
         self.gunLeft = 0
         self._warning = False

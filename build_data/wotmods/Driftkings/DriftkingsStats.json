@@ -1,0 +1,9 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/DriftkingsStats/__init__.pyc": "build/scripts/client/DriftkingsStats/__init__.pyc",
+        "res/scripts/client/DriftkingsStats/vehinfo.pyc": "build/scripts/client/DriftkingsStats/vehinfo.pyc",
+        "res/scripts/client/DriftkingsStats/xvm_stats.pyc": "build/scripts/client/DriftkingsStats/xvm_stats.pyc"
+    }
+}

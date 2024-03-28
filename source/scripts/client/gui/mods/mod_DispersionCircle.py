@@ -69,7 +69,7 @@ class ConfigInterface(SimpleConfigInterface):
         percent = self.i18n['UI_setting_scale_size']
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': self.version,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('replaceOriginalCircle'),

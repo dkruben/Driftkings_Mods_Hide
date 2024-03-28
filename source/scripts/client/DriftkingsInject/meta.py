@@ -6,7 +6,8 @@ from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import logDebug, logInfo, g_events
+from DriftkingsCore import logDebug, logInfo
+from common import g_events
 
 
 class DriftkingsView(BaseDAAPIComponent):

@@ -29,7 +29,8 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isDisabledByBattleType, isReplay, CyclicTimerEvent, g_events, DriftkingsInjector, DriftkingsView
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isDisabledByBattleType, isReplay
+from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
 AS_BATTLE = 'BattleClockView'
@@ -40,6 +41,7 @@ _cache = set()
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
+        self.version_int = 2.10
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -96,6 +98,7 @@ class ConfigInterface(SimpleConfigInterface):
         colorLabel['tooltip'] %= {'color': self.data['color']}
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showBattleHint'),
@@ -128,19 +131,10 @@ config = ConfigInterface()
 statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DateTimesMeta(DriftkingsView):
-
-    def __init__(self):
-        super(DateTimesMeta, self).__init__(config.ID)
-
-    def as_setDateTimeS(self, text):
-        return self.flashObject.as_setDateTime(text) if self._isDAAPIInited() else None
-
-
 class DateTimes(DateTimesMeta):
 
     def __init__(self):
-        super(DateTimes, self).__init__()
+        super(DateTimes, self).__init__(config.ID)
         self.coding = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
 

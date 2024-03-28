@@ -105,6 +105,7 @@ class ConfigInterface(SimpleConfigInterface):
         xQuestsHeader['text'] += ''
         return {
             'modDisplayName': self.ID,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('isTruncateNumbers'),

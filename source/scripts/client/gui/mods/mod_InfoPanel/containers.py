@@ -134,14 +134,14 @@ class DataConstants(object):
     def shell_name_3(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%s' % self._gunShots[2].shell.userString
 
-    # def shell_damage_1(self):
-    #    return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].shell.damage[0])
+    def shell_damage_1(self):
+        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].shell.damage[0])
 
-    # def shell_damage_2(self):
-    #    return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].shell.damage[0])
+    def shell_damage_2(self):
+        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].shell.damage[0])
 
-    # def shell_damage_3(self):
-    #    return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].shell.damage[0])
+    def shell_damage_3(self):
+        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].shell.damage[0])
 
     def shell_power_1(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].piercingPower[0])

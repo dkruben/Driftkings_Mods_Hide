@@ -10,12 +10,7 @@ from .iter import *
 from .logger import *
 from .monkeypatch import *
 from .wgUtils import *
-from .timers import *
 from .colorRatting import *
-from .eventsManager import *
-from .view_injector import *
-from .view_meta import *
-from vehicle_cache import *
 
 
 def __import_delayed():

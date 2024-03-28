@@ -18,7 +18,8 @@ from helpers import dependency
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException, g_events, DriftkingsInjector, DriftkingsView
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException
+from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
 AS_BATTLE = 'ArmorCalculatorView'
@@ -32,6 +33,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
+        self.version_int = 1.00
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -78,6 +80,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('displayOnAllies'),
@@ -97,19 +100,11 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class ArmorCalculatorMeta(DriftkingsView):
-    def __init__(self):
-        super(ArmorCalculatorMeta, self).__init__(config.ID)
-
-    def as_armorCalculatorS(self, text):
-        return self.flashObject.as_armorCalculator(text) if self._isDAAPIInited() else None
-
-
 class ArmorCalculator(ArmorCalculatorMeta):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
-        super(ArmorCalculator, self).__init__()
+        super(ArmorCalculator, self).__init__(config.ID)
         self.calcMacro = defaultdict(lambda: 'macros not found')
 
     def getSettings(self):

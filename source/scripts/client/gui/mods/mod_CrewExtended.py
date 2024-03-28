@@ -11,6 +11,9 @@ from DriftkingsCore import SimpleConfigInterface, override, Analytics
 
 
 class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.version_int = 1.70
+        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -120,6 +123,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 xLabel1,

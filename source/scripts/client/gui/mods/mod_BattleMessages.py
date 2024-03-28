@@ -18,6 +18,9 @@ from DriftkingsCore import SimpleConfigInterface, Analytics, override, sendChatM
 
 
 class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.version_int = 2.35
+        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -76,15 +79,16 @@ class ConfigInterface(SimpleConfigInterface):
         infoCountLine['text'] += ''
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createStepper('maxLinesCount', 2.0, 10.0, 1.0, True),
                 infoALabel,
                 self.tb.createControl('artyMessage'),
-                self.tb.createControl('artyTxt', 'TextInput', 300),
+                self.tb.createControl('artyTxt', self.tb.types.TextInput, 300),
                 infoClLabel,
                 self.tb.createControl('clipLoad'),
-                self.tb.createControl('loadTxt', 'TextInput', 300),
+                self.tb.createControl('loadTxt', self.tb.types.TextInput, 300),
             ],
             'column2': [
                 infoCLabel,

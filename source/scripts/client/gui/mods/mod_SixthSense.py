@@ -5,6 +5,7 @@ from functools import partial
 from random import choice
 
 import BigWorld
+import ResMgr
 import Math
 import SoundGroups
 from PlayerEvents import g_playerEvents
@@ -17,7 +18,8 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, SixthSenseTimer, checkNamesList, g_events, DriftkingsInjector, DriftkingsView
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, checkNamesList
+from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, SixthSenseTimer, g_events
 
 AS_INJECTOR = 'SixthSenseInjector'
 AS_BATTLE = 'SixthSenseView'
@@ -89,10 +91,11 @@ class ConfigInterface(SimpleConfigInterface):
         infoSLabel['text'] += ''
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('defaultIcon'),
-                self.tb.createImageOptions('defaultIconName', 'gui/maps/icons/SixthSense', checkNamesList('gui/maps/icons/SixthSense/')),
+                self.tb.createImageOptions('defaultIconName', self.sixthSenseIconsNamesList()),
                 self.tb.createControl('playTickSound'),
                 self.tb.createSlider('lampShowTime', 2.0, 15.0, 1.0, '{{value}} ' + ' .sec'),
 
@@ -101,10 +104,16 @@ class ConfigInterface(SimpleConfigInterface):
                 infoSLabel,
                 self.tb.createControl('spottedMessage'),
                 self.tb.createControl('helpMessage'),
-                self.tb.createControl('spottedText', 'TextInput', 300),
+                self.tb.createControl('spottedText', self.tb.types.TextInput, 300),
                 self.tb.createSlider('delay', 1.0, 10.0, 1.0, '{{value}} ' + ' sec.')
             ]
         }
+
+    @staticmethod
+    def sixthSenseIconsNamesList():
+        directory = 'gui/maps/icons/SixthSense/'
+        folder = ResMgr.openSection(directory)
+        return sorted(folder.keys())
 
     @staticmethod
     def onBattleLoaded():
@@ -164,24 +173,10 @@ class Messages(object):
 g_messages = Messages()
 
 
-class SixthSenseMeta(DriftkingsView):
-    def __init__(self):
-        super(SixthSenseMeta, self).__init__(config.ID)
-
-    def as_showS(self):
-        return self.flashObject.as_show() if self._isDAAPIInited() else None
-
-    def as_hideS(self):
-        return self.flashObject.as_hide() if self._isDAAPIInited() else None
-
-    def as_updateTimerS(self, text):
-        return self.flashObject.as_updateTimer(text) if self._isDAAPIInited() else None
-
-
 class SixthSense(SixthSenseMeta, SixthSenseTimer):
 
     def __init__(self):
-        super(SixthSense, self).__init__()
+        super(SixthSense, self).__init__(config.ID)
         self.radio_installed = False
         self.__visible = False
         self.__message = None

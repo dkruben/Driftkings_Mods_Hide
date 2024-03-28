@@ -64,6 +64,7 @@ class ConfigsInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('noBinoculars'),
@@ -73,7 +74,7 @@ class ConfigsInterface(SimpleConfigInterface):
             ],
             'column2': [
                 self.tb.createControl('disableCamAfterShot'),
-                self.tb.createControl('disableCamAfterShotLatency', 1.0, 20.0, 1.0, '{{value}} %'),
+                self.tb.createSlider('disableCamAfterShotLatency', 1.0, 20.0, 1.0, '{{value}} %'),
                 self.tb.createControl('disableCamAfterShotSkipClip')
             ]
         }

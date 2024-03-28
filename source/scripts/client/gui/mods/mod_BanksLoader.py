@@ -25,6 +25,8 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         events.LoginView.populate.after(events.LobbyView.populate.after(events.PlayerAvatar.startGUI.after(self.tryRestart)))
         super(ConfigInterface, self).__init__()
 
+    LOG = property(lambda self: self.ID + ':')
+
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.5.5 (%(file_compile_date)s)'

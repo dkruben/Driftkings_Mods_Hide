@@ -10,10 +10,11 @@ from items import vehicles
 from DriftkingsCore import callback, logError
 
 # URL
-URL_WN8 = 'https://static.modxvm.com/wn8-data-exp/json/wn8exp.json'
-URL_XTE = 'https://static.modxvm.com/xte.json'
-URL_XTDB = 'https://static.modxvm.com/xtdb.json'
-URL_XVMSCALE = 'https://static.modxvm.com/xvmscales.json'
+HOST = 'https://static.modxvm.com/'
+URL_WN8 = HOST + 'wn8-data-exp/json/wn8exp.json'
+URL_XTE = HOST + 'xte.json'
+URL_XTDB = HOST + 'xtdb.json'
+URL_XVMSCALE = HOST + 'xvmscales.json'
 
 VEHICLE_TYPE_XML_PATH = 'scripts/item_defs/vehicles/'
 UNKNOWN_VEHICLE_DATA = {
@@ -44,7 +45,7 @@ class ScaleValues(object):
 
     def __init__(self):
         # ID
-        self.ID = 'StatsCore'
+        self.ID = 'DriftkingsStats'
         # Vehicle
         self.vehicleInfoData = None
         # dicts
@@ -137,9 +138,9 @@ class ScaleValues(object):
 
         if self.settings['showExpectedTankValuesMessage']:
             if updateExpectedOK:
-                SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[StatsCore]</font>\nExpected Tank Values updated to version: ' + newVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
+                SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[DriftkingsStats]</font>\nExpected Tank Values updated to version: ' + newVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
             else:
-                SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[StatsCore]</font>\nExpected Tank Values\nversion: ' + localVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
+                SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[DriftkingsStats]</font>\nExpected Tank Values\nversion: ' + localVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
 
         with open(wn8_cache) as origExpectedValuesJson:
             origExpectedValues = json.load(origExpectedValuesJson)
@@ -218,11 +219,6 @@ class ScaleValues(object):
     def calculateXTE(self, vehCD, dmg_per_battle, frg_per_battle):
         data = self.getXteData(vehCD)
         if data is None or data['td'] == data['ad'] or data['tf'] == data['af']:
-            # indoData = self.getVehicleInfoData(vehCD)
-            # if indoData is None:
-            #    logWarning('No vehicle info for vehicle id = {}'.format(vehCD))
-            # else:
-            #    logWarning('No xte data for vehicle [{}] {}'.format(vehCD, indoData['key']))
             return -1
 
         # constants
@@ -266,5 +262,5 @@ try:
     calculateXvmScale = ScaleValues().calculateXvmScale
     calculateXTDB = ScaleValues().calculateXTDB
     calculateXTE = ScaleValues().calculateXTE
-except Exception as error:
+except ImportError as error:
     logError('Scale not imported {}'.format(error))

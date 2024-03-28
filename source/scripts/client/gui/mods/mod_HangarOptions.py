@@ -36,22 +36,22 @@ from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemp
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
-from gui.Scaleform.locale.MENU import MENU
+# from gui.Scaleform.locale.MENU import MENU
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
-from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
+# from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.formatters import text_styles
-from gui.shared.gui_items.Tankman import Tankman
+# from gui.shared.gui_items.Tankman import Tankman
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters
 from gui.shared.tooltips import getUnlockPrice
 from gui.shared.tooltips.shell import CommonStatsBlockConstructor
-from gui.shared.utils.requesters import REQ_CRITERIA
+# from gui.shared.utils.requesters import REQ_CRITERIA
 from gun_rotation_shared import calcPitchLimitsFromDesc
 from helpers import dependency
 from helpers.i18n import makeString
@@ -62,7 +62,8 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, CyclicTimerEvent, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback
+from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
 CONST_45_IN_RADIANS = radians(45)
@@ -189,6 +190,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('autoLogin'),

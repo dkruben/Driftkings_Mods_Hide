@@ -1,0 +1,12 @@
+﻿# -*- coding: utf-8 -*-
+__MOD_CORE__ = '1.4.0'
+__CORE_NAME__ = 'DriftkingsStats'
+__MOD_DATE__ = '(%(file_compile_date)s)'
+
+from DriftkingsCore import logInfo
+from vehinfo import *
+from xvm_stats import *
+
+__all__ = ('getVehicleInfoData', 'calculateXvmScale', 'calculateXTDB', 'calculateXTE', 'xvm_stat',)
+
+logInfo('%s, version %s, is loaded' % (__CORE_NAME__, __MOD_CORE__))

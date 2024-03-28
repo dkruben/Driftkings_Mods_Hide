@@ -273,6 +273,7 @@ class ConfigInterface(SimpleConfigInterface):
         xColorUnknown['tooltip'] = xColorUnknown['tooltip'].replace('{/BODY}', '\n'.join(textExamples) + '{/BODY}')
         return {
             'modDisplayName': self.ID,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showInStatistic'),

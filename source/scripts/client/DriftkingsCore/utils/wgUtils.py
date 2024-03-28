@@ -6,12 +6,13 @@ from colorsys import hsv_to_rgb
 
 import BigWorld
 import ResMgr
+from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from BattleReplay import isPlaying, isLoading, g_replayCtrl
 from gui.battle_control import avatar_getter
 from constants import ARENA_GUI_TYPE
 from gui.shared.utils import getPlayerDatabaseID
 
-__all__ = ('getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback',
+__all__ = ('getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback', 'getPercent',
            'cancelCallback', 'hex_to_decimal', 'isReplay', 'getColor', 'isDisabledByBattleType', 'percentToRGB', 'getAccountDBID', 'checkNamesList',)
 
 
@@ -111,6 +112,12 @@ class Utils(object):
                 if val['value'] > kwargs:
                     return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
 
+    @staticmethod
+    def getPercent(param_a, param_b):
+        if param_b <= 0:
+            return 0.0
+        return float(normalizeHealth(param_a)) / param_b
+
     def isDisabledByBattleType(self, exclude=None, include=tuple()):
         """
         In mod use (false)
@@ -142,3 +149,4 @@ getColor = Utils().getColor
 isDisabledByBattleType = Utils().isDisabledByBattleType
 checkNamesList = Utils().checkNamesList
 percentToRGB = Utils().percentToRGB
+getPercent = Utils().getPercent

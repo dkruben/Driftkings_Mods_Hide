@@ -3,7 +3,10 @@ from functools import partial
 
 from SoundGroups import g_instance
 
-from . import cancelCallback, callback
+from DriftkingsCore import cancelCallback, callback
+
+
+__all__ = ('Timer', 'SixthSenseTimer', 'CyclicTimerEvent',)
 
 
 class Timer(object):

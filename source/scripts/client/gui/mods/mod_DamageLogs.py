@@ -2,14 +2,14 @@
 from collections import defaultdict
 
 from frameworks.wulf import WindowLayer
-from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, g_events, DriftkingsView, DriftkingsInjector, percentToRGB, cachedVehicleData
+from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, getPercent
+from DriftkingsInject import DriftkingsInjector, DamageLogsMeta, cachedVehicleData, g_events
 
 AS_INJECTOR = 'DamageLogsInjector'
 AS_BATTLE = 'DamageLogsView'
@@ -27,6 +27,7 @@ _EVENT_TO_TOP_LOG_MACROS = {
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
+        self.version_int = 1.00
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -79,13 +80,13 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_wgLogHideBlock_tooltip': '',
             'UI_setting_wgLogHideAssist_text': 'WG Log Hide Assist',
             'UI_setting_wgLogHideAssist_tooltip': ''
-            # 'UI_colors': {}
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         return {
             'modDisplayName': self.ID,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [], 'column2': []}
 
@@ -101,32 +102,16 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-def getPercent(param_a, param_b):
-    if param_b <= 0:
-        return 0.0
-    return float(normalizeHealth(param_a)) / param_b
-
-
-class DamageLogsMeta(DriftkingsView):
-
-    def __init__(self):
-        super(DamageLogsMeta, self).__init__(config.ID)
-        self.settings = config
-
-    def as_createTopLogS(self, settings):
-        return self.flashObject.as_createTopLog(settings) if self._isDAAPIInited() else None
-
-    def as_updateTopLogS(self, text):
-        return self.flashObject.as_updateTopLog(text) if self._isDAAPIInited() else None
-
-
 class DamageLogs(DamageLogsMeta):
 
     def __init__(self):
-        super(DamageLogs, self).__init__()
+        super(DamageLogs, self).__init__(config.ID)
         self._is_top_log_enabled = False
         self.top_log = defaultdict(int)
         self.top_log_template = ''
+
+    def getSettings(self):
+        return config.data
 
     def _populate(self):
         # noinspection PyProtectedMember
@@ -135,27 +120,29 @@ class DamageLogs(DamageLogsMeta):
         if feedback is None:
             return
         feedback.onPlayerFeedbackReceived += self.__onPlayerFeedbackReceived
-        self._is_top_log_enabled = self.settings.data['enabled']
+        self._is_top_log_enabled = config.data['enabled']
         if self._is_top_log_enabled:
-            self.as_createTopLogS(self.settings.data['settings'])
+            self.as_createTopLogS(config.data['settings'])
             self.update_top_log_start_params()
             self.as_updateTopLogS(self.top_log_template % self.top_log)
 
     def update_top_log_start_params(self):
-        template = self.settings.data['templateMainDMG']
-        self.top_log.update(self.settings.data['icons'],
-                            tankDamageAvgColor='#FFFFFF',
-                            tankAssistAvgColor='#FFFFFF',
-                            tankBlockedAvgColor='#FFFFFF',
-                            tankStunAvgColor='#FFFFFF',
-                            tankAvgDamage=cachedVehicleData.efficiencyAvgData.damage,
-                            tankAvgAssist=cachedVehicleData.efficiencyAvgData.assist,
-                            tankAvgStun=cachedVehicleData.efficiencyAvgData.stun,
-                            tankAvgBlocked=cachedVehicleData.efficiencyAvgData.blocked)
+        template = config.data['templateMainDMG']
+        self.top_log.update(
+            config.data['icons'],
+            tankDamageAvgColor='#FFFFFF',
+            tankAssistAvgColor='#FFFFFF',
+            tankBlockedAvgColor='#FFFFFF',
+            tankStunAvgColor='#FFFFFF',
+            tankAvgDamage=cachedVehicleData.efficiencyAvgData.damage,
+            tankAvgAssist=cachedVehicleData.efficiencyAvgData.assist,
+            tankAvgStun=cachedVehicleData.efficiencyAvgData.stun,
+            tankAvgBlocked=cachedVehicleData.efficiencyAvgData.blocked
+        )
         if not self.isSPG():
             self.top_log.update(stun='', stunIcon='')
             template = [line for line in template if 'stunIcon' not in line]
-        self.top_log_template = self.settings.data['separate'].join(template)
+        self.top_log_template = config.data['separate'].join(template)
 
     def isTopLogEventEnabled(self, eventType):
         return self._is_top_log_enabled and eventType in _EVENT_TO_TOP_LOG_MACROS
@@ -179,8 +166,8 @@ class DamageLogs(DamageLogsMeta):
     def addToTopLog(self, e_type, event, extra):
         avg_value_macros, avg_color_macros, value_macros = _EVENT_TO_TOP_LOG_MACROS[e_type]
         if e_type == FEEDBACK_EVENT_ID.PLAYER_ASSIST_TO_STUN_ENEMY and not self.top_log['stunIcon']:
-            self.top_log_template = self.settings.data['separate'].join(self.settings.data['templateMainDMG'])
-            self.top_log['stunIcon'] = self.settings.data['icons']['stunIcon']
+            self.top_log_template = config.data['separate'].join(config.data['templateMainDMG'])
+            self.top_log['stunIcon'] = config.data['icons']['stunIcon']
             self.top_log[value_macros] = 0
         self.top_log[value_macros] += self.unpackTopLogValue(e_type, event, extra)
         if avg_value_macros is not None:
@@ -201,8 +188,9 @@ class DamageLogs(DamageLogsMeta):
             for event in events:
                 self.parseEvent(event)
 
-    def getAVGColor(self, percent):
-        return percentToRGB(percent, **self.settings.data['avgColor']) if percent else '#FFFFFF'
+    @staticmethod
+    def getAVGColor(percent):
+        return percentToRGB(percent, **config.data['avgColor']) if percent else '#FFFFFF'
 
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))

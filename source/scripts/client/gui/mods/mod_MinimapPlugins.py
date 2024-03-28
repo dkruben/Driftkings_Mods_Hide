@@ -16,7 +16,8 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, g_events, DriftkingsInjector, DriftkingsView
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError
+from DriftkingsInject import DriftkingsInjector, DriftkingsView, g_events
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
 AS_BATTLE = 'MinimapCentredView'
@@ -113,6 +114,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('permanentMinimapDeath'),

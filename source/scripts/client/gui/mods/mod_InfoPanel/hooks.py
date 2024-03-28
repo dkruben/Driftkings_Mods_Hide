@@ -5,7 +5,7 @@ from messenger import MessengerEntry
 
 from DriftkingsCore import override, checkKeys, getPlayer
 from .configs import g_config
-from .data import g_mod  # , _isEntitySatisfiesConditions
+from .data import g_mod, _isEntitySatisfiesConditions
 
 
 @override(PlayerAvatar, 'targetBlur')
@@ -14,13 +14,13 @@ def new_targetBlur(func, self, prevEntity):
     if g_config.data['enabled'] and hasattr(prevEntity, 'publicInfo'):
         if not (g_config.data['enemiesOnly'] and 0 < getattr(prevEntity.publicInfo, 'team', 0) == player().team) or not (g_config.data['aliveOnly'] and not prevEntity.isAlive()):
             g_mod.updateBlur()
-    # if g_config.data['enabled'] and hasattr(prevEntity, 'publicInfo'):
-    #    enabledFor = g_config.data['showFor']
-    #    isAlly = 0 < getattr(prevEntity.publicInfo, 'team', 0) == getPlayer().team
-    #    showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
-    #    aliveOnly = (not g_config.data['aliveOnly']) or (g_config.data['aliveOnly'] and prevEntity.isAlive())
-    #    g_mod.updateBlur()
-    #    return showFor and aliveOnly
+    if g_config.data['enabled'] and hasattr(prevEntity, 'publicInfo'):
+        enabledFor = g_config.data['showFor']
+        isAlly = 0 < getattr(prevEntity.publicInfo, 'team', 0) == getPlayer().team
+        showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
+        aliveOnly = (not g_config.data['aliveOnly']) or (g_config.data['aliveOnly'] and prevEntity.isAlive())
+        g_mod.updateBlur()
+        return showFor and aliveOnly
     func(self, prevEntity)
 
 
@@ -35,20 +35,20 @@ def targetFocus(func, self, entity):
     g_mod.update(entity)
 
 
-# @override(PlayerAvatar, 'targetFocus')
-# def new_targetFocus(func, self, entity):
-#    func(self, entity)
-#    if not (g_config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
-#        return
-#    g_mod.update(entity)
+@override(PlayerAvatar, 'targetFocus')
+def new_targetFocus(func, self, entity):
+    func(self, entity)
+    if not (g_config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
+        return
+    g_mod.update(entity)
 
 
-# @override(PlayerAvatar, 'handleKey')
-# def new_handleKey(func, self, isDown, key, mods):
-#    func(self, isDown, key, mods)
-#    if g_config.data['enabled'] or (key != checkKeys(g_config.data['altKey'])) or MessengerEntry.g_instance.gui.isFocused():
-#        return
-#    g_mod.handleKey(isDown)
+@override(PlayerAvatar, 'handleKey')
+def new_handleKey(func, self, isDown, key, mods):
+    func(self, isDown, key, mods)
+    if g_config.data['enabled'] or (key != checkKeys(g_config.data['altKey'])) or MessengerEntry.g_instance.gui.isFocused():
+        return
+    g_mod.handleKey(isDown)
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')

@@ -161,15 +161,15 @@ class InfoPanel(DataConstants):
             self.timer = None
         # g_guiFlash.updateComponent(ALIAS, self.getLabelFormat('visible', False))
 
-    # def handleKey(self, isDown):
-    #    if isDown:
-    #        self.update(getPlayer().getVehicleAttached())
-    #        self.hotKeyDown = True
-    #    elif not isDown:
-    #        self.hotKeyDown = False
-    #        target = getTarget()
-    #        if _isEntitySatisfiesConditions(target):
-    #            self.update(target)
+    def handleKey(self, isDown):
+        if isDown:
+            self.update(getPlayer().getVehicleAttached())
+            self.hotKeyDown = True
+        elif not isDown:
+            self.hotKeyDown = False
+            target = getTarget()
+            if _isEntitySatisfiesConditions(target):
+                self.update(target)
 
     def updateBlur(self):
         if self.hotKeyDown or (getPlayer().getVehicleAttached() is None):
@@ -193,14 +193,13 @@ class InfoPanel(DataConstants):
                 elif hasattr(playerVehicle, 'typeDescriptor'):
                     self.init(None, playerVehicle)
 
-            # battle = ServicesLocator.appLoader.getDefBattleApp()
+            battle = ServicesLocator.appLoader.getDefBattleApp()
             target = getTarget()
-            # if not player.arena:
-            #    return
-            # if player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
-            #    return
-            # if target and battle is not None:
-            if target is not None:
+            if not player.arena:
+                return
+            if player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+                return
+            if target and battle is not None:
                 g_flash.addText(self.getTextFormatted())
 
 
@@ -208,11 +207,11 @@ g_macros = _CompareMacros()
 g_mod = InfoPanel()
 
 
-# def _isEntitySatisfiesConditions(entity):
-#    if (entity is None) or not hasattr(entity, 'publicInfo'):
-#        return False
-#    enabledFor = g_config.data['showFor']
-#    isAlly = 0 < getattr(entity.publicInfo, 'team', 0) == getPlayer().team
-#    showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
-#    aliveOnly = (not g_config.data['aliveOnly']) or (g_config.data['aliveOnly'] and entity.isAlive())
-#    return showFor and aliveOnly
+def _isEntitySatisfiesConditions(entity):
+    if (entity is None) or not hasattr(entity, 'publicInfo'):
+        return False
+    enabledFor = g_config.data['showFor']
+    isAlly = 0 < getattr(entity.publicInfo, 'team', 0) == getPlayer().team
+    showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
+    aliveOnly = (not g_config.data['aliveOnly']) or (g_config.data['aliveOnly'] and entity.isAlive())
+    return showFor and aliveOnly

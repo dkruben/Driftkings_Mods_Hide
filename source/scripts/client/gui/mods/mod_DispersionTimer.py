@@ -13,7 +13,8 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, g_events, DriftkingsInjector, DriftkingsView
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug
+from DriftkingsInject import DispersionTimerMeta, DriftkingsInjector, g_events
 
 AS_INJECTOR = 'DispersionTimerInjector'
 AS_BATTLE = 'DispersionTimerView'
@@ -95,6 +96,7 @@ class ConfigInterface(SimpleConfigInterface):
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
+            'settingsVersion': 1,
             'column1': [
                 colorLabelRed,
                 colorLabelOrange,
@@ -104,7 +106,7 @@ class ConfigInterface(SimpleConfigInterface):
                 colorLabelPurple
             ],
             'column2': [
-                self.tb.createControl('template', 'TextInput', 400),
+                self.tb.createControl('template', self.tb.types.TextInput, 400),
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
                 self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
 
@@ -123,19 +125,11 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DispersionTimerMeta(DriftkingsView):
-    def __init__(self):
-        super(DispersionTimerMeta, self).__init__(config.ID)
-
-    def as_updateTimerTextS(self, text):
-        return self.flashObject.as_upateTimerText(text) if self._isDAAPIInited() else None
-
-
 class DispersionTimer(DispersionTimerMeta):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
-        super(DispersionTimer, self).__init__()
+        super(DispersionTimer, self).__init__(config.ID)
         self.macro = defaultdict(lambda: 'macros not found', timer=0, percent=0)
         self.min_angle = 1.0
         self.isPostmortem = False

@@ -14,7 +14,7 @@ from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, isDisabledByBattleType, getColor, COLOR_TABLES
-from StatsCore import getVehicleInfoData, calculateXvmScale, calculateXTE
+from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']
 # BATTLE_RESULTS
@@ -25,6 +25,7 @@ DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun':
 
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
+        self.version_int = 2.45
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -86,15 +87,16 @@ class ConfigInterface(SimpleConfigInterface):
         xColorList = ('NoobMeter', 'XVM', 'WotLabs')
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('textLock'),
                 self.tb.createOptions('colorRatting', [self.i18n[xColorKey + x] for x in xColorList]),
-                self.tb.createControl('format', 'TextInput', 400)
+                self.tb.createControl('format', self.tb.types.TextInput, 400)
             ],
             'column2': [
                 self.tb.createControl('battleResultsWindow'),
-                self.tb.createControl('battleResultsFormat', 'TextInput', 400),
+                self.tb.createControl('battleResultsFormat', self.tb.types.TextInput, 400),
             ]
         }
 

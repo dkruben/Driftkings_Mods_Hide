@@ -34,15 +34,10 @@
 		"res/scripts/client/DriftkingsCore/utils/analytics.pyc"   	: "build/scripts/client/DriftkingsCore/utils/analytics.pyc",
 		"res/scripts/client/DriftkingsCore/utils/chat.pyc"        	: "build/scripts/client/DriftkingsCore/utils/chat.pyc",
 		"res/scripts/client/DriftkingsCore/utils/colorRatting.pyc"	: "build/scripts/client/DriftkingsCore/utils/colorRatting.pyc",
-		"res/scripts/client/DriftkingsCore/utils/eventsManager.pyc" : "build/scripts/client/DriftkingsCore/utils/eventsManager.pyc",
 		"res/scripts/client/DriftkingsCore/utils/game.pyc"        	: "build/scripts/client/DriftkingsCore/utils/game.pyc",
 		"res/scripts/client/DriftkingsCore/utils/iter.pyc"        	: "build/scripts/client/DriftkingsCore/utils/iter.pyc",
 		"res/scripts/client/DriftkingsCore/utils/logger.pyc"      	: "build/scripts/client/DriftkingsCore/utils/logger.pyc",
 		"res/scripts/client/DriftkingsCore/utils/monkeypatch.pyc" 	: "build/scripts/client/DriftkingsCore/utils/monkeypatch.pyc",
-		"res/scripts/client/DriftkingsCore/utils/timers.pyc"     	: "build/scripts/client/DriftkingsCore/utils/timers.pyc",
-		"res/scripts/client/DriftkingsCore/utils/vehicle_cache.pyc" : "build/scripts/client/DriftkingsCore/utils/vehicle_cache.pyc",
-		"res/scripts/client/DriftkingsCore/utils/view_injector.pyc" : "build/scripts/client/DriftkingsCore/utils/view_injector.pyc",
-		"res/scripts/client/DriftkingsCore/utils/view_meta.pyc" : "build/scripts/client/DriftkingsCore/utils/view_meta.pyc",
         "res/scripts/client/DriftkingsCore/utils/wgUtils.pyc"     	: "build/scripts/client/DriftkingsCore/utils/wgUtils.pyc"
     }
 }

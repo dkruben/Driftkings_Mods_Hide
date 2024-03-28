@@ -15,6 +15,7 @@ class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         self.player = None
         self.angle = None
+        self.version_int = 1.45
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -43,6 +44,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('angle', 0, 90.0, 0.1, '{{value}}%s' % self.i18n['UI_setting_angle_value'])

@@ -3,7 +3,8 @@ from helpers import dependency
 from skeletons.gui.shared import IItemsCache
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, cachedVehicleData
+from DriftkingsCore import SimpleConfigInterface, Analytics, override
+from DriftkingsInject import cachedVehicleData
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -58,6 +59,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('avgAssist'),

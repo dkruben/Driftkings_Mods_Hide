@@ -13,7 +13,8 @@ from gui.battle_control.avatar_getter import getInputHandler
 from gui.battle_control.battle_constants import PLAYER_GUI_PROPS
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsInjector, DriftkingsView, CyclicTimerEvent, logDebug, g_events
+from DriftkingsCore import SimpleConfigInterface, Analytics, logDebug
+from DriftkingsInject import DriftkingsInjector, DistanceMeta, CyclicTimerEvent, g_events
 
 AS_INJECTOR = 'DistanceInjector'
 AS_BATTLE = 'DistanceView'
@@ -54,11 +55,12 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('template', 'TextInput', 400),
-                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
-                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
+                self.tb.createControl('template', self.tb.types.TextInput, 400),
+                self.tb.createSlider('x', -2000, 2000, 1, '{{value}} X'),
+                self.tb.createSlider('y', -2000, 2000, 1, '{{value}} Y')
             ],
             'column2': []
         }
@@ -75,19 +77,10 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DistanceMeta(DriftkingsView):
-
-    def __init__(self):
-        super(DistanceMeta, self).__init__(config.ID)
-
-    def as_setDistanceS(self, text):
-        return self.flashObject.as_setDistance(text) if self._isDAAPIInited() else None
-
-
 class Distance(DistanceMeta):
 
     def __init__(self):
-        super(Distance, self).__init__()
+        super(Distance, self).__init__(config.ID)
         self.macrosDict = defaultdict(lambda: 'Macros not found', distance=0, name='')
         self.timeEvent = None
         self.isPostmortem = False

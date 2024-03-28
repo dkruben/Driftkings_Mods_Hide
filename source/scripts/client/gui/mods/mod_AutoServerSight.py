@@ -6,6 +6,10 @@ from DriftkingsCore import SimpleConfigInterface, override, Analytics, callback,
 
 
 class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.version_int = 1.45
+        super(ConfigInterface, self).__init__()
+
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
@@ -38,6 +42,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('lightTank'),

@@ -30,6 +30,7 @@ class PostmortemDelay(object):
 class ConfigsInterface(SimpleConfigInterface):
     def __init__(self):
         self.camCache = {}
+        self.version_int = 1.00
         super(ConfigsInterface, self).__init__()
 
     def init(self):
@@ -61,6 +62,7 @@ class ConfigsInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('scrollSensitivity', 1.0, 100.0, 1.0, '{{value}} %'),

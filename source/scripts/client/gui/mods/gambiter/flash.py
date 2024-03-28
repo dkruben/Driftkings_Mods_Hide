@@ -1,15 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
-
 __all__ = ['COMPONENT_TYPE', 'COMPONENT_ALIGN', 'COMPONENT_EVENT', 'GUIFlash']
 
-# import codecs
-# import json
-
-# noinspection PyUnresolvedReferences
 import BigWorld
-# noinspection PyUnresolvedReferences
 import GUI
-
 import BattleReplay
 import Event
 from frameworks.wulf import WindowLayer

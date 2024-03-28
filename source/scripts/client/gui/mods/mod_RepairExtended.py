@@ -142,6 +142,7 @@ class ConfigInterface(SimpleConfigInterface):
         xMax = self.i18n['UI_setting_timerMax_format']
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createHotKey('buttonChassis'),

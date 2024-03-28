@@ -116,6 +116,7 @@ class ConfigInterface(SimpleConfigInterface):
         xColorAssistStun['tooltip'] %= {'messageColorAssistStun': self.data['messageColorAssistStun']}
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('sound'),
@@ -124,13 +125,13 @@ class ConfigInterface(SimpleConfigInterface):
             ],
             'column2': [
                 xColorSpotted,
-                self.tb.createControl('Spotted', 'TextInput', 300),
+                self.tb.createControl('Spotted', self.tb.types.TextInput, 300),
                 xColorAssistRadio,
-                self.tb.createControl('AssistRadio', 'TextInput', 300),
+                self.tb.createControl('AssistRadio', self.tb.types.TextInput, 300),
                 xColorAssistTrack,
-                self.tb.createControl('AssistTrack', 'TextInput', 300),
+                self.tb.createControl('AssistTrack', self.tb.types.TextInput, 300),
                 xColorAssistStun,
-                self.tb.createControl('AssistStun', 'TextInput', 300)
+                self.tb.createControl('AssistStun', self.tb.types.TextInput, 300)
             ]}
 
     def check_macros(self, macros):
@@ -157,7 +158,7 @@ class ConfigInterface(SimpleConfigInterface):
         text, color, macros = GENERATOR[event]
         return (config.i18n[text], config.data[macros].format(**self.format_str)), config.data[color]
 
-    def post_message(self, events):
+    def postMessage(self, events):
         if not config.data['enabled']:
             return
         g_sessionProvider = getPlayer().guiSessionProvider
@@ -167,7 +168,7 @@ class ConfigInterface(SimpleConfigInterface):
             eventID = feedbackEvent.getBattleEventType()
             if eventID in [BATTLE_EVENT_TYPE.SPOTTED, BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST]:
                 vehicleID = feedbackEvent.getTargetID()
-                icon = '<img src="img://%s" width="%s" height="%s" />' % (g_sessionProvider.getArenaDP().getVehicleInfo(vehicleID).vehicleType.iconPath.replace('..', 'gui'), config.data['iconSizeX'], config.data['iconSizeY'])
+                icon = '<img src=\'img://%s\' width=\'%s\' height=\'%s\' />' % (g_sessionProvider.getArenaDP().getVehicleInfo(vehicleID).vehicleType.iconPath.replace('..', 'gui'), config.data['iconSizeX'], config.data['iconSizeY'])
                 target_info = g_sessionProvider.getCtx().getPlayerFullNameParts(vID=vehicleID)
                 if self.check_macros('{icons}'):
                     self.format_str['icons'] += icon
@@ -202,4 +203,4 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 @override(PlayerAvatar, 'onBattleEvents')
 def new_onBattleEvents(func, *args):
     func(*args)
-    config.post_message(args[1])
+    config.postMessage(args[1])

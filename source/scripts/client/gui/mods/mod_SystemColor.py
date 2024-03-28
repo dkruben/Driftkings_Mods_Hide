@@ -73,6 +73,7 @@ class ConfigInterface(SimpleConfigInterface):
         colorLabelTeamKillerAlive['tooltip'] %= {'teamKillerAlive': self.data['teamKillerAlive']}
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 colorLabelAllyDead,

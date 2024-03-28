@@ -62,16 +62,18 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         help['tooltip'] += 'help'
         return {
             'modDisplayName': self.ID,
+            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('neverSeen', 'TextInput', 350),
-                self.tb.createControl('spotted', 'TextInput', 350),
-                self.tb.createControl('lost', 'TextInput', 350),
-                self.tb.createControl('dead', 'TextInput', 350)
+                self.tb.createControl('neverSeen', self.tb.types.TextInput, 350),
+                self.tb.createControl('spotted', self.tb.types.TextInput, 350),
+                self.tb.createControl('lost', self.tb.types.TextInput, 350),
+                self.tb.createControl('dead', self.tb.types.TextInput, 350)
             ],
             'column2': [
                 help
-            ]}
+            ]
+        }
 
     def clear(self):
         self._spotted_cache = {}
