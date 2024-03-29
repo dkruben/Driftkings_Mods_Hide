@@ -20,7 +20,7 @@ from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
 from wg_async import wg_async, wg_await
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError, loadJson
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError, loadJson  # , events
 from DriftkingsCore.utils.delayed.utils.old_dialogs import showCrewDialog
 
 
@@ -159,6 +159,7 @@ class CrewWorker(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
+        # events.LoginView.populate.after(events.LobbyView.populate.after(events.PlayerAvatar.startGUI.after(self.accelerateCrewTraining)))
         self.intCD = None
         self.isDialogVisible = False
         g_events.onVehicleChangedDelayed += self.updateCrew

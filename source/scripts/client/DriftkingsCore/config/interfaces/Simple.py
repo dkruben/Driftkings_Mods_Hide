@@ -1,136 +1,126 @@
 # -*- coding: utf-8 -*-
-# import os
+import os
 import traceback
 
-# import ResMgr
+import ResMgr
 
-from .Dummy import DummyConfigInterface, DummyConfBlockInterface, DummySettingContainer
-from ..json_reader import loadJson  # , loadJsonOrdered
-from ..template_builders import TemplateBuilder, BlockTemplateBuilder
+from .Dummy import DummyConfigInterface, DummyConfBlockInterface
+from ..json_reader import loadJson, loadJsonOrdered
+from ..template_builders import TemplateBuilder
 from ..utils import smart_update, processHotKeys
 
 
 __all__ = ['ConfigNoInterface', 'ConfigInterface', 'SimpleConfigInterface', 'ConfBlockInterface', 'SimpleConfBlockInterface']
 
 
-# class ConfigBase(object):
-#   def __init__(self):
-#       self.ID = ''
-#       self.defaultKeys = {}
-#       self.i18n = {}
-#       self.data = {}
-#       self.author = ''
-#       self.version = ''
-#       self.modsGroup = ''
-#       self.configPath = ''
-#       self.langPath = ''
+class ConfigBase(object):
+    def __init__(self):
+        self.ID = ''
+        self.defaultKeys = {}
+        self.i18n = {}
+        self.data = {}
+        self.author = ''
+        self.version = ''
+        self.modsGroup = ''
+        self.configPath = ''
+        self.langPath = ''
 
-#    LOG = property(lambda self: self.ID + ':')
-#    loadDataJson = lambda self, *a, **kw: loadJson(self.ID, self.ID, self.data, self.configPath, *a, **kw)
-#    writeDataJson = lambda self, *a, **kw: loadJson(self.ID, self.ID, self.data, self.configPath, True, False, *a, **kw)
-#    loadLangJson = lambda self, *a, **kw: loadJson(self.ID, self.lang, self.i18n, self.langPath, *a, **kw)
+    LOG = property(lambda self: self.ID + ':')
+    loadDataJson = lambda self, *a, **kw: loadJson(self.ID, self.ID, self.data, self.configPath, *a, **kw)
+    writeDataJson = lambda self, *a, **kw: loadJson(self.ID, self.ID, self.data, self.configPath, True, False, *a, **kw)
+    loadLangJson = lambda self, *a, **kw: loadJson(self.ID, self.lang, self.i18n, self.langPath, *a, **kw)
 
-#    def init(self):
-#        self.configPath = './mods/configs/%s/%s/' % (self.modsGroup, self.ID)
-#        self.langPath = '%si18n/' % self.configPath
-#        self.registerHotkeys()
+    def init(self):
+        self.configPath = './mods/configs/%s/%s/' % (self.modsGroup, self.ID)
+        self.langPath = '%si18n/' % self.configPath
+        self.registerHotkeys()
 
-#    def loadLang(self):
-#        smart_update(self.i18n, self.loadLangJson())
+    def loadLang(self):
+        smart_update(self.i18n, self.loadLangJson())
 
-#    def createTB(self):
-#        return TemplateBuilder(self.data, self.i18n)
+    def createTB(self):
+        return TemplateBuilder(self.data, self.i18n)
 
-#    def readConfigDir(
-#            self, quiet, recursive=False, dir_name='configs', error_not_exist=True, make_dir=True, ordered=False,
-#            encrypted=False, migrate=False, ext='.json'):
-#        configs_dir = self.configPath + dir_name + '/'
-#        if not os.path.isdir(configs_dir):
-#            if error_not_exist and not quiet:
-#                print '=' * 30
-#                print self.LOG, 'config directory not found:', configs_dir
-#                print '=' * 30
-#            if make_dir:
-#                os.makedirs(configs_dir)
-#        for dir_path, sub_dirs, names in os.walk(configs_dir):
-#            dir_path = dir_path.replace('\\', '/').decode('windows-1251').encode('utf-8')
-#            local_path = dir_path.replace(configs_dir, '')
-#            names = sorted([x for x in names if x.endswith(ext)], key=str.lower)
-#            if not recursive:
-#                sub_dirs[:] = []
-#            for name in names:
-#                name = os.path.splitext(name)[0].decode('windows-1251').encode('utf-8')
-#                json_data = {}
-#                try:
-#                    if ext == '.json':
-#                        if ordered:
-#                            json_data = loadJsonOrdered(self.ID, dir_path, name)
-#                        else:
-#                            json_data = loadJson(self.ID, name, json_data, dir_path, encrypted=encrypted)
-#                    elif ext == '.xml':
-#                        json_data = ResMgr.openSection('.' + dir_path + '/' + name + ext)
-#                except Exception:
-#                    traceback.print_exc()
-#                if not json_data:
-#                    print self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid'
-#                    continue
-#                try:
-#                    if ext == '.json':
-#                        if migrate:
-#                            self.onMigrateConfig(quiet, dir_path, local_path, name, json_data, sub_dirs, names)
-#                        else:
-#                            self.onReadConfig(quiet, local_path, name, json_data, sub_dirs, names)
-#                    elif ext == '.xml':
-#                        self.onReadDataSection(quiet, dir_path, local_path, name, json_data, sub_dirs, names)
-#                        ResMgr.purge('.' + dir_path + '/' + name + ext)
-#                except Exception:
-#                    traceback.print_exc()
+    def readConfigDir(
+            self, quiet, recursive=False, dir_name='configs', error_not_exist=True, make_dir=True, ordered=False,
+            encrypted=False, migrate=False, ext='.json'):
+        configs_dir = self.configPath + dir_name + '/'
+        if not os.path.isdir(configs_dir):
+            if error_not_exist and not quiet:
+                print '=' * 30
+                print self.LOG, 'config directory not found:', configs_dir
+                print '=' * 30
+            if make_dir:
+                os.makedirs(configs_dir)
+        for dir_path, sub_dirs, names in os.walk(configs_dir):
+            dir_path = dir_path.replace('\\', '/').decode('windows-1251').encode('utf-8')
+            local_path = dir_path.replace(configs_dir, '')
+            names = sorted([x for x in names if x.endswith(ext)], key=str.lower)
+            if not recursive:
+                sub_dirs[:] = []
+            for name in names:
+                name = os.path.splitext(name)[0].decode('windows-1251').encode('utf-8')
+                json_data = {}
+                try:
+                    if ext == '.json':
+                        if ordered:
+                            json_data = loadJsonOrdered(self.ID, dir_path, name)
+                        else:
+                            json_data = loadJson(self.ID, name, json_data, dir_path, encrypted=encrypted)
+                    elif ext == '.xml':
+                        json_data = ResMgr.openSection('.' + dir_path + '/' + name + ext)
+                except Exception:
+                    traceback.print_exc()
+                if not json_data:
+                    print self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid'
+                    continue
+                try:
+                    if ext == '.json':
+                        if migrate:
+                            self.onMigrateConfig(quiet, dir_path, local_path, name, json_data, sub_dirs, names)
+                        else:
+                            self.onReadConfig(quiet, local_path, name, json_data, sub_dirs, names)
+                    elif ext == '.xml':
+                        self.onReadDataSection(quiet, dir_path, local_path, name, json_data, sub_dirs, names)
+                        ResMgr.purge('.' + dir_path + '/' + name + ext)
+                except Exception:
+                    traceback.print_exc()
 
-#    def onMigrateConfig(self, quiet, path, dir_path, name, json_data, sub_dirs, names):
-#        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
-#        pass
+    def onMigrateConfig(self, quiet, path, dir_path, name, json_data, sub_dirs, names):
+        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
+        pass
 
-#    def onReadConfig(self, quiet, dir_path, name, json_data, sub_dirs, names):
-#        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
-#        pass
+    def onReadConfig(self, quiet, dir_path, name, json_data, sub_dirs, names):
+        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
+        pass
 
-#    def onReadDataSection(self, quiet, path, dir_path, name, data_section, sub_dirs, names):
-#        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
-#        pass
+    def onReadDataSection(self, quiet, path, dir_path, name, data_section, sub_dirs, names):
+        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
+        pass
 
-#    def message(self):
-#        return '%s v.%s %s' % (self.ID, self.version, self.author)
+    def message(self):
+        return '%s v.%s %s' % (self.ID, self.version, self.author)
 
-#    def __hotKeyPressed(self, event):
-#        try:
-#            self.onHotkeyPressed(event)
-#        except StandardError:
-#            print self.LOG, 'ERROR at onHotkeyPressed'
-#            traceback.print_exc()
+    def __hotKeyPressed(self, event):
+        try:
+            self.onHotkeyPressed(event)
+        except StandardError:
+            print self.LOG, 'ERROR at onHotkeyPressed'
+            traceback.print_exc()
 
-#    def onHotkeyPressed(self, event):
-#        pass
+    def onHotkeyPressed(self, event):
+        pass
 
-#    def registerHotkeys(self):
-#        from gui import InputHandler
-#        InputHandler.g_instance.onKeyDown += self.__hotKeyPressed
-#        InputHandler.g_instance.onKeyUp += self.__hotKeyPressed
+    def registerHotkeys(self):
+        from gui import InputHandler
+        InputHandler.g_instance.onKeyDown += self.__hotKeyPressed
+        InputHandler.g_instance.onKeyUp += self.__hotKeyPressed
 
-#    def load(self):
-#        print '=' * 30
-#        print self.message() + ': initialised.'
-#        print '=' * 30
+    def load(self):
+        print '=' * 30
+        print self.message() + ': initialised.'
+        print '=' * 30
 
-
-# class ConfigNoInterface(object):
-#    def updateMod(self):
-#        pass
-
-#    def createTemplate(self):
-#        pass
-
-#    def registerSettings(self):
-#        pass
 
 class ConfigNoInterface(object):
     def updateMod(self):
@@ -143,92 +133,10 @@ class ConfigNoInterface(object):
         pass
 
 
-# class ConfigInterface(ConfigBase, DummyConfigInterface):
-#    def __init__(self):
-#        ConfigBase.__init__(self)
-#        DummyConfigInterface.__init__(self)
-
-#    def getData(self):
-#        return self.data
-
-#    def createTemplate(self):
-#        raise NotImplementedError
-
-#    def readData(self, quiet=True):
-#        processHotKeys(self.data, self.defaultKeys, 'write')
-#        smart_update(self.data, self.loadDataJson(quiet=quiet))
-#        processHotKeys(self.data, self.defaultKeys, 'read')
-
-#    def onApplySettings(self, settings):
-#        smart_update(self.data, settings)
-#        processHotKeys(self.data, self.defaultKeys, 'write')
-#        self.writeDataJson()
-#        processHotKeys(self.data, self.defaultKeys, 'read')
-
-#    def load(self):
-#        DummyConfigInterface.load(self)
-#        ConfigBase.load(self)
-
-
-# class ConfBlockInterface(ConfigBase, DummyConfBlockInterface):
-#    def __init__(self):
-#        ConfigBase.__init__(self)
-#        DummyConfBlockInterface.__init__(self)
-
-#    @property
-#    def blockIDs(self):
-#        return self.data.keys()
-
-#    def getData(self, blockID=None):
-#        return self.data[blockID]
-
-#    def createTemplate(self, blockID=None):
-#        raise NotImplementedError('Template for block %s is not created' % blockID)
-
-#    def readData(self, quiet=True):
-#        for blockID in self.data:
-#            processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'write')
-#        data = self.loadDataJson(quiet=quiet)
-#        for blockID in self.data:
-#            if blockID in data:
-#                smart_update(self.data[blockID], data[blockID])
-#            processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'read')
-
-#    def onApplySettings(self, settings, blockID=None):
-#        smart_update(self.data[blockID], settings)
-#        processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'write')
-#        self.writeDataJson()
-#        processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'read')
-
-#    def load(self):
-#        DummyConfBlockInterface.load(self)
-#        ConfigBase.load(self)
-
-
-# SimpleConfigInterface = ConfigInterface  # avoids name collisions
-# SimpleConfBlockInterface = ConfBlockInterface
-
-
-class ConfigInterface(DummyConfigInterface):
+class ConfigInterface(ConfigBase, DummyConfigInterface):
     def __init__(self):
-        self.defaultKeys = {}
-        self.data = {}
-        self.author = ''
-        self.version = ''
-        self.modsGroup = ''
-        self.loadDataJson = lambda *args, **kwargs: {}
-        self.loadLangJson = lambda *args, **kwargs: {}
-        self.writeDataJson = lambda *args, **kwargs: None
-        self.configPath = ''
-        self.langPath = ''
-        super(ConfigInterface, self).__init__()
-
-    def init(self):
-        self.configPath = './mods/configs/%s/%s/' % (self.modsGroup, self.ID)
-        self.langPath = '%si18n/' % self.configPath
-
-    def loadLang(self):
-        smart_update(self.i18n, self.loadLangJson())
+        ConfigBase.__init__(self)
+        DummyConfigInterface.__init__(self)
 
     def getData(self):
         return self.data
@@ -236,9 +144,9 @@ class ConfigInterface(DummyConfigInterface):
     def createTemplate(self):
         raise NotImplementedError
 
-    def readCurrentSettings(self, quiet=True):
+    def readData(self, quiet=True):
         processHotKeys(self.data, self.defaultKeys, 'write')
-        smart_update(self.data, self.loadDataJson())
+        smart_update(self.data, self.loadDataJson(quiet=quiet))
         processHotKeys(self.data, self.defaultKeys, 'read')
 
     def onApplySettings(self, settings):
@@ -246,164 +154,46 @@ class ConfigInterface(DummyConfigInterface):
         processHotKeys(self.data, self.defaultKeys, 'write')
         self.writeDataJson()
         processHotKeys(self.data, self.defaultKeys, 'read')
-        self.updateMod()
-
-    @property
-    def tb(self):
-        if self._tb is None:
-            self._tb = TemplateBuilder(self.data, self.i18n, self.defaultKeys)
-        return self._tb
-
-    @property
-    def containerClass(self):
-        if self._containerClass is None:
-            self._containerClass = SettingContainer
-        return self._containerClass
-
-    def message(self):
-        return '%s v.%s %s' % (self.ID, self.version, self.author)
 
     def load(self):
-        super(ConfigInterface, self).load()
-        print '=' * 30
-        print self.message() + ': initialised.'
-        print '=' * 30
+        DummyConfigInterface.load(self)
+        ConfigBase.load(self)
 
 
-class ConfBlockInterface(DummyConfBlockInterface):
+class ConfBlockInterface(ConfigBase, DummyConfBlockInterface):
     def __init__(self):
-        self.defaultKeys = {}
-        self.data = {}
-        self.author = ''
-        self.version = ''
-        self.modsGroup = ''
-        self.loadDataJson = lambda *args, **kwargs: {}
-        self.loadLangJson = lambda *args, **kwargs: {}
-        self.writeDataJson = lambda *args, **kwargs: None
-        self.configPath = ''
-        self.langPath = ''
-        super(ConfBlockInterface, self).__init__()
-
-    def init(self):
-        self.configPath = './mods/configs/%s/%s/' % (self.modsGroup, self.ID)
-        self.langPath = '%si18n/' % self.configPath
-
-    def loadLang(self):
-        smart_update(self.i18n, self.loadLangJson())
+        ConfigBase.__init__(self)
+        DummyConfBlockInterface.__init__(self)
 
     @property
     def blockIDs(self):
-        return self.data
+        return self.data.keys()
 
-    def getDataBlock(self, blockID):
+    def getData(self, blockID=None):
         return self.data[blockID]
 
-    def createTemplate(self, blockID):
+    def createTemplate(self, blockID=None):
         raise NotImplementedError('Template for block %s is not created' % blockID)
 
-    def readCurrentSettings(self, quiet=True):
+    def readData(self, quiet=True):
         for blockID in self.data:
-            processHotKeys(self.data[blockID], self.defaultKeys, 'write')
+            processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'write')
         data = self.loadDataJson(quiet=quiet)
         for blockID in self.data:
             if blockID in data:
                 smart_update(self.data[blockID], data[blockID])
-            processHotKeys(self.data[blockID], self.defaultKeys, 'read')
+            processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'read')
 
-    def onApplySettings(self, blockID, settings):
+    def onApplySettings(self, settings, blockID=None):
         smart_update(self.data[blockID], settings)
-        processHotKeys(self.data[blockID], self.defaultKeys, 'write')
+        processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'write')
         self.writeDataJson()
-        processHotKeys(self.data[blockID], self.defaultKeys, 'read')
-        self.updateMod(blockID)
-
-    @property
-    def tb(self):
-        if self._tb is None:
-            self._tb = BlockTemplateBuilder(self.data, self.i18n, self.defaultKeys)
-        return self._tb
-
-    @property
-    def containerClass(self):
-        if self._containerClass is None:
-            self._containerClass = SettingContainer
-        return self._containerClass
-
-    def message(self):
-        return '%s v.%s %s' % (self.ID, self.version, self.author)
+        processHotKeys(self.data[blockID], self.defaultKeys[blockID], 'read')
 
     def load(self):
-        super(ConfBlockInterface, self).load()
-        print '=' * 30
-        print self.message() + ': initialised.'
-        print '=' * 30
+        DummyConfBlockInterface.load(self)
+        ConfigBase.load(self)
 
 
-class SettingContainer(DummySettingContainer):
-    def __init__(self, ID, configPath):
-        self.langPath = ''
-        self.loadJsonLang = lambda *args, **kwargs: {}
-        super(SettingContainer, self).__init__(ID, configPath)
-
-    def loadLang(self):
-        self.configPath = self.configPath.rsplit('/', 2)[0] + '/%s/' % self.ID
-        self.langPath = '%si18n/' % self.configPath
-        smart_update(self.i18n, self.loadJsonLang())
-
-
-# -------------------------------------------------------------------------------------------------------------------- #
-
-# -------------------------------------------------------------------------------------------------------------------- #
-class SimpleConfigInterface(ConfigInterface):
-    def init(self):
-        self.author = 'adapted by: Driftkings'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
-        self.loadDataJson = lambda **kwargs: loadJson(self.ID, self.ID, self.data, self.configPath, **kwargs)
-        self.writeDataJson = lambda **kwargs: loadJson(self.ID, self.ID, self.data, self.configPath, True, False, **kwargs)
-        self.loadLangJson = lambda **kwargs: loadJson(self.ID, self.lang, self.i18n, self.langPath, **kwargs)
-        super(SimpleConfigInterface, self).init()
-
-    def createTemplate(self):
-        raise NotImplementedError
-
-    @property
-    def containerClass(self):
-        if self._containerClass is None:
-            self._containerClass = SimpleSettingContainer
-        return self._containerClass
-
-
-class SimpleConfBlockInterface(ConfBlockInterface):
-    def init(self):
-        super(SimpleConfBlockInterface, self).init()
-        self.author = 'adapted by: Driftkings'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
-        self.loadDataJson = lambda **kwargs: loadJson(self.ID, self.ID, self.data, self.configPath, **kwargs)
-        self.writeDataJson = lambda **kwargs: loadJson(self.ID, self.ID, self.data, self.configPath, True, False, **kwargs)
-        self.loadLangJson = lambda **kwargs: loadJson(self.ID, self.lang, self.i18n, self.langPath, **kwargs)
-
-    def createTemplate(self, blockID):
-        raise NotImplementedError('Template for block %s is not created' % blockID)
-
-    @property
-    def containerClass(self):
-        if self._containerClass is None:
-            self._containerClass = SimpleSettingContainer
-        return self._containerClass
-
-
-class SimpleSettingContainer(SettingContainer):
-    def loadLang(self):
-        self.loadJsonLang = lambda: loadJson(self.ID, self.lang, self.i18n, self.langPath)
-        self.i18n = {
-            'gui_name': 'Driftkings mods settings',
-            'gui_description': '<font color=\'#FF55AA\'><b>Driftkings</b></font>\'s modifications enabling and settings',
-            'gui_windowTitle': 'Driftkings mods settings',
-            'gui_buttonOK': 'OK',
-            'gui_buttonCancel': 'Cancel',
-            'gui_buttonApply': 'Apply',
-            'gui_enableButtonTooltip': '{HEADER}ON/OFF{/HEADER}{BODY}Enable/disable this mod{/BODY}'
-        }
-        super(SimpleSettingContainer, self).loadLang()
+SimpleConfigInterface = ConfigInterface
+SimpleConfBlockInterface = ConfBlockInterface

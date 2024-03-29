@@ -57,24 +57,21 @@ class JSONObjectDecoder(json.JSONDecoder):
 class JSONLoader(object):
     @classmethod
     def byte_ify(cls, inputs, ignore_dicts=False):
-        # https://stackoverflow.com/a/33571117
         if isinstance(inputs, unicode):
             return inputs.encode('utf-8')
         elif isinstance(inputs, list):
             return [cls.byte_ify(element, ignore_dicts=True) for element in inputs]
         elif isinstance(inputs, tuple):
             return tuple(cls.byte_ify(element, ignore_dicts=True) for element in inputs)
-        elif isinstance(inputs, OrderedDict):  # can't use object_hook and object_pairs_hook at the same time
+        elif isinstance(inputs, OrderedDict):
             return OrderedDict((cls.byte_ify(key), cls.byte_ify(value)) for key, value in inputs.iteritems())
         elif isinstance(inputs, dict) and not ignore_dicts:
-            return {cls.byte_ify(key, ignore_dicts=True): cls.byte_ify(value, ignore_dicts=True) for key, value in
-                    inputs.iteritems()}
+            return {cls.byte_ify(key, ignore_dicts=True): cls.byte_ify(value, ignore_dicts=True) for key, value in inputs.iteritems()}
         return inputs
 
     @classmethod
     def stringed_ints(cls, inputs):
         if inputs and isinstance(inputs, dict):
-            # OrderedDict is a subclass of dict
             gen_expr = (
                 ((str(key) if isinstance(key, int) else key), cls.stringed_ints(value)) for key, value in inputs.iteritems())
             if isinstance(inputs, OrderedDict):

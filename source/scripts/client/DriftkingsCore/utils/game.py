@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import BigWorld
+import Keys
 
 from functools import partial
 
-__all__ = ('BigWorld_callback', 'sendPanelMessage', 'checkKeys', 'refreshCurrentVehicle', 'Sound',)
+__all__ = ('BigWorld_callback', 'sendPanelMessage', 'checkKeys', 'refreshCurrentVehicle', 'Sound', 'checkKeySet',)
 
 
 def BigWorld_callback(delay, func, *a, **k):
@@ -12,8 +13,55 @@ def BigWorld_callback(delay, func, *a, **k):
 
 def checkKeys(keys, key=None):  # thx to P0LIR0ID
     keySets = [data if not isinstance(data, int) else (data,) for data in keys]
-    return (bool(keys) and all(any(BigWorld.isKeyDown(x) for x in keySet) for keySet in keySets)
-            and (key is None or any(key in keySet for keySet in keySets)))
+    return (bool(keys) and all(any(BigWorld.isKeyDown(item) for item in keySet) for keySet in keySets) and (key is None or any(key in keySet for keySet in keySets)))
+
+
+VKEY_ALT, VKEY_CONTROL, VKEY_SHIFT = range(-1, -4, -1)
+VKEYS_MAP = {
+    VKEY_ALT: (Keys.KEY_LALT, Keys.KEY_RALT),
+    VKEY_CONTROL: (Keys.KEY_LCONTROL, Keys.KEY_RCONTROL),
+    VKEY_SHIFT: (Keys.KEY_LSHIFT, Keys.KEY_RSHIFT),
+}
+
+
+def checkKeySet(keys, keyCode=None):
+    """Verify is keys is pressed
+    :param keys: list of keys to be checked
+    :param keyCode: pressed keyCode"""
+    result, fromSet = True, False
+    if not keys:
+        result = False
+    for key in keys:
+        if isinstance(key, int):
+            # virtual special keys
+            if key in (VKEY_ALT, VKEY_CONTROL, VKEY_SHIFT):
+                result &= any(map(BigWorld.isKeyDown, VKEYS_MAP[key]))
+                fromSet |= keyCode in VKEYS_MAP[key]
+            # BW Keys
+            elif not BigWorld.isKeyDown(key):
+                result = False
+                fromSet |= keyCode == key
+        # old special keys
+        if isinstance(key, list):
+            result &= any(map(BigWorld.isKeyDown, key))
+            fromSet |= keyCode in key
+        if keyCode is not None:
+            return result, fromSet
+        return result
+
+
+def _checkKeySet(keySet):
+    """Verify is keys is pressed
+    :param keySet: list of keys to be checked"""
+    result = True
+    if not keySet:
+        result = False
+    for item in keySet:
+        if isinstance(item, int) and not BigWorld.isKeyDown(item):
+            result = False
+        if isinstance(item, list):
+            result = result and any(map(BigWorld.isKeyDown, item))
+    return result
 
 
 def refreshCurrentVehicle():

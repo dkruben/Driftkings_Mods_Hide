@@ -4,6 +4,7 @@
     "files": {
         "res/scripts/client/gui/mods/mod_SixthSense.pyc": "build/scripts/client/gui/mods/mod_SixthSense.pyc",
 		
+		"res/gui/maps/icons/SixthSense/0.png": "res/res/maps/icons/SixthSense/0.png",
 		"res/gui/maps/icons/SixthSense/1.png": "res/res/maps/icons/SixthSense/1.png",
 		"res/gui/maps/icons/SixthSense/2.png": "res/res/maps/icons/SixthSense/2.png",
 		"res/gui/maps/icons/SixthSense/3.png": "res/res/maps/icons/SixthSense/3.png",
@@ -13,10 +14,6 @@
 		"res/gui/maps/icons/SixthSense/7.png": "res/res/maps/icons/SixthSense/7.png",
 		"res/gui/maps/icons/SixthSense/8.png": "res/res/maps/icons/SixthSense/8.png",
 		"res/gui/maps/icons/SixthSense/9.png": "res/res/maps/icons/SixthSense/9.png",
-		"res/gui/maps/icons/SixthSense/10.png": "res/res/maps/icons/SixthSense/10.png",
-		"res/gui/maps/icons/SixthSense/11.png": "res/res/maps/icons/SixthSense/11.png",
-		"res/gui/maps/icons/SixthSense/12.png": "res/res/maps/icons/SixthSense/12.png",
-		"res/gui/maps/icons/SixthSense/13.png": "res/res/maps/icons/SixthSense/13.png",
 		
         "res/gui/flash/SixthSenseIcon.swf": "res/flash/SixthSenseIcon.swf"
     }
