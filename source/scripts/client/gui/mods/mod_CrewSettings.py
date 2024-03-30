@@ -5,11 +5,12 @@ import os
 from io import open as _open
 
 import BigWorld
-from Event import SafeEvent
 from external_strings_utils import unicode_from_utf8
 from frameworks.wulf import WindowLayer
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.exchange.ExchangeXPWindow import ExchangeXPWindow
+from gui.impl.dialogs import dialogs
+from gui.impl.dialogs.builders import InfoDialogBuilder
 from gui.impl.pub.dialog_window import DialogButtons
 from gui.shared.gui_items.processors.tankman import TankmanReturn
 from gui.shared.gui_items.processors.vehicle import VehicleTmenXPAccelerator
@@ -18,19 +19,18 @@ from gui.veh_post_progression.models.progression import PostProgressionCompletio
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
 from skeletons.gui.shared import IItemsCache
-from wg_async import wg_async, wg_await
+from wg_async import AsyncReturn, wg_async, wg_await
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError, loadJson  # , events
-from DriftkingsCore.utils.delayed.utils.old_dialogs import showCrewDialog
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError, events
+from DriftkingsInject import g_events
 
-
-class Events(object):
-    def __init__(self):
-        super(Events, self).__init__()
-        self.onVehicleChangedDelayed = SafeEvent()
+IMG_DIR = 'img://../mods/configs/Driftkings/Driftkings_GUI'
 
 
-g_events = Events()
+def getLogo(big=True):
+    if big:
+        return '<img src=\'%s/big.png\' width=\'500\' height=\'32\' vspace=\'16\'>' % IMG_DIR
+    return '<img src=\'%s/Driftkings_GUI.png\' width=\'220\' height=\'14\' vspace=\'16\'>' % IMG_DIR
 
 
 def getPreferencesDir():
@@ -69,7 +69,7 @@ def writeJsonFile(path, data):
         dataFile.write(unicode(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=2, sort_keys=True)))
 
 
-def getObserverCachePath():
+def getCachePath():
     path = os.path.join(preferencesDir, 'Driftkings/%(mod_ID)s')
     if not os.path.exists(path):
         os.makedirs(path)
@@ -77,15 +77,18 @@ def getObserverCachePath():
 
 
 def openIgnoredVehicles():
-    path = os.path.join(getObserverCachePath(), 'crewIgnored.json')
+    path = os.path.join(getCachePath(), 'crewIgnored.json')
     if not os.path.exists(path):
         writeJsonFile(path, {'vehicles': []})
         return set()
     return set(openJsonFile(path).get('vehicles'))
 
 
+ignored_vehicles = openIgnoredVehicles()
+
+
 def updateIgnoredVehicles(vehicles):
-    path = os.path.join(getObserverCachePath(), 'crewIgnored.json')
+    path = os.path.join(getCachePath(), 'crewIgnored.json')
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 
@@ -103,7 +106,6 @@ class DialogBase(object):
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         self.vehicle = {}
-        self.version_int = 1.00
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -119,6 +121,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_crewReturn_text': 'Crew Auto-Return',
             'UI_setting_crewReturn_tooltip': 'Return crew tanks.',
             'UI_setting_crewTraining_text': 'Crew Training',
@@ -143,7 +146,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('crewReturn'),
@@ -151,18 +153,24 @@ class ConfigInterface(SimpleConfigInterface):
             ],
             'column2': []}
 
-    def readCurrentSettings(self, quiet=True):
-        self.vehicle = loadJson(self.ID, 'crewIgnored', self.vehicle, self.configPath)
-
 
 class CrewWorker(object):
+    appLoader = dependency.descriptor(IAppLoader)
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        # events.LoginView.populate.after(events.LobbyView.populate.after(events.PlayerAvatar.startGUI.after(self.accelerateCrewTraining)))
+        events.LoginView.populate.after(events.LobbyView.populate.after(events.PlayerAvatar.startGUI.after(self.accelerateCrewTraining)))
         self.intCD = None
         self.isDialogVisible = False
         g_events.onVehicleChangedDelayed += self.updateCrew
+        override(ExchangeXPWindow, 'as_vehiclesDataChangedS', self.new_onXPExchangeDataChanged)
+
+    @property
+    def view(self):
+        app = self.appLoader.getApp()
+        if app is not None and app.containerManager is not None:
+            return app.containerManager.getView(WindowLayer.VIEW)
+        return None
 
     @staticmethod
     def getLocalizedMessage(value, description):
@@ -170,15 +178,26 @@ class CrewWorker(object):
         return '\n'.join((dialog[description], dialog['enabled'] if value else dialog['disabled']))
 
     @wg_async
+    def showCrewDialog(self, vehicle_name, message):
+        builder = InfoDialogBuilder()
+        builder.setFormattedTitle(''.join((getLogo(), vehicle_name)))
+        builder.setFormattedMessage(message)
+        builder.addButton(DialogButtons.SUBMIT, None, True, rawLabel=config.i18n['UI_dialog_apply'])
+        builder.addButton(DialogButtons.CANCEL, None, False, rawLabel=config.i18n['UI_dialog_cancel'])
+        builder.addButton(DialogButtons.PURCHASE, None, False, rawLabel=config.i18n['UI_dialog_ignore'])
+        result = yield wg_await(dialogs.show(builder.build(self.view)))
+        raise AsyncReturn(result)
+
+    @wg_async
     def showDialog(self, vehicle, value, description):
         self.isDialogVisible = True
         message = self.getLocalizedMessage(value, description)
-        dialog_result = yield wg_await(showCrewDialog(vehicle.userName, message, '../mods/configs/Driftkings/Driftkings_GUI/Driftkings_GUI.png', config.i18n['UI_dialog_apply'], config.i18n['UI_dialog_cancel'], config.i18n['UI_dialog_ignore']))
+        dialog_result = yield wg_await(self.showCrewDialog(vehicle.userName, message))
         if dialog_result.result == DialogButtons.SUBMIT:
             self.accelerateCrewXp(vehicle, value)
         elif dialog_result.result == DialogButtons.PURCHASE:
-            openIgnoredVehicles().add(vehicle.userName)
-            updateIgnoredVehicles(openIgnoredVehicles())
+            ignored_vehicles.add(vehicle.userName)
+            updateIgnoredVehicles(ignored_vehicles)
         self.isDialogVisible = False
 
     @adisp_process('updateTankmen')
@@ -206,7 +225,7 @@ class CrewWorker(object):
             return False, config.i18n['crewDialogs']['needTurnOff']
 
     def accelerateCrewTraining(self, vehicle):
-        if vehicle.userName in openIgnoredVehicles() or not vehicle.isElite:
+        if vehicle.userName in ignored_vehicles or not vehicle.isElite:
             return
         acceleration, description = self.isAccelerateTraining(vehicle)
         if vehicle.isXPToTman != acceleration and not self.isDialogVisible:
@@ -243,22 +262,19 @@ class CrewWorker(object):
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
             logInfo('{}: {}'.format(vehicle.userName, result.userMsg))
 
+    def new_onXPExchangeDataChanged(self, func, dialog, data, *args, **kwargs):
+        try:
+            ID = 'id'
+            CANDIDATE = 'isSelectCandidate'
+            for vehicleData in data['vehicleList']:
+                vehicle = self.itemsCache.items.getItemByCD(vehicleData[ID])
+                check, _ = self.isAccelerateTraining(vehicle)
+                vehicleData[CANDIDATE] &= check
+        except Exception as error:
+            logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
+        finally:
+            return func(dialog, data, *args, **kwargs)
 
-g_mod = CrewWorker()
+
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
-
-@override(ExchangeXPWindow, 'as_vehiclesDataChangedS')
-def new_onXPExchangeDataChanged(func, self, data, *args, **kwargs):
-    try:
-        ID = 'id'
-        CANDIDATE = 'isSelectCandidate'
-        for vehicleData in data['vehicleList']:
-            vehicle = g_mod.itemsCache.items.getItemByCD(vehicleData[ID])
-            check, _ = g_mod.isAccelerateTraining(vehicle)
-            vehicleData[CANDIDATE] &= check
-    except Exception as error:
-        logError('CrewProcessor onXPExchangeDataChanged: {}', repr(error))
-    finally:
-        return func(self, data, *args, **kwargs)

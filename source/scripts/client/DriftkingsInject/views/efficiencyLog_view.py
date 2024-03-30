@@ -2,10 +2,10 @@
 from ..meta import DriftkingsView
 
 
-class DamageLogsMeta(DriftkingsView):
+class TotalLogMeta(DriftkingsView):
 
     def __init__(self, ID):
-        super(DamageLogsMeta, self).__init__(ID)
+        super(TotalLogMeta, self).__init__(ID)
 
     def as_createTopLogS(self, settings):
         return self.flashObject.as_createTopLog(settings) if self._isDAAPIInited() else None

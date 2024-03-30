@@ -5,9 +5,6 @@ from math import sin, radians
 from time import strftime
 
 import ResMgr
-# 2024-03-24 03:38:47.340: ERROR:   File "scripts/client/gui/mods/mod_HangarOptions.py", line 8, in <module>
-# 2024-03-24 03:38:47.340: ERROR: debug_utils.HandledError: (ImportError('No module named barracks.barracks_data_provider',), ())
-# import gui.Scaleform.daapi.view.lobby.barracks.barracks_data_provider as barrack
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
 import nations
@@ -36,22 +33,17 @@ from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemp
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
-# from gui.Scaleform.locale.MENU import MENU
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
-# from gui.Scaleform.locale.TOOLTIPS import TOOLTIPS
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.formatters import text_styles
-# from gui.shared.gui_items.Tankman import Tankman
 from gui.shared.personality import ServicesLocator
-from gui.shared.tooltips import formatters
-from gui.shared.tooltips import getUnlockPrice
+from gui.shared.tooltips import formatters, getUnlockPrice
 from gui.shared.tooltips.shell import CommonStatsBlockConstructor
-# from gui.shared.utils.requesters import REQ_CRITERIA
 from gun_rotation_shared import calcPitchLimitsFromDesc
 from helpers import dependency
 from helpers.i18n import makeString
@@ -66,7 +58,6 @@ from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback,
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
-CONST_45_IN_RADIANS = radians(45)
 
 AS_SWF = 'DateTimes.swf'
 AS_ALIASES = 'Driftkings_DateTimes_UI'
@@ -79,8 +70,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.values = {'vehicles': []}
         self.callback = None
         self.macros = {}
-        self.visionRadius = None
-        self.gunsInfoPath = None
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -112,20 +101,16 @@ class ConfigInterface(SimpleConfigInterface):
             'showButtonCounters': True,
             'allowExchangeXPInTechTree': True,
             'premiumTime': False,
-            'barracks': {
-                'nations_order': ['ussr', 'germany', 'usa', 'china', 'france', 'uk', 'japan', 'czech', 'poland', 'sweden', 'italy'],
-                'roles_order': [],
-                'sorting_criteria': ['nation', 'inVehicle', 'vehicle', 'role']
-            },
             'clock': True,
             'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
-            'barracksShowFlags': True,
-            'barracksShowSkills': True,
+            'x': 1900,
+            'y': 47,
             'rows': 2,
             'smallCarousel': False
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_autoLogin_text': 'Auto-Login',
             'UI_setting_autoLogin_tooltip': 'Auto enter to the game',
             'UI_setting_showReferralButton_text': 'Referral Button',
@@ -168,19 +153,22 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Display of missing experience to unlock vehicles.',
             'UI_setting_premiumTime_text': 'Premium Time',
             'UI_setting_premiumTime_tooltip': 'Display exact premium time.',
+            #
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
+            'UI_setting_x_text': 'Position X',
+            'UI_setting_x_tooltip': 'Horizontal position',
+            'UI_setting_y_text': 'Position Y',
+            'UI_setting_y_tooltip': 'Vertical position',
+            #
             'UI_setting_rows_text': 'Rows',
             'UI_setting_rows_tooltip': 'Rows Number',
             'UI_setting_smallCarousel_text': 'Small Carousel',
             'UI_setting_smallCarousel_tooltip': 'Enable Small Carousel',
-            'UI_setting_barracksShowFlags_text': 'Show Flags',
-            'UI_setting_barracksShowFlags_tooltip': 'Show flags in barracks',
-            'UI_setting_barracksShowSkills_text': 'Show Skills',
-            'UI_setting_barracksShowSkills_tooltip': 'Show skills in barracks',
-            'UI_settings_barracks_noSkills': 'noSkills',
+            #
             'UI_techTree_shootingRadius': 'Shooting Radius',
             'UI_techTree_m': 'M.',
+            #
             'UI_nations_order': '[\'ussr\', \'germany\', \'usa\', \'china\', \'france\', \'uk\', \'japan\', \'czech\', \'poland\', \'sweden\', \'italy\']',
             'UI_roles_order': '[\'commander\', \'gunner\', \'driver\', \'radioman\', \'loader\']',
             'UI_sorting_criteria': '[\'nation\', \'role\', \'level\', \'-level\', \'XP\', \'-XP\', \'gender\', \'-gender\', \'inVehicle\', \'-inVehicle\', \'vehicle\']',
@@ -217,8 +205,8 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('clock'),
-                self.tb.createControl('barracksShowFlags'),
-                self.tb.createControl('barracksShowSkills'),
+                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
+                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y'),
                 self.tb.createSlider('rows', 1, 10, 1, '{{value}} ' + ' Rows'),
                 self.tb.createControl('smallCarousel')
 
@@ -229,33 +217,6 @@ class ConfigInterface(SimpleConfigInterface):
     def onGUISpaceEntered(spaceID):
         if spaceID == GuiGlobalSpaceID.LOBBY:
             ServicesLocator.appLoader.getApp().loadView(SFViewLoadParams(AS_ALIASES))
-
-    # TechTree
-    def getRanges(self, turret, __gun, _nation, vClass):
-        self.visionRadius = firingRadius = artyRadius = 0
-        self.gunsInfoPath = 'scripts/item_defs/vehicles/' + _nation + '/components/guns.xml/shared/'
-        self.visionRadius = int(turret.circularVisionRadius)
-        _shots = __gun.shots
-        for shot in _shots:
-            radius = int(shot.maxDistance)
-            if firingRadius < radius:
-                firingRadius = radius
-
-            if vClass == 'SPG' and shot.shell.kind == 'HIGH_EXPLOSIVE':
-                try:
-                    pitchLimit_rad = min(CONST_45_IN_RADIANS, -calcPitchLimitsFromDesc(0, __gun.pitchLimits)[0])
-                except StandardError:
-                    minPitch = radians(-45)
-                    for _gun in turret.guns:
-                        if _gun.name == __gun.name:
-                            minPitch = _gun.pitchLimits['minPitch'][0][1]
-                            break
-                    pitchLimit_rad = min(CONST_45_IN_RADIANS, -minPitch)
-                radius = int(pow(shot.speed, 2) * sin(2 * pitchLimit_rad) / shot.gravity)
-                if artyRadius < radius:
-                    artyRadius = radius
-
-        return self.visionRadius, firingRadius, artyRadius
 
     def getPremiumLabelText(self, timeDelta):
         delta = float(getTimeDeltaFromNow(makeLocalServerTime(timeDelta)))
@@ -484,6 +445,37 @@ def new__construct(func, self):
 
 
 # TechTree
+def _getRanges(turret, gun, nation, vClass):
+    visionRadius = 0
+    firingRadius = 0
+    artyRadius = 0
+    gunsInfoPath = 'scripts/item_defs/vehicles/' + nation + '/components/guns.xml/shared/'
+    # Turret-dependent
+    visionRadius = int(turret.circularVisionRadius)
+    # Gun-dependent
+    shots = gun.shots
+    for shot in shots:
+        radius = int(shot.maxDistance)
+        if firingRadius < radius:
+            firingRadius = radius
+
+        if vClass == 'SPG' and shot.shell.kind == 'HIGH_EXPLOSIVE':
+            try:
+                pitchLimit_rad = min(radians(45), -calcPitchLimitsFromDesc(0, gun.pitchLimits)[0])
+            except StandardError:
+                minPitch = radians(-45)
+                for gun in turret.guns:
+                    if gun.name == gun.name:
+                        minPitch = gun.pitchLimits['minPitch'][0][1]
+                        break
+                pitchLimit_rad = min(radians(45), -minPitch)
+            radius = int(pow(shot.speed, 2) * sin(2 * pitchLimit_rad) / shot.gravity)
+            if artyRadius < radius:
+                artyRadius = radius
+
+        return visionRadius, firingRadius, artyRadius
+
+
 @override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
 def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     if config.data['enabled'] and config.data['allowExchangeXPInTechTree']:
@@ -501,7 +493,7 @@ def new__setModuleInfoS(func, self, moduleInfo):
             vehicle = itemsCache.items.getItemByCD(veh_id)
             _gun = itemsCache.items.getItemByCD(self.moduleCompactDescr).descriptor
             turret = self._ModuleInfoWindow__vehicleDescr.turret
-            (viewRange, shellRadius, artiRadius) = config.getRanges(turret, _gun, vehicle.nationName, vehicle.type)
+            (viewRange, shellRadius, artiRadius) = _getRanges(turret, _gun, vehicle.nationName, vehicle.type)
             if vehicle.type == 'SPG':
                 moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>', 'value': '<h>' + str(artiRadius) + '</h>'})
             elif shellRadius < 707:
@@ -511,113 +503,51 @@ def new__setModuleInfoS(func, self, moduleInfo):
     return func(self, moduleInfo)
 
 
-# Barracks
-# sorting in the barracks
-# @override(barrack.BarracksDataProvider, 'showActiveTankmen')
-# def new__showActiveTankmen(func, self, criteria):
-
-#    def keySorted(_tankman):
-#        keys = {
-#            'nation': nations_order.get(_tankman.nationID, nations.NONE_INDEX),
-#            'inVehicle': _tankman.isInTank,
-#            '-inVehicle': -_tankman.isInTank,
-#            'vehicle': _tankman.vehicleNativeDescr.type.userString,
-#            'role': roles_order.get(_tankman.descriptor.role, 10),
-#            'XP': _tankman.descriptor.totalXP(),
-#            '-XP': -_tankman.descriptor.totalXP(),
-#            'level': _tankman.vehicleNativeDescr.type.level,
-#            '-level': -_tankman.vehicleNativeDescr.type.level,
-#            'gender': _tankman.isFemale,
-#            '-gender': -_tankman.isFemale
-#        }
-#        return tuple(keys.get(x, None) for x in sorting_criteria)
-
-#    if not config.data['barracks']:
-#        return func(self, criteria)
-#    sorting_criteria = config.data['barracks']['sorting_criteria']
-#    if not sorting_criteria:
-#        return func(self, criteria)
-#    sorting_criteria = [criterion.replace(' ', '') for criterion in sorting_criteria]
-#    _nations = config.data['barracks']['nations_order']
-#    if _nations:
-#        nations_order = {nations.INDICES[name]: idx for idx, name in enumerate(_nations)}
-#    else:
-#        nations_order = {idx: idx for idx, name in enumerate(nations.AVAILABLE_NAMES)}
-#    _roles = config.data['barracks']['roles_order']
-#    if _roles:
-#        roles_order = {name: idx for idx, name in enumerate(_roles)}
-#    else:
-#        roles_order = Tankman.TANKMEN_ROLES_ORDER
-
-#    allTankMen = self.itemsCache.items.removeUnsuitableTankmen(self.itemsCache.items.getTankmen().values(), ~REQ_CRITERIA.VEHICLE.BATTLE_ROYALE)
-#    self._BarracksDataProvider__totalCount = len(allTankMen)
-#    tankMenInBarracks = 0
-#    allTankMenList = [barrack._packBuyBerthsSlot()]
-#    for tankMan in sorted(allTankMen, key=keySorted):
-#        if not tankMan.isInTank:
-#            tankMenInBarracks += 1
-#        if criteria(tankMan):
-#            allTankMenList.append(tankMan)
-
-#    self._BarracksDataProvider__filteredCount = len(allTankMenList) - 1
-#    slots = self.itemsCache.items.stats.tankmenBerthsCount
-#    if tankMenInBarracks < slots:
-#        allTankMenList.insert(1, {'empty': True, 'freePlaces': slots - tankMenInBarracks})
-#    self._BarracksDataProvider__placeCount = max(slots - tankMenInBarracks, 0)
-#    self.setItemWrapper(barrack._packActiveTankman)
-#    self.buildList(allTankMenList)
-
-
 # ToolTips Shell
-class ToolTipsShell(object):
-    __slots__ = ('shells', 'myVehicles')
-
-    def __init__(self):
-        self.shells = {}
-        self.myVehicles = set()
-
-    @staticmethod
-    def getShots():
-        xmlPath = '%svehicles/%s/components/guns.xml' % (ITEM_DEFS_PATH, nation)
-        section = ResMgr.openSection(xmlPath)
-        shared = section['shared']
-        result = {}
-        for __gun, val in shared.items():
-            __shots = val['shots']
-            result.update({shot: (result.get(shot, set()) | {__gun}) for shot in __shots.keys()})
-        return result
-
-    @staticmethod
-    def getGuns():
-        xmlPath = '%svehicles/%s/list.xml' % (ITEM_DEFS_PATH, nation)
-        vehicles = ResMgr.openSection(xmlPath)
-        result = {}
-        for veh, v_v in vehicles.items():
-            if (veh == 'Observer') or (veh == 'xmlns:xmlref'):
-                continue
-            i18n_veh = v_v['userString'].asString
-            xmlPath = '%svehicles/%s/%s.xml' % (ITEM_DEFS_PATH, nation, veh)
-            vehicle = ResMgr.openSection(xmlPath)
-            turrets0 = vehicle['turrets0']
-            result.update({gun: (result.get(gun, set()) | {makeString(i18n_veh)}) for turret in turrets0.values() for gun in turret['guns'].keys()})
-        return result
-
-    def updateMyVehicles(self):
-        itemsCache = dependency.instance(IItemsCache)
-        vehicles = itemsCache.items.getVehicles()
-        self.myVehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
+shells = {}
+myVehicles = set()
 
 
-g_mod = ToolTipsShell()
+def getShots():
+    xmlPath = '%svehicles/%s/components/guns.xml' % (ITEM_DEFS_PATH, nation)
+    section = ResMgr.openSection(xmlPath)
+    shared = section['shared']
+    result = {}
+    for gun, val in shared.items():
+        shots = val['shots']
+        result.update({shot: (result.get(shot, set()) | {gun}) for shot in shots.keys()})
+    return result
+
+
+def getGuns():
+    xmlPath = '%svehicles/%s/list.xml' % (ITEM_DEFS_PATH, nation)
+    vehicles = ResMgr.openSection(xmlPath)
+    result = {}
+    for veh, v_v in vehicles.items():
+        if (veh == 'Observer') or (veh == 'xmlns:xmlref'):
+            continue
+        i18n_veh = v_v['userString'].asString
+        xmlPath = '%svehicles/%s/%s.xml' % (ITEM_DEFS_PATH, nation, veh)
+        vehicle = ResMgr.openSection(xmlPath)
+        turrets0 = vehicle['turrets0']
+        result.update({gun: (result.get(gun, set()) | {makeString(i18n_veh)}) for turret in turrets0.values() for gun in turret['guns'].keys()})
+    return result
 
 
 for nation in nations.NAMES:
-    shots = g_mod.getShots()
-    guns = g_mod.getGuns()
-    g_mod.shells[nation] = {}
+    shots = getShots()
+    guns = getGuns()
+    shells[nation] = {}
     for k_s, v_s in shots.iteritems():
         for gun in v_s:
-            g_mod.shells[nation][k_s] = g_mod.shells[nation].get(k_s, set()) | guns.get(gun, set())
+            shells[nation][k_s] = shells[nation].get(k_s, set()) | guns.get(gun, set())
+
+
+def updateMyVehicles():
+    global myVehicles
+    itemsCache = dependency.instance(IItemsCache)
+    vehicles = itemsCache.items.getVehicles()
+    myVehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
 
 
 @override(CommonStatsBlockConstructor, 'construct')
@@ -626,10 +556,10 @@ def new__construct(fun, self):
     if self.configuration.params:
         topPadding = formatters.packPadding(top=5)
         block.append(formatters.packTitleDescBlock(title=text_styles.middleTitle(makeString('#tooltips:quests/vehicles/header')), padding=formatters.packPadding(top=8)))
-        n_shell = g_mod.shells.get(self.shell.nationName, None)
+        n_shell = shells.get(self.shell.nationName, None)
         select_shell = n_shell.get(self.shell.name, set())
-        if g_mod.myVehicles:
-            vehicles = select_shell & g_mod.myVehicles
+        if myVehicles:
+            vehicles = select_shell & myVehicles
             block.append(formatters.packTitleDescBlock(title=text_styles.stats(', '.join(vehicles)), padding=topPadding))
             vehicles = select_shell - vehicles
             block.append(formatters.packTitleDescBlock(title=text_styles.standard(', '.join(vehicles)), padding=topPadding))
@@ -641,55 +571,7 @@ def new__construct(fun, self):
 @override(CarouselDataProvider, 'buildList')
 def new__buildList(func, self):
     func(self)
-    g_mod.updateMyVehicles()
-
-
-# barracks: add nation flag and skills for tanksMan
-# @override(barrack, '_packActiveTankman')
-# def new__packActiveTankMan(_, self):
-#    try:
-#        if isinstance(self, Tankman):
-#            tankManData = barrack._packTankmanData(self)
-#            if self.isInTank:
-#                actionBtnLabel = MENU.BARRACKS_BTNUNLOAD
-#                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_UNLOAD
-#            else:
-#                actionBtnLabel = MENU.BARRACKS_BTNDISSMISS
-#                actionBtnTooltip = TOOLTIPS.BARRACKS_TANKMEN_DISMISS
-#            tankManData.update({
-#                'isRankNameVisible': True,
-#                'recoveryPeriodText': None,
-#                'actionBtnLabel': actionBtnLabel,
-#                'actionBtnTooltip': actionBtnTooltip,
-#                'skills': None,
-#                'isSkillsVisible': False
-#            })
-#
-#            if config.data['barracksShowFlags'] or config.data['barracksShowSkills']:
-#                imgPath = 'img://../mods/configs/Driftkings/%(mod_ID)s/icons/barracks'
-#                tankManData['rank'] = tankManData['role']
-#                tankMan_role_arr = []
-#                if config.data['barracksShowFlags']:
-#                    tankMan_role_arr.append('<img src=\'%s/nations/%s.png\' vspace=\'-3\'>' % (imgPath, nations.NAMES[tankManData['nationID']]))
-#                if config.data['barracksShowSkills']:
-#                    tankMan_role_arr.append('')
-#                    itemsCache = dependency.instance(IItemsCache)
-#                    tankMan_full_info = itemsCache.items.getTankman(tankManData['tankmanID'])
-#                    if tankMan_full_info is not None:
-#                        for skill in tankMan_full_info.skills:
-#                            tankMan_role_arr[-1] += '<img src=\'%s/skills/%s\' vspace=\'-3\'>' % (imgPath, skill.icon)
-#                        if len(tankMan_full_info.skills):
-#                            tankMan_role_arr[-1] += '%s%%' % tankMan_full_info.descriptor.lastSkillLevel
-#                        if tankMan_full_info.hasNewSkill and tankMan_full_info.newSkillCount[0] > 0:
-#                            tankMan_role_arr[-1] += '<img src=\'%s/skills/new_skill.png\' vspace=\'-3\'>x%s' % (imgPath, tankMan_full_info.newSkillCount[0])
-#                    if not tankMan_role_arr[-1]:
-#                        tankMan_role_arr[-1] = config.i18n['UI_settings_barracks_noSkills']
-#                    tankManData['role'] = ' '.join(tankMan_role_arr)
-#            return tankManData
-#        else:
-#            return self
-#    except StandardError:
-#        traceback.format_exc()
+    updateMyVehicles()
 
 
 @override(PlayerAccount, 'onArenaCreated')
@@ -764,8 +646,8 @@ class DateTimesUI(DateTimesMeta):
         super(DateTimesUI, self).__init__()
         self.config = {
             'enabled': config.data['clock'],
-            'x': 1821,
-            'y': 47,
+            'x': config.data['x'],
+            'y': config.data['y'],
             'format': config.data['format']
         }
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)

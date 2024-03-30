@@ -44,8 +44,8 @@ class BigTextConsumablesPanel(View):
 @override(ConsumablesPanelMeta, 'as_addOptionalDeviceSlotS')
 @override(ConsumablesPanelMeta, 'as_addShellSlotS')
 @override(ConsumablesPanelMeta, 'as_resetS')
-def new_onPanelInvalidated(base, *a, **k):
-    base(*a, **k)
+def new_onPanelInvalidated(func, *a, **k):
+    func(*a, **k)
     BigTextConsumablesPanel.onPanelInvalidated()
 
 

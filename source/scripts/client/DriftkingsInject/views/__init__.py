@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__all__ = ('ArmorCalculatorMeta', 'BattleEfficiencyMeta', 'DateTimesMeta', 'DispersionTimerMeta', 'DistanceMeta', 'DamageLogsMeta', 'MainGunMeta', 'OwnHealthMeta', 'SixthSenseMeta',)
+__all__ = ('ArmorCalculatorMeta', 'BattleEfficiencyMeta', 'DateTimesMeta', 'DispersionTimerMeta', 'DistanceMeta', 'TotalLogMeta', 'MainGunMeta', 'OwnHealthMeta', 'SixthSenseMeta',)
 
 from .armorCalc_view import *
 from .battleEfficiency_view import *

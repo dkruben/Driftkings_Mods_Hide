@@ -6,7 +6,6 @@ from time import strftime
 from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
-from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
@@ -21,7 +20,7 @@ from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
-# from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
+from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 from messenger.storage import storage_getter
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
@@ -29,7 +28,7 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isDisabledByBattleType, isReplay
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isReplay
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -41,12 +40,11 @@ _cache = set()
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
-        self.version_int = 2.10
         super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.1.0 (%(file_compile_date)s)'
+        self.version = '2.1.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -58,6 +56,8 @@ class ConfigInterface(SimpleConfigInterface):
             'disableSoundCommander': False,
             'stunSound': False,
             'muteTeamBaseSound': False,
+            # 'showAnonymous': False,
+            # 'hideBattlePrestige': False,
             'color': 'FF002A',
             'showFriends': False,
             'inBattle': True,
@@ -68,6 +68,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
             'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
             'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',
@@ -89,6 +90,10 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showFriends_tooltip': '',
             'UI_setting_directivesOnlyFromStorage_text': 'Directives Only From Storage',
             'UI_setting_directivesOnlyFromStorage_tooltip': '',
+            # 'UI_setting_showAnonymous_text': 'Show Anonymous',
+            # 'UI_setting_showAnonymous_tooltip': '',
+            # 'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
+            # 'UI_setting_hideBattlePrestige_tooltip': ''
         }
         super(ConfigInterface, self).init()
 
@@ -98,13 +103,14 @@ class ConfigInterface(SimpleConfigInterface):
         colorLabel['tooltip'] %= {'color': self.data['color']}
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showBattleHint'),
                 self.tb.createControl('showPostmortemDogTag'),
                 self.tb.createControl('stunSound'),
                 self.tb.createControl('muteTeamBaseSound'),
+                # self.tb.createControl('showAnonymous'),
+                # self.tb.createControl('hideBattlePrestige'),
             ],
             'column2': [
                 self.tb.createControl('postmortemTips'),
@@ -122,9 +128,6 @@ class ConfigInterface(SimpleConfigInterface):
         if not app:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
-
-    def isEnabled(self):
-        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 
 
 config = ConfigInterface()
@@ -200,7 +203,7 @@ def new_createPlugins(base, *args, **kwargs):
 # postmortemTips
 @override(SharedPage, 'as_onPostmortemActiveS')
 def new_setPostmortemTipsVisibleS(func, self, value):
-    if config.isEnabled:
+    if config.data['enabled']:
         if not config.data['postmortemTips']:
             value = False
     func(self, value)
@@ -208,7 +211,7 @@ def new_setPostmortemTipsVisibleS(func, self, value):
 
 @override(SharedPage, '_switchToPostmortem')
 def new_switchToPostmortem(func, *args):
-    if config.isEnabled and config.data['postmortemTips']:
+    if config.data['enabled'] and config.data['postmortemTips']:
         func(*args)
 
 
@@ -235,19 +238,19 @@ def new_onVehicleStateUpdated(base, eq, state, value):
 # mute battle bases
 @override(BattleTeamsBasesController, '__playCaptureSound')
 def new_muteCaptureSound(func, *args):
-    if config.data['enabled'] and config.data['muteTeamBaseSound']:
+    if config.data['enabled'] and not config.data['muteTeamBaseSound']:
         return func(*args)
 
 
 # border color
 @override(ArenaBorderController, '_ArenaBorderController__getCurrentColor')
 def new_getBorderColor(func, self, colorBlind):
-    if not config.isEnabled:
+    if not config.data['enabled']:
         colors = GuiColorsLoader.load()
         scheme = colors.getSubScheme('areaBorder', 'color_blind' if colorBlind else 'default')
         color = scheme['rgba'] / 255
         return color
-    elif config.isEnabled:
+    elif config.data['enabled']:
         color = int(config.data['color'], 16)
         alpha = int(100)
         red = ((color & 0xff0000) >> 16) / 255.0
@@ -261,26 +264,26 @@ def new_getBorderColor(func, self, colorBlind):
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
-    if not config.isEnabled and not config.data['inBattle']:
+    if not config.data['enabled'] and not config.data['inBattle']:
         return
     config.isLobby = False
 
 
 # is friends
 def showFriends():
-    return config.isEnabled and config.data['showFriends'] and not isReplay()
+    return config.data['enabled'] and config.data['showFriends'] and not isReplay()
 
 
 @override(VehicleTypeInfoVO, '__init__')
 def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
     func(self, *args, **kwargs)
-    if showFriends():
+    if config.data['enabled'] and showFriends():
         self.isPremiumIGR |= kwargs.get('accountDBID') in _cache
 
 
 @override(VehicleTypeInfoVO, 'update')
 def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
-    if showFriends():
+    if config.data['enabled'] and showFriends():
         result = func(self, *args, **kwargs)
         if hasattr(self, 'isPremiumIGR'):
             self.isPremiumIGR |= kwargs.get('accountDBID') in _cache

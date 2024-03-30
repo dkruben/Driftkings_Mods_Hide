@@ -9,11 +9,11 @@ from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, getPercent
-from DriftkingsInject import DriftkingsInjector, DamageLogsMeta, cachedVehicleData, g_events
+from DriftkingsInject import DriftkingsInjector, TotalLogMeta, cachedVehicleData, g_events
 
-AS_INJECTOR = 'DamageLogsInjector'
-AS_BATTLE = 'DamageLogsView'
-AS_SWF = 'DamageLogs.swf'
+AS_INJECTOR = 'TotalLogInjector'
+AS_BATTLE = 'TotalLogView'
+AS_SWF = 'TotalLog.swf'
 
 _EVENT_TO_TOP_LOG_MACROS = {
     FEEDBACK_EVENT_ID.PLAYER_DAMAGED_HP_ENEMY: ('tankAvgDamage', 'tankDamageAvgColor', 'playerDamage'),
@@ -27,7 +27,6 @@ _EVENT_TO_TOP_LOG_MACROS = {
 class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
-        self.version_int = 1.00
         super(ConfigInterface, self).__init__()
 
     def init(self):
@@ -39,22 +38,20 @@ class ConfigInterface(SimpleConfigInterface):
         self.data = {
             'enabled': True,
             'separate': '  ',
-            'settings': {
-                'align': 'right',
-                'inCenter': True,
-                'x': -260,
-                'y': 0
-            },
+            'align': 'center',
+            'inCenter': True,
+            'x': -570,
+            'y': 850,
             'avgColor': {
                 'brightness': 1.0,
                 'saturation': 0.5
             },
             'icons': {
-                'assistIcon': '<img src=\'img://gui/maps/icons/DamageLogs/efficiency/help.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
-                'blockedIcon': '<img src=\'img://gui/maps/icons/DamageLogs/efficiency/armor.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
-                'damageIcon': '<img src=\'img://gui/maps/icons/DamageLogs/efficiency/damage.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
-                'spottedIcon': '<img src=\'img://gui/maps/icons/DamageLogs/efficiency/detection.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
-                'stunIcon': '<img src=\'img://gui/maps/icons/DamageLogs/efficiency/stun.png\' width=\'16\' height=\'16\' vspace=\'-4\'>'
+                'assistIcon': '<img src=\'img://gui/maps/icons/TotalLog/efficiency/help.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
+                'blockedIcon': '<img src=\'img://gui/maps/icons/TotalLog/efficiency/armor.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
+                'damageIcon': '<img src=\'img://gui/maps/icons/TotalLog/efficiency/damage.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
+                'spottedIcon': '<img src=\'img://gui/maps/icons/TotalLog/efficiency/detection.png\' width=\'16\' height=\'16\' vspace=\'-4\'>',
+                'stunIcon': '<img src=\'img://gui/maps/icons/TotalLog/efficiency/stun.png\' width=\'16\' height=\'16\' vspace=\'-4\'>'
             },
             'templateMainDMG': [
                 '%(damageIcon)s<font color=\'%(tankDamageAvgColor)s\'>%(playerDamage)s</font>',
@@ -67,28 +64,33 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_setting_colour_text': '',
-            'UI_setting_colour_tooltip': '',
-            'UI_setting_isModel_text': '',
-            'UI_setting_isModel_tooltip': '',
+            'UI_version': self.version,
+            'UI_setting_separate_text': 'Separate',
+            'UI_setting_separate_tooltip': '',
+            'UI_setting_inCenter_text': 'In Center',
+            'UI_setting_inCenter_tooltip': 'Display the log in the middle of the screen',
             #
-            'UI_setting_reversLog_text': 'Enable Reverse Log.',
-            'UI_setting_reversLog_tooltip': 'Reverses the position of the damage log.',
-            'UI_setting_wgLogHideCritics_text': 'WG Log Hide Critics',
-            'UI_setting_wgLogHideCritics_tooltip': '',
-            'UI_setting_wgLogHideBlock_text': 'WG Log Hide Block',
-            'UI_setting_wgLogHideBlock_tooltip': '',
-            'UI_setting_wgLogHideAssist_text': 'WG Log Hide Assist',
-            'UI_setting_wgLogHideAssist_tooltip': ''
+            'UI_setting_x_text': 'Position X',
+            'UI_setting_x_tooltip': 'Horizontal position',
+            'UI_setting_y_text': 'Position Y',
+            'UI_setting_y_tooltip': 'Vertical position',
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
-            'column1': [], 'column2': []}
+            'column1': [
+                self.tb.createControl('separate', self.tb.types.TextInput, 400),
+                self.tb.createControl('inCenter')
+
+            ],
+            'column2': [
+                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
+                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
+            ]
+        }
 
     @staticmethod
     def onBattleLoaded():
@@ -102,10 +104,10 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DamageLogs(DamageLogsMeta):
+class TotalLog(TotalLogMeta):
 
     def __init__(self):
-        super(DamageLogs, self).__init__(config.ID)
+        super(TotalLog, self).__init__(config.ID)
         self._is_top_log_enabled = False
         self.top_log = defaultdict(int)
         self.top_log_template = ''
@@ -115,14 +117,14 @@ class DamageLogs(DamageLogsMeta):
 
     def _populate(self):
         # noinspection PyProtectedMember
-        super(DamageLogs, self)._populate()
+        super(TotalLog, self)._populate()
         feedback = self.sessionProvider.shared.feedback
         if feedback is None:
             return
         feedback.onPlayerFeedbackReceived += self.__onPlayerFeedbackReceived
         self._is_top_log_enabled = config.data['enabled']
         if self._is_top_log_enabled:
-            self.as_createTopLogS(config.data['settings'])
+            self.as_createTopLogS(config.data)
             self.update_top_log_start_params()
             self.as_updateTopLogS(self.top_log_template % self.top_log)
 
@@ -154,7 +156,7 @@ class DamageLogs(DamageLogsMeta):
             if self._is_top_log_enabled:
                 self.top_log.clear()
         # noinspection PyProtectedMember
-        super(DamageLogs, self)._dispose()
+        super(TotalLog, self)._dispose()
 
     def parseEvent(self, event):
         """wg Feedback event parser"""
@@ -194,4 +196,4 @@ class DamageLogs(DamageLogsMeta):
 
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, DamageLogs, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, TotalLog, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
