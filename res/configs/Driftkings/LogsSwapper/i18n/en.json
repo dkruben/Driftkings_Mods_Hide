@@ -1,7 +1,0 @@
-{
-    "UI_description": "LogsSwapper",
-    "UI_setting_logSwapper_text": "Enable Reverse Log.",
-    "UI_setting_logSwapper_tooltip": "Reverses the position of the damage log.",
-    "UI_setting_percentIndicator_text": "Damage Percent Indicator",
-    "UI_setting_percentIndicator_tooltip": "Reverses the position of the damage log."
-}

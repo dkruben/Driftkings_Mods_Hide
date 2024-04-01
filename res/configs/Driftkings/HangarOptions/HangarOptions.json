@@ -1,31 +1,30 @@
-﻿{
+{
     "allowExchangeXPInTechTree": true,
-    "autoLogin": true,
-    "battleCount": true,
-    "buttonStats": true,
+    "autoLogin": false,
     "clock": true,
-    "crewReturn": true,
     "enabled": true,
-    "generalChatButton": false,
-    "popUpMessages": true,
-    "promoPremVehicle": true,
-    "referralButton": true,
-    "showCustomizationCounter": true,
+    "format": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='30'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin='85' leading='-2'>%A<br/><font size='15'>%d %b %Y</font></textformat></font>",
+    "premiumTime": false,
+    "rows": 2,
+    "showBattleCount": true,
+    "showButton": true,
+    "showButtonCounters": true,
+    "showBuyPremiumButton": true,
     "showDailyQuestWidget": true,
     "showEventBanner": true,
+    "showGeneralChatButton": true,
+    "showHangarPrestigeWidget": true,
+    "showPopUpMessages": true,
+    "showPremiumShopButton": true,
+    "showProfilePrestigeWidget": true,
     "showProgressiveDecalsWindow": true,
-    "showRankedBattleResults": false,
-    "showUnreadCounter": false,
+    "showPromoPremVehicle": true,
+    "showRankedBattleResults": true,
+    "showReferralButton": true,
+    "showUnreadCounter": true,
+    "showWotPlusButton": true,
     "showXpToUnlockVeh": true,
-    "widgets": {
-        "format": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='36'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin='85' leading='-2'>%A<br/><font size='15'>%d %b %Y</font></textformat></font>",
-        "position": [1720.0, 46.0],
-        "shadow": true,
-        "textShadow": {
-            "angle": 0,
-            "distance": 0,
-            "quality": 3,
-            "strength": 0.5
-        }
-    }
+    "smallCarousel": false,
+    "x": 1900,
+    "y": 47
 }

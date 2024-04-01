@@ -73,7 +73,6 @@ class ConfigInterface(SimpleConfigInterface):
                 'red': '#ED070A',
                 'yellow': '#FFC900'
             }
-
         }
         super(ConfigInterface, self).init()
 

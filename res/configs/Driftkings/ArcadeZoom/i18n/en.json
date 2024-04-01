@@ -1,0 +1,11 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_setting_max_text": "Max Zoom Out",
+    "UI_setting_max_tooltip": "",
+    "UI_setting_min_text": "Min Zoom Out",
+    "UI_setting_min_tooltip": "",
+    "UI_setting_scrollSensitivity_text": "Scroll Sensitivity",
+    "UI_setting_scrollSensitivity_tooltip": "",
+    "UI_setting_startDeadDist_text": "Start Dead Distance",
+    "UI_setting_startDeadDist_tooltip": ""
+}

@@ -18,5 +18,6 @@
     "UI_setting_showModeSniper_text": "Sniper mode available",
     "UI_setting_showModeSniper_tooltip": "",
     "UI_setting_showSplashOnDefault_text": "Show Splash on default",
-    "UI_setting_showSplashOnDefault_tooltip": ""
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_version": "1.0.0"
 }

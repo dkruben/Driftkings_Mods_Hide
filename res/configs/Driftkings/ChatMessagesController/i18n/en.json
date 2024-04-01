@@ -1,9 +1,0 @@
-{
-    "UI_description": "ChatMessagesController",
-    "UI_message_chatOff": "Chat: Disable",
-    "UI_message_chatOn": "Chat: Enable",
-    "UI_setting_button_text": "Hot key: battle chat",
-    "UI_setting_button_tooltip": "Fast disable or enable battle chat",
-    "UI_setting_enabledChat_text": "Chat in Game",
-    "UI_setting_enabledChat_tooltip": "This option give you chance to enable or disable chat in battle."
-}

@@ -1,0 +1,17 @@
+{
+    "displayOnAllies": false,
+    "enabled": true,
+    "messages": {
+        "green": "<font size='20' color='#66FF33'>Breaking through.</font>",
+        "normal": "Easy To Penetrate :P",
+        "orange": "<font size='20' color='#FF9900'>Switch to Gold.</font>",
+        "purple": "<font size='20' color='#6F6CD3'>Your time has come.</font>",
+        "red": "<font size='20' color='#FF0000'>Try hard, your time has come.</font>",
+        "yellow": "<font size='20' color='#FAF829'>Switch to Gold.</font>"
+    },
+    "position": {
+        "x": 0,
+        "y": 40
+    },
+    "template": "<p align='center'>%(ricochet)s%(noDamage)s<br><font color='%(color)s'>%(countedArmor)d | %(piercingPower)d</font></p>"
+}

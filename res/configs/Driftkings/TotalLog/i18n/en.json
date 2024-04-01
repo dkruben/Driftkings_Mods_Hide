@@ -1,0 +1,12 @@
+{
+    "UI_description": "TotalLog",
+    "UI_setting_inCenter_text": "In Center",
+    "UI_setting_inCenter_tooltip": "Display the log in the middle of the screen",
+    "UI_setting_separate_text": "Separate",
+    "UI_setting_separate_tooltip": "",
+    "UI_setting_x_text": "Position X",
+    "UI_setting_x_tooltip": "Horizontal position",
+    "UI_setting_y_text": "Position Y",
+    "UI_setting_y_tooltip": "Vertical position",
+    "UI_version": "1.0.0"
+}

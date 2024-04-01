@@ -18,3 +18,10 @@ res/flash/ArmorCalculator/obj/ArmorCalculatorConfig.xml
 res/flash/ArmorCalculator/obj/ArmorCalculatorConfig.old
 res/flash/SixthSense/obj/SixthSenseConfig.xml
 res/flash/SixthSense/obj/SixthSenseConfig.xml
+source/scripts/client/gui/mods/Config_Generator/__init__.py
+source/scripts/client/gui/mods/Config_Generator/__init__.py
+source/scripts/client/gui/mods/Config_Generator/core.py
+source/scripts/client/gui/mods/Config_Generator/creator.py
+/source/scripts/client/gui/mods
+/source/scripts/client/gui/mods
+/source/scripts/client/gui/mods
