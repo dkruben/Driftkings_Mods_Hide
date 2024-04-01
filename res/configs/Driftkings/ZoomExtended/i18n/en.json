@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_setting_disableCamAfterShotLatency_text": "Disable Cam After Shot Latency",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Delay automatic shutdown of the camera.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Disable Cam After Shot Skip Clip",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Do not exit if magazine loading system.",
+    "UI_setting_disableCamAfterShot_text": "Sisable Cam After Shot",
+    "UI_setting_disableCamAfterShot_tooltip": "Disable sniper mode after the shot.",
+    "UI_setting_noBinoculars_text": "Disable Binoculars.",
+    "UI_setting_noBinoculars_tooltip": "Remove the blackout in sniper mode.",
+    "UI_setting_noFlashBang_text": "Disable Red Flash.",
+    "UI_setting_noFlashBang_tooltip": "Remove red flash when taking damage.",
+    "UI_setting_noShockWave_text": "Shock Wave",
+    "UI_setting_noShockWave_tooltip": "Remove camera shaking when hit by tank.",
+    "UI_setting_noSniperDynamic_text": "Sniper Dynamic",
+    "UI_setting_noSniperDynamic_tooltip": "Disable dynamic camera in sniper mode.",
+    "UI_version": "1.0.0"
+}

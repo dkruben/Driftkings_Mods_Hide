@@ -1,0 +1,10 @@
+{
+    "UI_description": "MainGun",
+    "UI_setting_progressBar_text": "ProgressBar",
+    "UI_setting_progressBar_tooltip": "",
+    "UI_setting_x_text": "Position X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Position Y",
+    "UI_setting_y_tooltip": "",
+    "UI_version": "1.0.0"
+}

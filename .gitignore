@@ -25,3 +25,6 @@ source/scripts/client/gui/mods/Config_Generator/creator.py
 /source/scripts/client/gui/mods
 /source/scripts/client/gui/mods
 /source/scripts/client/gui/mods
+source/scripts/client/gui/mods/Config_Generator/core.py
+source/scripts/client/gui/mods/Config_Generator/creator.py
+source/scripts/client/gui/mods/Config_Generator/creator.py

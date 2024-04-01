@@ -3,16 +3,20 @@ import datetime
 import json
 import os
 import re
+from collections import defaultdict
 
 
 class Base(object):
+    _data = property(lambda self: self.data)
+    _i18n = property(lambda self: self.i18n)
+    version = defaultdict(lambda: 'ERROR', version='')
 
     def __init__(self, ID, folder, path, i18_path, author):
         self.ID = ID
         self.version = self.version
         self.author = author
-        self.data = self.data
-        self.i18n = self.i18n
+        self.data = self._data
+        self.i18n = self._i18n
         self.folder = folder
         self.path = path
         self.configs = None

@@ -49,11 +49,13 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
                 '{reason}{reasons}\n'
                 'Game client restart is required to accept changes.\n'
                 'Sound mods\' proper behaviour <b>NOT GUARANTEED</b> until next game launch.\n'
-                'This will <b>not</b> be required later.\nDo you want to restart the game now?'),
+                'This will <b>not</b> be required later.\n'
+                'Do you want to restart the game now?'),
             'UI_restart_button_restart': 'Restart',
             'UI_restart_button_shutdown': 'Shutdown',
             'UI_restart_button_close': 'Continue',
-            'UI_restart_reason': ' Exact changes:\n{}.',
+            'UI_restart_reason': ' Exact changes:\n'
+                                 '{}.',
             'UI_restart_create': ' • sections <b>created</b> for banks: ',
             'UI_restart_delete': ' • sections <b>deleted</b> for banks: ',
             'UI_restart_move': ' • sections <b>moved</b> for banks: ',

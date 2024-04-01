@@ -53,7 +53,8 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
             'UI_setting_help_text': 'Help:',
             'UI_setting_help_tooltip': ' * You can change images to text or icons.\n'
                                        ' * For icons go to ../Games/WorldOfTanks_xx/mods/configs/Driftkings/SpottedStatus/icons/*.png and replace names\n'
-                                       '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'><font color=\'#\'>\tPlease don\'t chang the text in text box if you don\'t know you doing</font><img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'>'
+                                       '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'><font color=\'#\'>\t'
+                                       'Please don\'t chang the text in text box if you don\'t know you doing</font><img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'>'
         }
         super(ConfigInterface, self).init()
 

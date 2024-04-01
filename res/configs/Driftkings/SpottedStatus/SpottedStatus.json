@@ -1,0 +1,11 @@
+{
+    "dead": "<img src='img:///dead.png' width='22' height='22'>",
+    "enabled": true,
+    "lost": "<img src='img:///lost.png' width='22' height='22'>",
+    "neverSeen": "<img src='img:///neverSeen.png' width='22' height='22'>",
+    "spotted": "<img src='img:///spotted.png' width='22' height='22'>",
+    "text": {
+        "x": -60,
+        "y": 0
+    }
+}

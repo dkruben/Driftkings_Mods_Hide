@@ -1,0 +1,10 @@
+{
+    "colors": {
+        "ally": "#60CB00",
+        "bgColor": "#000000"
+    },
+    "enabled": false,
+    "progressBar": false,
+    "x": 600,
+    "y": 30
+}

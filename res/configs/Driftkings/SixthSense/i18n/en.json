@@ -1,0 +1,23 @@
+{
+    "UI_description": "SixthSense",
+    "UI_setting_defaultIconName_text": "Default Icon Name",
+    "UI_setting_defaultIconName_tooltip": "Select an embedded image.",
+    "UI_setting_defaultIcon_text": "Default Icon",
+    "UI_setting_defaultIcon_tooltip": "Use embedded image.",
+    "UI_setting_delay_text": "Delay",
+    "UI_setting_delay_tooltip": "Text message remains on screen for this amount of seconds before fading out.",
+    "UI_setting_helpMessage_text": "Help Message",
+    "UI_setting_helpMessage_tooltip": "Send for chat (Help me) message automatically.",
+    "UI_setting_infoSpottedMessage_text": "Spotted Messages:",
+    "UI_setting_lampShowTime_text": "Lamp Show Time",
+    "UI_setting_lampShowTime_tooltip": "Choose value to hide icon (default 2 sec.)",
+    "UI_setting_playTickSound_text": "Play Tick Sound",
+    "UI_setting_playTickSound_tooltip": "Play tick sound.",
+    "UI_setting_spottedMessage_text": "Spotted",
+    "UI_setting_spottedMessage_tooltip": "Enable spotted text in battle.",
+    "UI_setting_spottedText_text": "Text Format",
+    "UI_setting_spottedText_tooltip": "Use macros to edit the message\n(macro:'%(pos)s').",
+    "UI_setting_userSound_text": "User Sound",
+    "UI_setting_userSound_tooltip": "Enable spotted text in battle.",
+    "UI_version": "1.0.0"
+}

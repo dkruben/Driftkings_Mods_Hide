@@ -1,0 +1,10 @@
+{
+    "UI_description": "DistanceToEnemy",
+    "UI_setting_template_text": "Template",
+    "UI_setting_template_tooltip": "Macros '%(distance).1f', %(name)s",
+    "UI_setting_x_text": "Position X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Position Y",
+    "UI_setting_y_tooltip": "",
+    "UI_version": "1.0.0"
+}
