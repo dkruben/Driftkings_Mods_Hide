@@ -2,21 +2,21 @@
 from collections import namedtuple
 
 from CurrentVehicle import g_currentVehicle
-from dossiers2.ui.achievements import MARK_ON_GUN_RECORD
+from dossiers2.ui.achievements import MARK_ON_GUN_RECORD, MARK_OF_MASTERY_RECORD
 from helpers import dependency
 from skeletons.gui.shared import IItemsCache
 
 __all__ = ('cachedVehicleData',)
 
 
-EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate'))
+EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate', 'masteryIcon'))
 
 
 class CurrentVehicleCachedData(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        self.__default = EfficiencyAVGData(2500, 2500, 2500, 0, 0.0, '', 'Undefined', False, 0.0)
+        self.__default = EfficiencyAVGData(2500, 2500, 2500, 0, 0.0, '', 'Undefined', False, 0.0, '')
         self.__EfficiencyAVGData = None
 
     def onVehicleChanged(self):
@@ -36,12 +36,22 @@ class CurrentVehicleCachedData(object):
         marksOnGun = random.getAchievement(MARK_ON_GUN_RECORD)
         icon = marksOnGun.getIcons()['95x85'][3:]
         marksOnGunIcon = '<img src=\'img://gui/%s\' width=\'20\' height=\'18\' vspace=\'-8\'>' % icon
+
+        mastery = random.getAchievement(MARK_OF_MASTERY_RECORD)
+        masteryValue = mastery.getValue()
+        if masteryValue and masteryValue < 5:
+            masteryIcon = '<img src=\'%s\' width=\'20\' height=\'20\' vspace=\'-8\'/></img>' % mastery.getSmallIcon().replace('../', '')
         self.__EfficiencyAVGData = EfficiencyAVGData(
             int(random.getAvgDamage() or 0),
             int(random.getDamageAssistedEfficiency() or 0),
             int(random.getAvgDamageAssistedStun() or 0),
             int(random.getAvgDamageBlocked() or 0),
-            round(marksOnGun.getDamageRating(), 2), marksOnGunIcon, name, level > 4, self.getWinsEfficiency(random)
+            round(marksOnGun.getDamageRating(), 2),
+            marksOnGunIcon,
+            name,
+            level > 4,
+            self.getWinsEfficiency(random),
+            masteryIcon
         )
 
     @property

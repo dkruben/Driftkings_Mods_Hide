@@ -36,7 +36,8 @@ class ConfigInterface(SimpleConfigInterface):
             'avgDamage': False,
             'avgStun': False,
             'gunMarks': False,
-            'winRate': False
+            'winRate': False,
+            'mastery': False
         }
 
         self.i18n = {
@@ -53,6 +54,8 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_gunMarks_tooltip': '',
             'UI_setting_winRate_text': 'Win Rate',
             'UI_setting_winRate_tooltip': '',
+            'UI_setting_mastery_text': 'Mastery',
+            'UI_setting_mastery_tooltip': '',
         }
         super(ConfigInterface, self).init()
 
@@ -69,7 +72,8 @@ class ConfigInterface(SimpleConfigInterface):
             'column2': [
                 self.tb.createControl('avgStun'),
                 self.tb.createControl('gunMarks'),
-                self.tb.createControl('winRate')
+                self.tb.createControl('winRate'),
+                self.tb.createControl('mastery'),
             ]
         }
 
@@ -93,6 +97,8 @@ def getAvgData():
         text.append('{winRateIcon}{winRate}%')
     if config.data['gunMarks'] and data.marksAvailable:
         text.append('{marksOnGunIcon}{marksOnGunValue}%')
+    if config.data['mastery']:
+        text.append('{masteryIcon}')
     if text:
         params = data._asdict()
         params.update(config.icons)
