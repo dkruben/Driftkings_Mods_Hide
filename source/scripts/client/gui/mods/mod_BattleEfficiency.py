@@ -49,31 +49,29 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_textLock_text': 'Text Lock',
             'UI_setting_textLock_tooltip': 'Drag Text in battle',
             'UI_setting_format_text': 'Text Format, Available Macros:',
-            'UI_setting_format_tooltip': (
-                ' • <b><font color=\'#FFFFFF\'>WN8:</font></b>  \'{wn8}\'   Color:\'{c:wn8}\''
-                '\n • <b><font color=\'#FFFFFF\'>XWN8:</font></b> \'{xwn8}\'  Color:\'{c:xwn8}\''
-                '\n • <b><font color=\'#FFFFFF\'>EFF:</font></b>  \'{eff}\'   Color:\'{c:eff}\''
-                '\n • <b><font color=\'#FFFFFF\'>XEFF:</font></b> \'{xeff}}\' Color:\'{c:xeff}\''
-                '\n • <b><font color=\'#FFFFFF\'>DIFF:</font></b> \'{diff}}\' Color:\'{c:dif}\''
-                '\n • <b><font color=\'#FFFFFF\'>DIFF:</font></b> \'{dmg}}\' Color:\'{c:dmg}\''
-                '\n • <b><font color=\'#FFFFFF\'>XTE:</font><b>   \'{xte}\'   Color:\'{c:xte}\''
-            ),
+            'UI_setting_format_tooltip': ('Macros:'
+                                          '\n WN8:\'{wn8}\', Color:\'{c_wn8}\''
+                                          '\nXWN8:\'{xwn8}\', Color:\'{c_xwn8}\''
+                                          '\nEFF:\'{eff}\', Color:\'{c_eff}\''
+                                          '\nXEFF:\'{xeff}}\', Color:\'{c_xeff}\''
+                                          '\nDIFF:\'{diff}}\', Color:\'{c:dif}\''
+                                          '\nDMG:\'{dmg}}\', Color:\'{c:dmg}\''
+                                          '\nXTE:\'{xte}\',   Color:\'{c:xte}\''),
             'UI_setting_battleResultsWindow_text': 'Battle Results Window',
             'UI_setting_battleResultsWindow_tooltip': 'Enable battle Results Window.',
             'UI_setting_battleResultsFormat_text': 'Battle results window modifying',
-            'UI_setting_battleResultsFormat_tooltip': (
-                '<b><font color=\'#FFD47F\'>Macros:</b>'
-                '\n  • <b><font color=\'#FFFFFF\'>WN8:</font></b>  \'{wn8}\'  Color: \'{c:wn8}\''
-                '\n  • <b><font color=\'#FFFFFF\'>XWN8:</font></b>  \'{xwn8}\'  Color: \'{c:xwn8}\''
-                '\n  • <b><font color=\'#FFFFFF\'>EFF:</font></b>  \'{eff}\'  Color: \'{c:eff}\''
-                '\n  • <b><font color=\'#FFFFFF\'>XEFF:</font></b>  \'{xeff}\'  Color: \'{c:xeff}\''
-                '\n  • <b><font color=\'#FFFFFF\'>DIFF:</font></b>  \'{diff}\'  Color: \'{c:dif}\''
-                '\n  • <b><font color=\'#FFFFFF\'>DMG:</font></b>  \'{dmg}\'  Color: \'{c:dmg}\''
-                '\n  • <b><font color=\'#FFFFFF\'>XTE:</font><b>  \'{xte}\'  Color: \'{c:xte}\''
-            ),
+            'UI_setting_battleResultsFormat_tooltip': ('Macros:'
+                                                       '\nWN8:\'{wn8}\', Color: \'{c:wn8}\''
+                                                       '\nXWN8:\'{xwn8}\', Color: \'{c:xwn8}\''
+                                                       '\nEFF:\'{eff}\', Color: \'{c:eff}\''
+                                                       '\nXEFF:\'{xeff}\', Color: \'{c:xeff}\''
+                                                       '\nDIFF:\'{diff}\', Color: \'{c:dif}\''
+                                                       '\nDMG:\'{dmg}\', Color: \'{c:dmg}\''
+                                                       '\nXTE:\'{xte}\', Color: \'{c:xte}\''),
             'UI_setting_colorRatting_text': 'Choose Color Ratting',
             'UI_setting_colorRatting_tooltip': '',
             'UI_setting_colorRatting_NoobMeter': 'NoobMeter',

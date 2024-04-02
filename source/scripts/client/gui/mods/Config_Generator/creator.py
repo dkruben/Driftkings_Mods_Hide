@@ -1,63 +1,70 @@
 # -*- coding: utf-8 -*-
-from core import ConfigClass
+from core import ConfigInterface
 
-MODS_LIST = ['ArcadeZoom', 'ArmorCalculator', 'ArtySplash', 'AutoAimOptimize', 'AutoServerSight', 'BanksLoader', 'BattleEfficiency', 'BattleOptions',
+MODS_LIST = ['AimingAngles', 'ArcadeZoom', 'ArmorCalculator', 'ArtySplash', 'AutoAimOptimize', 'AutoServerSight', 'BanksLoader', 'BattleEfficiency', 'BattleOptions',
              'CrewSettings', 'CrewExtended', 'DispersionCircle', 'DistanceTimer', 'DistanceToEnemy', 'Driftkings_GUI', 'HangarOptions',
              'InfoPanel', 'LogsSwapper', 'MainGun', 'MarksOnGunBattle', 'MarksOnGunTechTree', 'MinimapPlugins', 'PlayersPanelHP',
              'RepairExtended', 'SafeShot', 'ServerTurretExtended', 'SixthSense', 'SpottedExtendedLight',
              'SpottedStatus', 'SystemColor', 'VehicleExpExtended', 'ZoomExtended', 'TooltipsCountItemsLimit', 'TotalLog', 'OwnHealth']
 
 
-class Settings(ConfigClass):
+class Settings(ConfigInterface):
     enabled = True
 
-    def __init__(self):
-        self.ID = 'CrewSettings'
-        self.version = '1.0.0'
-        self.author = '_DKRuben_EU'
-        self.defaultKeys = {}
+    def init(self):
+        self.ID = 'ZoomExtended'
+        self.version = '1.1.0 (02.04.2024)'
+        self.author = 'by: _DKRuben_EU'
+        self.modsGroup = 'Driftkings'
+        # -
         self.data = {
-            'enabled': True,
-            'crewReturn': False,
-            'crewTraining': False,
+            'enabled': False,
+            'noBinoculars': False,
+            'noFlashBang': False,
+            'noShockWave': False,
+            'noSniperDynamic': False,
+            'disableCamAfterShot': False,
+            'disableCamAfterShotLatency': 0.5,
+            'disableCamAfterShotSkipClip': True,
+            'dynamicZoom': {
+                'enabled': False,
+                'stepsOnly': False
+            },
+            'zoomSteps': {
+                'enabled': False,
+                'steps': [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0, 25.0, 30.0]
+            }
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
-            'UI_setting_crewReturn_text': 'Crew Auto-Return',
-            'UI_setting_crewReturn_tooltip': 'Return crew tanks.',
-            'UI_setting_crewTraining_text': 'Crew Training',
-            'UI_setting_crewTraining_tooltip': 'Monitors whether \'Field Upgrade\' is upgraded/available and enables or disables \'Expedited Crew Training\' accordingly',
-
-            # crew dialogs
-            'UI_dialog_apply': 'Apply',
-            'UI_dialog_cancel': 'Cancel',
-            'UI_dialog_ignore': 'Ignore',
-            #
-            'crewDialogs': {
-                'enabled': '<br>Enable accelerated crew training?',
-                'disabled': '<br>Disable accelerated crew training?',
-                'notAvailable': 'Field upgrades are not available for this vehicle.',
-                'isFullXp': 'You have accumulated the necessary amount of experience to fully upgrade the field upgrade.',
-                'isFullComplete': 'You have pumped the field upgrade to the highest possible level.',
-                'needTurnOff': 'You do not have field upgrades, it is recommended to disable accelerated crew training.'
-            }
+            'UI_setting_noBinoculars_text': 'Disable Binoculars.',
+            'UI_setting_noBinoculars_tooltip': 'Remove the blackout in sniper mode.',
+            'UI_setting_noFlashBang_text': 'Disable Red Flash.',
+            'UI_setting_noFlashBang_tooltip': 'Remove red flash when taking damage.',
+            'UI_setting_noShockWave_text': 'Shock Wave',
+            'UI_setting_noShockWave_tooltip': 'Remove camera shaking when hit by tank.',
+            'UI_setting_noSniperDynamic_text': 'Sniper Dynamic',
+            'UI_setting_noSniperDynamic_tooltip': 'Disable dynamic camera in sniper mode.',
+            'UI_setting_disableCamAfterShot_text': 'Sisable Cam After Shot',
+            'UI_setting_disableCamAfterShot_tooltip': 'Disable sniper mode after the shot.',
+            'UI_setting_disableCamAfterShotLatency_text': 'Disable Cam After Shot Latency',
+            'UI_setting_disableCamAfterShotLatency_tooltip': 'Delay automatic shutdown of the camera.',
+            'UI_setting_disableCamAfterShotSkipClip_text': 'Disable Cam After Shot Skip Clip',
+            'UI_setting_disableCamAfterShotSkipClip_tooltip': 'Do not exit if magazine loading system.',
         }
-        super(Settings, self).__init__()
-
-    def getData(self):
-        return self.data
+        super(Settings, self).init()
 
 
 generator = Settings()
 
-try:
-    if generator.enabled:
+if __name__ == '__main__':
+    try:
+        if generator.enabled:
+            print '=' * 25
+            Settings()
+    except Exception as err:
+        print '[ERROR]: %s' % err
+    else:
+        print 'Status OK'
+        print 'Mod Name {}, v.{} and author {}'.format(generator.ID, generator.version, generator.author)
         print '=' * 25
-        print generator.ID
-except StandardError as err:
-    print err
-    print '=' * 25
-else:
-    print 'Status OK'
-    print '=' * 25

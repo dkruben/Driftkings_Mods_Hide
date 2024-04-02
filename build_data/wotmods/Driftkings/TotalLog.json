@@ -4,11 +4,7 @@
     "files": {
         "res/scripts/client/gui/mods/mod_TotalLog.pyc": "build/scripts/client/gui/mods/mod_TotalLog.pyc",
 		
-		"res/gui/maps/icons/TotalLog/efficiency/armor.png"    : "res/res/maps/icons/TotalLog/efficiency/armor.png",
-		"res/gui/maps/icons/TotalLog/efficiency/damage.png"   : "res/res/maps/icons/TotalLog/efficiency/damage.png",
-		"res/gui/maps/icons/TotalLog/efficiency/detection.png": "res/res/maps/icons/TotalLog/efficiency/detection.png",
-		"res/gui/maps/icons/TotalLog/efficiency/help.png"     : "res/res/maps/icons/TotalLog/efficiency/help.png",
-		"res/gui/maps/icons/TotalLog/efficiency/stun.png"     : "res/res/maps/icons/TotalLog/efficiency/stun.png",
+		"res/gui/maps/icons/TotalLog/efficiency/**"    : "res/res/maps/icons/TotalLog/efficiency/**",
 		
         "res/gui/flash/TotalLog.swf": "res/flash/TotalLog.swf"
     }

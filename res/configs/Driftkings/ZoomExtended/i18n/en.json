@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_description": "ZoomExtended",
     "UI_setting_disableCamAfterShotLatency_text": "Disable Cam After Shot Latency",
     "UI_setting_disableCamAfterShotLatency_tooltip": "Delay automatic shutdown of the camera.",
@@ -13,6 +13,5 @@
     "UI_setting_noShockWave_text": "Shock Wave",
     "UI_setting_noShockWave_tooltip": "Remove camera shaking when hit by tank.",
     "UI_setting_noSniperDynamic_text": "Sniper Dynamic",
-    "UI_setting_noSniperDynamic_tooltip": "Disable dynamic camera in sniper mode.",
-    "UI_version": "1.0.0"
+    "UI_setting_noSniperDynamic_tooltip": "Disable dynamic camera in sniper mode."
 }

@@ -6,3 +6,5 @@ TEST_*/
 TEXT_*.*
 MOD_TEST/
 DriftkingsCore_O/
+/gui/mods/Config_Generator/
+/gui/mods/.later/

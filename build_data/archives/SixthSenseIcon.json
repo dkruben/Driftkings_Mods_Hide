@@ -4,16 +4,14 @@
     "files": {
 	    "mods/configs/Driftkings/BanksLoader/BanksLoader.json": "res/configs/Driftkings/BanksLoader/BanksLoader.json",
         "mods/configs/Driftkings/Driftkings_GUI/i18n/en.json": "res/configs/Driftkings/Driftkings_GUI/i18n/en.json",
-		"mods/configs/Driftkings/SixthSenseIcon/SixthSenseIcon.json": "res/configs/Driftkings/SixthSenseIcon/SixthSenseIcon.json",
-        "mods/configs/Driftkings/SixthSenseIcon/SixthSenseIcon.png": "res/configs/Driftkings/SixthSenseIcon/SixthSenseIcon.png",
-		"mods/configs/Driftkings/SixthSenseIcon/i18n/en.json": "res/configs/Driftkings/SixthSenseIcon/i18n/en.json",
-		"mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*",
+		"mods/configs/Driftkings/SixthSense/SixthSense.json": "res/configs/Driftkings/SixthSense/SixthSense.json",
+		"mods/configs/Driftkings/SixthSense/i18n/en.json": "res/configs/Driftkings/SixthSense/i18n/en.json",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",
         "mods/{GAME_VERSION}/Driftkings/sound_bank.wotmod": "res/audioww/sound_bank.wotmod",
 		"mods/{GAME_VERSION}/Driftkings/_aaa_BanksLoader_audioMods.wotmod": "res/audioww/_aaa_BanksLoader_audioMods.wotmod",
         "mods/{GAME_VERSION}/Driftkings/BanksLoader.wotmod": "build/wotmods/Driftkings/BanksLoader.wotmod",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
-        "mods/{GAME_VERSION}/Driftkings/SixthSenseIcon.wotmod": "build/wotmods/Driftkings/SixthSenseIcon.wotmod"
+        "mods/{GAME_VERSION}/Driftkings/SixthSense.wotmod": "build/wotmods/Driftkings/SixthSense.wotmod"
     }
 }

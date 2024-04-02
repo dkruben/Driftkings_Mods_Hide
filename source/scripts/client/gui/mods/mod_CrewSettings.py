@@ -125,7 +125,6 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_crewTraining_tooltip': 'Monitors whether \'Field Upgrade\' is upgraded/available and enables or disables \'Expedited Crew Training\' accordingly',
             'UI_setting_crewAutoReturn_text': 'Crew Return By Default',
             'UI_setting_crewAutoReturn_tooltip': '',
-
             # crew dialogs
             'UI_dialog_apply': 'Apply',
             'UI_dialog_cancel': 'Cancel',
