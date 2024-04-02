@@ -9,14 +9,14 @@ from skeletons.gui.shared import IItemsCache
 __all__ = ('cachedVehicleData',)
 
 
-EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate', 'masteryIcon'))
+EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate'))
 
 
 class CurrentVehicleCachedData(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        self.__default = EfficiencyAVGData(2500, 2500, 2500, 0, 0.0, '', 'Undefined', False, 0.0, '')
+        self.__default = EfficiencyAVGData(2500, 2500, 2500, 0, 0.0, '', 'Undefined', False, 0.0)
         self.__EfficiencyAVGData = None
 
     def onVehicleChanged(self):
@@ -50,8 +50,7 @@ class CurrentVehicleCachedData(object):
             marksOnGunIcon,
             name,
             level > 4,
-            self.getWinsEfficiency(random),
-            masteryIcon
+            self.getWinsEfficiency(random)
         )
 
     @property

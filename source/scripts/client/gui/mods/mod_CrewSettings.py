@@ -4,8 +4,7 @@ import json
 import os
 from io import open as _open
 
-import BigWorld
-from external_strings_utils import unicode_from_utf8
+from CurrentVehicle import g_currentVehicle
 from frameworks.wulf import WindowLayer
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.exchange.ExchangeXPWindow import ExchangeXPWindow
@@ -14,7 +13,7 @@ from gui.impl.dialogs.builders import InfoDialogBuilder
 from gui.impl.pub.dialog_window import DialogButtons
 from gui.shared.gui_items.processors.tankman import TankmanReturn
 from gui.shared.gui_items.processors.vehicle import VehicleTmenXPAccelerator
-from gui.shared.utils.decorators import adisp_process
+from gui.shared.utils import decorators
 from gui.veh_post_progression.models.progression import PostProgressionCompletion
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader
@@ -34,8 +33,8 @@ def getLogo(big=True):
 
 
 def getPreferencesDir():
-    preferences_file_path = unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]
-    return os.path.normpath(os.path.dirname(preferences_file_path))
+    configPath = './mods/configs/Driftkings/CrewSettings/'
+    return os.path.normpath(os.path.dirname(configPath))
 
 
 preferencesDir = getPreferencesDir()
@@ -70,7 +69,7 @@ def writeJsonFile(path, data):
 
 
 def getCachePath():
-    path = os.path.join(preferencesDir, 'Driftkings/%(mod_ID)s')
+    path = os.path.join(preferencesDir)
     if not os.path.exists(path):
         os.makedirs(path)
     return path
@@ -104,9 +103,6 @@ class DialogBase(object):
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        self.vehicle = {}
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -118,6 +114,7 @@ class ConfigInterface(SimpleConfigInterface):
             'enabled': True,
             'crewReturn': False,
             'crewTraining': False,
+            'crewAutoReturn': False
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -126,6 +123,8 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_crewReturn_tooltip': 'Return crew tanks.',
             'UI_setting_crewTraining_text': 'Crew Training',
             'UI_setting_crewTraining_tooltip': 'Monitors whether \'Field Upgrade\' is upgraded/available and enables or disables \'Expedited Crew Training\' accordingly',
+            'UI_setting_crewAutoReturn_text': 'Crew Return By Default',
+            'UI_setting_crewAutoReturn_tooltip': '',
 
             # crew dialogs
             'UI_dialog_apply': 'Apply',
@@ -151,7 +150,9 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('crewReturn'),
                 self.tb.createControl('crewTraining'),
             ],
-            'column2': []}
+            'column2': [
+                self.tb.createControl('crewAutoReturn')
+            ]}
 
 
 class CrewWorker(object):
@@ -162,7 +163,6 @@ class CrewWorker(object):
         self.intCD = None
         self.isDialogVisible = False
         g_events.onVehicleChangedDelayed += self.updateCrew
-        override(ExchangeXPWindow, 'as_vehiclesDataChangedS', self.new_onXPExchangeDataChanged)
 
     @property
     def view(self):
@@ -199,7 +199,7 @@ class CrewWorker(object):
             updateIgnoredVehicles(ignored_vehicles)
         self.isDialogVisible = False
 
-    @adisp_process('updateTankmen')
+    @decorators.adisp_process('updateTankmen')
     def accelerateCrewXp(self, vehicle, value):
         result = yield VehicleTmenXPAccelerator(vehicle, value, confirmationEnabled=False).request()
         if result.success:
@@ -249,31 +249,48 @@ class CrewWorker(object):
             return
         if config.data['crewReturn'] and self.intCD != vehicle.intCD:
             if not vehicle.isCrewFull and self.isCrewAvailable(vehicle):
-                self._processReturnCrew(vehicle)
+                self.processReturnCrew(vehicle)
             self.intCD = vehicle.intCD
         if config.data['crewTraining']:
             self.accelerateCrewTraining(vehicle)
+        if config.data['crewAutoReturn']:
+            self.processReturnCrewForVehicleSelectorPopup(vehicle)
 
-    @adisp_process('crewReturning')
-    def _processReturnCrew(self, vehicle):
+    @decorators.adisp_process('crewReturning')
+    def processReturnCrew(self, vehicle):
         result = yield TankmanReturn(vehicle).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
             logInfo('{}: {}'.format(vehicle.userName, result.userMsg))
 
-    def new_onXPExchangeDataChanged(self, func, dialog, data, *args, **kwargs):
-        try:
-            ID = 'id'
-            CANDIDATE = 'isSelectCandidate'
-            for vehicleData in data['vehicleList']:
-                vehicle = self.itemsCache.items.getItemByCD(vehicleData[ID])
-                check, _ = self.isAccelerateTraining(vehicle)
-                vehicleData[CANDIDATE] &= check
-        except Exception as error:
-            logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
-        finally:
-            return func(dialog, data, *args, **kwargs)
+    @decorators.adisp_process('crewReturning')
+    def processReturnCrewForVehicleSelectorPopup(self, vehicle):
+        if not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
+            yield TankmanReturn(vehicle).request()
+
+    @decorators.adisp_process('unloading')
+    def processUnloadCrew(self):
+        result = yield TankmanUnload(g_currentVehicle.item.invID).request()
+        if result.userMsg:
+            SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
+            logInfo('{}'.format(result.userMsg))
 
 
 config = ConfigInterface()
+g_worker = CrewWorker()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+
+
+@override(ExchangeXPWindow, 'as_vehiclesDataChangedS')
+def new_onXPExchangeDataChanged(func, self, data, *args, **kwargs):
+    try:
+        ID = 'id'
+        CANDIDATE = 'isSelectCandidate'
+        for vehicleData in data['vehicleList']:
+            vehicle = g_worker.itemsCache.items.getItemByCD(vehicleData[ID])
+            check, _ = g_worker.isAccelerateTraining(vehicle)
+            vehicleData[CANDIDATE] &= check
+    except Exception as error:
+        logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
+    finally:
+        return func(self, data, *args, **kwargs)
