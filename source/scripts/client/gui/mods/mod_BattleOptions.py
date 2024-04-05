@@ -20,13 +20,13 @@ from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
-from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 from messenger.storage import storage_getter
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.shared.personality import ServicesLocator
+from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isReplay
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
@@ -57,6 +57,7 @@ class ConfigInterface(SimpleConfigInterface):
             'stunSound': False,
             'muteTeamBaseSound': False,
             # 'showAnonymous': False,
+            # 'hideClanName': False,
             # 'hideBattlePrestige': False,
             'color': 'FF002A',
             'showFriends': False,
@@ -92,6 +93,8 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_directivesOnlyFromStorage_tooltip': '',
             # 'UI_setting_showAnonymous_text': 'Show Anonymous',
             # 'UI_setting_showAnonymous_tooltip': '',
+            # 'UI_setting_hideClanName_text': 'Hide Clan Name',
+            # 'UI_setting_hideClanName_tooltip': '',
             # 'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
             # 'UI_setting_hideBattlePrestige_tooltip': ''
         }
@@ -108,11 +111,12 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('showBattleHint'),
                 self.tb.createControl('showPostmortemDogTag'),
                 self.tb.createControl('stunSound'),
-                self.tb.createControl('muteTeamBaseSound'),
                 # self.tb.createControl('showAnonymous'),
+                # self.tb.createControl('hideClanName'),
                 # self.tb.createControl('hideBattlePrestige'),
             ],
             'column2': [
+                self.tb.createControl('muteTeamBaseSound'),
                 self.tb.createControl('postmortemTips'),
                 colorLabel,
                 self.tb.createControl('inBattle'),
@@ -292,8 +296,8 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 
 
 # hide badges
-# @override(VehicleArenaInfoVO, '__init__')
-# def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
+# @override(VehicleArenaInfoVO)
+# def new__VehicleArenaInfoVO(func, self, *args, **kwargs):
 #    if kwargs:
 #        if config.data['hideBadges'] and 'badges' in kwargs:
 #            kwargs['badges'] = None
@@ -306,6 +310,17 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 #        if config.data['hideBattlePrestige']:
 #            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = None
 #    return func(self, *args, **kwargs)
+
+
+# @override(PlayerInfoVO, 'update')
+# def new__VehicleArenaInfoVO(func, self, **kwargs):
+#    if kwargs:
+#        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
+#            if kwargs['accountDBID'] == 0:
+#                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
+#        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
+#            kwargs['clanAbbrev'] = ''
+#    return func(self, **kwargs)
 
 
 @adisp_process

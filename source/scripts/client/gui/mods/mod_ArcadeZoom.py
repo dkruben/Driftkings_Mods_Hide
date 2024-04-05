@@ -110,12 +110,13 @@ def new__readConfigs(func, self, *args, **kwargs):
             cfg['startDist'] = config.data['startDeadDist']
 
 
-@override(ArcadeCamera, '__updateProperties')
+@override(ArcadeCamera, '_updateProperties')
 def new__updateProperties(func, self, state=None):
     try:
         if config.data['enabled'] and state is not None:
-            state.distRange = MinMax(config.data['min'], config.data['max'])
-            state.scrollSensitivity = config.data['scrollSensitivity']
+            distRange = MinMax(config.data['min'], config.data['max'])
+            scrollSensitivity = config.data['scrollSensitivity']
+            state = state._replace(distRange=distRange, scrollSensitivity=scrollSensitivity)
     except Exception:
         LOG_CURRENT_EXCEPTION()
     finally:
