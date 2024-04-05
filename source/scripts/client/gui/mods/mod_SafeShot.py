@@ -40,7 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
             'format': '[{name} - {vehicle}], get out of the way!',
             'disableKey': self.defaultKeys['disableKey'],
             'onHold': True,
-            'disableMessage': False
+            'disableMessage': True
         }
         self.i18n = {
             'UI_description': self.ID,

@@ -35,8 +35,7 @@ class Analytics(object):
             'cid': '%s' % self.old_user if old else self.user,  # User ID
             'an': '%s' % self.mod_description,  # Mod name
             'av': '%s %s' % (self.mod_description, self.mod_version),  # App version.
-            'cd': '%s (Cluster: [%s], lang: [%s])' % (
-                self.old_playerName if old else self.playerName, AUTH_REALM, self.lang),  # Readable user name
+            'cd': '%s (Cluster: [%s], lang: [%s])' % (self.old_playerName if old else self.playerName, AUTH_REALM, self.lang),  # Readable user name
             'ul': '%s' % self.lang,  # client language
             't': 'event'  # Hit type
         }
@@ -79,8 +78,7 @@ class Analytics(object):
             from helpers import getClientLanguage
             self.lang = str(getClientLanguage()).upper()
             try:
-                urllib2.urlopen(url='https://www.google-analytics.com/collect?',
-                                data=urllib.urlencode(dict(self.template(True), sc='end', ec='session', ea='end'))).read()
+                urllib2.urlopen(url='https://www.google-analytics.com/collect?', data=urllib.urlencode(dict(self.template(True), sc='end', ec='session', ea='end'))).read()
             except IOError:  # URLError
                 pass
             self.analytics_started = False
