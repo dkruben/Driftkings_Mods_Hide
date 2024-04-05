@@ -38,6 +38,8 @@
 		"res/scripts/client/DriftkingsCore/utils/iter.pyc"        	: "build/scripts/client/DriftkingsCore/utils/iter.pyc",
 		"res/scripts/client/DriftkingsCore/utils/logger.pyc"      	: "build/scripts/client/DriftkingsCore/utils/logger.pyc",
 		"res/scripts/client/DriftkingsCore/utils/monkeypatch.pyc" 	: "build/scripts/client/DriftkingsCore/utils/monkeypatch.pyc",
-        "res/scripts/client/DriftkingsCore/utils/wgUtils.pyc"     	: "build/scripts/client/DriftkingsCore/utils/wgUtils.pyc"
+        "res/scripts/client/DriftkingsCore/utils/wgUtils.pyc"     	: "build/scripts/client/DriftkingsCore/utils/wgUtils.pyc",
+		
+		"res/gui/maps/icons/Driftkings/**": "res/res/maps/icons/Driftkings/**"
     }
 }

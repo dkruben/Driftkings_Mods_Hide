@@ -4,4 +4,4 @@ from template_builders import *
 from utils import *
 from interfaces import *
 
-__all__ = ['loadJson', 'loadJsonOrdered', 'SimpleConfigInterface', 'SimpleConfBlockInterface', 'ConfigNoInterface']
+__all__ = ['loadJson', 'loadJsonOrdered', 'SimpleConfigInterface', 'SimpleConfBlockInterface', 'ConfigNoInterface', 'smart_update']

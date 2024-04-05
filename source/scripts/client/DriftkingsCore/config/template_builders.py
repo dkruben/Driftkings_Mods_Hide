@@ -144,4 +144,3 @@ class TemplateBuilder(DummyTemplateBuilder):
 
     def getValue(self, varName, value):
         return value if value is not None else (self.data[varName] if self._blockID is None else self.data[self._blockID][varName])
-

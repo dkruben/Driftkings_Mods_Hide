@@ -8,4 +8,4 @@ class BattleEfficiencyMeta(DriftkingsView):
         super(BattleEfficiencyMeta, self).__init__(ID)
 
     def as_battleEffS(self, text):
-        return self.flashObject.as_createTopLog(text) if self._isDAAPIInited() else None
+        return self.flashObject.as_battleEff(text) if self._isDAAPIInited() else None

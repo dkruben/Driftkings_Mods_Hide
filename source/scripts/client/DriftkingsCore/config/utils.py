@@ -4,6 +4,8 @@ import collections
 import BigWorld
 import Keys
 
+__all__ = ('smart_update', 'processHotKeys',)
+
 
 def smart_update(dict1, dict2):
     changed = False
@@ -40,6 +42,3 @@ def processHotKeys(data, keys, mode):
         if (newKey if mode == 'read' else dataKey) not in data:
             continue
         data[(dataKey if mode == 'read' else newKey)] = make(data.pop((newKey if mode == 'read' else dataKey)))
-
-
-

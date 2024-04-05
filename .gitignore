@@ -3,7 +3,7 @@
 .idea
 *.iml
 
-# Mod Build Options ans Dettings
+# Mod Build Options ans Settings
 build/
 archive.zip
 res/flash/MarksOnGunTechTree/obj/MarksOnGunTechTreeConfig.old
@@ -28,3 +28,5 @@ source/scripts/client/gui/mods/Config_Generator/creator.py
 source/scripts/client/gui/mods/Config_Generator/core.py
 source/scripts/client/gui/mods/Config_Generator/creator.py
 source/scripts/client/gui/mods/Config_Generator/creator.py
+res/flash/BattleEffeciency/obj/BattleEffeciencyConfig.old
+res/flash/BattleEffeciency/obj/BattleEffeciencyConfig.xml

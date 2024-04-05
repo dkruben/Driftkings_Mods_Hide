@@ -18,15 +18,10 @@ from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']
 # BATTLE_RESULTS
-DEF_RESULTS_LEN = 16
-RANKED_OFFSET = 4
 DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun': 14, 'defAndCap_vehWStun': 17}
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        self.version_int = 2.45
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -45,7 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
             'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
             # Battle result
             'battleResultsWindow': True,
-            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[5, 250]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}\tWN8: <font color=\'{c:wn8}\'>{wn8} ({xwn8})</font>  EFF: <font color=\'{c:eff}\'>{eff} ({xeff})</font></font></textformat>',
+            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>',
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -85,7 +80,6 @@ class ConfigInterface(SimpleConfigInterface):
         xColorList = ('NoobMeter', 'XVM', 'WotLabs')
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('textLock'),
@@ -207,7 +201,6 @@ class EfficiencyCalculator(object):
             XWN8 = 0
             DIFF = 0
             DMG = 0
-
         EFF = int(max(0, int(damage * (10.0 / (self.avgTier + 2)) * (0.23 + 2 * self.avgTier / 100.0) + frags * 250 + spotted * 150 + math.log(capture + 1, 1.732) * 150 + defence * 150)))
         XEFF = calculateXvmScale('xeff', EFF)
 
@@ -281,6 +274,7 @@ class BattleEfficiency(object):
     def startBattle(self):
         if not g_config.isEnabled:
             return
+
         result = g_calculator.calc(self.damage, self.spotted, self.frags, self.defence, self.capture)
         self.wn8, self.xwn8, self.eff, self.xeff, self.xte, self.dmg, self.diff = result
         #
@@ -411,11 +405,11 @@ def new_setDataS(func, self, data):
         common = data['common']
         if common['bonusType'] in (ARENA_BONUS_TYPE.EVENT_BATTLES, ARENA_BONUS_TYPE.EPIC_RANDOM, ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING, ARENA_BONUS_TYPE.EPIC_BATTLE):
             return func(self, data)
-        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
+        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else 4
 
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
-        stunStatus = 'vehWStun' if (len(statValues) > (DEF_RESULTS_LEN + offset)) else 'vehWOStun'
+        stunStatus = 'vehWStun' if (len(statValues) > (46 + offset)) else 'vehWOStun'
         isWin = common['resultShortStr'] == 'win'
         arenaStr = _splitArenaStr(common['arenaStr'])
         mapName = arenaStr[0].strip()

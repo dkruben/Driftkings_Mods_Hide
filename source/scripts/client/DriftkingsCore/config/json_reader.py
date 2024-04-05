@@ -2,6 +2,7 @@
 import binascii
 import codecs
 import json
+from json import JSONDecoder, JSONEncoder
 import os
 import re
 import traceback
@@ -9,11 +10,12 @@ import zlib
 from collections import OrderedDict
 
 from .utils import smart_update
+from ..utils import logInfo
 
-__all__ = ['loadJson', 'loadJsonOrdered']
+__all__ = ('loadJson', 'loadJsonOrdered',)
 
 
-class JSONEncoder(json.JSONEncoder):
+class JSONObjectEncoder(JSONEncoder):
     def encode(self, o, i=0):
         try:
             # Special Processing for lists
@@ -33,17 +35,16 @@ class JSONEncoder(json.JSONEncoder):
                 keys = o.keys()
                 if self.sort_keys:
                     keys = sorted(keys)
-                return '{\n%s\n%s}' % (item_sep.join(
-                    '%s%s%s%s' % (indent, json.dumps(k), self.key_separator, self.encode(o[k], i)) for k in keys), dedent)
+                return '{\n%s\n%s}' % (item_sep.join('%s%s%s%s' % (indent, json.dumps(k), self.key_separator, self.encode(o[k], i)) for k in keys), dedent)
             else:
-                return super(JSONEncoder, self).encode(o)
+                return super(JSONObjectEncoder, self).encode(o)
         except StandardError:
             traceback.print_exc()
             print type(o)
             return str(o)
 
 
-class JSONObjectDecoder(json.JSONDecoder):
+class JSONObjectDecoder(JSONDecoder):
     def __init__(self, *a, **k):
         super(JSONObjectDecoder, self).__init__(*a, **k)
         self.old_parse_array = self.parse_array
@@ -116,7 +117,7 @@ class JSONLoader(object):
     @staticmethod
     def json_dumps(conf, sort):
         # noinspection PyArgumentEqualDefault
-        return json.dumps(conf, sort_keys=sort, indent=4, ensure_ascii=False, encoding='utf-8', separators=(',', ': '), cls=JSONEncoder)
+        return json.dumps(conf, sort_keys=sort, indent=4, ensure_ascii=False, encoding='utf-8', separators=(',', ': '), cls=JSONObjectEncoder)
 
     @classmethod
     def json_file_read(cls, new_path, encrypted):
@@ -158,9 +159,7 @@ class JSONLoader(object):
         new_path = '%s%s.json' % (path, name)
         if not os.path.isfile(new_path):
             if not save:
-                print '=' * 25
-                print LOG, 'ERROR: Config not found, creating default:', new_path
-                print '=' * 25
+                logInfo(LOG, 'ERROR: Config not found, creating default:', new_path)
             cls.json_file_write(new_path, cls.json_dumps(oldConfig, sort_keys), encrypted)
             return config_new
         if not save:
@@ -170,7 +169,7 @@ class JSONLoader(object):
             try:
                 config_new = cls.json_loads(data)
             except StandardError:
-                print new_path
+                logInfo(new_path)
                 traceback.print_exc()
             return config_new
         read_contents, read_excluded, success = cls.json_file_read(new_path, encrypted)
@@ -189,17 +188,13 @@ class JSONLoader(object):
             return config_new
         write_lines = cls.json_dumps(read_data, sort_keys).split('\n')
         if not quiet:
-            print '=' * 25
-            print LOG, 'updating config:', new_path
-            print '=' * 25
+            logInfo(LOG, 'updating config:', new_path)
         for lineNum, (comment, insert) in sorted(read_excluded.iteritems(), key=lambda x: x[0]):
             if not insert:
                 if lineNum < len(write_lines):
                     write_lines[lineNum] += comment
                     continue
-                print '=' * 25
-                print LOG, 'config', new_path, 'update warning: comment on line', lineNum, 'went beyond updated file'
-                print '=' * 25
+                logInfo(LOG, 'config', new_path, 'update warning: comment on line', lineNum, 'went beyond updated file')
             write_lines.insert(lineNum, comment)
         cls.json_file_write(new_path, '\n'.join(write_lines), encrypted)
         return config_new
@@ -213,9 +208,7 @@ class JSONLoader(object):
             path += '/'
         new_path = '%s%s.json' % (path, name)
         if not os.path.isfile(new_path):
-            print '=' * 25
-            print ID + ': ERROR: Config not found:', new_path
-            print '=' * 25
+            logInfo(ID + ': ERROR: Config not found:', new_path)
             return config_new
         data, _, success = cls.json_file_read(new_path, False)
         if not success:
@@ -223,7 +216,7 @@ class JSONLoader(object):
         try:
             config_new = cls.json_loads(data, True)
         except StandardError:
-            print new_path
+            logInfo(new_path)
             traceback.print_exc()
         return config_new
 

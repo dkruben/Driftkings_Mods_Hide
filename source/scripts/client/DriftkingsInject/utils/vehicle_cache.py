@@ -36,11 +36,6 @@ class CurrentVehicleCachedData(object):
         marksOnGun = random.getAchievement(MARK_ON_GUN_RECORD)
         icon = marksOnGun.getIcons()['95x85'][3:]
         marksOnGunIcon = '<img src=\'img://gui/%s\' width=\'20\' height=\'18\' vspace=\'-8\'>' % icon
-
-        mastery = random.getAchievement(MARK_OF_MASTERY_RECORD)
-        masteryValue = mastery.getValue()
-        if masteryValue and masteryValue < 5:
-            masteryIcon = '<img src=\'%s\' width=\'20\' height=\'20\' vspace=\'-8\'/></img>' % mastery.getSmallIcon().replace('../', '')
         self.__EfficiencyAVGData = EfficiencyAVGData(
             int(random.getAvgDamage() or 0),
             int(random.getDamageAssistedEfficiency() or 0),
