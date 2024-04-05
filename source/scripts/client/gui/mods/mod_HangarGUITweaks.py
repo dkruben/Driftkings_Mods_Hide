@@ -43,6 +43,7 @@ tank_xp_tiers = (100, 50, 25)
 credits_tiers = (50, 25)
 decal_order = ('battles', 'frags', 'BonusBattles', 'marksOfMastery', 'mainGun', 'BrothersInArms',)
 DEFAULT_VALUES[KEY_FILTERS][CAROUSEL_FILTER_CLIENT_1]['normal'] = False
+
 for _alliance in nations.ALLIANCES_TAGS_ORDER:
     DEFAULT_VALUES[KEY_FILTERS][CAROUSEL_FILTER_CLIENT_1][_alliance] = False
 

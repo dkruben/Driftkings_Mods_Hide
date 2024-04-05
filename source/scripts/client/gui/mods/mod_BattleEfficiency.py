@@ -88,7 +88,7 @@ class ConfigInterface(SimpleConfigInterface):
             ],
             'column2': [
                 self.tb.createControl('battleResultsWindow'),
-                self.tb.createControl('battleResultsFormat', self.tb.types.TextInput, 400),
+                self.tb.createControl('battleResultsFormat', self.tb.types.TextInput, 400)
             ]
         }
 

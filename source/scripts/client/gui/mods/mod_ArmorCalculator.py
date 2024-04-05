@@ -138,7 +138,7 @@ class ArmorCalculator(ArmorCalculatorMeta):
 
     @logException
     def onCameraChanged(self, ctrlMode, *_, **__):
-        _CTRL_MODE = {CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
+        _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
         if ctrlMode in _CTRL_MODE:
             self.as_armorCalculatorS('')
 

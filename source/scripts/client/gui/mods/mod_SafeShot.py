@@ -98,7 +98,7 @@ class ConfigInterface(SimpleConfigInterface):
         if checkKeys(self.data['disableKey']) and event.isKeyDown():
             self._disable_key = True
             self.is_hot_key_event = not self.is_hot_key_event
-            sendPanelMessage('SafeShot: is enabled' if self.is_hot_key_event else 'SafeShot: is disabled', 'Green' if self.is_hot_key_event else 'Red')
+            sendPanelMessage('SafeShot: is disabled' if self.is_hot_key_event else 'SafeShot: is enabled', 'Red' if self.is_hot_key_event else 'Green')
 
     def __addVehicleStatusUpdate(self, func, b_self, vInfoVO):
         func(b_self, vInfoVO)

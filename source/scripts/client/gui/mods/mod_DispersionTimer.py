@@ -158,7 +158,7 @@ class DispersionTimer(DispersionTimerMeta):
         super(DispersionTimer, self)._dispose()
 
     def onCameraChanged(self, ctrlMode, _=None):
-        self.isPostmortem = ctrlMode in {CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
+        self.isPostmortem = ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
         if self.isPostmortem:
             self.min_angle = 1.0
             self.as_updateTimerTextS('')
