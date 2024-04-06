@@ -7,20 +7,17 @@ from collections import defaultdict
 
 import BigWorld
 import CommandMapping
-import messenger.gui.Scaleform.view.battle.messenger_view as MESSEGER_VIEW
+# import messenger.gui.Scaleform.view.battle.messenger_view as MESSEGER_VIEW
 from Avatar import PlayerAvatar
 from Vehicle import Vehicle
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
-from items import vehicles as WG_VEHICLES
+from items import vehicles
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, sendChatMessage, getPlayer, callback, getTarget
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        self.version_int = 2.35
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -43,6 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_infoCountLine_text': 'Chat Lines Control:',
             'UI_setting_linesCount_text': 'Enable Lines Count',
             'UI_setting_linesCount_tooltip': 'Enable limit lines in game chat.',
@@ -79,7 +77,6 @@ class ConfigInterface(SimpleConfigInterface):
         infoCountLine['text'] += ''
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createStepper('maxLinesCount', 2.0, 10.0, 1.0, True),
@@ -119,7 +116,7 @@ class Worker(object):
         def pos2name(pos):
             sqrsName = 'KJHGFEDCBA'
             linesName = '1234567890'
-            return '{}{}'.format(sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
+            return '%s%s' % (sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
 
         arena = getattr(getPlayer(), 'arena', None)
         boundingBox = arena.arenaType.boundingBox
@@ -141,7 +138,7 @@ class Worker(object):
             return
         if attacker['vehicleType'] is None:
             return
-        if WG_VEHICLES.getVehicleClass(attacker['vehicleType'].type.compactDescr) == VEHICLE_CLASS_NAME.SPG:
+        if vehicles.getVehicleClass(attacker['vehicleType'].type.compactDescr) == VEHICLE_CLASS_NAME.SPG:
             if player.team != attacker['team']:
                 self.macro['player-tank'] = attacker['vehicleType'].type.shortUserString
                 self.macro['player-name'] = attacker['name']
@@ -162,7 +159,6 @@ class Worker(object):
     def onSight(self, avatar, target):
         if ((BigWorld.serverTime() - self.lastAttackCommandTime) > config.data['timeout']) and (getTarget() == target):
             avatar.guiSessionProvider.shared.chatCommands.sendTargetedCommand(BATTLE_CHAT_COMMAND_NAMES.ATTACK_ENEMY, target.id)
-
         self.lastAttackCommandTime = BigWorld.serverTime()
 
 
@@ -209,9 +205,9 @@ def handleKey(func, self, isDown, key, mods):
     func(self, isDown, key, mods)
 
 
-@override(MESSEGER_VIEW, '_makeSettingsVO')
-def new_makeSettingsVO(func, arenaVisitor):
-    result = func(arenaVisitor)
-    if config.data['enabled']:
-        result['maxLinesCount'] = config.data['maxLinesCount']
-        return result
+# @override(MESSEGER_VIEW, '_makeSettingsVO')
+# def new_makeSettingsVO(func, arenaVisitor):
+#    result = func(arenaVisitor)
+#    if config.data['enabled']:
+#        result['maxLinesCount'] = config.data['maxLinesCount']
+#        return result

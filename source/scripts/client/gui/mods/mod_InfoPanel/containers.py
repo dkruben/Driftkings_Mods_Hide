@@ -324,3 +324,6 @@ class DataConstants(object):
     def pl_gun_aiming_time(self):
         self._typeDescriptor = self._playerVehicle.typeDescriptor
         return self.gun_aiming_time()
+
+
+container = DataConstants()

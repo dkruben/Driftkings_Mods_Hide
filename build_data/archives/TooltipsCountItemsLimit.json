@@ -1,9 +1,0 @@
-﻿{
-    "enabled": true,
-    "ext": ".zip",
-    "files": {
-        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
-        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",
-        "mods/{GAME_VERSION}/Driftkings/TooltipsCountItemsLimit.wotmod": "build/wotmods/Driftkings/TooltipsCountItemsLimit.wotmod"
-    }
-}

@@ -4,16 +4,16 @@
     "files": {
         "mods/configs/Driftkings/BattleEfficiency/BattleEfficiency.json": "res/configs/Driftkings/BattleEfficiency/BattleEfficiency.json",
         "mods/configs/Driftkings/BattleEfficiency/i18n/en.json": "res/configs/Driftkings/BattleEfficiency/i18n/en.json",
+        "mods/configs/Driftkings/Driftkings_GUI/i18n/en.json": "res/configs/Driftkings/Driftkings_GUI/i18n/en.json",
 		
-		"mods/configs/Driftkings/BattleEfficiency/cache/wn8exp.json": "res/configs/Driftkings/BattleEfficiency/cache/wn8exp.json",
-		"mods/configs/Driftkings/BattleEfficiency/cache/wn8kttc.json": "res/configs/Driftkings/BattleEfficiency/cache/wn8kttc.json",
-		"mods/configs/Driftkings/BattleEfficiency/cache/xtdb.json": "res/configs/Driftkings/BattleEfficiency/cache/xtdb.json",
-		"mods/configs/Driftkings/BattleEfficiency/cache/xte.json": "res/configs/Driftkings/BattleEfficiency/cache/xte.json",
-		"mods/configs/Driftkings/BattleEfficiency/cache/xvmScales.json": "res/configs/Driftkings/BattleEfficiency/cache/xvmScales.json",
+		"mods/configs/Driftkings/DriftkingsStats/cache/wn8exp.json": "res/configs/Driftkings/DriftkingsStats/cache/wn8exp.json",
+		"mods/configs/Driftkings/DriftkingsStats/cache/xtdb.json": "res/configs/Driftkings/DriftkingsStats/cache/xtdb.json",
+		"mods/configs/Driftkings/DriftkingsStats/cache/xte.json": "res/configs/Driftkings/DriftkingsStats/cache/xte.json",
+		"mods/configs/Driftkings/DriftkingsStats/cache/xvmScales.json": "res/configs/Driftkings/DriftkingsStats/cache/xvmScales.json",
 		
         "mods/{GAME_VERSION}/Driftkings/BattleEfficiency.wotmod": "build/wotmods/Driftkings/BattleEfficiency.wotmod",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
-        "mods/{GAME_VERSION}/Driftkings/StatsCore.wotmod": "build/wotmods/Driftkings/StatsCore.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsStats.wotmod": "build/wotmods/Driftkings/DriftkingsStats.wotmod",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*"
     }

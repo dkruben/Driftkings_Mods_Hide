@@ -4,6 +4,7 @@
     "files": {
         "mods/configs/Driftkings/HangarOptions/HangarOptions.json": "res/configs/Driftkings/HangarOptions/HangarOptions.json",
         "mods/configs/Driftkings/HangarOptions/i18n/en.json": "res/configs/Driftkings/HangarOptions/i18n/en.json",
+        "mods/configs/Driftkings/Driftkings_GUI/i18n/en.json": "res/configs/Driftkings/Driftkings_GUI/i18n/en.json",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",

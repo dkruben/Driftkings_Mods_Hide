@@ -1,24 +1,25 @@
 ﻿# -*- coding: utf-8 -*-
 import traceback
+from collections import defaultdict
 
 from gui.shared.personality import ServicesLocator
 from gui.shared.utils.TimeInterval import TimeInterval
 from constants import ARENA_BONUS_TYPE
 
 from DriftkingsCore import getPlayer, getTarget, callback, cancelCallback
-from ._constants import MACROS, COMPARE_MACROS
+# from ._constants import MACROS, COMPARE_MACROS
 from .configs import g_config
 from .views import g_events
-from .containers import DataConstants
+from .containers import container  # , DataConstants
 
 
 class _CompareMacros(object):
     def __init__(self):
-        self.reset()
-
-    def reset(self):
         self.value2 = None
         self.value1 = None
+
+    def reset(self):
+        self.__init__()
 
     def setData(self, value1, value2):
         self.value1 = float(value1)
@@ -112,11 +113,13 @@ class Flash(object):
 g_flash = Flash()
 
 
-class InfoPanel(DataConstants):
+# class InfoPanel(DataConstants):
+class InfoPanel(object):
     def __init__(self):
+        self.macro = defaultdict(lambda: 'Macro not exist')
         self.timer = None
         self.hotKeyDown = False
-        super(InfoPanel, self).__init__()
+        # super(InfoPanel, self).__init__()
 
     def reset(self):
         self.__init__()
@@ -132,28 +135,104 @@ class InfoPanel(DataConstants):
         else:
             return None
 
-    def getTextFormatted(self):
-        if not g_config.data['enabled']:
-            return
+    # def getTextFormatted(self):
+    #    if not g_config.data['enabled']:
+    #        return
+    #    textFormat = g_config.data['format'] if g_config.data['enabled'] else None
+    #    for macro in MACROS:
+    #        if macro in textFormat:
+    #            funcName = macro.replace('{', '').replace('}', '')
+    #            funcResponse = self.getFuncResponse(funcName)
+    #            textFormat = textFormat.replace(macro, funcResponse)
+    #    for macro in COMPARE_MACROS:
+    #        if macro in textFormat:
+    #            reader = textFormat[textFormat.find(macro + '('):textFormat.find(')', textFormat.index(macro + '(') + 6) + 1]
+    #            func = reader[:reader.find('(')]
+    #            arg1 = reader[reader.find('(') + 1:reader.find(',')]
+    #            arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
+    #            g_macros.setData(arg1, arg2)
+    #            funcRes = getattr(g_macros, func)
+    #            textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
+    #    return textFormat
 
-        textFormat = g_config.data['format'] if g_config.data['enabled'] else None
-        for macro in MACROS:
-            if macro in textFormat:
-                funcName = macro.replace('{', '').replace('}', '')
-                funcResponse = self.getFuncResponse(funcName)
-                textFormat = textFormat.replace(macro, funcResponse)
-
-        for macro in COMPARE_MACROS:
-            if macro in textFormat:
-                reader = textFormat[textFormat.find(macro + '('):textFormat.find(')', textFormat.index(macro + '(') + 6) + 1]
-                func = reader[:reader.find('(')]
-                arg1 = reader[reader.find('(') + 1:reader.find(',')]
-                arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
-                g_macros.setData(arg1, arg2)
-                funcRes = getattr(g_macros, func)
-                textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
-
-        return textFormat
+    def refreshMacros(self):
+        self.macro['nick_name'] = container.nick_name
+        self.macro['marks_on_gun'] = container.marks_on_gun
+        self.macro['vehicle_type'] = container.vehicle_type
+        self.macro['vehicle_name'] = container.vehicle_name
+        self.macro['vehicle_system_name'] = container.vehicle_system_name
+        self.macro['icon_system_name'] = container.icon_system_name
+        self.macro['gun_name'] = container.gun_name
+        self.macro['gun_caliber'] = container.gun_caliber
+        self.macro['max_ammo'] = container.max_ammo
+        self.macro['gun_reload'] = container.gun_reload
+        self.macro['gun_dpm'] = container.gun_dpm
+        self.macro['gun_reload_equip'] = container.gun_reload_equip
+        self.macro['gun_dpm_equip'] = container.gun_dpm_equip
+        self.macro['gun_clip'] = container.gun_clip
+        self.macro['gun_clip_reload'] = ''
+        self.macro['gun_burst'] = ''
+        self.macro['gun_burst_reload'] = ''
+        self.macro['gun_aiming_time'] = ''
+        self.macro['gun_accuracy'] = ''
+        self.macro['shell_name_1'] = ''
+        self.macro['shell_name_2'] = ''
+        self.macro['shell_name_3'] = ''
+        self.macro['shell_damage_1'] = ''
+        self.macro['shell_damage_2'] = ''
+        self.macro['shell_damage_3'] = ''
+        self.macro['shell_power_1'] = ''
+        self.macro['shell_power_2'] = ''
+        self.macro['shell_power_3'] = ''
+        self.macro['shell_type_1'] = ''
+        self.macro['shell_type_2'] = ''
+        self.macro['shell_type_3'] = ''
+        self.macro['shell_speed_1'] = ''
+        self.macro['shell_speed_2'] = ''
+        self.macro['shell_speed_3'] = ''
+        self.macro['shell_distance_1'] = ''
+        self.macro['shell_distance_2'] = ''
+        self.macro['shell_distance_3'] = ''
+        self.macro['angle_pitch_up'] = ''
+        self.macro['angle_pitch_down'] = ''
+        self.macro['angle_pitch_left'] = ''
+        self.macro['angle_pitch_right'] = ''
+        self.macro['vehicle_max_health'] = ''
+        self.macro['armor_hull_front'] = ''
+        self.macro['armor_hull_side'] = ''
+        self.macro['armor_hull_back'] = ''
+        self.macro['turret_name'] = ''
+        self.macro['armor_turret_front'] = ''
+        self.macro['armor_turret_side'] = ''
+        self.macro['armor_turret_back'] = ''
+        self.macro['vehicle_weight'] = ''
+        self.macro['chassis_max_weight'] = ''
+        self.macro['engine_name'] = ''
+        self.macro['engine_power'] = ''
+        self.macro['engine_power_density'] = ''
+        self.macro['speed_forward'] = ''
+        self.macro['speed_backward'] = ''
+        self.macro['hull_speed_turn'] = ''
+        self.macro['turret_speed_turn'] = ''
+        self.macro['invis_stand'] = ''
+        self.macro['invis_stand_shot'] = ''
+        self.macro['invis_move'] = ''
+        self.macro['invis_move_shot'] = ''
+        self.macro['vision_radius'] = ''
+        self.macro['radio_name'] = ''
+        self.macro['radio_radius'] = ''
+        self.macro['nation'] = ''
+        self.macro['level'] = ''
+        self.macro['rlevel'] = ''
+        self.macro['pl_vehicle_weight'] = ''
+        self.macro['pl_gun_reload'] = ''
+        self.macro['pl_gun_reload_equip'] = ''
+        self.macro['pl_gun_dpm'] = ''
+        self.macro['pl_gun_dpm_equip'] = ''
+        self.macro['pl_vision_radius'] = ''
+        self.macro['pl_gun_aiming_time'] = container.pl_gun_aiming_time
+        text = g_config.data['format'] % self.macro
+        return text
 
     def hide(self):
         if self.timer is not None and self.timer.isStarted():
@@ -189,9 +268,9 @@ class InfoPanel(DataConstants):
             playerVehicle = player.getVehicleAttached()
             if playerVehicle is not None:
                 if hasattr(vehicle, 'typeDescriptor'):
-                    self.init(vehicle, playerVehicle)
+                    container.init(vehicle, playerVehicle)
                 elif hasattr(playerVehicle, 'typeDescriptor'):
-                    self.init(None, playerVehicle)
+                    container.init(None, playerVehicle)
 
             battle = ServicesLocator.appLoader.getDefBattleApp()
             target = getTarget()
@@ -200,7 +279,8 @@ class InfoPanel(DataConstants):
             if player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
                 return
             if target and battle is not None:
-                g_flash.addText(self.getTextFormatted())
+                # g_flash.addText(self.getTextFormatted())
+                g_flash.addText(self.refreshMacros())
 
 
 g_macros = _CompareMacros()

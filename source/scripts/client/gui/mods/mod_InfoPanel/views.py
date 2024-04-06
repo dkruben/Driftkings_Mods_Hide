@@ -117,12 +117,5 @@ class InfoPanelUI(View):
             self.flashObject.as_isDraggable(isDrag)
 
 
-def getFactories():
-    viewSettings = []
-    viewSettings.append(ViewSettings(alias=AS_INJECTOR, clazz=View, url=AS_SWF, layer=WindowLayer.WINDOW, scope=ScopeTemplates.DEFAULT_SCOPE))
-    viewSettings.append(ComponentSettings(AS_BATTLE, InfoPanelUI, ScopeTemplates.DEFAULT_SCOPE))
-    return viewSettings
-
-
-for item in getFactories():
-    g_entitiesFactories.addSettings(item)
+g_entitiesFactories.addSettings(ViewSettings(alias=AS_INJECTOR, clazz=View, url=AS_SWF, layer=WindowLayer.WINDOW, scope=ScopeTemplates.DEFAULT_SCOPE))
+g_entitiesFactories.addSettings(ComponentSettings(AS_BATTLE, InfoPanelUI, ScopeTemplates.DEFAULT_SCOPE))

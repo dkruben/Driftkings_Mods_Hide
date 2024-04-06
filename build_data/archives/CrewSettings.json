@@ -1,0 +1,13 @@
+﻿{
+    "enabled": true,
+    "ext": ".zip",
+    "files": {
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsettingsapi*": "res/wotmods/*modsettingsapi*",
+        "mods/{GAME_VERSION}/Driftkings/CrewSettings.wotmod": "build/wotmods/Driftkings/CrewSettings.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/configs/Driftkings/Driftkings_GUI/i18n/en.json": "res/configs/Driftkings/Driftkings_GUI/i18n/en.json",
+		"mods/configs/Driftkings/CrewSettings/CrewSettings.json": "res/configs/Driftkings/CrewSettings/CrewSettings.json",
+		"mods/configs/Driftkings/CrewSettings/i18n/en.json": "res/configs/Driftkings/CrewSettings/i18n/en.json"
+    }
+}
