@@ -4,11 +4,13 @@ import traceback
 from math import sin, radians
 from time import strftime
 
+from Event import SafeEvent
 import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
 import nations
 from Account import PlayerAccount
+from account_helpers.settings_core.settings_constants import GAME
 from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
 from constants import ITEM_DEFS_PATH
@@ -67,6 +69,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+        self.onModSettingsChanged = SafeEvent()
         self.values = {'vehicles': []}
         self.callback = None
         self.macros = {}
@@ -588,6 +591,13 @@ def new__populate(func, *args, **kwargs):
 
 
 # CAROUSEL
+def onModSettingsChanged():
+    ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
+
+
+config.onModSettingsChanged += onModSettingsChanged
+
+
 @override(TankCarousel, 'as_rowCountS')
 def new__rowCountS(func, self, row_count):
     if config.data['enabled'] and self.getAlias() == HANGAR_ALIASES.TANK_CAROUSEL:
