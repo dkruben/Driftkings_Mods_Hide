@@ -2,8 +2,8 @@
     "enabled": true,
     "ext": ".wotmod",
     "files": {
-        "res/scripts/client/DriftkingsInject/__init__.pyc" : "build/scripts/client/DriftkingsInject/__init__.pyc",
-        "res/scripts/client/DriftkingsInject/meta.pyc"     : "build/scripts/client/DriftkingsInject/meta.pyc",
+        "res/scripts/client/DriftkingsInject/__init__.pyc": "build/scripts/client/DriftkingsInject/__init__.pyc",
+        "res/scripts/client/DriftkingsInject/meta.pyc"    : "build/scripts/client/DriftkingsInject/meta.pyc",
 		
         "res/scripts/client/DriftkingsInject/common/__init__.pyc": "build/scripts/client/DriftkingsInject/common/__init__.pyc",
         "res/scripts/client/DriftkingsInject/common/events.pyc"  : "build/scripts/client/DriftkingsInject/common/events.pyc",
@@ -13,16 +13,14 @@
         "res/scripts/client/DriftkingsInject/utils/timers.pyc"       : "build/scripts/client/DriftkingsInject/utils/timers.pyc",
         "res/scripts/client/DriftkingsInject/utils/vehicle_cache.pyc": "build/scripts/client/DriftkingsInject/utils/vehicle_cache.pyc",
 
-        "res/scripts/client/DriftkingsInject/views/__init__.pyc"		     : "build/scripts/client/DriftkingsInject/views/__init__.pyc",
-        "res/scripts/client/DriftkingsInject/views/armorCalc_view.pyc"       : "build/scripts/client/DriftkingsInject/views/armorCalc_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/battleEfficiency_view.pyc": "build/scripts/client/DriftkingsInject/views/battleEfficiency_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/battleTimer_view.pyc"     : "build/scripts/client/DriftkingsInject/views/battleTimer_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc" : "build/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/distance_view.pyc"        : "build/scripts/client/DriftkingsInject/views/distance_view.pyc",
-        "res/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc"   : "build/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/infoPanel_view.pyc"   : "build/scripts/client/DriftkingsInject/views/infoPanel_view.pyc",
-        "res/scripts/client/DriftkingsInject/views/mainGun_view.pyc"         : "build/scripts/client/DriftkingsInject/views/mainGun_view.pyc",
-        "res/scripts/client/DriftkingsInject/views/ownHealth_view.pyc"       : "build/scripts/client/DriftkingsInject/views/ownHealth_view.pyc",
-        "res/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"      : "build/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"
+        "res/scripts/client/DriftkingsInject/views/__init__.pyc"		    : "build/scripts/client/DriftkingsInject/views/__init__.pyc",
+        "res/scripts/client/DriftkingsInject/views/armorCalc_view.pyc"      : "build/scripts/client/DriftkingsInject/views/armorCalc_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/battleTimer_view.pyc"    : "build/scripts/client/DriftkingsInject/views/battleTimer_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc": "build/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/distance_view.pyc"       : "build/scripts/client/DriftkingsInject/views/distance_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc"  : "build/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc",
+        "res/scripts/client/DriftkingsInject/views/mainGun_view.pyc"        : "build/scripts/client/DriftkingsInject/views/mainGun_view.pyc",
+        "res/scripts/client/DriftkingsInject/views/ownHealth_view.pyc"      : "build/scripts/client/DriftkingsInject/views/ownHealth_view.pyc",
+        "res/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"     : "build/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"
     }
 }

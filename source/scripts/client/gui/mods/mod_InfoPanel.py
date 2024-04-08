@@ -4,24 +4,12 @@ from math import degrees
 
 import Keys
 from Avatar import PlayerAvatar
-from Event import SafeEvent
 from constants import ARENA_BONUS_TYPE
-from frameworks.wulf import WindowLayer
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ComponentSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
-from gui.shared.personality import ServicesLocator
 from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
-from skeletons.gui.app_loader import GuiGlobalSpaceID
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, cancelCallback, callback, override, checkKeys
-
-AS_BATTLE = 'InfoPanelView'
-AS_INJECTOR = 'InfoPanelViewInjector'
-AS_SWF = 'InfoPanel.swf'
+from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, BigWorld_callback, logNote, logError
 
 
 MACROS = [
@@ -40,13 +28,10 @@ MACROS = [
     '{{pl_vehicle_weight}}', '{{pl_gun_reload}}', '{{pl_gun_reload_equip}}', '{{pl_gun_dpm}}', '{{pl_gun_dpm_equip}}', '{{pl_vision_radius}}', '{{pl_gun_aiming_time}}'
 ]
 
-COMPARE_MACROS = ['compareDelim', 'compareColor', 'isTarget', 'isPremium']
+COMPARE_MACROS = ['compareDelim', 'compareColor']
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        super(ConfigInterface, self).__init__()
-
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.3.5 %(file_compile_date)s'
@@ -63,13 +48,14 @@ class ConfigInterface(SimpleConfigInterface):
             'altKey': self.defaultKeys['altKey'],
             'compareValues': {'moreThan': {'delim': '&gt;', 'color': '#FF0000'}, 'equal': {'delim': '=', 'color': '#FFFFFF'}, 'lessThan': {'delim': '&lt;', 'color': '#00FF00'}},
             'format': '<font color=\'#F0F0F0\'><b>{{vehicle_name}}</b></font><br><textformat tabstops=\'[80]\'><font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font><tab><font color=\'#96CC29\'>{{vision_radius}} mt.</font></textformat>',
-            'textStyle': {'size': 14, 'font': '$TitleFont', 'align': 'left'},
             # flash
-            'textPosition': [632.0, 577.0],
-            'textShadow': {'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 2}
+            'textPosition': {'x': 40.0, 'y': 5.0},
+            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 2},
+            'textStyle': {'size': 14, 'font': '$TitleFont', 'align': 'left'}
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_textLock_text': 'Disable text mouse dragging',
             'UI_setting_textLock_tooltip': 'This setting controls whether you are able to move text window with a mouse or not.',
             'UI_setting_showFor_text': 'Show For',
@@ -106,9 +92,104 @@ class ConfigInterface(SimpleConfigInterface):
             'column2': []
         }
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if g_flash is not None:
+            g_flash.onApplySettings()
 
+
+class Flash(object):
+    def __init__(self, ID):
+        self.ID = ID
+        self.texts = []
+        self.isTextAnimating = False
+        self.setup()
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
+
+    def __updatePosition(self, alias, data):
+        if alias != self.ID:
+            return
+        config.onApplySettings({'textPosition': data})
+
+    def onApplySettings(self):
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
+
+    def setup(self):
+        self.texts = []
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.PANEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
+        self.createBox(0)
+
+    def createBox(self, idx):
+        g_guiFlash.createComponent(self.ID + '.text%s' % idx, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.BOTTOM})
+        shadow = config.data['textShadow']
+        if shadow['enabled']:
+            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'shadow': shadow})
+
+    def removeBox(self, idx):
+        g_guiFlash.deleteComponent(self.ID + '.text%s' % idx)
+
+    def addText(self, text):
+        if not config.data['enabled']:
+            return
+        if self.isTextAnimating:
+            BigWorld_callback(0.1, self.addText, text)
+            return
+        self.isTextAnimating = True
+        styleConf = config.data['textStyle']
+        text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (styleConf['size'], styleConf['font'], styleConf['align'], text)
+        if len(self.texts):
+            self.removeFirstText()
+        idx = len(self.texts)
+        self.texts.append(text)
+        if idx:
+            self.createBox(idx)
+        g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': text})
+        g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'alpha': 1.0}, {'duration': 0.5})
+        BigWorld_callback(0.5, self.onTextAdded)
+        BigWorld_callback(config.data['delay'] + 0.5, self.removeFirstText)
+
+    def onTextAdded(self):
+        self.isTextAnimating = False
+
+    def onTextRemoved(self):
+        for idx in xrange(len(self.texts)):
+            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': self.texts[idx], 'alpha': 1.0, 'y': 0})
+        idx = len(self.texts)
+        if idx:
+            self.removeBox(idx)
+        self.isTextAnimating = False
+
+    def removeFirstText(self):
+        if self.isTextAnimating:
+            BigWorld_callback(0.1, self.removeFirstText)
+            return
+        if self.texts:
+            logNote('removing first text')
+            del self.texts[0]
+        self.isTextAnimating = True
+        g_guiFlash.updateComponent(self.ID + '.text0', {'alpha': 0.0}, {'duration': 0.5})
+        for idx in xrange(1, len(self.texts) + 1):
+            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'y': 0}, {'duration': 0.5})
+        BigWorld_callback(0.5, self.onTextRemoved)
+
+
+g_flash = None
 config = ConfigInterface()
-statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+try:
+    from gambiter import g_guiFlash
+    from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
+
+    g_flash = Flash(config.ID)
+except ImportError:
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    logError('gambiter.GUIFlash not found. Text viewing disabled.')
+except StandardError:
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    traceback.print_exc()
+
+
+# g_flash = Flash()
 
 
 def _isEntitySatisfiesConditions(entity):
@@ -119,179 +200,6 @@ def _isEntitySatisfiesConditions(entity):
     showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
     aliveOnly = (not config.data['aliveOnly']) or (config.data['aliveOnly'] and entity.isAlive())
     return showFor and aliveOnly
-
-
-class Events(object):
-    def __init__(self):
-        self.hide = SafeEvent()
-        self.isDrag = SafeEvent()
-        self.onUpdatePosition = SafeEvent()
-        self.onUpdateUI = SafeEvent()
-        self.onAppResolution = SafeEvent()
-        self.setDefaultPosition = SafeEvent()
-        ServicesLocator.appLoader.onGUISpaceEntered += self.__onGUISpaceEntered
-
-    def _onAppResolution(self, *args, **kwargs):
-        self.onAppResolution(*args, **kwargs)
-
-    @staticmethod
-    def __onGUISpaceEntered(spaceID):
-        if spaceID == GuiGlobalSpaceID.BATTLE:
-            ServicesLocator.appLoader.getDefBattleApp().loadView(SFViewLoadParams(AS_INJECTOR))
-
-
-g_events = Events()
-
-
-class InfoPanelUI(View):
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(InfoPanelUI, self)._populate()
-        g_events.hide += self.as_hideS
-        #
-        g_events.onUpdateUI += self.onUpdateUI
-        g_events.setDefaultPosition += self.as_setDefaultPositionS
-        g_eventBus.addListener(events.GameEvent.FULL_STATS, self.handleToggleFullStats, scope=EVENT_BUS_SCOPE.BATTLE)
-        g_eventBus.addListener(events.GameEvent.SHOW_CURSOR, self.handleShowCursor, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_eventBus.addListener(events.GameEvent.HIDE_CURSOR, self.handleHideCursor, scope=EVENT_BUS_SCOPE.GLOBAL)
-
-    def _dispose(self):
-        g_events.onUpdateUI -= self.onUpdateUI
-        g_events.hide -= self.as_hideS
-        #
-        g_eventBus.removeListener(events.GameEvent.FULL_STATS, self.handleToggleFullStats, scope=EVENT_BUS_SCOPE.BATTLE)
-        g_eventBus.removeListener(events.GameEvent.SHOW_CURSOR, self.handleShowCursor, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_eventBus.removeListener(events.GameEvent.HIDE_CURSOR, self.handleHideCursor, scope=EVENT_BUS_SCOPE.GLOBAL)
-        # noinspection PyProtectedMember
-        super(InfoPanelUI, self)._dispose()
-
-    @staticmethod
-    def onUpdatePosition(x, y):
-        g_events.onUpdatePosition([x, y])
-
-    def onUpdateUI(self, conf, text):
-        position = conf.get('textPosition')
-        if position is None:
-            self.as_setDefaultPositionS()
-        else:
-            self.as_setPositionS(*position)
-        self.as_setTextS(text)
-        self.as_setShadowS(dict(conf['textShadow']))
-        self.as_isDraggableS(isDrag=not conf['textLock'])
-
-    def handleToggleFullStats(self, event):
-        self.as_setVisibleS(not event.ctx['isDown'])
-
-    def handleShowCursor(self, _):
-        self.as_setVisibleBBS(True)
-
-    def handleHideCursor(self, _):
-        self.as_setVisibleBBS(False)
-
-    def as_setScaleS(self, width, height):
-        if self._isDAAPIInited():
-            self.flashObject.as_setScale(width, height)
-
-    def as_setTextS(self, text):
-        if self._isDAAPIInited():
-            self.flashObject.as_setText(text)
-
-    def as_hideS(self, delay):
-        if self._isDAAPIInited():
-            self.flashObject.as_hide(delay)
-
-    def as_setVisibleS(self, value):
-        if self._isDAAPIInited():
-            self.flashObject.as_setVisible(value)
-
-    def as_setVisibleBBS(self, value):
-        if self._isDAAPIInited():
-            self.flashObject.as_setVisibleBB(value)
-
-    def as_setPositionS(self, x, y):
-        if self._isDAAPIInited():
-            self.flashObject.as_setPosition(x, y)
-
-    def as_setShadowS(self, linkage):
-        if self._isDAAPIInited():
-            self.flashObject.as_setShadow(linkage)
-
-    def as_setDefaultPositionS(self):
-        if self._isDAAPIInited():
-            self.flashObject.as_setDefaultPosition()
-
-    def as_isDraggableS(self, isDrag):
-        if self._isDAAPIInited():
-            self.flashObject.as_isDraggable(isDrag)
-
-
-class Flash(object):
-    def __init__(self):
-        self.texts = []
-        self.callbacks = []
-        self.isTextAdding = False
-        self.isTextRemoving = False
-        self.setup()
-        g_events.onUpdatePosition += self.onUpdatePosition
-
-    @property
-    def currentConfig(self):
-        return {
-            'textPosition': config.data['textPosition'],
-            'textShadow': config.data['textShadow'],
-            'textLock': config.data['textLock'],
-        }
-
-    def onUpdatePosition(self, position):
-        self.currentConfig['textPosition'] = position
-        config.onApplySettings({'textPosition': position})
-
-    def setup(self):
-        self.texts = []
-
-    @staticmethod
-    def removeBox(idx):
-        g_events.hide(idx)
-
-    def addText(self, text):
-        styleConf = config.data['textStyle']
-        text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (styleConf['size'], styleConf['font'], styleConf['align'], text)
-        if len(self.texts):
-            self.removeFirstText()
-        self.texts.append(text)
-        g_events.onUpdateUI(self.currentConfig, text)
-        self.isTextAdding = True
-        callback(0.5, self.onTextAddingComplete)
-        self.callbacks.append(callback(config.data['delay'] + 0.5, self.removeFirstText))
-
-    def onTextAddingComplete(self):
-        self.isTextAdding = False
-
-    def onTextRemovalComplete(self):
-        self.isTextRemoving = False
-        for idx in xrange(len(self.texts)):
-            g_events.onUpdateUI(self.currentConfig, self.texts[idx])
-        idx = len(self.texts)
-        self.removeBox(idx)
-
-    def removeFirstText(self):
-        if self.texts:
-            del self.texts[0]
-        if self.callbacks:
-            try:
-                cancelCallback(self.callbacks[0])
-            except ValueError:
-                pass
-            except StandardError:
-                traceback.print_exc()
-            del self.callbacks[0]
-        self.isTextRemoving = True
-        for idx in xrange(1, len(self.texts) + 1):
-            g_events.onUpdateUI(self.currentConfig, idx)
-        callback(0.5, self.onTextRemovalComplete)
-
-
-g_flash = Flash()
 
 
 class DataConstants(object):
@@ -650,15 +558,6 @@ class CompareMacros(object):
         elif self.value1 < self.value2:
             return config.data['compareValues']['lessThan']['color']
 
-    @property
-    def isTarget(self):
-        return '' if ((getTarget() is None) or g_mod.hotKeyDown) else 'trg'
-
-    @property
-    def isPremium(self):
-        _typeDescriptor = getTarget().getVehicleAttached().typeDescriptor if ((getTarget() is None) or g_mod.hotKeyDown) else getTarget().typeDescriptor
-        return 'premium' if ('premium' in _typeDescriptor.type.tags) else ''
-
 
 class InfoPanel(DataConstants):
     def __init__(self):
@@ -780,7 +679,3 @@ def new_destroyGUI(func, *args):
     if not getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         return
     g_mod.reset()
-
-
-g_entitiesFactories.addSettings(ViewSettings(alias=AS_INJECTOR, clazz=View, url=AS_SWF, layer=WindowLayer.WINDOW, scope=ScopeTemplates.DEFAULT_SCOPE))
-g_entitiesFactories.addSettings(ComponentSettings(AS_BATTLE, InfoPanelUI, ScopeTemplates.DEFAULT_SCOPE))

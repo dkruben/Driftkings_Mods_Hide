@@ -28,7 +28,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.shared.personality import ServicesLocator
 from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logDebug, isReplay
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -56,9 +56,10 @@ class ConfigInterface(SimpleConfigInterface):
             'disableSoundCommander': False,
             'stunSound': False,
             'muteTeamBaseSound': False,
-            # 'showAnonymous': False,
-            # 'hideClanName': False,
-            # 'hideBattlePrestige': False,
+            'showAnonymous': False,
+            'hideBadges': False,
+            'hideClanName': False,
+            'hideBattlePrestige': False,
             'color': 'FF002A',
             'showFriends': False,
             'inBattle': True,
@@ -91,12 +92,14 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showFriends_tooltip': '',
             'UI_setting_directivesOnlyFromStorage_text': 'Directives Only From Storage',
             'UI_setting_directivesOnlyFromStorage_tooltip': '',
-            # 'UI_setting_showAnonymous_text': 'Show Anonymous',
-            # 'UI_setting_showAnonymous_tooltip': '',
-            # 'UI_setting_hideClanName_text': 'Hide Clan Name',
-            # 'UI_setting_hideClanName_tooltip': '',
-            # 'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
-            # 'UI_setting_hideBattlePrestige_tooltip': ''
+            'UI_setting_showAnonymous_text': 'Show Anonymous',
+            'UI_setting_showAnonymous_tooltip': '',
+            'UI_setting_hideClanName_text': 'Hide Clan Name',
+            'UI_setting_hideClanName_tooltip': '',
+            'UI_setting_hideBadges_text': 'Hide Badges',
+            'UI_setting_hideBadges_tooltip': '',
+            'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
+            'UI_setting_hideBattlePrestige_tooltip': ''
         }
         super(ConfigInterface, self).init()
 
@@ -111,9 +114,10 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('showBattleHint'),
                 self.tb.createControl('showPostmortemDogTag'),
                 self.tb.createControl('stunSound'),
-                # self.tb.createControl('showAnonymous'),
-                # self.tb.createControl('hideClanName'),
-                # self.tb.createControl('hideBattlePrestige'),
+                self.tb.createControl('showAnonymous'),
+                self.tb.createControl('hideClanName'),
+                self.tb.createControl('hideBadges'),
+                self.tb.createControl('hideBattlePrestige'),
             ],
             'column2': [
                 self.tb.createControl('muteTeamBaseSound'),
@@ -278,7 +282,7 @@ def showFriends():
     return config.data['enabled'] and config.data['showFriends'] and not isReplay()
 
 
-@override(VehicleTypeInfoVO, '__init__')
+@overrideMethod(VehicleTypeInfoVO)
 def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
     func(self, *args, **kwargs)
     if config.data['enabled'] and showFriends():
@@ -296,31 +300,31 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 
 
 # hide badges
-# @override(VehicleArenaInfoVO)
-# def new__VehicleArenaInfoVO(func, self, *args, **kwargs):
-#    if kwargs:
-#        if config.data['hideBadges'] and 'badges' in kwargs:
-#            kwargs['badges'] = None
-#            kwargs['overriddenBadge'] = None
-#        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
-#            if kwargs['accountDBID'] == 0:
-#                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
-#        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
-#            kwargs['clanAbbrev'] = ''
-#        if config.data['hideBattlePrestige']:
-#            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = None
-#    return func(self, *args, **kwargs)
+@override(VehicleArenaInfoVO, '__init__')
+def new__VehicleArenaInfoVO(func, self, *args, **kwargs):
+    if kwargs:
+        if config.data['hideBadges'] and 'badges' in kwargs:
+            kwargs['badges'] = None
+            kwargs['overriddenBadge'] = None
+        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
+            if kwargs['accountDBID'] == 0:
+                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
+        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
+            kwargs['clanAbbrev'] = ''
+        if config.data['hideBattlePrestige']:
+            kwargs['prestigeLevel'] = kwargs['prestigeGradeMarkID'] = None
+    return func(self, *args, **kwargs)
 
 
-# @override(PlayerInfoVO, 'update')
-# def new__VehicleArenaInfoVO(func, self, **kwargs):
-#    if kwargs:
-#        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
-#            if kwargs['accountDBID'] == 0:
-#                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
-#        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
-#            kwargs['clanAbbrev'] = ''
-#    return func(self, **kwargs)
+@override(PlayerInfoVO, 'update')
+def new__VehicleArenaInfoVO(func, self, **kwargs):
+    if kwargs:
+        if config.data['showAnonymous'] and 'accountDBID' in kwargs:
+            if kwargs['accountDBID'] == 0:
+                kwargs['name'] = kwargs['fakeName'] = 'Anonymous'
+        if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
+            kwargs['clanAbbrev'] = ''
+    return func(self, **kwargs)
 
 
 @adisp_process
