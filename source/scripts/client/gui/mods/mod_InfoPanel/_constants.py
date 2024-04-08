@@ -1,6 +1,4 @@
 ﻿# -*- coding: utf-8 -*-
-from constants import ARENA_GUI_TYPE
-
 AS_BATTLE = 'InfoPanelView'
 AS_INJECTOR = 'InfoPanelViewInjector'
 AS_SWF = 'InfoPanel.swf'
@@ -22,5 +20,3 @@ MACROS = [
 ]
 
 COMPARE_MACROS = ['compareDelim', 'compareColor', 'isTarget', 'isPremium']
-
-DISABLED_BATTLES = (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING)

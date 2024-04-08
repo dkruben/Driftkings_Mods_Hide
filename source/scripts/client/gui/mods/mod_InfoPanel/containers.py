@@ -1,8 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-from nations import NAMES
-from helpers import i18n
-
 from math import degrees
+from nations import NAMES
 
 
 class DataConstants(object):
@@ -73,7 +71,9 @@ class DataConstants(object):
             return None
         else:
             time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * self._typeDescriptor.gun.shots[0].shell.damage[0], 0))
+            shell = self._typeDescriptor.gun.shots[0].shell
+            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
 
     def gun_reload_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         if not self._typeDescriptor:
@@ -105,7 +105,9 @@ class DataConstants(object):
         else:
             reload_equip = float(self.gun_reload_equip(eq1, eq2, eq3, eq4))
             time = reload_equip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * self._typeDescriptor.gun.shots[0].shell.damage[0], 0))
+            shell = self._typeDescriptor.gun.shots[0].shell
+            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
 
     def gun_clip(self):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.gun.clip[0])
@@ -135,13 +137,13 @@ class DataConstants(object):
         return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%s' % self._gunShots[2].shell.userString
 
     def shell_damage_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].shell.damage[0])
+        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].shell.armorDamage[0] if hasattr(self._gunShots[0].shell, 'armorDamage') else self._gunShots[0].shell.damage[0])
 
     def shell_damage_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].shell.damage[0])
+        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].shell.armorDamage[0] if hasattr(self._gunShots[1].shell, 'armorDamage') else self._gunShots[1].shell.damage[0])
 
     def shell_damage_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].shell.damage[0])
+        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].shell.armorDamage[0] if hasattr(self._gunShots[2].shell, 'armorDamage') else self._gunShots[2].shell.damage[0])
 
     def shell_power_1(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].piercingPower[0])
@@ -153,13 +155,13 @@ class DataConstants(object):
         return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].piercingPower[0])
 
     def shell_type_1(self):
-        return None if not self._gunShots or len(self._gunShots) < 1 else i18n.makeString('#ingame_gui:damageLog/shellType/%s' % self._gunShots[0].shell.kind.upper())
+        return None if (not self._gunShots) or (len(self._gunShots) < 1) else self._gunShots[0].shell.kind.lower()
 
     def shell_type_2(self):
-        return None if not self._gunShots or len(self._gunShots) < 2 else i18n.makeString('#ingame_gui:damageLog/shellType/%s' % self._gunShots[1].shell.kind.upper())
+        return None if (not self._gunShots) or (len(self._gunShots) < 2) else self._gunShots[1].shell.kind.lower()
 
     def shell_type_3(self):
-        return None if not self._gunShots or len(self._gunShots) < 3 else i18n.makeString('#ingame_gui:damageLog/shellType/%s' % self._gunShots[2].shell.kind.upper())
+        return None if (not self._gunShots) or (len(self._gunShots) < 3) else self._gunShots[2].shell.kind.lower()
 
     def shell_speed_1(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % round(self._gunShots[0].speed * 1.25)
@@ -282,13 +284,13 @@ class DataConstants(object):
         return None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.circularVisionRadius
 
     def radio_name(self):
-        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.radio.shortUserString
+        return None if not self._typeDescriptor else '%s' % self._typeDescriptor.radio.shortUserString
 
     def radio_radius(self):
         return None if not self._typeDescriptor else '%d' % self._typeDescriptor.radio.distance
 
     def nation(self):
-        return None if not self._typeDescriptor else (NAMES[self._typeDescriptor.type.customizationNationID])
+        return None if not self._typeDescriptor else NAMES[self._typeDescriptor.type.customizationNationID]
 
     def level(self):
         return None if not self._typeDescriptor else '%d' % self._typeDescriptor.type.level

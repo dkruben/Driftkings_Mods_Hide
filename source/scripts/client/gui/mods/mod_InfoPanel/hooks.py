@@ -9,10 +9,10 @@ from .data import g_mod, _isEntitySatisfiesConditions
 
 
 @override(PlayerAvatar, 'targetBlur')
-def new__targetBlur(base, self, prevEntity):
+def new__targetBlur(func, self, prevEntity):
     if g_config.data['enabled'] and _isEntitySatisfiesConditions(prevEntity):
         g_mod.updateBlur()
-    base(self, prevEntity)
+    func(self, prevEntity)
 
 
 @override(PlayerAvatar, 'targetFocus')
@@ -21,6 +21,14 @@ def new_targetFocus(func, self, entity):
     if not (g_config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
         return
     g_mod.update(entity)
+
+
+# @override(PlayerAvatar, '__guiSetTargetInFocus')
+# def new__guiSetTargetInFocus(func, self, entity, isFocused):
+#    func(self, entity, isFocused)
+#    if not (g_config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
+#        return
+#    g_mod.update(entity)
 
 
 @override(PlayerAvatar, 'handleKey')
