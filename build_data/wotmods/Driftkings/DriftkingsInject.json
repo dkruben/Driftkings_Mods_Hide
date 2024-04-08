@@ -20,6 +20,7 @@
 		"res/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc" : "build/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/distance_view.pyc"        : "build/scripts/client/DriftkingsInject/views/distance_view.pyc",
         "res/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc"   : "build/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/infoPanel_view.pyc"   : "build/scripts/client/DriftkingsInject/views/infoPanel_view.pyc",
         "res/scripts/client/DriftkingsInject/views/mainGun_view.pyc"         : "build/scripts/client/DriftkingsInject/views/mainGun_view.pyc",
         "res/scripts/client/DriftkingsInject/views/ownHealth_view.pyc"       : "build/scripts/client/DriftkingsInject/views/ownHealth_view.pyc",
         "res/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"      : "build/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"

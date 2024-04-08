@@ -16,6 +16,8 @@ class Events(object):
         self.onDispersionAngleChanged = SafeEvent()
         self.onMarkerColorChanged = SafeEvent()
         self.onArmorChanged = SafeEvent()
+        self.onUpdateVehicle = SafeEvent()
+        self.onUpdateBlur = SafeEvent()
 
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         ServicesLocator.appLoader.onGUISpaceLeft += self.onGUISpaceLeft

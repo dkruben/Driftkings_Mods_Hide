@@ -30,3 +30,5 @@ source/scripts/client/gui/mods/Config_Generator/creator.py
 source/scripts/client/gui/mods/Config_Generator/creator.py
 res/flash/BattleEffeciency/obj/BattleEffeciencyConfig.old
 res/flash/BattleEffeciency/obj/BattleEffeciencyConfig.xml
+res/flash/InfoPanel_V2/obj/InfoPanelConfig.xml
+res/flash/InfoPanel_V2/obj/InfoPanelConfig.old
