@@ -23,14 +23,6 @@ def new_targetFocus(func, self, entity):
     g_mod.update(entity)
 
 
-# @override(PlayerAvatar, '__guiSetTargetInFocus')
-# def new__guiSetTargetInFocus(func, self, entity, isFocused):
-#    func(self, entity, isFocused)
-#    if not (g_config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
-#        return
-#    g_mod.update(entity)
-
-
 @override(PlayerAvatar, 'handleKey')
 def new_handleKey(func, self, isDown, key, mods):
     func(self, isDown, key, mods)
