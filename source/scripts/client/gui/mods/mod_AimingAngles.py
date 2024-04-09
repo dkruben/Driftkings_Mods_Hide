@@ -123,7 +123,8 @@ class ConfigsInterface(SimpleConfigInterface):
 
     def createTemplate(self):
         return {
-            'modDisplayName': self.i18n['name'], 'enabled': self.data['enabled'],
+            'modDisplayName': self.ID,
+            'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createOptions('horizontal', [self.i18n['UI_setting_horizontal_%s' % i] for i in xrange(7)], self.tb.types.RadioButtonGroup)
             ],

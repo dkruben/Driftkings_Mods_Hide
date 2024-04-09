@@ -9,7 +9,7 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, BigWorld_callback, logNote, logError
+from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, BigWorld_callback, logError
 
 
 MACROS = [
@@ -145,11 +145,7 @@ class Flash(object):
             self.createBox(idx)
         g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': text})
         g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'alpha': 1.0}, {'duration': 0.5})
-        BigWorld_callback(0.5, self.onTextAdded)
         BigWorld_callback(config.data['delay'] + 0.5, self.removeFirstText)
-
-    def onTextAdded(self):
-        self.isTextAnimating = False
 
     def onTextRemoved(self):
         for idx in xrange(len(self.texts)):
@@ -157,16 +153,10 @@ class Flash(object):
         idx = len(self.texts)
         if idx:
             self.removeBox(idx)
-        self.isTextAnimating = False
 
     def removeFirstText(self):
-        if self.isTextAnimating:
-            BigWorld_callback(0.1, self.removeFirstText)
-            return
         if self.texts:
-            logNote('removing first text')
             del self.texts[0]
-        self.isTextAnimating = True
         g_guiFlash.updateComponent(self.ID + '.text0', {'alpha': 0.0}, {'duration': 0.5})
         for idx in xrange(1, len(self.texts) + 1):
             g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'y': 0}, {'duration': 0.5})
