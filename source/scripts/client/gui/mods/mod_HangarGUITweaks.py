@@ -56,13 +56,19 @@ class ConfigInterface(SimpleConfigInterface):
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
-            'enabled': True, 'showCompatibles': True,
-            'removeFromOther_devices': True, 'removeFromOther_customization': True,
-            'sort_progressionDecals': True, 'sort_personalReserves': True, 'sort_vehicleCarousel': False,
-            'filter_vehicleCarousel_normal': True, 'filter_vehicleCarousel_alliance': True,
+            'enabled': True,
+            'showCompatibles': True,
+            'removeFromOther_devices': True,
+            'removeFromOther_customization': True,
+            'sort_progressionDecals': True,
+            'sort_personalReserves': True,
+            'sort_vehicleCarousel': False,
+            'filter_vehicleCarousel_normal': True,
+            'filter_vehicleCarousel_alliance': True
         }
         self.i18n = {
-            'name': 'Hangar GUI Tweaks',
+            'name': self.ID,
+            'UI_version': self.version,
             'UI_setting_showCompatibles_text': 'Show compatible vehicles for modules in tech tree',
             'UI_setting_showCompatibles_tooltip': (
                 'This setting adds the list of compatible vehicles into tooltips of vehicle modules, '
@@ -100,7 +106,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['name'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showCompatibles'),

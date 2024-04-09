@@ -52,6 +52,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_replaceOriginalCircle_text': 'Replace Original Circle',
             'UI_setting_replaceOriginalCircle_tooltip': '',
             'UI_setting_useServerDispersion_text': 'Enable server scope (extra lap)',
@@ -69,7 +70,6 @@ class ConfigInterface(SimpleConfigInterface):
         percent = self.i18n['UI_setting_scale_size']
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('replaceOriginalCircle'),

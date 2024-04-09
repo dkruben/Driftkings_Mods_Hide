@@ -27,6 +27,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_logSwapper_text': 'Enable Reverse Log.',
             'UI_setting_logSwapper_tooltip': 'Reverses the position of the damage log.',
             'UI_setting_wgLogHideCritics_text': 'WG Log Hide Critics',
@@ -41,7 +42,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('logSwapper'),

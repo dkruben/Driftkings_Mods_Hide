@@ -48,6 +48,7 @@ class ConfigsInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_min_text': 'Min Zoom Out',
             'UI_setting_min_tooltip': '',
             'UI_setting_max_text': 'Max Zoom Out',
@@ -62,7 +63,6 @@ class ConfigsInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('scrollSensitivity', 1.0, 100.0, 1.0, '{{value}} %'),

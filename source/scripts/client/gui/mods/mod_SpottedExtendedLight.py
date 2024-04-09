@@ -48,6 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_sound_text': 'Use sound in battle',
             'UI_setting_sound_tooltip': '',
             'UI_setting_sound_default': 'Default: %s' % ('On' if self.data['sound'] else 'Off'),
@@ -116,7 +117,6 @@ class ConfigInterface(SimpleConfigInterface):
         xColorAssistStun['tooltip'] %= {'messageColorAssistStun': self.data['messageColorAssistStun']}
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('sound'),

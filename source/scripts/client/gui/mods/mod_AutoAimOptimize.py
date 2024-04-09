@@ -32,6 +32,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_angle_text': 'Set angle to catch target',
             'UI_setting_angle_value': 'x',
             'UI_setting_catchHiddenTarget_text': 'Catch target hidden behind an obstacle',
@@ -44,7 +45,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('angle', 0, 90.0, 0.1, '{{value}}%s' % self.i18n['UI_setting_angle_value'])

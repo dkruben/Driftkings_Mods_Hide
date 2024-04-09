@@ -40,6 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_activateMessage_text': 'Show Activation Message',
             'UI_setting_activateMessage_tooltip': 'Show Activation Message in battle',
             'UI_setting_fixAccuracyInMove_text': 'Fix Accuracy',
@@ -66,7 +67,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('serverTurret'),

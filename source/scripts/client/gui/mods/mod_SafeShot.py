@@ -45,7 +45,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': self.version,
-            #
             'UI_setting_wasteShotBlock_text': 'Waste Shot Block',
             'UI_setting_wasteShotBlock_tooltip': '',
             'UI_setting_teamShotBlock_text': 'Team Shot Block',

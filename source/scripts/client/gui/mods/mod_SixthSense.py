@@ -64,6 +64,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_defaultIcon_text': 'Default Icon',
             'UI_setting_defaultIcon_tooltip': 'Use embedded image.',
             'UI_setting_lampShowTime_text': 'Lamp Show Time',
@@ -91,7 +92,6 @@ class ConfigInterface(SimpleConfigInterface):
         infoSLabel['text'] += ''
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('defaultIcon'),

@@ -165,6 +165,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_message': 'MoE change visual %s',
             'UI_setting_buttonShow_text': 'Button: Change Style',
             'UI_setting_buttonShow_tooltip': '',
@@ -273,7 +274,6 @@ class ConfigInterface(SimpleConfigInterface):
         xColorUnknown['tooltip'] = xColorUnknown['tooltip'].replace('{/BODY}', '\n'.join(textExamples) + '{/BODY}')
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showInStatistic'),

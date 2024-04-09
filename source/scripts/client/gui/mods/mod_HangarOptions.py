@@ -156,22 +156,18 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Display of missing experience to unlock vehicles.',
             'UI_setting_premiumTime_text': 'Premium Time',
             'UI_setting_premiumTime_tooltip': 'Display exact premium time.',
-            #
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': 'Horizontal position',
             'UI_setting_y_text': 'Position Y',
             'UI_setting_y_tooltip': 'Vertical position',
-            #
             'UI_setting_rows_text': 'Rows',
             'UI_setting_rows_tooltip': 'Rows Number',
             'UI_setting_smallCarousel_text': 'Small Carousel',
             'UI_setting_smallCarousel_tooltip': 'Enable Small Carousel',
-            #
             'UI_techTree_shootingRadius': 'Shooting Radius',
             'UI_techTree_m': 'M.',
-            #
             'UI_nations_order': '[\'ussr\', \'germany\', \'usa\', \'china\', \'france\', \'uk\', \'japan\', \'czech\', \'poland\', \'sweden\', \'italy\']',
             'UI_roles_order': '[\'commander\', \'gunner\', \'driver\', \'radioman\', \'loader\']',
             'UI_sorting_criteria': '[\'nation\', \'role\', \'level\', \'-level\', \'XP\', \'-XP\', \'gender\', \'-gender\', \'inVehicle\', \'-inVehicle\', \'vehicle\']',

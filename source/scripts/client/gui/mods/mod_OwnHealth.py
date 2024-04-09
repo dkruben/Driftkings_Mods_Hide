@@ -50,6 +50,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': '',
             'UI_setting_y_text': 'Position Y',
@@ -60,7 +61,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),

@@ -56,10 +56,11 @@ class ConfigInterface(SimpleConfigInterface):
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'hideAvailableBooster': False,
+            'hideAvailableBooster': False
         }
         self.i18n = {
-            'name': 'Hangar Booster Viewer',
+            'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_hideAvailableBooster_text': 'Hide available booster icon and quantity',
             'UI_setting_hideAvailableBooster_tooltip': 'Hides default plus icon and quantity of available boosters',
         }
@@ -68,7 +69,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['name'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('hideAvailableBooster'),

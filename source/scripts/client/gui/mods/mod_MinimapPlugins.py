@@ -71,6 +71,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_permanentMinimapDeath_text': 'Permanent Minimap Death',
             'UI_setting_permanentMinimapDeath_tooltip': 'Always show the destroyed on the map',
             'UI_setting_showNames_text': 'Show Names',
@@ -114,7 +115,6 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('permanentMinimapDeath'),

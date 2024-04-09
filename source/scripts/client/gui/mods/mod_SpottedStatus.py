@@ -30,10 +30,7 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'text': {
-                'x': -60,
-                'y': 0
-            },
+            'text': {'x': -60, 'y': 0},
             'neverSeen': '<img src=\'img://' + self.place + 'neverSeen.png\' width=\'22\' height=\'22\'>',
             'spotted': '<img src=\'img://' + self.place + 'spotted.png\' width=\'22\' height=\'22\'>',
             'lost': '<img src=\'img://' + self.place + 'lost.png\' width=\'22\' height=\'22\'>',
@@ -41,6 +38,7 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_neverSeen_text': 'Never Seen',
             'UI_setting_neverSeen_tooltip': '',
             'UI_setting_spotted_text': 'Spotted',
@@ -49,7 +47,6 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
             'UI_setting_lost_tooltip': '',
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
-            #
             'UI_setting_help_text': 'Help:',
             'UI_setting_help_tooltip': ' * You can change images to text or icons.\n'
                                        ' * For icons go to ../Games/WorldOfTanks_xx/mods/configs/Driftkings/SpottedStatus/icons/*.png and replace names\n'
@@ -63,7 +60,6 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         help['tooltip'] += 'help'
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('neverSeen', self.tb.types.TextInput, 350),

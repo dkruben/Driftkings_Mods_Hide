@@ -46,6 +46,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_showInTechTree_text': 'TechTree: enabled',
             'UI_setting_showInTechTree_tooltip': '',
             'UI_setting_showInTechTreeMastery_text': 'TechTree: show Mastery',
@@ -64,7 +65,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showInTechTree'),

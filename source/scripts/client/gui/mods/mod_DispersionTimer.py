@@ -47,6 +47,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_template_text': 'Template',
             'UI_setting_template_tooltip': 'Macros \'%(color)s\', %(timer).1fs, %(percent)d%%',
             'UI_setting_colorRed_text': 'Choose Color for dispersion timer bad:',
@@ -96,7 +97,6 @@ class ConfigInterface(SimpleConfigInterface):
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
-            'settingsVersion': 1,
             'column1': [
                 colorLabelRed,
                 colorLabelOrange,

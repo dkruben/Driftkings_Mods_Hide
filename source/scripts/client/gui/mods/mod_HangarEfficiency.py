@@ -41,6 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_avgAssist_text': 'Avg Assist',
             'UI_setting_avgAssist_tooltip': '',
             'UI_setting_avgBlocked_text': 'Avg Blocked',
@@ -59,7 +60,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('avgAssist'),

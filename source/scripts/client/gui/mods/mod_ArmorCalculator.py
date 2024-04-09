@@ -62,6 +62,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_displayOnAllies_text': 'Display On Allies',
             'UI_setting_displayOnAllies_tooltip': '',
             'UI_noDamage': 'Critical hit, no damage.',
@@ -79,7 +80,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('displayOnAllies'),

@@ -40,7 +40,8 @@ class PlayersPanelController(SimpleConfigInterface):
             'toggle_key': self.defaultKeys['toggle_key']
         }
         self.i18n = {
-            'UI_description': 'PlayersPanelHP',
+            'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_mode_text': 'Displaying mode',
             'UI_setting_mode_tooltip': (
                 ' • <b>Always</b> - HP markers will always be displayed.\n'
@@ -57,7 +58,6 @@ class PlayersPanelController(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])
