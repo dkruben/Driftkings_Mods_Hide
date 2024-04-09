@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+from functools import partial
 import traceback
 from math import degrees
 
@@ -9,7 +10,7 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, BigWorld_callback, logError
+from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback
 
 
 MACROS = [
@@ -102,7 +103,9 @@ class Flash(object):
     def __init__(self, ID):
         self.ID = ID
         self.texts = []
-        self.isTextAnimating = False
+        self.callbacks = []
+        self.isTextAdding = False
+        self.isTextRemoving = False
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
@@ -120,7 +123,7 @@ class Flash(object):
         self.createBox(0)
 
     def createBox(self, idx):
-        g_guiFlash.createComponent(self.ID + '.text%s' % idx, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.BOTTOM})
+        g_guiFlash.createComponent(self.ID + '.text%s' % idx, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.TOP})
         shadow = config.data['textShadow']
         if shadow['enabled']:
             g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'shadow': shadow})
@@ -131,10 +134,9 @@ class Flash(object):
     def addText(self, text):
         if not config.data['enabled']:
             return
-        if self.isTextAnimating:
-            BigWorld_callback(0.1, self.addText, text)
+        if self.isTextAdding:
+            callback(0.1, partial(self.addText, text))
             return
-        self.isTextAnimating = True
         styleConf = config.data['textStyle']
         text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (styleConf['size'], styleConf['font'], styleConf['align'], text)
         if len(self.texts):
@@ -145,22 +147,43 @@ class Flash(object):
             self.createBox(idx)
         g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': text})
         g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'alpha': 1.0}, {'duration': 0.5})
-        BigWorld_callback(config.data['delay'] + 0.5, self.removeFirstText)
+        self.isTextAdding = True
+        callback(0.5, self.onTextAddingComplete)
+        self.callbacks.append(callback(config.data['delay'] + 0.5, self.removeFirstText))
 
-    def onTextRemoved(self):
+    def onTextAddingComplete(self):
+        self.isTextAdding = False
+
+    def onTextRemovalComplete(self):
+        self.isTextRemoving = False
+        bgConf = config.data['textBackground']
+        height = bgConf['height']
         for idx in xrange(len(self.texts)):
-            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': self.texts[idx], 'alpha': 1.0, 'y': 0})
+            y = height * idx
+            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': self.texts[idx], 'alpha': 1.0, 'y': y})
         idx = len(self.texts)
         if idx:
             self.removeBox(idx)
 
     def removeFirstText(self):
+        if self.isTextRemoving:
+            callback(0.1, self.removeFirstText)
+            return
         if self.texts:
             del self.texts[0]
+        if self.callbacks:
+            try:
+                cancelCallback(self.callbacks[0])
+            except ValueError:
+                pass
+            except StandardError:
+                traceback.print_exc()
+            del self.callbacks[0]
+        self.isTextRemoving = True
         g_guiFlash.updateComponent(self.ID + '.text0', {'alpha': 0.0}, {'duration': 0.5})
         for idx in xrange(1, len(self.texts) + 1):
             g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'y': 0}, {'duration': 0.5})
-        BigWorld_callback(0.5, self.onTextRemoved)
+        callback(0.5, self.onTextRemovalComplete)
 
 
 g_flash = None
