@@ -4,16 +4,17 @@ import traceback
 from math import sin, radians
 from time import strftime
 
-from Event import SafeEvent
 import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
 import nations
 from Account import PlayerAccount
-from account_helpers.settings_core.settings_constants import GAME
 from CurrentVehicle import g_currentVehicle
+from Event import SafeEvent
 from HeroTank import HeroTank
+from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
+from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
@@ -56,7 +57,7 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
@@ -70,7 +71,6 @@ class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         self.onModSettingsChanged = SafeEvent()
-        self.values = {'vehicles': []}
         self.callback = None
         self.macros = {}
         super(ConfigInterface, self).__init__()
@@ -104,6 +104,7 @@ class ConfigInterface(SimpleConfigInterface):
             'showButtonCounters': True,
             'allowExchangeXPInTechTree': True,
             'premiumTime': False,
+            'lootboxesWidget': False,
             'clock': True,
             'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
             'x': 1900,
@@ -156,6 +157,10 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Display of missing experience to unlock vehicles.',
             'UI_setting_premiumTime_text': 'Premium Time',
             'UI_setting_premiumTime_tooltip': 'Display exact premium time.',
+
+            'UI_setting_lootboxesWidget_text': 'Loot boxes Widget',
+            'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
+
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
             'UI_setting_x_text': 'Position X',
@@ -199,6 +204,7 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('showPremiumShopButton'),
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('showXpToUnlockVeh'),
+                self.tb.createControl('lootboxesWidget'),
                 self.tb.createControl('clock'),
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
                 self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y'),
@@ -207,6 +213,11 @@ class ConfigInterface(SimpleConfigInterface):
 
             ]
         }
+
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if self.data['enabled']:
+            ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
 
     @staticmethod
     def onGUISpaceEntered(spaceID):
@@ -440,6 +451,9 @@ def new__construct(func, self):
 
 
 # TechTree
+# noinspection PyTypeChecker
+# noinspection PyUnusedLocal
+# noinspection PyProtectedMember
 def _getRanges(turret, gun, nation, vClass):
     visionRadius = 0
     firingRadius = 0
@@ -503,6 +517,9 @@ shells = {}
 myVehicles = set()
 
 
+# noinspection PyTypeChecker
+# noinspection PyUnusedLocal
+# noinspection PyProtectedMember
 def getShots():
     xmlPath = '%svehicles/%s/components/guns.xml' % (ITEM_DEFS_PATH, nation)
     section = ResMgr.openSection(xmlPath)
@@ -514,6 +531,9 @@ def getShots():
     return result
 
 
+# noinspection PyTypeChecker
+# noinspection PyUnusedLocal
+# noinspection PyProtectedMember
 def getGuns():
     xmlPath = '%svehicles/%s/list.xml' % (ITEM_DEFS_PATH, nation)
     vehicles = ResMgr.openSection(xmlPath)
@@ -583,14 +603,15 @@ def new__populate(func, *args, **kwargs):
         config.isBattle = False
 
 
+# hide lootboxes widget in tank carousel in hangar
+@overrideStaticMethod(EventLootBoxesEntryPointWidget, 'getIsActive')
+def LootBoxesEntryPointWidget_getIsActive(func, self):
+    if not config.data['enabled'] and not config.data['lootboxesWidget']:
+        return False
+    return func(self)
+
+
 # CAROUSEL
-def onModSettingsChanged():
-    ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
-
-
-config.onModSettingsChanged += onModSettingsChanged
-
-
 @override(TankCarousel, 'as_rowCountS')
 def new__rowCountS(func, self, row_count):
     if config.data['enabled'] and self.getAlias() == HANGAR_ALIASES.TANK_CAROUSEL:

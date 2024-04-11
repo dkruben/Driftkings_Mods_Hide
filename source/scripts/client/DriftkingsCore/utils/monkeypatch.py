@@ -33,9 +33,9 @@ def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
     """
     :param obj: object, which attribute needs overriding
     :param prop: attribute name (can be not mangled), attribute must be callable
-    :param getter: fget function or None
-    :param setter: fset function or None
-    :param deleter: fdel function or None
+    :param getter: f_get function or None
+    :param setter: f_set function or None
+    :param deleter: f_del function or None
     :return function: unmodified getter or, if getter is None and src is not property, decorator"""
 
     if getter:
@@ -185,7 +185,7 @@ class HooksDecorators(object):
                     return new_method(old_method, *args, **kwargs)
                 setattr(wg_class, method_name, __override)
             else:
-                logError('overrideMethod error: {} in {} is not callable or undefined in {}', method_name, class_name, new_method.__name__)
+                logError('overrideMethod error: {} in {} is not callable or undefined in {}'.format(method_name, class_name, new_method.__name__))
             return new_method
 
         return outer
