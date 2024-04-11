@@ -10,7 +10,7 @@ from frameworks.wulf import WindowLayer
 from gui.impl.dialogs import dialogs
 from gui.impl.dialogs.builders import WarningDialogBuilder
 from gui.impl.pub.dialog_window import DialogButtons as DButtons
-from gui.shared.personality import ServicesLocator as SL
+from gui.shared.personality import ServicesLocator
 from helpers import getClientVersion
 from wg_async import wg_await, wg_async
 
@@ -24,8 +24,6 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         self.was_declined = False
         events.LoginView.populate.after(events.LobbyView.populate.after(events.PlayerAvatar.startGUI.after(self.tryRestart)))
         super(ConfigInterface, self).__init__()
-
-    LOG = property(lambda self: self.ID + ':')
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -80,17 +78,14 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         print self.LOG, 'requesting client restart...'
         reasons = []
         if self.data['debug']:
-            reasons = [
-                self.i18n['UI_restart_' + key] + ', '.join('<b>%s</b>' % x for x in remDups(self.editedBanks[key]))
-                for key in self.editedBanks if self.editedBanks[key]]
+            reasons = [self.i18n['UI_restart_' + key] + ', '.join('<b>%s</b>' % x for x in remDups(self.editedBanks[key])) for key in self.editedBanks if self.editedBanks[key]]
         reasonStr = self.i18n['UI_restart_reason'].format(';\n'.join(reasons)) if reasons else ''
-        dialogText = self.i18n['UI_restart_text'].format(
-            reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
+        dialogText = self.i18n['UI_restart_text'].format(reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
         builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(self.i18n['UI_restart_header'])
         for ID, key in (DButtons.PURCHASE, 'restart'), (DButtons.RESEARCH, 'shutdown'), (DButtons.SUBMIT, 'close'):
             builder.addButton(ID, None, ID == DButtons.PURCHASE, rawLabel=self.i18n['UI_restart_button_%s' % key])
         try:
-            parent = SL.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
+            parent = ServicesLocator.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
         except (AttributeError, TypeError):
             parent = None
         result = yield wg_await(dialogs.show(builder.build(parent)))
@@ -191,7 +186,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         while True:
             orig_engine = ResMgr.openSection('engine_config.xml')
             if orig_engine is None:
-                print _config.LOG, 'ERROR: engine_config.xml not found'
+                print self.LOG, 'ERROR: engine_config.xml not found'
                 return
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
@@ -225,10 +220,8 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
             profile = soundMgr[soundMgr[profile_name].asString]
             self.manageProfileMemorySettings(profile_type, profile)
             self.manageProfileBanks(profile_type, profile, bankFiles)
-        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',
-                         ('delete', 'move', 'remap'))
-        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',
-                         ('delete', 'move', 'create', 'memory'))
+        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml', ('delete', 'move', 'remap'))
+        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml', ('delete', 'move', 'create', 'memory'))
 
     def collectBankFiles(self, mediaPath):
         bankFiles = {
@@ -275,7 +268,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         audio_mods_new = ResMgr.openSection(mediaPath + '/audio_mods_edited.xml', True)
         audio_mods_banks = []
         if audio_mods is None:
-            print _config.LOG, 'audio_mods.xml not found, will be created if needed'
+            print self.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
             {
                 'name': 'events',
@@ -433,5 +426,5 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
                 os.rename(new_path, orig_path)
 
 
-_config = ConfigInterface()
-statistic_mod = Analytics(_config.ID, _config.version, 'UA-121940539-1')
+config = ConfigInterface()
+statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')

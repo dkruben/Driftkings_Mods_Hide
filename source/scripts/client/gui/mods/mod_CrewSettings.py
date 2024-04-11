@@ -2,7 +2,7 @@
 # Crew return
 import json
 import os
-from io import open as _open
+from io import open
 
 from CurrentVehicle import g_currentVehicle
 from frameworks.wulf import WindowLayer
@@ -55,7 +55,7 @@ def encodeData(data):
 def openJsonFile(path):
     """Gets a dict from JSON."""
     if os.path.exists(path):
-        with _open(path, 'r', encoding='utf-8') as dataFile:
+        with open(path, 'r', encoding='utf-8') as dataFile:
             try:
                 return encodeData(json.load(dataFile, encoding='utf-8'))
             except ValueError:
@@ -64,7 +64,7 @@ def openJsonFile(path):
 
 def writeJsonFile(path, data):
     """Creates a new json file in a folder or replace old."""
-    with _open(path, 'w', encoding='utf-8') as dataFile:
+    with open(path, 'w', encoding='utf-8') as dataFile:
         dataFile.write(unicode(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=2, sort_keys=True)))
 
 

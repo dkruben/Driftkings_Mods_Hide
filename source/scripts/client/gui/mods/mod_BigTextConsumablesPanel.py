@@ -4,7 +4,7 @@ from gui.Scaleform.daapi.view.meta.ConsumablesPanelMeta import ConsumablesPanelM
 from gui.Scaleform.framework import ScopeTemplates as ST, ViewSettings, WindowLayer as WL, g_entitiesFactories
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.shared.personality import ServicesLocator as SL
+from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
 from DriftkingsCore import override, logNote
@@ -18,7 +18,7 @@ class BigTextConsumablesPanel(View):
     def __onGUISpaceEntered(spaceID):
         if spaceID != GuiGlobalSpaceID.BATTLE:
             return
-        app = SL.appLoader.getDefBattleApp()
+        app = ServicesLocator.appLoader.getDefBattleApp()
         if app is not None:
             app.loadView(SFViewLoadParams(BigTextConsumablesPanel.__name__))
 
