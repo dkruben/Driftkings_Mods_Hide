@@ -18,7 +18,11 @@
     },
     "delay": 5,
     "textLock": false,
-    "textPosition": {"x": 632.0, "y": 577.0},
+    "format": "<font color='#F0F0F0'><b>{{vehicle_name}}</b></font><br><textformat tabstops='[80]'><font color='#14AFF1'>{{gun_reload_equip}} sec.</font><tab><font color='#96CC29'>{{vision_radius}} mt.</font></textformat>",
+        "textPosition": {
+        "x": 399.0,
+        "y": 835.0
+    },
     "textShadow": {
         "alpha": 0.8,
         "angle": 90,
@@ -26,10 +30,10 @@
         "blurY": 2,
         "color": "#000000",
         "distance": 0,
+        "enabled": true,
         "quality": 2,
         "strength": 2
     },
-    "format": "<font color='#F0F0F0'><b>{{vehicle_name}}</b></font><br><textformat tabstops='[80]'><font color='#14AFF1'>{{gun_reload_equip}} sec.</font><tab><font color='#96CC29'>{{vision_radius}} mt.</font></textformat>",
     "showFor": 0,
     "textStyle": {
         "align": "left",

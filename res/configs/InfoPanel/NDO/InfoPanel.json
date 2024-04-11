@@ -20,7 +20,10 @@
     "showFor": 0,
     "delay": 5,
     "textLock": false,
-    "textPosition": {"x": 632.0, "y": 577.0},
+    "textPosition": {
+        "x": 399.0,
+        "y": 835.0
+    },
     "textShadow": {
         "alpha": 0.8,
         "angle": 90,
@@ -28,6 +31,7 @@
         "blurY": 2,
         "color": "#000000",
         "distance": 0,
+        "enabled": true,
         "quality": 2,
         "strength": 2
     },
