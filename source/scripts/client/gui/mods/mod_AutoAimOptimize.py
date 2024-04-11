@@ -15,7 +15,6 @@ class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         self.player = None
         self.angle = None
-        self.version_int = 1.45
         super(ConfigInterface, self).__init__()
 
     def init(self):

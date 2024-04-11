@@ -17,7 +17,6 @@ from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, override
 
 class PlayersPanelController(SimpleConfigInterface):
     vCache = property(lambda self: self.__vCache)
-
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):

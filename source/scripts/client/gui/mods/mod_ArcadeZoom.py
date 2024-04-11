@@ -30,7 +30,6 @@ class PostmortemDelay(object):
 class ConfigsInterface(SimpleConfigInterface):
     def __init__(self):
         self.camCache = {}
-        self.version_int = 1.00
         super(ConfigsInterface, self).__init__()
 
     def init(self):

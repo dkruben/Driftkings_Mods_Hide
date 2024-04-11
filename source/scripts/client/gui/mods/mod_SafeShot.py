@@ -144,5 +144,5 @@ def new_startGUI(func, *args):
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new__destroyGUI(func, *args):
     func(*args)
-    config.startBattle()
+    config.stopBattle()
     config.deadDict = {}

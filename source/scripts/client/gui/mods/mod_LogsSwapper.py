@@ -9,8 +9,6 @@ validated = {}
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'

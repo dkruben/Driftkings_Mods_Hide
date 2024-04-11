@@ -390,7 +390,7 @@ def new_destroyGUI(func, *args):
 
 @override(BattleResultsWindow, 'as_setDataS')
 def new_setDataS(func, self, data):
-    if g_config.isEnabled and not g_config.data['battleResultsWindow']:
+    if g_config.data['enabled'] and not g_config.data['battleResultsWindow']:
         return func(self, data)
 
     def _normalizeString(s):

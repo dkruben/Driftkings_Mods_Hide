@@ -167,10 +167,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_smallCarousel_text': 'Small Carousel',
             'UI_setting_smallCarousel_tooltip': 'Enable Small Carousel',
             'UI_techTree_shootingRadius': 'Shooting Radius',
-            'UI_techTree_m': 'M.',
-            'UI_nations_order': '[\'ussr\', \'germany\', \'usa\', \'china\', \'france\', \'uk\', \'japan\', \'czech\', \'poland\', \'sweden\', \'italy\']',
-            'UI_roles_order': '[\'commander\', \'gunner\', \'driver\', \'radioman\', \'loader\']',
-            'UI_sorting_criteria': '[\'nation\', \'role\', \'level\', \'-level\', \'XP\', \'-XP\', \'gender\', \'-gender\', \'inVehicle\', \'-inVehicle\', \'vehicle\']',
+            'UI_techTree_m': 'M.'
         }
         super(ConfigInterface, self).init()
 

@@ -33,7 +33,6 @@ class ConfigInterface(SimpleConfigInterface):
 
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
-        self.version_int = 1.00
         super(ConfigInterface, self).__init__()
 
     def init(self):

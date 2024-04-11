@@ -1,25 +1,6 @@
 ﻿{
     "allowExchangeXPInTechTree": true,
     "autoLogin": true,
-    "barracks": {
-        "nations_order": [
-            "ussr",
-            "germany",
-            "usa",
-            "china",
-            "france",
-            "uk",
-            "japan",
-            "czech",
-            "poland",
-            "sweden",
-            "italy"
-        ],
-        "roles_order": [],
-        "sorting_criteria": ["nation", "inVehicle", "vehicle", "role"]
-    },
-    "barracksShowFlags": true,
-    "barracksShowSkills": true,
     "clock": true,
     "enabled": true,
     "format": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='36'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin='85' leading='-2'>%A<br/><font size='15'>%d %b %Y</font></textformat></font>",

@@ -1,1 +1,0 @@
-gui\maps\icons\filters\nations

@@ -30,8 +30,7 @@ def as_updateProgressTrackingS(base, self, data, *args, **kwargs):
     for quest in data['trackingData']:
         quest['fullMissionName'] = questName
         quest['selected'] = True
-        quest['eyeBtnVisible'] = find_attr(
-            self, 'settingsCore').getSetting(QUESTS_PROGRESS.VIEW_TYPE) == QuestsProgressViewType.TYPE_STANDARD
+        quest['eyeBtnVisible'] = find_attr(self, 'settingsCore').getSetting(QUESTS_PROGRESS.VIEW_TYPE) == QuestsProgressViewType.TYPE_STANDARD
     return base(self, data, *args, **kwargs)
 
 
@@ -48,10 +47,8 @@ def as_setQuestsInfoS(base, self, data, setForce, *args, **kwargs):
         formatter = getFormatter(quest)
         headerProgress.extend(formatter.headerFormat())
         bodyProgress.extend(formatter.bodyFormat())
-    headerProgress.sort(key=lambda x: (
-        x['progressType'] == DISPLAY_TYPE.NONE, x['orderType'] == QUEST_PROGRESS_BASE.ADD_ORDER_TYPE))
-    bodyProgress.sort(key=lambda x: (
-        x['initData']['orderType'] == QUEST_PROGRESS_BASE.ADD_ORDER_TYPE))
+    headerProgress.sort(key=lambda x: (x['progressType'] == DISPLAY_TYPE.NONE, x['orderType'] == QUEST_PROGRESS_BASE.ADD_ORDER_TYPE))
+    bodyProgress.sort(key=lambda x: (x['initData']['orderType'] == QUEST_PROGRESS_BASE.ADD_ORDER_TYPE))
     headerProgress[2:] = []
     return base(self, data, setForce, *args, **kwargs)
 
