@@ -156,10 +156,8 @@ class Flash(object):
 
     def onTextRemovalComplete(self):
         self.isTextRemoving = False
-        bgConf = config.data['textBackground']
-        height = bgConf['height']
         for idx in xrange(len(self.texts)):
-            y = height * idx
+            y = idx
             g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': self.texts[idx], 'alpha': 1.0, 'y': y})
         idx = len(self.texts)
         if idx:
