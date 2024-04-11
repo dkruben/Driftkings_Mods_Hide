@@ -81,7 +81,7 @@ def try_import():
             self.updateHotKeys = SafeEvent()
             self.onWindowOpened = SafeEvent()
             # folder to core p2
-            self.hotkeys = HotkeysContoller(self)
+            self.hotkeys = HotkeysController(self)
             self.hotkeys.onUpdated += self.updateHotKeys
             self.userSettings = {
                 'modsListApiName': MOD_NAME,
