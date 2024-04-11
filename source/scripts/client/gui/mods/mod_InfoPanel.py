@@ -202,9 +202,6 @@ except StandardError:
     traceback.print_exc()
 
 
-# g_flash = Flash()
-
-
 def _isEntitySatisfiesConditions(entity):
     if (entity is None) or not hasattr(entity, 'publicInfo'):
         return False

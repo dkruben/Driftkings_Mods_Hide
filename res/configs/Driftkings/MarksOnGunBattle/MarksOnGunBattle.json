@@ -1,5 +1,5 @@
-{
-    "UI": 10,
+﻿{
+    "UI": 4,
     "background": true,
     "battleMessage": "<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>",
     "battleMessageAlt": "<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>\n{c_damageToMark65}{c_damageToMark85}\n{c_damageToMark95}{c_damageToMark100}",
@@ -37,7 +37,7 @@
     "battleMessage{status}Down": "<img src=\"img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy.png\" vspace=\"-5\"/>",
     "battleMessage{status}Unknown": "<img src=\"img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy_violet.png\" vspace=\"-5\"/>",
     "battleMessage{status}Up": "<img src=\"img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_online.png\" vspace=\"-5\"/> ",
-    "buttonReset": ["KEY_DELETE", ["KEY_LCONTROL", "KEY_RCONTROL"],["KEY_LSHIFT", "KEY_RSHIFT"]],
+    "buttonReset": ["KEY_DELETE", ["KEY_LSHIFT", "KEY_RSHIFT"], ["KEY_LCONTROL", "KEY_RCONTROL"]],
     "buttonShow": ["KEY_NUMPAD9", ["KEY_LALT", "KEY_RALT"]],
     "buttonSizeDown": ["KEY_PGDN", ["KEY_LALT", "KEY_RALT"]],
     "buttonSizeUp": ["KEY_PGUP", ["KEY_LALT", "KEY_RALT"]],
@@ -78,6 +78,10 @@
     "showInHangar": true,
     "showInReplay": true,
     "showInStatistic": true,
+    "showInTechTree": true,
+    "showInTechTreeMarkOfGunPercent": true,
+    "showInTechTreeMarkOfGunPercentFirst": false,
+    "showInTechTreeMastery": true,
     "unknownColor": 16,
     "upColor": 18
 }

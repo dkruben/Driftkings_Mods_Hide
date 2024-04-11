@@ -1,18 +1,20 @@
-{
-    "color": "FF002A",
+﻿{
+    "color": "dd00f0",
     "directivesOnlyFromStorage": false,
     "disableSoundCommander": false,
     "enabled": true,
     "format": "<font face='$FieldFont' size='16' color='#FFFFFF'><p align='left'>%H:%M:%S</p></font>",
+    "hideBattlePrestige": false,
     "inBattle": true,
     "muteTeamBaseSound": false,
     "position": {
-        "x": -870,
+        "x": -970,
         "y": 1
     },
     "postmortemTips": true,
-    "showBattleHint": false,
-    "showFriends": false,
+    "showAnonymous": false,
+    "showBattleHint": true,
+    "showFriends": true,
     "showPostmortemDogTag": true,
     "stunSound": false
 }

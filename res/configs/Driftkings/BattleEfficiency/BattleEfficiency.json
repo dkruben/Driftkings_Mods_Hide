@@ -1,5 +1,5 @@
 ﻿{
-    "battleResultsFormat": "<textformat leading='-2' tabstops='[5, 250]'>\t<font color='#FFFFFF' size='15'>{mapName} - {battleType}\tWN8: <font color='{c:wn8}'>{wn8}</font>||==||EFF: <font color='{c:eff}'>{eff}</font></font></textformat>",
+    "battleResultsFormat": "<textformat leading='-2' tabstops='[0, 300]'>\t<font color='#FFFFFF' size='15'>{mapName} - {battleType}    WN8:<font color='{c:wn8}'>{wn8}</font>|=|EFF:<font color='{c:eff}'>{eff}</font>|=|Xte:<font color='{c:xte}'>{xte}</font></font></textformat>",
     "battleResultsWindow": true,
     "colorRatting": 0,
     "enabled": true,

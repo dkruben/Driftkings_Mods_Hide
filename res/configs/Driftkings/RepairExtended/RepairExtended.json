@@ -1,0 +1,50 @@
+﻿{
+    "autoRepair": true,
+    "buttonChassis": ["KEY_SPACE"],
+    "buttonRepair": ["KEY_SPACE"],
+    "enabled": true,
+    "extinguishFire": true,
+    "healCrew": true,
+    "removeStun": true,
+    "repairDevices": true,
+    "repairPriority": {
+        "AT-SPG": {
+            "medkit": ["loader", "gunner", "commander", "driver"],
+            "repairkit": ["ammoBay", "gun", "engine", "turretRotator", "fuelTank"]
+        },
+        "AllAvailableVariables": {
+            "medkit": ["commander", "gunner", "driver", "radioman", "loader"],
+            "repairkit": [
+                "engine",
+                "ammoBay",
+                "gun",
+                "turretRotator",
+                "chassis",
+                "surveyingDevice",
+                "radio",
+                "fuelTank",
+                "wheel"
+            ]
+        },
+        "SPG": {
+            "medkit": ["commander", "loader", "gunner", "driver"],
+            "repairkit": ["ammoBay", "engine", "gun", "turretRotator", "fuelTank"]
+        },
+        "heavyTank": {
+            "medkit": ["commander", "loader", "gunner", "driver"],
+            "repairkit": ["turretRotator", "ammoBay", "engine", "gun", "fuelTank"]
+        },
+        "lightTank": {
+            "medkit": ["driver", "commander", "gunner", "loader"],
+            "repairkit": ["engine", "ammoBay", "gun", "turretRotator", "fuelTank"]
+        },
+        "mediumTank": {
+            "medkit": ["loader", "driver", "commander", "gunner"],
+            "repairkit": ["turretRotator", "engine", "ammoBay", "gun", "fuelTank"]
+        }
+    },
+    "restoreChassis": true,
+    "timerMax": 0.8,
+    "timerMin": 0.3,
+    "useGoldKits": true
+}

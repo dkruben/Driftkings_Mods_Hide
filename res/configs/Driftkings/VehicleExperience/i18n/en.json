@@ -1,5 +1,5 @@
-{
-    "UI_description": "VehicleExpExtended",
+﻿{
+    "UI_description": "VehicleExperience",
     "UI_setting_eliteStatusReadyTitle_text": "{tank-name}",
     "UI_setting_eliteStatusReady_text": "<img align='top' src='img://gui/maps/icons/library/EliteXpIcon-2.png' height='16' width='16' vspace='-3'> <font color='#00FF00'>Elite status available!</font>",
     "UI_setting_eliteStatusTitle_text": "{tank-name}",
@@ -39,6 +39,5 @@
     "UI_text_add_condition": "<font color='#aefe57'>{quest-add-condition}</font>",
     "UI_text_add_condition_extra": "Secondary condition",
     "UI_text_main_condition": "<b><font color='#aefe57'>{quest-main-condition}</font></b>",
-    "UI_text_main_condition_extra": "Main condition",
-    "UI_version": "1.0.0"
+    "UI_text_main_condition_extra": "Main condition"
 }

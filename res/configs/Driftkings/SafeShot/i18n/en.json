@@ -1,0 +1,20 @@
+﻿{
+    "UI_description": "SafeShot",
+    "UI_setting_deadShotBlockTimeOut_text": "Dead Shot Block TimeOut",
+    "UI_setting_deadShotBlockTimeOut_tooltip": "",
+    "UI_setting_deadShotBlock_text": "Dead Shot Block",
+    "UI_setting_deadShotBlock_tooltip": "",
+    "UI_setting_disableKey_text": "Disable Key",
+    "UI_setting_disableKey_tooltip": "",
+    "UI_setting_disableMessage_text": "Disable Message",
+    "UI_setting_disableMessage_tooltip": "",
+    "UI_setting_format_text": "Format Message",
+    "UI_setting_format_tooltip": "",
+    "UI_setting_teamKillerShotUnblock_text": "Team Killer Shot Unblock",
+    "UI_setting_teamKillerShotUnblock_tooltip": "",
+    "UI_setting_teamShotBlock_text": "Team Shot Block",
+    "UI_setting_teamShotBlock_tooltip": "",
+    "UI_setting_wasteShotBlock_text": "Waste Shot Block",
+    "UI_setting_wasteShotBlock_tooltip": "",
+    "UI_version": "1.5.5 (28.03.2024)"
+}

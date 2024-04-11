@@ -48,6 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
+            'UI_version': self.version,
             'UI_setting_useFreeExp_text': 'Factor Free Experience',
             'UI_setting_useFreeExp_tooltip': '',
             'UI_setting_isTruncateNumbers_text': 'Short numbers',
@@ -64,7 +65,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_showQuestTitle_tooltip': '',
             'UI_setting_showConditions_text': 'Display description',
             'UI_setting_showConditions_tooltip': '',
-            #
+
             'UI_setting_eliteStatus_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/EliteXpIcon-2.png\' height=\'16\' width=\'16\' vspace=\'-3\'> <font color=\'#00FF00\'>{chk-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> from <font color=\'#FF0000\'>{need-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> (~{battles-left}<img align=\'top\' src=\'img://gui/maps/icons/library/BattleResultIcon-1.png\' height=\'14\' width=\'14\' vspace=\'-3\'>)',
             'UI_setting_eliteStatusReady_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/EliteXpIcon-2.png\' height=\'16\' width=\'16\' vspace=\'-3\'> <font color=\'#00FF00\'>Elite status available!</font>',
             'UI_setting_eliteStatusReadyTitle_text': '{tank-name}',

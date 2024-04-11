@@ -1,0 +1,17 @@
+﻿{
+    "clientMessages": {
+        "deadShotBlockedMessage": "Dead shot blocked!",
+        "teamShotBlockedMessage": "Team shot blocked!",
+        "wasteShotBlockedMessage": "Waste shot blocked!"
+    },
+    "deadShotBlock": true,
+    "deadShotBlockTimeOut": 3,
+    "disableKey": ["KEY_Q"],
+    "disableMessage": true,
+    "enabled": true,
+    "format": "[{name} - {vehicle}], get out of the way!",
+    "onHold": true,
+    "teamKillerShotUnblock": true,
+    "teamShotBlock": true,
+    "wasteShotBlock": false
+}

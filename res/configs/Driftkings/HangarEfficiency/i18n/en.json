@@ -1,0 +1,15 @@
+﻿{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Avg Assist",
+    "UI_setting_avgAssist_tooltip": "",
+    "UI_setting_avgBlocked_text": "Avg Blocked",
+    "UI_setting_avgBlocked_tooltip": "",
+    "UI_setting_avgDamage_text": "Avg Damage",
+    "UI_setting_avgDamage_tooltip": "",
+    "UI_setting_avgStun_text": "Avg Stun",
+    "UI_setting_avgStun_tooltip": "",
+    "UI_setting_gunMarks_text": "Gun Marks",
+    "UI_setting_gunMarks_tooltip": "",
+    "UI_setting_winRate_text": "Win Rate",
+    "UI_setting_winRate_tooltip": ""
+}

@@ -1,5 +1,5 @@
-{
-    "crewReturn": false,
+﻿{
+    "crewReturn": true,
     "crewTraining": false,
     "enabled": true
 }

@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_description": "CrewSettings",
     "UI_dialog_apply": "Apply",
     "UI_dialog_cancel": "Cancel",
@@ -7,7 +7,6 @@
     "UI_setting_crewReturn_tooltip": "Return crew tanks.",
     "UI_setting_crewTraining_text": "Crew Training",
     "UI_setting_crewTraining_tooltip": "Monitors whether 'Field Upgrade' is upgraded/available and enables or disables 'Expedited Crew Training' accordingly",
-    "UI_version": "1.0.0",
     "crewDialogs": {
         "disabled": "<br>Disable accelerated crew training?",
         "enabled": "<br>Enable accelerated crew training?",

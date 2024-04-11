@@ -1,6 +1,6 @@
-{
+﻿{
     "align": "center",
-    "enabled": false,
+    "enabled": true,
     "template": "<font color='#f5ff8f' size='18'>%(distance).1f to %(name)s</font>",
     "x": 0,
     "y": 150

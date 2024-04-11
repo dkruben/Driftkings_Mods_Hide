@@ -1,4 +1,4 @@
-{
+﻿{
     "align": "center",
     "avgColor": {
         "brightness": 1.0,
@@ -21,6 +21,6 @@
         "%(spottedIcon)s%(spottedTanks)s",
         "%(stunIcon)s<font color='%(tankStunAvgColor)s'>%(stun)s</font>"
     ],
-    "x": -570,
-    "y": 850
+    "x": -716,
+    "y": 960
 }

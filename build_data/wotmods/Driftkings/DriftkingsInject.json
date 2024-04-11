@@ -8,6 +8,7 @@
         "res/scripts/client/DriftkingsInject/common/__init__.pyc": "build/scripts/client/DriftkingsInject/common/__init__.pyc",
         "res/scripts/client/DriftkingsInject/common/events.pyc"  : "build/scripts/client/DriftkingsInject/common/events.pyc",
         "res/scripts/client/DriftkingsInject/common/injector.pyc": "build/scripts/client/DriftkingsInject/common/injector.pyc",
+		"res/scripts/client/DriftkingsInject/common/markers.pyc" : "build/scripts/client/DriftkingsInject/common/markers.pyc",
 
         "res/scripts/client/DriftkingsInject/utils/__init__.pyc"     : "build/scripts/client/DriftkingsInject/utils/__init__.pyc",
         "res/scripts/client/DriftkingsInject/utils/timers.pyc"       : "build/scripts/client/DriftkingsInject/utils/timers.pyc",

@@ -18,7 +18,7 @@
     },
     "delay": 5,
     "textLock": false,
-    "textPosition": [632.0, 577.0],
+    "textPosition": {"x": 632.0, "y": 577.0},
     "textShadow": {
         "alpha": 0.8,
         "angle": 90,

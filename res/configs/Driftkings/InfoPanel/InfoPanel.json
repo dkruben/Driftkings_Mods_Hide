@@ -1,8 +1,6 @@
-{
+﻿{
     "aliveOnly": false,
-    "altKey": [
-        "KEY_LALT"
-    ],
+    "altKey": ["KEY_LALT"],
     "compareValues": {
         "equal": {
             "color": "#FFFFFF",
@@ -19,13 +17,20 @@
     },
     "delay": 5,
     "enabled": true,
-    "format": "<font color='#F0F0F0'><b>{{vehicle_name}}</b></font><br><textformat tabstops='[80]'><font color='#14AFF1'>{{gun_reload_equip}} sec.</font><tab><font color='#96CC29'>{{vision_radius}} mt.</font></textformat>",
+    "format": "<font color='#FFFFFF'><b>{{vehicle_name}}</b>\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\nView: {{vision_radius}}m.\n<font color='{{compareColor({{vehicle_weight}}, {{pl_vehicle_weight}})}}'>{{vehicle_weight}}t. {{compareDelim({{vehicle_weight}}, {{pl_vehicle_weight}})}} {{pl_vehicle_weight}}t.</font>|{{vehicle_weight}}t.</font>",
     "showFor": 0,
+    "textBackground": {
+        "enabled": false,
+        "height": 32,
+        "image": "../../scripts/client/gui/mods/__bg__.png",
+        "width": 530
+    },
+    "textLength": 5,
     "textLock": false,
-    "textPosition": [
-        632.0,
-        577.0
-    ],
+    "textPosition": {
+        "x": 596.0,
+        "y": 859.0
+    },
     "textShadow": {
         "alpha": 0.8,
         "angle": 90,
@@ -33,6 +38,7 @@
         "blurY": 2,
         "color": "#000000",
         "distance": 0,
+        "enabled": true,
         "quality": 2,
         "strength": 2
     },

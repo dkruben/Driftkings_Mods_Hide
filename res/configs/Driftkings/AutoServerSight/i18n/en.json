@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_description": "AutoServerSight",
     "UI_setting_AT-SPG_text": "to AT",
     "UI_setting_AT-SPG_tooltip": "",
@@ -10,5 +10,5 @@
     "UI_setting_lightTank_tooltip": "",
     "UI_setting_mediumTank_text": "to MT",
     "UI_setting_mediumTank_tooltip": "",
-    "UI_version": "1.0.0"
+    "UI_version": "1.0.0 (09.04.2024)"
 }

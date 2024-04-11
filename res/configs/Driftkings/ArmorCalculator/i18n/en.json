@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_colors": {
         "green": "#60CB00",
         "orange": "#FF9900",
@@ -10,6 +10,5 @@
     "UI_noDamage": "Critical hit, no damage.",
     "UI_ricochet": "Ricochet",
     "UI_setting_displayOnAllies_text": "Display On Allies",
-    "UI_setting_displayOnAllies_tooltip": "",
-    "UI_version": "1.0.0"
+    "UI_setting_displayOnAllies_tooltip": ""
 }

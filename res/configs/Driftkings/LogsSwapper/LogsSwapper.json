@@ -1,0 +1,7 @@
+﻿{
+    "enabled": true,
+    "logSwapper": true,
+    "wgLogHideAssist": true,
+    "wgLogHideBlock": true,
+    "wgLogHideCritics": true
+}

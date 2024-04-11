@@ -8,24 +8,12 @@ from AvatarInputHandler.aih_global_binding import CTRL_MODE_NAME
 from gui import InputHandler
 from gui.shared.gui_items import Vehicle
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
-from tutorial.control.battle.functional import _StaticObjectMarker3D
 
 from DriftkingsCore import SimpleConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException
+from DriftkingsInject.common.markers import _StaticWorldObjectMarker3D
 
 
 class ConfigInterface(SimpleConfigInterface):
-    def __init__(self):
-        self.modelSplash = None
-        self.modelDot = None
-        self.modelSplashCircle = None
-        self.modelSplashVisible = False
-        self.modelDotVisible = False
-        self.modelSplashKeyPressed = False
-        self.modelDotKeyPressed = False
-        self.scaleSplash = None
-        self.player = None
-        self.version_int = 1.45
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -92,6 +80,19 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
+
+class ArtyBall(object):
+    def __init__(self):
+        self.modelSplash = None
+        self.modelDot = None
+        self.modelSplashCircle = None
+        self.modelSplashVisible = False
+        self.modelDotVisible = False
+        self.modelSplashKeyPressed = False
+        self.modelDotKeyPressed = False
+        self.scaleSplash = None
+        self.player = None
+
     # noinspection PyProtectedMember
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
@@ -100,16 +101,17 @@ class ConfigInterface(SimpleConfigInterface):
             self.modelSplashVisible = config.data['showSplashOnDefault']
             self.modelDotVisible = config.data['showDotOnDefault']
             self.scaleSplash = None
-            self.modelSplash = _StaticObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
-            self.modelDot = _StaticObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
-            self.modelDot._StaticObjectMarker3D__model.sacle = (0.1, 0.1, 0.1)  # they are sick! changed BigWorld.Model().scale to BigWorld.Model().saсle how did that even come to mind? the best junkies in the industry
+            self.modelSplash = _StaticWorldObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
+            self.modelDot = _StaticWorldObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
+            self.modelDot._StaticWorldObjectMarker3D__model.scale = (0.1, 0.1, 0.1)
             if Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags) == VEHICLE_CLASS_NAME.SPG:
-                self.modelDot._StaticObjectMarker3D__model.scale = (0.5, 0.5, 0.5)
-            self.modelSplash._StaticObjectMarker3D__model.visible = False
-            self.modelDot._StaticObjectMarker3D__model.visible = False
+                self.modelDot._StaticWorldObjectMarker3D__model.scale = (0.5, 0.5, 0.5)
+            self.modelSplash._StaticWorldObjectMarker3D__model.visible = False
+            self.modelDot._StaticWorldObjectMarker3D__model.visible = False
+            # noinspection PyUnresolvedReferences
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
             self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L)
-            self.modelSplash._StaticObjectMarker3D__model.root.attach(self.modelSplashCircle)
+            self.modelSplash._StaticWorldObjectMarker3D__model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
     # noinspection PyProtectedMember
@@ -121,7 +123,7 @@ class ConfigInterface(SimpleConfigInterface):
         self.modelDotKeyPressed = False
         if self.modelSplash is not None:
             if self.modelSplashCircle.attached:
-                self.modelSplash._StaticObjectMarker3D__model.root.detach(self.modelSplashCircle)
+                self.modelSplash._StaticWorldObjectMarker3D__model.root.detach(self.modelSplashCircle)
             self.modelSplash.clear()
         if self.modelDot is not None:
             self.modelDot.clear()
@@ -155,35 +157,35 @@ class ConfigInterface(SimpleConfigInterface):
             self.hideVisible()
             return
 
-        if self.modelSplash is not None and self.modelSplash._StaticObjectMarker3D__model:
+        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model:
             if not self.scaleSplash or self.scaleSplash != shell.type.explosionRadius:
                 self.scaleSplash = shell.type.explosionRadius
-                self.modelSplash._StaticObjectMarker3D__model.sacle = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
+                self.modelSplash._StaticWorldObjectMarker3D__model.scale = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
             if not self.modelSplashKeyPressed:
                 self.modelSplashVisible = config.data['showSplashOnDefault']
-            self.modelSplash._StaticObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
+            self.modelSplash._StaticWorldObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
             self.modelSplashCircle.updateHeights()
-        if self.modelDot is not None and self.modelDot._StaticObjectMarker3D__model:
+        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model:
             if not self.modelDotKeyPressed:
                 self.modelDotVisible = config.data['showDotOnDefault']
-            self.modelDot._StaticObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
+            self.modelDot._StaticWorldObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
         self.setVisible()
 
     # noinspection PyProtectedMember
     def setVisible(self):
-        if self.modelSplash is not None and self.modelSplash._StaticObjectMarker3D__model:
-            if self.modelSplash._StaticObjectMarker3D__model.visible != self.modelSplashVisible:
-                self.modelSplash._StaticObjectMarker3D__model.visible = self.modelSplashVisible
-        if self.modelDot is not None and self.modelDot._StaticObjectMarker3D__model:
-            if self.modelDot._StaticObjectMarker3D__model.visible != self.modelDotVisible:
-                self.modelDot._StaticObjectMarker3D__model.visible = self.modelDotVisible
+        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model:
+            if self.modelSplash._StaticWorldObjectMarker3D__model.visible != self.modelSplashVisible:
+                self.modelSplash._StaticWorldObjectMarker3D__model.visible = self.modelSplashVisible
+        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model:
+            if self.modelDot._StaticWorldObjectMarker3D__model.visible != self.modelDotVisible:
+                self.modelDot._StaticWorldObjectMarker3D__model.visible = self.modelDotVisible
 
     # noinspection PyProtectedMember
     def hideVisible(self):
-        if self.modelSplash is not None and self.modelSplash._StaticObjectMarker3D__model and self.modelSplash._StaticObjectMarker3D__model.visible:
-            self.modelSplash._StaticObjectMarker3D__model.visible = False
-        if self.modelDot is not None and self.modelDot._StaticObjectMarker3D__model and self.modelDot._StaticObjectMarker3D__model.visible:
-            self.modelDot._StaticObjectMarker3D__model.visible = False
+        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model and self.modelSplash._StaticWorldObjectMarker3D__model.visible:
+            self.modelSplash._StaticWorldObjectMarker3D__model.visible = False
+        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model and self.modelDot._StaticWorldObjectMarker3D__model.visible:
+            self.modelDot._StaticWorldObjectMarker3D__model.visible = False
 
     @logException
     def injectButton(self, event):
@@ -201,22 +203,23 @@ class ConfigInterface(SimpleConfigInterface):
 
 
 config = ConfigInterface()
+artySplash = ArtyBall()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new_startGUI(func, *args):
     func(*args)
-    config.startBattle()
+    artySplash.startBattle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
-    config.stopBattle()
+    artySplash.stopBattle()
 
 
 @override(VehicleGunRotator.VehicleGunRotator, '_VehicleGunRotator__updateGunMarker')
 def new_updateMarkerPos(func, *args):
     func(*args)
-    config.working()
+    artySplash.working()

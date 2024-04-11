@@ -1,6 +1,6 @@
 ﻿{
     "enableButtonTooltip": "{HEADER}ON/OFF{/HEADER}{BODY}Enable/disable this mod{/BODY}",
-    "modsListApiDescription": "<font color='#FF55AA'><b>Driftkings's</b></font>Modification Settings",
+    "modsListApiDescription": "<font color='#FF0080'><b>Driftkings's</b></font>Modification Settings",
     "modsListApiName": "Driftking's Mods Settings",
     "windowTitle": "Driftking's Mods Settings"
 }

@@ -18,5 +18,5 @@
     "UI_setting_vertical_6": "ktulho",
     "UI_setting_vertical_text": "Vertical marker type",
     "UI_setting_vertical_tooltip": "Type of markers above and below the crosshair showing vertical edge positions of your gun.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
-    "UI_version": "1.1.0 (02.04.2024)"
+    "UI_version": "1.1.0 (09.04.2024)"
 }

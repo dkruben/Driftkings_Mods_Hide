@@ -1,5 +1,5 @@
-{
-    "dispersionCircleScale": 1.0,
+﻿{
+    "dispersionCircleScale": 10,
     "enabled": false,
     "replaceOriginalCircle": true,
     "useServerDispersion": true

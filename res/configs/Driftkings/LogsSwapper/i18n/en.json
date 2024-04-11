@@ -1,0 +1,11 @@
+﻿{
+    "UI_description": "LogsSwapper",
+    "UI_setting_logSwapper_text": "Enable Reverse Log.",
+    "UI_setting_logSwapper_tooltip": "Reverses the position of the damage log.",
+    "UI_setting_wgLogHideAssist_text": "WG Log Hide Assist",
+    "UI_setting_wgLogHideAssist_tooltip": "",
+    "UI_setting_wgLogHideBlock_text": "WG Log Hide Block",
+    "UI_setting_wgLogHideBlock_tooltip": "",
+    "UI_setting_wgLogHideCritics_text": "WG Log Hide Critics",
+    "UI_setting_wgLogHideCritics_tooltip": ""
+}

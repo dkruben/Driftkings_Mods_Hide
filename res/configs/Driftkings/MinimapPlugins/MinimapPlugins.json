@@ -1,13 +1,13 @@
-{
-    "button": ["KEY_LALT"],
+﻿{
+    "button": [["KEY_LSHIFT", "KEY_RSHIFT"]],
     "changeColorCircles": true,
-    "colorDrawCircle": "2B28D1",
+    "colorDrawCircle": "fbe226",
     "colorMaxViewCircle": "E02810",
-    "colorMinSpottingCircle": "35DE46",
-    "colorViewCircle": "FF7FFF",
+    "colorMinSpottingCircle": "00bbb0",
+    "colorViewCircle": "e63aff",
     "enabled": true,
     "permanentMinimapDeath": false,
-    "showNames": true,
+    "showNames": false,
     "viewRadius": true,
     "yaw": true,
     "zoomFactor": 1.1

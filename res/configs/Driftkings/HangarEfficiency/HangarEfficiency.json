@@ -1,0 +1,9 @@
+﻿{
+    "avgAssist": true,
+    "avgBlocked": true,
+    "avgDamage": true,
+    "avgStun": true,
+    "enabled": true,
+    "gunMarks": true,
+    "winRate": true
+}
