@@ -49,7 +49,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = '_DKRuben__EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -115,6 +115,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': self.version,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('permanentMinimapDeath'),
@@ -263,18 +264,16 @@ class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
         if self.__isDestroyImmediately:
             self._setInAoI(entry, True)
         super(ArenaVehiclesPlugin, self).__setDestroyed(vehicleID, entry)
-        self._invoke(entry.getID(), self._showNames)
 
     def __switchToVehicle(self, prevCtrlID):
         if self.__isDestroyImmediately:
             return
         super(ArenaVehiclesPlugin, self).__switchToVehicle(prevCtrlID)
 
-    @property
-    def _showNames(self):
-        if self.__showDestroyEntries and config.data['showNames']:
-            return 'showVehicleName'
-        return 'hideVehicleName'
+    def _getDisplayedName(self, vInfo):
+        if not vInfo.isAlive() and not config.data['showNames']:
+            return ''
+        return super(ArenaVehiclesPlugin, self)._getDisplayedName(vInfo)
 
 
 @override(MinimapComponent, '_setupPlugins')

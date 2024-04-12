@@ -40,9 +40,12 @@ def try_import():
         from gui.shared.personality import ServicesLocator
         from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
+        # from skeletons.gui.impl import IGuiLoader
+        # from helpers import dependency
         # modSettingsApi
         from gui.modsSettingsApi.api import ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
+        # from gui.modsSettingsApi.skeleton import IModsSettingsApiInternal
         from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow, HotkeyContextHandler
         from gui.modsSettingsApi._constants import MOD_ICON, MOD_NAME, MOD_DESCRIPTION, STATE_TOOLTIP, VIEW_ALIAS
     except ImportError as e:
@@ -71,7 +74,7 @@ def try_import():
             self.modSettingsID = 'Driftkings_GUI'
             self.isMSAWindowOpen = False
             self.activeMods = set()
-            self.config = {'templates': {}, 'settings': {}}
+            self.config = {'templates': {}, 'settings': {}, 'data': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
             # Events
@@ -106,9 +109,20 @@ def try_import():
             )
             self.onWindowClosed += self.MSADispose
 
+        # @dependency.replace_none_kwargs(guiLoader=IGuiLoader)
+        # def getParentWindow(self, guiLoader=None):
+        #    if guiLoader and guiLoader.windowsManager:
+        #        return guiLoader.windowsManager.getMainWindow()
+
+        # @dependency.replace_none_kwargs(api=IModsSettingsApiInternal)
+        # def loadView(self, api=None):
+        #    app = ServicesLocator.appLoader.getApp()
+        #    app.loadView(SFViewLoadParams(VIEW_ALIAS, parent=self.getParentWindow()), ctx=api)
+
         @staticmethod
         def MSALoad(api=None):
-            ServicesLocator.appLoader.getDefLobbyApp().loadView(SFViewLoadParams(VIEW_ALIAS, VIEW_ALIAS), ctx=api)
+            app = ServicesLocator.appLoader.getApp()
+            app.loadView(SFViewLoadParams(VIEW_ALIAS, VIEW_ALIAS), ctx=api)
 
         def MSAPopulate(self):
             self.isMSAWindowOpen = True
@@ -163,8 +177,7 @@ def registerSettings(config):
         print config.LOG, '=' * 25
         return
     if config.modSettingsID not in config.modSettingsContainers:
-        config.modSettingsContainers[config.modSettingsID] = ModsSettings(
-            config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
+        config.modSettingsContainers[config.modSettingsID] = ModsSettings(config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
     msc = config.modSettingsContainers[config.modSettingsID]
     msc.onWindowOpened += config.onMSAPopulate
     msc.onWindowClosed += config.onMSADestroy
