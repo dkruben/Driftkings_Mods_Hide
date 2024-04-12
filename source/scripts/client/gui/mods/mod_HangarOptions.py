@@ -110,11 +110,12 @@ class ConfigInterface(SimpleConfigInterface):
             'x': 1900,
             'y': 47,
             'rows': 2,
-            'smallCarousel': False
+            'smallCarousel': False,
+            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_autoLogin_text': 'Auto-Login',
             'UI_setting_autoLogin_tooltip': 'Auto enter to the game',
             'UI_setting_showReferralButton_text': 'Referral Button',
@@ -179,6 +180,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('autoLogin'),
@@ -206,8 +208,8 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('lootboxesWidget'),
                 self.tb.createControl('clock'),
-                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
-                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y'),
+                self.tb.createSlider('x', -4000, 4000, 1, '{{value}}%s' % ' X'),
+                self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y'),
                 self.tb.createSlider('rows', 1, 10, 1, '{{value}} ' + ' Rows'),
                 self.tb.createControl('smallCarousel')
 

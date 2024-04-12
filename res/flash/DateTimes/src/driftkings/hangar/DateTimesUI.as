@@ -1,4 +1,4 @@
-﻿package driftkings.hangar
+﻿﻿package driftkings.hangar
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -111,19 +111,19 @@
 			App.utils.data.cleanupDynamicObject(this.config);
 		}
 		
-		public function as_startUpdateLobby(settings:Object):void
+		public function as_startUpdate(settings:Object):void
 		{
 			this.as_clearScene();
 			if (settings.enabled)
 			{
 				this.config = settings;
-				this.x = settings.lobbyPos.x < 0 ? parent.width + settings.lobbyPos.x : settings.lobbyPos.x
-				this.y = settings.lobbyPos.y < 0 ? parent.height + settings.lobbyPos.y : settings.lobbyPos.y
-				this.dateTime = new TextExt(settings.lobbyPos.x, settings.lobbyPos.y, TextFieldAutoSize.CENTER, this);
+				this.x = settings.x < 0 ? parent.width + settings.x : settings.x
+				this.y = settings.y < 0 ? parent.height + settings.y : settings.y
+				this.dateTime = new TextExt(settings.x, settings.y, TextFieldAutoSize.CENTER, this);
 			}
 		}
 		
-		public function as_creditCalcLobby(text:String):void
+		public function as_setDateTime(text:String):void
 		{
 			if (this.dateTime)
 			{
@@ -133,8 +133,8 @@
 		
 		public function _onResizeHandle(event:Event):void
 		{
-			this.x = this.config.lobbyPos.x < 0 ? parent.width + this.config.lobbyPos.x : this.config.lobbyPos.x
-			this.y = this.config.lobbyPos.y < 0 ? parent.height + this.config.lobbyPos.y : this.config.lobbyPos.y
+			this.x = this.config.x < 0 ? parent.width + this.config.x : this.config.x
+			this.y = this.config.y < 0 ? parent.height + this.config.y : this.config.y
 		}
 	}
 }

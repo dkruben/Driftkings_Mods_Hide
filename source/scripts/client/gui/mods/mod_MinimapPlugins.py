@@ -67,11 +67,12 @@ class ConfigInterface(SimpleConfigInterface):
             'colorMaxViewCircle': 'E02810',
             'colorMinSpottingCircle': '35DE46',
             'colorViewCircle': 'FF7FFF',
+            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
         }
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_permanentMinimapDeath_text': 'Permanent Minimap Death',
             'UI_setting_permanentMinimapDeath_tooltip': 'Always show the destroyed on the map',
             'UI_setting_showNames_text': 'Show Names',
@@ -115,7 +116,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': self.version,
+            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('permanentMinimapDeath'),
