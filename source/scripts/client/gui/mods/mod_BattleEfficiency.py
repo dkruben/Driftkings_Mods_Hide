@@ -92,6 +92,11 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if g_flash is not None:
+            g_flash.onApplySettings()
+
     def isEnabled(self):
         return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 

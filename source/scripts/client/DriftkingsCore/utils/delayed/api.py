@@ -42,7 +42,7 @@ def try_import():
         from gui.Scaleform.framework.entities.View import ViewKey
         # modSettingsApi
         from gui.modsSettingsApi.api import ModsSettingsApi
-        from gui.modsSettingsApi.hotkeys import HotkeysController  # HotkeysContoller
+        from gui.modsSettingsApi.hotkeys import HotkeysController
         from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow, HotkeyContextHandler
         from gui.modsSettingsApi._constants import MOD_ICON, MOD_NAME, MOD_DESCRIPTION, STATE_TOOLTIP, VIEW_ALIAS
     except ImportError as e:
