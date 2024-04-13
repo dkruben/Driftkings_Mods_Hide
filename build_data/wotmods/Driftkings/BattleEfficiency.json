@@ -3,6 +3,6 @@
     "ext": ".wotmod",
     "files": {
         "res/scripts/client/gui/mods/mod_BattleEfficiency.pyc": "build/scripts/client/gui/mods/mod_BattleEfficiency.pyc",
-		"res/gui/flash/commonStats.swf.swf": "res/flash/commonStats.swf.swf"
+		"res/gui/flash/commonStats.swf": "res/flash/commonStats.swf"
 	}
 }
