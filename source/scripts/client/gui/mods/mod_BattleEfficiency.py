@@ -41,10 +41,11 @@ class ConfigInterface(SimpleConfigInterface):
             # Battle result
             'battleResultsWindow': True,
             'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>',
+            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.'))))
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_textLock_text': 'Text Lock',
             'UI_setting_textLock_tooltip': 'Drag Text in battle',
             'UI_setting_format_text': 'Text Format, Available Macros:',
@@ -80,6 +81,7 @@ class ConfigInterface(SimpleConfigInterface):
         xColorList = ('NoobMeter', 'XVM', 'WotLabs')
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('textLock'),

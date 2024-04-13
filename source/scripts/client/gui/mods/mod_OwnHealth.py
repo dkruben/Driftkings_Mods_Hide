@@ -46,11 +46,12 @@ class ConfigInterface(SimpleConfigInterface):
                 'bgColor': '#000000',
                 'enemy': '#ED070A',
                 'enemyColorBlind': "#6F6CD3"
-            }
+            },
+            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': '',
             'UI_setting_y_text': 'Position Y',
@@ -61,6 +62,7 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
+            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),

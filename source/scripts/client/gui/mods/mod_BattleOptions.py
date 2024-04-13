@@ -65,12 +65,13 @@ class ConfigInterface(SimpleConfigInterface):
             'inBattle': True,
             'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
             'directivesOnlyFromStorage': False,
-            'position': {'x': -870, 'y': 1}
+            'position': {'x': -870, 'y': 1},
+            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.'))))
         }
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
             'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
             'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',
@@ -108,7 +109,8 @@ class ConfigInterface(SimpleConfigInterface):
         colorLabel['text'] = self.tb.getLabel('colorCheck')
         colorLabel['tooltip'] %= {'color': self.data['color']}
         return {
-            'modDisplayName': self.i18n['UI_description'],
+            'modDisplayName': self.ID,
+            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showBattleHint'),
