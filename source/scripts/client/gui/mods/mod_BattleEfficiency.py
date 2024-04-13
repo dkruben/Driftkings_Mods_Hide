@@ -18,6 +18,8 @@ from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']
 # BATTLE_RESULTS
+DEF_RESULTS_LEN = 16
+RANKED_OFFSET = 4
 DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun': 14, 'defAndCap_vehWStun': 17}
 
 
@@ -25,7 +27,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.4.5 %(file_compile_date)s'
+        self.version = '2.5.0 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -412,11 +414,11 @@ def new_setDataS(func, self, data):
         common = data['common']
         if common['bonusType'] in (ARENA_BONUS_TYPE.EVENT_BATTLES, ARENA_BONUS_TYPE.EPIC_RANDOM, ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING, ARENA_BONUS_TYPE.EPIC_BATTLE):
             return func(self, data)
-        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else 4
+        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
 
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
-        stunStatus = 'vehWStun' if (len(statValues) > (46 + offset)) else 'vehWOStun'
+        stunStatus = 'vehWStun' if (len(statValues) > (DEF_RESULTS_LEN + offset)) else 'vehWOStun'
         isWin = common['resultShortStr'] == 'win'
         arenaStr = _splitArenaStr(common['arenaStr'])
         mapName = arenaStr[0].strip()
