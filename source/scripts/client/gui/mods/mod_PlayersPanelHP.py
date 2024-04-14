@@ -99,7 +99,7 @@ class PlayersPanelController(SimpleConfigInterface):
 
     def setHPField(self, vehicleID):
         player = getPlayer()
-        if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING):
+        if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.COMP7):
             return
         team = player.arena.vehicles[vehicleID]['team']
         panelSide = 'left' if player.team == team else 'right'

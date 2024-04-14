@@ -414,7 +414,7 @@ def new_setDataS(func, self, data):
         common = data['common']
         if common['bonusType'] in (ARENA_BONUS_TYPE.EVENT_BATTLES, ARENA_BONUS_TYPE.EPIC_RANDOM, ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING, ARENA_BONUS_TYPE.EPIC_BATTLE):
             return func(self, data)
-        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
+        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED or ARENA_GUI_TYPE.COMP7 else RANKED_OFFSET
 
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
