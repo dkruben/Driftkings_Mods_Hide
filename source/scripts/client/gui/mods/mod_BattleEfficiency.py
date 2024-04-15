@@ -13,7 +13,7 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, isDisabledByBattleType, getColor, COLOR_TABLES
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, COLOR_TABLES
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']
@@ -100,9 +100,6 @@ class ConfigInterface(SimpleConfigInterface):
         super(ConfigInterface, self).onApplySettings(settings)
         if g_flash is not None:
             g_flash.onApplySettings()
-
-    def isEnabled(self):
-        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 
 
 class Flash(object):
@@ -281,7 +278,7 @@ class BattleEfficiency(object):
         return g_config.data['format'].format(**self.format_string)
 
     def startBattle(self):
-        if not g_config.isEnabled:
+        if not g_config.data['enabled']:
             return
 
         result = g_calculator.calc(self.damage, self.spotted, self.frags, self.defence, self.capture)
@@ -328,7 +325,7 @@ class BattleEfficiency(object):
             return
 
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
-            return
+            return self.stopBattle()
 
         g_flash.addText(set_text(self.textGenerator()))
 
@@ -340,10 +337,11 @@ g_calculator = EfficiencyCalculator()
 @override(PlayerAvatar, 'vehicle_onAppearanceReady')
 def new_onAppearanceReady(func, self, vehicle):
     func(self, vehicle)
-    if g_config.isEnabled:
-        if vehicle.id == self.playerVehicleID:
-            g_calculator.registerVInfoData(vehicle.typeDescriptor.type.compactDescr)
-            g_battleEfficiency.startBattle()
+    if not g_config.data['enabled']:
+        return
+    if vehicle.id == self.playerVehicleID:
+        g_calculator.registerVInfoData(vehicle.typeDescriptor.type.compactDescr)
+        g_battleEfficiency.startBattle()
 
 
 @override(RibbonsAggregator, 'suspend')
@@ -351,11 +349,12 @@ def new_suspend(func, self):
     if not g_config.data['enabled']:
         func(self)
         return
+    self.resume()
 
 
 def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs):
     func(self, ribbonID, ribbonType, leftFieldStr, **kwargs)
-    if not g_config.isEnabled:
+    if not g_config.data['enabled']:
         return
 
     if ribbonType not in (BATTLE_EFFICIENCY_TYPES.DETECTION, BATTLE_EFFICIENCY_TYPES.DESTRUCTION, BATTLE_EFFICIENCY_TYPES.DEFENCE, BATTLE_EFFICIENCY_TYPES.CAPTURE):
@@ -376,23 +375,26 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
 @override(DamageLogPanel, '_onTotalEfficiencyUpdated')
 def new_onTotalEfficiencyUpdated(func, self, diff):
     func(self, diff)
-    if g_config.isEnabled:
-
-        if PERSONAL_EFFICIENCY_TYPE.DAMAGE in diff:
-            g_battleEfficiency.damage = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
-            g_battleEfficiency.startBattle()
-
-
-@override(PlayerAvatar, '_PlayerAvatar__startGUI')
-def new_startGUI(func, *args):
-    func(*args)
-    if g_config.isEnabled:
+    if not g_config.data['enabled']:
+        return
+    if PERSONAL_EFFICIENCY_TYPE.DAMAGE in diff:
+        g_battleEfficiency.damage = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
         g_battleEfficiency.startBattle()
+
+
+# @override(PlayerAvatar, '_PlayerAvatar__startGUI')
+# def new_startGUI(func, *args):
+#    func(*args)
+#    if not g_config.data['enabled']:
+#        func(*args)
+#    g_battleEfficiency.startBattle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
+    if not g_config.data['enabled']:
+        return
     g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
 
@@ -414,7 +416,7 @@ def new_setDataS(func, self, data):
         common = data['common']
         if common['bonusType'] in (ARENA_BONUS_TYPE.EVENT_BATTLES, ARENA_BONUS_TYPE.EPIC_RANDOM, ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING, ARENA_BONUS_TYPE.EPIC_BATTLE):
             return func(self, data)
-        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED or ARENA_GUI_TYPE.COMP7 else RANKED_OFFSET
+        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
 
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
