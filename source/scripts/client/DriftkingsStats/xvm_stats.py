@@ -3,6 +3,8 @@ from vehinfo import calculateXTE, calculateXTDB, calculateXvmScale, getVehicleIn
 
 
 class _Stat(object):
+    def __init__(self):
+        self.resp = None
 
     @staticmethod
     def _fix_common(value):

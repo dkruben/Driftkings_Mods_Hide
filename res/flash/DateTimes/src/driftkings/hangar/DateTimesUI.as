@@ -1,4 +1,4 @@
-﻿﻿package driftkings.hangar
+﻿package driftkings.hangar
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;

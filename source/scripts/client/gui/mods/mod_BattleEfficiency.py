@@ -27,7 +27,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.5.0 %(file_compile_date)s'
+        self.version = '2.5.5 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -168,7 +168,6 @@ class EfficiencyCalculator(object):
 
     def __init__(self):
         self.expectedValues = {}
-        self.damage = 0
         self.vehCD = None
         self.vInfoOK = False
 
@@ -201,7 +200,7 @@ class EfficiencyCalculator(object):
             WN8 = int(980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * min(1.8, rWINc))
             XWN8 = calculateXvmScale('xwn8', WN8)
             DIFF = int(damage - self.expectedValues['wn8expDamage'])
-            DMG = int(damage - self.damage)
+            DMG = int(damage - 0)
         else:
             WN8 = 0
             XWN8 = 0
@@ -280,49 +279,45 @@ class BattleEfficiency(object):
     def startBattle(self):
         if not g_config.data['enabled']:
             return
-
         result = g_calculator.calc(self.damage, self.spotted, self.frags, self.defence, self.capture)
         self.wn8, self.xwn8, self.eff, self.xeff, self.xte, self.dmg, self.diff = result
         #
         self.format_recreate()
-        # wn8 / c_wn8
+        # wn8 / c:wn8
         if self.check_macros('{wm8}'):
             self.format_string['wn8'] = self.wn8
         if self.check_macros('{c_wn8}'):
             self.format_string['c_wn8'] += self.readColors('wn8', self.wn8)
-        # xwn8 / c_xwn8
+        # xwn8 / c:xwn8
         if self.check_macros('{xwn8}'):
             self.format_string['xwn8'] = self.xwn8
         if self.check_macros('{c_xwn8}'):
             self.format_string['c_wn8'] += self.readColors('x', self.xwn8)
-        # eff / c_eff
+        # eff / c:eff
         if self.check_macros('{eff}'):
             self.format_string['eff'] = self.eff
         if self.check_macros('{c_eff}'):
             self.format_string['c_eff'] += self.readColors('eff', self.eff)
-        # xeff / c_xeff
+        # xeff / c:xeff
         if self.check_macros('{xeff}'):
             self.format_string['xeff'] = self.xeff
         if self.check_macros('{c_xeff}'):
             self.format_string['c_xeff'] += self.readColors('x', self.xeff)
-        # xte / c_xte
+        # xte / c:xte
         if self.check_macros('{xte}'):
             self.format_string['xte'] = ''
         if self.check_macros('{c_xte}'):
             self.format_string['c_xte'] += self.readColors('x', self.xte)
-        # diff / c_diff
+        # diff / c:diff
         if self.check_macros('{diff}'):
             self.format_string['diff'] = self.diff
         if self.check_macros('{c_diff}'):
             self.format_string['c_diff'] += self.readColors('diff', self.diff)
-        # dmg / c_dmg
+        # dmg / c:dmg
         if self.check_macros('{dmg}'):
             self.format_string['dmg'] = self.dmg
         if self.check_macros('{c_dmg}'):
             self.format_string['c_dmg'] += self.readColors('tdb', self.dmg)
-
-        if not getPlayer().arena:
-            return
 
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return self.stopBattle()
