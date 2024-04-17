@@ -1,0 +1,13 @@
+{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_AccountManager.pyc": "build/scripts/client/gui/mods/mod_AccountManager.pyc",
+		
+		"res/gui/flash/AccountsManager.swf"           : "res/flash/AccountsManager.swf",
+		"res/gui/flash/AccountsManagerLoginButton.swf": "res/flash/AccountsManagerLoginButton.swf",
+		"res/gui/flash/AccountsManagerWindow.swf"     : "res/flash/AccountsManagerWindow.swf",
+		
+		"res/gui/flash/AccountsManager/**": "res/res/gui/AccountsManager/**"
+    }
+}

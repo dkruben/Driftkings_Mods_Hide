@@ -36,3 +36,6 @@ res/flash/CreditCalculator/obj/CreditCalculatorConfig.old
 res/flash/CreditCalculator/obj/CreditCalculatorConfig.xml
 res/flash/DateTimes/obj/DateTimesConfig.xml
 res/flash/DateTimes/obj/DateTimesConfig.old
+res/flash/AccountsManager/obj/AccountsManagerConfig.xml
+res/flash/AccountsManager/obj/AccountsManagerLoginButtonConfig.xml
+res/flash/AccountsManager/obj/AccountsManagerWindowConfig.xml

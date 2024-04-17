@@ -377,14 +377,6 @@ def new_onTotalEfficiencyUpdated(func, self, diff):
         g_battleEfficiency.startBattle()
 
 
-# @override(PlayerAvatar, '_PlayerAvatar__startGUI')
-# def new_startGUI(func, *args):
-#    func(*args)
-#    if not g_config.data['enabled']:
-#        func(*args)
-#    g_battleEfficiency.startBattle()
-
-
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
