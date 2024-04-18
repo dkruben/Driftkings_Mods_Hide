@@ -287,12 +287,6 @@ class AccountsManagerSubWindow(AbstractWindowView):
         loadWindow('AccountsManager')
 
 
-# def init():
-BigWorld.wh_data = UserAccounts()
-g_entitiesFactories.addSettings(ViewSettings('AccountsManager', AccountsManager, 'AccountsManager.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings('AccountsManagerSubWindow', AccountsManagerSubWindow, 'AccountsManagerWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
-
-
 class AccountsManagerButtonController(object):
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
@@ -356,4 +350,7 @@ class AccountsManagerLoginButton(View):
 
 
 g_AccMngr = AccountsManagerButtonController()
+BigWorld.wh_data = UserAccounts()
+g_entitiesFactories.addSettings(ViewSettings('AccountsManager', AccountsManager, 'AccountsManager.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings('AccountsManagerSubWindow', AccountsManagerSubWindow, 'AccountsManagerWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings('AccountsManagerLoginButton', AccountsManagerLoginButton, 'AccountsManagerLoginButton.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))

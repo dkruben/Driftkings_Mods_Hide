@@ -262,5 +262,5 @@ try:
     calculateXvmScale = ScaleValues().calculateXvmScale
     calculateXTDB = ScaleValues().calculateXTDB
     calculateXTE = ScaleValues().calculateXTE
-except ImportError as error:
-    logError('Scale not imported {}'.format(error))
+except ImportError as err:
+    logError('Scale not imported {}'.format(err))
