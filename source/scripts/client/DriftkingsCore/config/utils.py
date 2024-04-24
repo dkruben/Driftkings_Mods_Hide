@@ -7,17 +7,17 @@ import Keys
 __all__ = ('smart_update', 'processHotKeys',)
 
 
-def smart_update(dict1, dict2):
+def smart_update(old, new):
     changed = False
-    for k in dict1:
-        v = dict2.get(k)
+    for k in old:
+        v = new.get(k)
         if isinstance(v, dict):
-            changed |= smart_update(dict1[k], v)
+            changed |= smart_update(old[k], v)
         elif v is not None:
             if isinstance(v, unicode):
                 v = v.encode('utf-8')
-            changed |= dict1[k] != v
-            dict1[k] = v
+            changed |= old[k] != v
+            old[k] = v
     return changed
 
 
@@ -37,7 +37,7 @@ def processHotKeys(data, keys, mode):
     else:
         assert False, 'unknown hotkey conversion mode'
     make = lambda keySet: [make(key) if isinstance(key, (list, tuple)) else process(key) for key in keySet]
-    for dataKey in keys:  # configs have 'Key', code checks for 'key'. >_<
+    for dataKey in keys:
         newKey = dataKey.replace('key', 'Key')
         if (newKey if mode == 'read' else dataKey) not in data:
             continue

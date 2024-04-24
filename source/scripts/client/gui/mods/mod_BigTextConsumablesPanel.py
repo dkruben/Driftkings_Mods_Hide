@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 from Event import Event
 from gui.Scaleform.daapi.view.meta.ConsumablesPanelMeta import ConsumablesPanelMeta
-from gui.Scaleform.framework import ScopeTemplates as ST, ViewSettings, WindowLayer as WL, g_entitiesFactories
+from gui.Scaleform.framework import ScopeTemplates, ViewSettings, WindowLayer, g_entitiesFactories
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.shared.personality import ServicesLocator
@@ -14,7 +14,7 @@ class BigTextConsumablesPanel(View):
     onPanelInvalidated = Event()
 
     @staticmethod
-    @SL.appLoader.onGUISpaceEntered.__iadd__
+    @ServicesLocator.appLoader.onGUISpaceEntered.__iadd__
     def __onGUISpaceEntered(spaceID):
         if spaceID != GuiGlobalSpaceID.BATTLE:
             return
@@ -50,5 +50,5 @@ def new_onPanelInvalidated(func, *a, **k):
 
 
 # noinspection PyArgumentList
-g_entitiesFactories.addSettings(ViewSettings(BigTextConsumablesPanel.__name__, BigTextConsumablesPanel, 'BigTextConsumablesPanel.swf', WL.WINDOW, None, ST.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings(BigTextConsumablesPanel.__name__, BigTextConsumablesPanel, 'BigTextConsumablesPanel.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 logNote('BigTextConsumablesPanel loaded!')

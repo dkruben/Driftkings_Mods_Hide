@@ -164,28 +164,28 @@ class HooksDecorators(object):
         e += handler
 
     @staticmethod
-    def overrideMethod(wg_class, method_name='__init__'):
+    def overrideMethod(setter, getter='__init__'):
         """
-        wg_class: class object
-        method_name: unicode default __init__
+        setter: class object
+        getter: unicode default __init__
         """
-        class_name = wg_class.__name__
-        if not hasattr(wg_class, method_name):
-            if method_name.startswith('__'):
-                full_name = '_{0}{1}'.format(class_name, method_name)
-                if hasattr(wg_class, full_name):
-                    method_name = full_name
-                elif hasattr(wg_class, method_name[1:]):
-                    method_name = method_name[1:]
+        class_name = setter.__name__
+        if not hasattr(setter, getter):
+            if getter.startswith('__'):
+                full_name = '_{0}{1}'.format(class_name, getter)
+                if hasattr(setter, full_name):
+                    getter = full_name
+                elif hasattr(setter, getter[1:]):
+                    getter = getter[1:]
 
         def outer(new_method):
-            old_method = getattr(wg_class, method_name, None)
+            old_method = getattr(setter, getter, None)
             if old_method is not None and callable(old_method):
                 def __override(*args, **kwargs):
                     return new_method(old_method, *args, **kwargs)
-                setattr(wg_class, method_name, __override)
+                setattr(setter, getter, __override)
             else:
-                logError('overrideMethod error: {} in {} is not callable or undefined in {}'.format(method_name, class_name, new_method.__name__))
+                logError('overrideMethod error: %s in %s is not callable or undefined in %s' % (getter, class_name, new_method.__name__))
             return new_method
 
         return outer

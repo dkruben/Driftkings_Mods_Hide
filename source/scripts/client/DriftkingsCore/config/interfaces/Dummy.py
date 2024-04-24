@@ -107,10 +107,10 @@ class DummyConfigInterface(object):
         """
         pass
 
-    def onButtonPress(self, vName, value):
+    def onButtonPress(self, v_name, value):
         """
-        Called when a "preview' button for corresponding setting is pressed.
-        :param vName: settings value name
+        Called when a 'preview' button for corresponding setting is pressed.
+        :param v_name: settings value name
         :param value: currently selected setting value (may differ from currently applied. As said, used for settings preview)
         """
         pass
@@ -162,5 +162,5 @@ class DummyConfBlockInterface(DummyConfigInterface):
             self.MSAInstance.config['templates'][self.ID + blockID] = templates[blockID]
             self.MSAInstance.updateModSettings(self.ID + blockID, self.getData(blockID))
 
-    def onButtonPress(self, vName, value, blockID=None):
+    def onButtonPress(self, v_name, value, blockID=None):
         pass

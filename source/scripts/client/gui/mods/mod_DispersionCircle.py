@@ -23,6 +23,7 @@ DEV_FACTORIES_COLLECTION = (
     gm_factory._OptionalMarkersFactory,
     gm_factory._EquipmentMarkersFactory
 )
+
 LINKAGES = {
     _CONSTANTS.DEBUG_SPG_GUN_MARKER_NAME: _CONSTANTS.GUN_MARKER_SPG_LINKAGE,
     _CONSTANTS.DEBUG_ARCADE_GUN_MARKER_NAME: _CONSTANTS.GUN_MARKER_LINKAGE,
@@ -37,10 +38,25 @@ aih_constants.SPG_GUN_MARKER_MIN_SIZE = 20.0
 
 
 class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.enabled = False
+        self.server = False
+        override(BattleReplay, 'setUseServerAim', self.replaySetUseServerAim)
+        override(gm_factory, 'createComponents', self.createOverrideComponents)
+        override(gm_factory, 'overrideComponents', self.createOverrideComponents)
+        override(gun_marker_ctrl, 'createGunMarker', self.createGunMarker)
+        override(gun_marker_ctrl, 'useDefaultGunMarkers', self.useDefaultGunMarkers)
+        override(gun_marker_ctrl, 'useClientGunMarker', self.useGunMarker)
+        override(gun_marker_ctrl, 'useServerGunMarker', self.useGunMarker)
+        override(VehicleGunRotator, 'applySettings', self.applySettings)
+        override(VehicleGunRotator, 'setShotPosition', self.setShotPosition)
+        override(CrosshairDataProxy, '__onServerGunMarkerStateChanged', self.onServerGunMarkerStateChanged)
+        override(CrosshairPanelContainer, 'setGunMarkerColor', self.setGunMarkerColor)
+        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.5 (%(file_compile_date)s)'
+        self.version = '1.8.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -80,14 +96,68 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        self.enabled = self.data['enabled'] and not g_replayCtrl.isPlaying
+        if self.enabled:
+            self.server = self.data['useServerDispersion']
+        else:
+            self.server = False
 
-class Events(object):
-    def __init__(self):
-        self.onModSettingsChanged = SafeEvent()
-        super(Events, self).__init__()
+
+    def replaySetUseServerAim(self, func, b_self, enabled):
+        return func(b_self, False if self.server else enabled)
+
+    def createOverrideComponents(self, func, *args):
+        if not self.server:
+            return func(*args)
+        player = getPlayer()
+        player.enableServerAim(True)
+        if len(args) == 2:
+            return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).create(*args)
+        return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).override(*args)
+
+    def createGunMarker(self, func, isStrategic):
+        if not self.enabled:
+            return func(isStrategic)
+        factory = gun_marker_ctrl._GunMarkersDPFactory()
+        if isStrategic:
+            client = SPGController(CLIENT, factory.getClientSPGProvider())
+            server = SPGController(SERVER, factory.getServerSPGProvider())
+            dual = gun_marker_ctrl._EmptyGunMarkerController(EMPTY, None)
+        else:
+            client = _DefaultGunMarkerController(CLIENT, factory.getClientProvider())
+            server = _DefaultGunMarkerController(SERVER, factory.getServerProvider())
+            dual = gun_marker_ctrl._DualAccMarkerController(DUAL_ACC, factory.getDualAccuracyProvider())
+        return gun_marker_ctrl._GunMarkersDecorator(client, server, dual)
+
+    def useDefaultGunMarkers(self, func, *args, **kwargs):
+        return not self.server or func(*args, **kwargs)
+
+    def useGunMarker(self, func, *args, **kwargs):
+        return self.server or func(*args, **kwargs)
+
+    def applySettings(self, func, *args, **kwargs):
+        return None if self.server else func(*args, **kwargs)
+
+    def setShotPosition(self, func, b_self, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=False):
+        func(b_self, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=forceValueRefresh)
+        if not self.server:
+            return
+        m_position = b_self._VehicleGunRotator__getGunMarkerPosition(sPos, sVec, b_self.getCurShotDispersionAngles())
+        endPos, direction, diameter, idealDiameter, dualAccDiameter, dualAccIdealDiameter, collData = m_position
+        size = (diameter, idealDiameter)
+        b_self._avatar.inputHandler.updateServerGunMarker(endPos, direction, size, SERVER_TICK_LENGTH, collData)
+
+    def onServerGunMarkerStateChanged(self, func, *args, **kwargs):
+        return None if self.server else func(*args, **kwargs)
+
+    def setGunMarkerColor(self, func, b_self, markerType, color):
+        if self.server and markerType == CLIENT:
+            func(b_self, SERVER, color)
+        return func(b_self, markerType, color)
 
 
-g_events = Events()
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
@@ -128,84 +198,3 @@ class SPGController(gun_marker_ctrl._SPGGunMarkerController):
         elif g_replayCtrl.isRecording and (g_replayCtrl.isServerAim and isServerAim or not isServerAim):
             g_replayCtrl.setSPGGunMarkerParams(dispersionAngle, 0)
         self._dataProvider.setupConicDispersion(dispersionAngle)
-
-
-class DispersionCircle(object):
-
-    def __init__(self):
-        self.enabled = False
-        self.server = False
-        g_events.onModSettingsChanged += self.onModSettingsChanged
-        override(BattleReplay, 'setUseServerAim', self.replaySetUseServerAim)
-        override(gm_factory, 'createComponents', self.createOverrideComponents)
-        override(gm_factory, 'overrideComponents', self.createOverrideComponents)
-        override(gun_marker_ctrl, 'createGunMarker', self.createGunMarker)
-        override(gun_marker_ctrl, 'useDefaultGunMarkers', self.useDefaultGunMarkers)
-        override(gun_marker_ctrl, 'useClientGunMarker', self.useGunMarker)
-        override(gun_marker_ctrl, 'useServerGunMarker', self.useGunMarker)
-        override(VehicleGunRotator, 'applySettings', self.applySettings)
-        override(VehicleGunRotator, 'setShotPosition', self.setShotPosition)
-        override(CrosshairDataProxy, '__onServerGunMarkerStateChanged', self.onServerGunMarkerStateChanged)
-        override(CrosshairPanelContainer, 'setGunMarkerColor', self.setGunMarkerColor)
-
-    def replaySetUseServerAim(self, func, replay, enabled):
-        return func(replay, False if self.server else enabled)
-
-    def createOverrideComponents(self, func, *args):
-        if not self.server:
-            return func(*args)
-        player = getPlayer()
-        player.enableServerAim(True)
-        if len(args) == 2:
-            return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).create(*args)
-        return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).override(*args)
-
-    def createGunMarker(self, func, isStrategic):
-        if not self.enabled:
-            return func(isStrategic)
-        factory = gun_marker_ctrl._GunMarkersDPFactory()
-        if isStrategic:
-            client = SPGController(CLIENT, factory.getClientSPGProvider())
-            server = SPGController(SERVER, factory.getServerSPGProvider())
-            dual = gun_marker_ctrl._EmptyGunMarkerController(EMPTY, None)
-        else:
-            client = _DefaultGunMarkerController(CLIENT, factory.getClientProvider())
-            server = _DefaultGunMarkerController(SERVER, factory.getServerProvider())
-            dual = gun_marker_ctrl._DualAccMarkerController(DUAL_ACC, factory.getDualAccuracyProvider())
-        return gun_marker_ctrl._GunMarkersDecorator(client, server, dual)
-
-    def useDefaultGunMarkers(self, func, *args, **kwargs):
-        return not self.server or func(*args, **kwargs)
-
-    def useGunMarker(self, func, *args, **kwargs):
-        return self.server or func(*args, **kwargs)
-
-    def applySettings(self, func, *args, **kwargs):
-        return None if self.server else func(*args, **kwargs)
-
-    def setShotPosition(self, func, bSelf, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=False):
-        func(bSelf, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=forceValueRefresh)
-        if not self.server:
-            return
-        m_position = bSelf._VehicleGunRotator__getGunMarkerPosition(sPos, sVec, bSelf.getCurShotDispersionAngles())
-        endPos, direction, diameter, idealDiameter, dualAccDiameter, dualAccIdealDiameter, collData = m_position
-        size = (diameter, idealDiameter)
-        bSelf._avatar.inputHandler.updateServerGunMarker(endPos, direction, size, SERVER_TICK_LENGTH, collData)
-
-    def onServerGunMarkerStateChanged(self, func, *args, **kwargs):
-        return None if self.server else func(*args, **kwargs)
-
-    def setGunMarkerColor(self, func, cr_panel, markerType, color):
-        if self.server and markerType == CLIENT:
-            func(cr_panel, SERVER, color)
-        return func(cr_panel, markerType, color)
-
-    def onModSettingsChanged(self):
-        self.enabled = config.data['enabled'] and not g_replayCtrl.isPlaying
-        if self.enabled:
-            self.server = config.data['useServerDispersion']
-        else:
-            self.server = False
-
-
-dispersion_circle = DispersionCircle()

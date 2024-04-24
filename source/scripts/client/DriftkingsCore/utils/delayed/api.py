@@ -6,7 +6,7 @@ from Event import SafeEvent
 
 from DriftkingsCore import loadJson, override, logError, smart_update
 
-__all__ = ['g_modsListApi']
+__all__ = ('g_modsListApi', 'registerSettings',)
 
 
 def try_import():

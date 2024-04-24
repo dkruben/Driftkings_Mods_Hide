@@ -39,8 +39,8 @@ class DummyTemplateBuilder(object):
         self._blockID = blockID
         return self
 
-    def getValue(self, varName, value):
-        return value
+    def getValue(self, var_name, value):
+        return var_name
 
     # dont remove (for future)
     def getControlType(self, value, contType):
@@ -82,57 +82,59 @@ class DummyTemplateBuilder(object):
     def createEmpty():
         return {'type': 'Empty'}
 
-    def getLabel(self, varName, ctx='setting'):
-        return self.i18n['UI_%s_%s_text' % (ctx, varName)]
+    def getLabel(self, var_name, ctx='setting'):
+        return self.i18n['UI_%s_%s_text' % (ctx, var_name)]
 
-    def createTooltip(self, varName, ctx='setting'):
-        return ('{HEADER}%s{/HEADER}{BODY}%s{/BODY}' % tuple(self.i18n['UI_%s_%s_%s' % (ctx, varName, strType)] for strType in ('text', 'tooltip'))) if self.i18n.get('UI_%s_%s_tooltip' % (ctx, varName), '') else ''
+    def createTooltip(self, var_name, ctx='setting'):
+        return ('{HEADER}%s{/HEADER}{BODY}%s{/BODY}' % tuple(self.i18n['UI_%s_%s_%s' % (ctx, var_name, strType)] for strType in ('text', 'tooltip'))) if self.i18n.get('UI_%s_%s_tooltip' % (ctx, var_name), '') else ''
 
-    def createLabel(self, varName, ctx='setting'):
+    def createLabel(self, var_name, ctx='setting'):
         if self._blockID is not None:
-            varName = self._blockID + '_' + varName
-        return {'type': 'Label', 'text': self.getLabel(varName, ctx), 'tooltip': self.createTooltip(varName, ctx)}
+            var_name = self._blockID + '_' + var_name
+        return {'type': 'Label', 'text': self.getLabel(var_name, ctx), 'tooltip': self.createTooltip(var_name, ctx)}
 
-    def createControl(self, varName, contType=CONTAINER.CheckBox, width=200, empty=False, button=None, value=None):
-        result = self.createLabel(varName) if not empty else {}  # contType: 'ColorChoice', 'TextInput'
-        result.update({'type': contType, 'value': self.getValue(varName, value), 'varName': varName, 'width': width})
+    def createControl(self, var_name, contType=CONTAINER.CheckBox, width=200, empty=False, button=None, value=None):
+        # contType: 'ColorChoice', 'TextInput'
+        result = self.createLabel(var_name) if not empty else {}
+        result.update({'type': contType, 'value': self.getValue(var_name, value), 'varName': var_name, 'width': width})
         if button is not None:
             result['button'] = button
         return result
 
-    def createOptions(self, varName, options, contType=CONTAINER.Dropdown, width=200, empty=False, button=None, value=None):
-        result = self.createControl(varName, contType, width, empty, button, value)  # contType: 'RadioButtonGroup'
+    def createOptions(self, var_name, options, contType=CONTAINER.Dropdown, width=200, empty=False, button=None, value=None):
+        # contType: 'RadioButtonGroup'
+        result = self.createControl(var_name, contType, width, empty, button, value)
         result['options'] = [{'label': x} for x in options]
         return result
 
-    def createImageOptions(self, varName, icons, contType=CONTAINER.Dropdown, width=200, empty=False, button=None, value=None):
-        result = self.createControl(varName, contType, width, empty, button, value)
+    def createImageOptions(self, var_name, icons, contType=CONTAINER.Dropdown, width=200, empty=False, button=None, value=None):
+        result = self.createControl(var_name, contType, width, empty, button, value)
         if result is not None:
             image = '<img src=\'img://gui/maps/icons/SixthSense/{}\' width=\'180\' height=\'180\'>'
             result['options'] = [{'label': x[:-4], 'tooltip': makeTooltip(body=image.format(x))} for x in icons]
         return result
 
-    def createHotKey(self, varName, empty=False, value=None):
-        result = self.createControl(varName, CONTAINER.HotKey, empty=empty, value=value)
+    def createHotKey(self, var_name, empty=False, value=None):
+        result = self.createControl(var_name, CONTAINER.HotKey, empty=empty, value=value)
         return result
 
-    def _createNumeric(self, varName, contType, step, vMin=0, vMax=0, width=200, empty=False, button=None, value=None):
-        result = self.createControl(varName, contType, width, empty, button, value)
-        result.update({'minimum': vMin, 'maximum': vMax, 'snapInterval': step})
+    def _createNumeric(self, var_name, contType, step, v_min=0, v_max=0, width=200, empty=False, button=None, value=None):
+        result = self.createControl(var_name, contType, width, empty, button, value)
+        result.update({'minimum': v_min, 'maximum': v_max, 'snapInterval': step})
         return result
 
-    def createStepper(self, varName, vMin, vMax, step, manual=False, width=200, empty=False, button=None, value=None):
-        result = self._createNumeric(varName, CONTAINER.NumericStepper, step, vMin, vMax, width, empty, button, value)
+    def createStepper(self, var_name, v_min, v_max, step, manual=False, width=200, empty=False, button=None, value=None):
+        result = self._createNumeric(var_name, CONTAINER.NumericStepper, step, v_min, v_max, width, empty, button, value)
         result['canManualInput'] = manual
         return result
 
-    def createSlider(self, varName, vMin, vMax, step, formatStr='{{value}}', width=200, empty=False, button=None, value=None):
-        result = self._createNumeric(varName, CONTAINER.Slider, step, vMin, vMax, width, empty, button, value)
+    def createSlider(self, var_name, v_min, v_max, step, formatStr='{{value}}', width=200, empty=False, button=None, value=None):
+        result = self._createNumeric(var_name, CONTAINER.Slider, step, v_min, v_max, width, empty, button, value)
         result['format'] = formatStr
         return result
 
-    def createRangeSlider(self, varName, vMin, vMax, labelStep, divStep, step, minRange, width=200, empty=False, button=None, value=None):
-        result = self._createNumeric(varName, CONTAINER.RangeSlider, step, vMin, vMax, width, empty, button, value)
+    def createRangeSlider(self, var_name, v_min, v_max, labelStep, divStep, step, minRange, width=200, empty=False, button=None, value=None):
+        result = self._createNumeric(var_name, CONTAINER.RangeSlider, step, v_min, v_max, width, empty, button, value)
         result.update({'divisionLabelStep': labelStep, 'divisionStep': divStep, 'minRangeDistance': minRange})
         return result
 

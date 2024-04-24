@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-# Crew return
 import json
 import os
 from io import open
 
+import BigWorld
 from CurrentVehicle import g_currentVehicle
+from external_strings_utils import unicode_from_utf8
 from frameworks.wulf import WindowLayer
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.exchange.ExchangeXPWindow import ExchangeXPWindow
@@ -29,15 +30,22 @@ IMG_DIR = 'img://../mods/configs/Driftkings/Driftkings_GUI'
 def getLogo(big=True):
     if big:
         return '<img src=\'%s/big.png\' width=\'500\' height=\'32\' vspace=\'16\'>' % IMG_DIR
-    return '<img src=\'%s/Driftkings_GUI.png\' width=\'220\' height=\'14\' vspace=\'16\'>' % IMG_DIR
+    return '<img src=\'%s/small.png\' width=\'220\' height=\'14\' vspace=\'16\'>' % IMG_DIR
 
 
 def getPreferencesDir():
-    configPath = './mods/configs/Driftkings/CrewSettings/'
-    return os.path.normpath(os.path.dirname(configPath))
+    preferencesFilePath = unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]
+    return os.path.normpath(os.path.dirname(preferencesFilePath))
 
 
 preferencesDir = getPreferencesDir()
+
+
+def getCachePath():
+    path = os.path.join(preferencesDir, 'Driftkings')
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 
 
 def encodeData(data):
@@ -68,13 +76,6 @@ def writeJsonFile(path, data):
         dataFile.write(unicode(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=2, sort_keys=True)))
 
 
-def getCachePath():
-    path = os.path.join(preferencesDir)
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
-
-
 def openIgnoredVehicles():
     path = os.path.join(getCachePath(), 'crewIgnored.json')
     if not os.path.exists(path):
@@ -89,17 +90,6 @@ ignored_vehicles = openIgnoredVehicles()
 def updateIgnoredVehicles(vehicles):
     path = os.path.join(getCachePath(), 'crewIgnored.json')
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
-
-
-class DialogBase(object):
-    appLoader = dependency.descriptor(IAppLoader)
-
-    @property
-    def view(self):
-        app = self.appLoader.getApp()
-        if app is not None and app.containerManager is not None:
-            return app.containerManager.getView(WindowLayer.VIEW)
-        return None
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -130,7 +120,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_dialog_cancel': 'Cancel',
             'UI_dialog_ignore': 'Ignore',
             #
-            'crewDialogs': {
+            'UI_crewDialogs': {
                 'enabled': '<br>Enable accelerated crew training?',
                 'disabled': '<br>Disable accelerated crew training?',
                 'notAvailable': 'Field upgrades are not available for this vehicle.',
@@ -151,7 +141,33 @@ class ConfigInterface(SimpleConfigInterface):
             ],
             'column2': [
                 self.tb.createControl('crewAutoReturn')
-            ]}
+            ]
+        }
+
+
+class DialogBase(object):
+    appLoader = dependency.descriptor(IAppLoader)
+
+    @property
+    def view(self):
+        app = self.appLoader.getApp()
+        if app is not None and app.containerManager is not None:
+            return app.containerManager.getView(WindowLayer.VIEW)
+        return None
+
+
+class CrewDialog(DialogBase):
+
+    @wg_async
+    def showCrewDialog(self, vehicleName, message):
+        builder = InfoDialogBuilder()
+        builder.setFormattedTitle(''.join((getLogo(), vehicleName)))
+        builder.setFormattedMessage(message)
+        builder.addButton(DialogButtons.SUBMIT, None, True, rawLabel=config.i18n['UI_dialog_apply'])
+        builder.addButton(DialogButtons.CANCEL, None, False, rawLabel=config.i18n['UI_dialog_cancel'])
+        builder.addButton(DialogButtons.PURCHASE, None, False, rawLabel=config.i18n['UI_dialog_ignore'])
+        result = yield wg_await(dialogs.show(builder.build(self.view)))
+        raise AsyncReturn(result)
 
 
 class CrewWorker(object):
@@ -162,6 +178,7 @@ class CrewWorker(object):
         self.intCD = None
         self.isDialogVisible = False
         g_events.onVehicleChangedDelayed += self.updateCrew
+        override(ExchangeXPWindow, 'as_vehiclesDataChangedS', self.new_onXPExchangeDataChanged)
 
     @property
     def view(self):
@@ -172,25 +189,14 @@ class CrewWorker(object):
 
     @staticmethod
     def getLocalizedMessage(value, description):
-        dialog = config.i18n['crewDialogs']
+        dialog = config.i18n['UI_crewDialogs']
         return '\n'.join((dialog[description], dialog['enabled'] if value else dialog['disabled']))
-
-    @wg_async
-    def showCrewDialog(self, vehicle_name, message):
-        builder = InfoDialogBuilder()
-        builder.setFormattedTitle(''.join((getLogo(), vehicle_name)))
-        builder.setFormattedMessage(message)
-        builder.addButton(DialogButtons.SUBMIT, None, True, rawLabel=config.i18n['UI_dialog_apply'])
-        builder.addButton(DialogButtons.CANCEL, None, False, rawLabel=config.i18n['UI_dialog_cancel'])
-        builder.addButton(DialogButtons.PURCHASE, None, False, rawLabel=config.i18n['UI_dialog_ignore'])
-        result = yield wg_await(dialogs.show(builder.build(self.view)))
-        raise AsyncReturn(result)
 
     @wg_async
     def showDialog(self, vehicle, value, description):
         self.isDialogVisible = True
         message = self.getLocalizedMessage(value, description)
-        dialog_result = yield wg_await(self.showCrewDialog(vehicle.userName, message))
+        dialog_result = yield wg_await(CrewDialog.showCrewDialog(vehicle.userName, message))
         if dialog_result.result == DialogButtons.SUBMIT:
             self.accelerateCrewXp(vehicle, value)
         elif dialog_result.result == DialogButtons.PURCHASE:
@@ -209,18 +215,19 @@ class CrewWorker(object):
         iterator = vehicle.postProgression.iterOrderedSteps()
         currentXP = vehicle.xp
         needToProgress = sum(x.getPrice().xp for x in iterator if not x.isRestricted() and not x.isReceived())
-        logInfo('isPPFullXP - {}: {}/{}', vehicle.userName, currentXP, needToProgress)
+        logInfo('isPPFullXP - %s: %s/%s' % (vehicle.userName, currentXP, needToProgress))
         return currentXP >= needToProgress
 
     def isAccelerateTraining(self, vehicle):
+        dialog = config.i18n['UI_crewDialogs']
         if not vehicle.postProgressionAvailability(unlockOnly=True).result:
-            return True, config.i18n['crewDialogs']['notAvailable']
+            return True, dialog['notAvailable']
         elif vehicle.postProgression.getCompletion() is PostProgressionCompletion.FULL:
-            return True, config.i18n['crewDialogs']['isFullXp']
+            return True, dialog['isFullXp']
         elif self.isPostProgressionFullXP(vehicle):
-            return True, config.i18n['crewDialogs']['isFullComplete']
+            return True, dialog['isFullComplete']
         else:
-            return False, config.i18n['crewDialogs']['needTurnOff']
+            return False, dialog['needTurnOff']
 
     def accelerateCrewTraining(self, vehicle):
         if vehicle.userName in ignored_vehicles or not vehicle.isElite:
@@ -233,11 +240,11 @@ class CrewWorker(object):
         lastCrewIDs = vehicle.lastCrew
         if lastCrewIDs is None:
             return False
-        for lastTankmenInvID in lastCrewIDs:
-            actualLastTankman = self.itemsCache.items.getTankman(lastTankmenInvID)
-            if actualLastTankman is not None and actualLastTankman.isInTank:
-                lastTankmanVehicle = self.itemsCache.items.getVehicle(actualLastTankman.vehicleInvID)
-                if lastTankmanVehicle and lastTankmanVehicle.isLocked:
+        for lastTankMenInvID in lastCrewIDs:
+            actualLastTankMan = self.itemsCache.items.getTankman(lastTankMenInvID)
+            if actualLastTankMan is not None and actualLastTankMan.isInTank:
+                lastTankManVehicle = self.itemsCache.items.getVehicle(actualLastTankMan.vehicleInvID)
+                if lastTankManVehicle and lastTankManVehicle.isLocked:
                     return False
         return True
 
@@ -260,7 +267,7 @@ class CrewWorker(object):
         result = yield TankmanReturn(vehicle).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo('{}: {}'.format(vehicle.userName, result.userMsg))
+            logInfo('%s: %s' % (vehicle.userName, result.userMsg))
 
     @decorators.adisp_process('crewReturning')
     def processReturnCrewForVehicleSelectorPopup(self, vehicle):
@@ -272,24 +279,21 @@ class CrewWorker(object):
         result = yield TankmanUnload(g_currentVehicle.item.invID).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo('{}'.format(result.userMsg))
+            logInfo('%s' % result.userMsg)
+
+    def new_onXPExchangeDataChanged(self, func, b_self, data, *args, **kwargs):
+        try:
+            ID = 'id'
+            CANDIDATE = 'isSelectCandidate'
+            for vehicleData in data['vehicleList']:
+                vehicle = self.itemsCache.items.getItemByCD(vehicleData[ID])
+                check, _ = self.isAccelerateTraining(vehicle)
+                vehicleData[CANDIDATE] &= check
+        except Exception as error:
+            logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
+        finally:
+            return func(b_self, data, *args, **kwargs)
 
 
 config = ConfigInterface()
-g_worker = CrewWorker()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
-
-@override(ExchangeXPWindow, 'as_vehiclesDataChangedS')
-def new_onXPExchangeDataChanged(func, self, data, *args, **kwargs):
-    try:
-        ID = 'id'
-        CANDIDATE = 'isSelectCandidate'
-        for vehicleData in data['vehicleList']:
-            vehicle = g_worker.itemsCache.items.getItemByCD(vehicleData[ID])
-            check, _ = g_worker.isAccelerateTraining(vehicle)
-            vehicleData[CANDIDATE] &= check
-    except Exception as error:
-        logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
-    finally:
-        return func(self, data, *args, **kwargs)

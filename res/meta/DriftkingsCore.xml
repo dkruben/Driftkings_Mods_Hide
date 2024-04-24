@@ -1,10 +1,10 @@
 <root>
 	
 	<!-- Techical MOD ID -->
-	<id>Driftkings.DKmodsCore</id>
+	<id>Driftkings.DriftkingsCore</id>
 	
 	<!-- Package version -->
-	<version>1.2x.x</version>
+	<version>1.24.0</version>
 	
 	<!-- Human readable name -->
 	<name>Driftkings mods core</name>
