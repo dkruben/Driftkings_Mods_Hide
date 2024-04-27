@@ -13,7 +13,7 @@ def try_import():
     try:
         from gui.modsListApi import g_modsListApi as modsListApi
     except ImportError:
-        logError('DriftkingsCore: ModsListApi package not found, ModsSettingsApi check skipped')
+        logError('DriftkingsCore', 'ModsListApi package not found, ModsSettingsApi check skipped')
 
         class ModsList(object):
             @staticmethod

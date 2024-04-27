@@ -10,7 +10,6 @@ import zlib
 from collections import OrderedDict
 
 from .utils import smart_update
-from ..utils import logInfo
 
 __all__ = ('loadJson', 'loadJsonOrdered',)
 
@@ -159,7 +158,7 @@ class JSONLoader(object):
         new_path = '%s%s.json' % (path, name)
         if not os.path.isfile(new_path):
             if not save:
-                logInfo(LOG, 'ERROR: Config not found, creating default:', new_path)
+                print(LOG, 'ERROR: Config not found, creating default:', new_path)
             cls.json_file_write(new_path, cls.json_dumps(oldConfig, sort_keys), encrypted)
             return config_new
         if not save:
@@ -169,7 +168,7 @@ class JSONLoader(object):
             try:
                 config_new = cls.json_loads(data)
             except StandardError:
-                logInfo(new_path)
+                print(new_path)
                 traceback.print_exc()
             return config_new
         read_contents, read_excluded, success = cls.json_file_read(new_path, encrypted)
@@ -188,13 +187,13 @@ class JSONLoader(object):
             return config_new
         write_lines = cls.json_dumps(read_data, sort_keys).split('\n')
         if not quiet:
-            logInfo(LOG, 'updating config:', new_path)
+            print(LOG, 'updating config:', new_path)
         for lineNum, (comment, insert) in sorted(read_excluded.iteritems(), key=lambda x: x[0]):
             if not insert:
                 if lineNum < len(write_lines):
                     write_lines[lineNum] += comment
                     continue
-                logInfo(LOG, 'config', new_path, 'update warning: comment on line', lineNum, 'went beyond updated file')
+                print(LOG, 'config', new_path, 'update warning: comment on line', lineNum, 'went beyond updated file')
             write_lines.insert(lineNum, comment)
         cls.json_file_write(new_path, '\n'.join(write_lines), encrypted)
         return config_new
@@ -208,7 +207,7 @@ class JSONLoader(object):
             path += '/'
         new_path = '%s%s.json' % (path, name)
         if not os.path.isfile(new_path):
-            logInfo(ID + ': ERROR: Config not found:', new_path)
+            print(ID + ': ERROR: Config not found:', new_path)
             return config_new
         data, _, success = cls.json_file_read(new_path, False)
         if not success:
@@ -216,7 +215,7 @@ class JSONLoader(object):
         try:
             config_new = cls.json_loads(data, True)
         except StandardError:
-            logInfo(new_path)
+            print(new_path)
             traceback.print_exc()
         return config_new
 

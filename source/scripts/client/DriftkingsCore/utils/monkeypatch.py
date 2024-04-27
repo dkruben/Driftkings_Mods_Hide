@@ -185,7 +185,7 @@ class HooksDecorators(object):
                     return new_method(old_method, *args, **kwargs)
                 setattr(setter, getter, __override)
             else:
-                logError('overrideMethod error: %s in %s is not callable or undefined in %s' % (getter, class_name, new_method.__name__))
+                logError('DriftkingsCore', 'overrideMethod error: {} in {} is not callable or undefined in {}', (getter, class_name, new_method.__name__))
             return new_method
 
         return outer

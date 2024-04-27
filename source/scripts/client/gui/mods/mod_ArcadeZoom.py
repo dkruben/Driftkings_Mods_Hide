@@ -89,7 +89,7 @@ def new__configs(func, self, dataSection):
             self._userCfg.clear()
             self._cfg.clear()
             config.camCache[self.__class__.__name__] = False
-    except Exception:
+    except StandardError:
         LOG_CURRENT_EXCEPTION()
     finally:
         return func(self, dataSection)
@@ -116,7 +116,7 @@ def new__updateProperties(func, self, state=None):
             distRange = MinMax(config.data['min'], config.data['max'])
             scrollSensitivity = config.data['scrollSensitivity']
             state = state._replace(distRange=distRange, scrollSensitivity=scrollSensitivity)
-    except Exception:
+    except StandardError:
         LOG_CURRENT_EXCEPTION()
     finally:
         return func(self, state=state)

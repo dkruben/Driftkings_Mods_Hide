@@ -8,6 +8,7 @@ from gui import SystemMessages
 from items import vehicles
 
 from DriftkingsCore import callback, logError
+from DriftkingsStats import __CORE_NAME__
 
 # URL
 HOST = 'https://static.modxvm.com/'
@@ -262,5 +263,5 @@ try:
     calculateXvmScale = ScaleValues().calculateXvmScale
     calculateXTDB = ScaleValues().calculateXTDB
     calculateXTE = ScaleValues().calculateXTE
-except ImportError as err:
-    logError('Scale not imported {}'.format(err))
+except ImportError as error:
+    logError(__CORE_NAME__, 'Scale not imported {}', error)

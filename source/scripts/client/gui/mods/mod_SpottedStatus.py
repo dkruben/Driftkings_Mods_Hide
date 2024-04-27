@@ -163,7 +163,7 @@ try:
     g_config = ConfigInterface()
     statistic_mod = Analytics(g_config.ID, g_config.version, 'UA-76792179-11')
 except ImportError:
-    logWarning('[%s]: Battle Flash API not found.' % g_config.ID)
+    logWarning(g_config.ID, 'Battle Flash API not found.')
 except StandardError:
     traceback.print_exc()
 else:

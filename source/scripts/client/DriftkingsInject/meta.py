@@ -8,6 +8,7 @@ from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import logDebug, logInfo
 from common import g_events
+from DriftkingsInject import __CORE_NAME__
 
 
 class DriftkingsView(BaseDAAPIComponent):
@@ -49,19 +50,19 @@ class DriftkingsView(BaseDAAPIComponent):
 
     def doLog(self, *args):
         for arg in args:
-            logInfo('%s:%s - %s' % (self.getAlias(), arg, dir(arg)))
+            logInfo(__CORE_NAME__, '%s:%s - %s' % (self.getAlias(), arg, dir(arg)))
 
     def _populate(self):
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._populate()
         g_events.onBattleClosed += self.destroy
-        logDebug(True, '\'%s\' is loaded' % self.ID)
+        logDebug(__CORE_NAME__, True, '\'%s\' is loaded' % self.ID)
 
     def _dispose(self):
         g_events.onBattleClosed -= self.destroy
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._dispose()
-        logDebug(True, '\'%s\' is closed' % self.ID)
+        logDebug(__CORE_NAME__, True, '\'%s\' is closed' % self.ID)
 
     def destroy(self):
         if self.getState() != EntityState.CREATED:

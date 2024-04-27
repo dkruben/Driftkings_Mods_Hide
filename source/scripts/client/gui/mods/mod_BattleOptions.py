@@ -340,7 +340,7 @@ def onVehicleChanged(vehicle):
     if vehicle is None or vehicle.isLocked or vehicle.isInBattle:
         return
     if not hasattr(vehicle, 'battleBoosters') or vehicle.battleBoosters is None:
-        logDebug('No battle boosters available for this vehicle: {}', vehicle.userName)
+        logDebug(config.ID, True, 'No battle boosters available for this vehicle: {}', vehicle.userName)
         return
     isAuto = vehicle.isAutoBattleBoosterEquip()
     boosters = vehicle.battleBoosters.installed.getItems()
@@ -348,7 +348,7 @@ def onVehicleChanged(vehicle):
         value = battleBooster.inventoryCount > 0
         if value != isAuto:
             changeValue(vehicle, value)
-            logInfo('VehicleAutoBattleBoosterEquipProcessor: value=%s vehicle=%s, booster=%s' % (value, vehicle.userName, battleBooster.userName))
+            logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}'.format(value, vehicle.userName, battleBooster.userName))
 
 
 def onGuiCacheSyncCompleted(_):

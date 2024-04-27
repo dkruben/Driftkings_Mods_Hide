@@ -10,4 +10,4 @@ from views import *
 from common import *
 
 
-logInfo('%s inject flash, version %s, is loaded' % (__CORE_NAME__, __MOD_CORE__))
+logInfo(__CORE_NAME__, ', version %s, is loaded' % __MOD_CORE__)

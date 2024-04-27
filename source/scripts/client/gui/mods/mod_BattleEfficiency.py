@@ -145,7 +145,7 @@ try:
     g_flash = Flash(g_config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError('[%s] Loading mod: Not found \'gambiter.flash\' module, loading stop!' % g_config.ID)
+    logError(g_config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
 except StandardError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()

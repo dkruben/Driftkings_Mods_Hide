@@ -388,18 +388,18 @@ class ConfigInterface(SimpleConfigInterface):
             return '{:0.1f}M'.format(value / 1000000.0)
 
 
-g_instance = ConfigInterface()
-analytics = Analytics(g_instance.ID, g_instance.version, 'UA-121940539-1')
+config = ConfigInterface()
+analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
 @override(VehParamsDataProvider, 'buildList')
 def new_buildList(func, self, cache):
-    if not g_instance.data['enabled']:
+    if not config.data['enabled']:
         return func(self, cache)
     self.clear()
     self._cache = cache
-    info = g_instance.getInfo()
-    if g_instance.data['showVehicleInfo']:
+    info = config.getInfo()
+    if config.data['showVehicleInfo']:
         func(self, cache)
         info.extend(self._list)
     if len(info) == 0:
@@ -412,5 +412,5 @@ def new_onParamClick(func, self, paramID):
     try:
         func(self, paramID)
     except KeyError:
-        g_instance.setExpanded(paramID, not g_instance.isExpanded(paramID))
+        config.setExpanded(paramID, not config.isExpanded(paramID))
         self._setDPUseAnimAndRebuild(False)

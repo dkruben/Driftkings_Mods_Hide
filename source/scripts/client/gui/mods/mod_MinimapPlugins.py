@@ -287,7 +287,7 @@ def new_setupPlugins(base, plugin, arenaVisitor):
                 res['vehicles'] = ArenaVehiclesPlugin
             res['personal'] = PersonalEntriesPlugin
     except Exception as err:
-        logError(repr(err))
+        logError(config.ID, repr(err))
     finally:
         return res
 

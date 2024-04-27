@@ -9,4 +9,4 @@ from xvm_stats import *
 
 __all__ = ('getVehicleInfoData', 'calculateXvmScale', 'calculateXTDB', 'calculateXTE', 'xvm_stat',)
 
-logInfo('%s, version %s, is loaded' % (__CORE_NAME__, __MOD_CORE__))
+logInfo(__CORE_NAME__, 'version %s, is loaded' % __MOD_CORE__)

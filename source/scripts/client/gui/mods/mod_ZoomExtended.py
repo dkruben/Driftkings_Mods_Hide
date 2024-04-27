@@ -162,7 +162,7 @@ def new__showTracer(func, self, shooterID, *args):
             if shooterID == self.playerVehicleID:
                 callback(max(config.data['disableCamAfterShotLatency'], 0), changeControlMode, self)
     except Exception as err:
-        logDebug(True,'I can\'t get out of sniper mode. Error {}.changeControlMode, {}', __package__, err)
+        logDebug(config.ID, True, 'I can\'t get out of sniper mode. Error {}.changeControlMode, {}', __package__, err)
     finally:
         return func(self, shooterID, *args)
 

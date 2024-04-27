@@ -7,7 +7,7 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
-from DriftkingsCore import override, logNote
+from DriftkingsCore import override, logInfo
 
 
 class BigTextConsumablesPanel(View):
@@ -51,4 +51,4 @@ def new_onPanelInvalidated(func, *a, **k):
 
 # noinspection PyArgumentList
 g_entitiesFactories.addSettings(ViewSettings(BigTextConsumablesPanel.__name__, BigTextConsumablesPanel, 'BigTextConsumablesPanel.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-logNote('BigTextConsumablesPanel loaded!')
+logInfo('BigTextConsumablesPanel', 'is loaded!')

@@ -266,13 +266,13 @@ class AccountsManagerSubWindow(AbstractWindowView):
         loadWindow('AccountsManager')
 
     def py_setEditAccount(self, id, title, email, password, cluster):
-        for it in BigWorld.wh_data.accounts:
-            if str(it['id']) != str(id):
+        for edit in BigWorld.wh_data.accounts:
+            if str(edit['id']) != str(id):
                 continue
-            it['title'] = title
-            it['cluster'] = cluster
-            it['email'] = BigWorld.wg_cpdata(email)
-            it['password'] = BigWorld.wg_cpdata(password)
+            edit['title'] = title
+            edit['cluster'] = cluster
+            edit['email'] = BigWorld.wg_cpdata(email)
+            edit['password'] = BigWorld.wg_cpdata(password)
             break
         BigWorld.wh_data.write_accounts()
         BigWorld.wh_data.renew_accounts()

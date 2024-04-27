@@ -133,7 +133,7 @@ class Distance(DistanceMeta):
         elif self.timeEvent is not None:
             self.timeEvent.stop()
             self.timeEvent = None
-        logDebug(True, 'Distance: onArenaPeriodChange: {}', ARENA_PERIOD_NAMES[period])
+        logDebug(config.ID, True, 'Distance: onArenaPeriodChange: {}', ARENA_PERIOD_NAMES[period])
 
     def onVehicleMarkerAdded(self, vProxy, vInfo, guiProps):
         if self.isPostmortem:

@@ -272,7 +272,7 @@ def new__handleLazyChannelCtlInited(func, self, event):
         ctx = event.ctx
         controller = ctx.get('controller')
         if controller is None:
-            logDebug(True, 'Controller is not defined', ctx)
+            logDebug(config.ID, True, 'Controller is not defined', ctx)
             return
         else:
             ctx.clear()

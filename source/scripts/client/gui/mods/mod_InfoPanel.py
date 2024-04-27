@@ -194,7 +194,7 @@ try:
     g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError('gambiter.GUIFlash not found. Text viewing disabled.')
+    logError(config.ID, 'gambiter.GUIFlash not found. Text viewing disabled.')
 except StandardError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()

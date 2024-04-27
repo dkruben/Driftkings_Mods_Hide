@@ -22,7 +22,6 @@ from skeletons.gui.shared import IItemsCache
 from wg_async import AsyncReturn, wg_async, wg_await
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError
-from DriftkingsInject import g_events
 
 IMG_DIR = 'img://../mods/configs/Driftkings/Driftkings_GUI'
 
@@ -177,8 +176,7 @@ class CrewWorker(object):
     def __init__(self):
         self.intCD = None
         self.isDialogVisible = False
-        g_events.onVehicleChangedDelayed += self.updateCrew
-        override(ExchangeXPWindow, 'as_vehiclesDataChangedS', self.new_onXPExchangeDataChanged)
+        # g_events.onVehicleChangedDelayed += self.updateCrew
 
     @property
     def view(self):
@@ -208,14 +206,14 @@ class CrewWorker(object):
     def accelerateCrewXp(self, vehicle, value):
         result = yield VehicleTmenXPAccelerator(vehicle, value, confirmationEnabled=False).request()
         if result.success:
-            logInfo('The accelerated crew training is %s for \'%s\'' % (value, vehicle.userName))
+            logInfo(config.ID, 'The accelerated crew training is %s for \'%s\'' % (value, vehicle.userName))
 
     @staticmethod
     def isPostProgressionFullXP(vehicle):
         iterator = vehicle.postProgression.iterOrderedSteps()
         currentXP = vehicle.xp
         needToProgress = sum(x.getPrice().xp for x in iterator if not x.isRestricted() and not x.isReceived())
-        logInfo('isPPFullXP - %s: %s/%s' % (vehicle.userName, currentXP, needToProgress))
+        logInfo(config.ID, 'isPPFullXP - %s: %s/%s' % (vehicle.userName, currentXP, needToProgress))
         return currentXP >= needToProgress
 
     def isAccelerateTraining(self, vehicle):
@@ -240,15 +238,16 @@ class CrewWorker(object):
         lastCrewIDs = vehicle.lastCrew
         if lastCrewIDs is None:
             return False
-        for lastTankMenInvID in lastCrewIDs:
-            actualLastTankMan = self.itemsCache.items.getTankman(lastTankMenInvID)
-            if actualLastTankMan is not None and actualLastTankMan.isInTank:
-                lastTankManVehicle = self.itemsCache.items.getVehicle(actualLastTankMan.vehicleInvID)
-                if lastTankManVehicle and lastTankManVehicle.isLocked:
+        for lastTankmenInvID in lastCrewIDs:
+            actualLastTankman = self.itemsCache.items.getTankman(lastTankmenInvID)
+            if actualLastTankman is not None and actualLastTankman.isInTank:
+                lastTankmanVehicle = self.itemsCache.items.getVehicle(actualLastTankman.vehicleInvID)
+                if lastTankmanVehicle and lastTankmanVehicle.isLocked:
                     return False
         return True
 
-    def updateCrew(self, vehicle):
+    def updateCrew(self):
+        vehicle = g_currentVehicle.item
         if vehicle is None or vehicle.isLocked or vehicle.isInBattle or vehicle.isCrewLocked:
             return
         if not config.data['enabled']:
@@ -267,7 +266,7 @@ class CrewWorker(object):
         result = yield TankmanReturn(vehicle).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo('%s: %s' % (vehicle.userName, result.userMsg))
+            logInfo(config.ID, '%s: %s' % (vehicle.userName, result.userMsg))
 
     @decorators.adisp_process('crewReturning')
     def processReturnCrewForVehicleSelectorPopup(self, vehicle):
@@ -279,21 +278,24 @@ class CrewWorker(object):
         result = yield TankmanUnload(g_currentVehicle.item.invID).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo('%s' % result.userMsg)
-
-    def new_onXPExchangeDataChanged(self, func, b_self, data, *args, **kwargs):
-        try:
-            ID = 'id'
-            CANDIDATE = 'isSelectCandidate'
-            for vehicleData in data['vehicleList']:
-                vehicle = self.itemsCache.items.getItemByCD(vehicleData[ID])
-                check, _ = self.isAccelerateTraining(vehicle)
-                vehicleData[CANDIDATE] &= check
-        except Exception as error:
-            logError('CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
-        finally:
-            return func(b_self, data, *args, **kwargs)
+            logInfo(config.ID, '%s' % result.userMsg)
 
 
 config = ConfigInterface()
+crew_return = CrewWorker()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+
+
+@override(ExchangeXPWindow, 'as_vehiclesDataChangedS')
+def new_onXPExchangeDataChanged(func, self, data, *args, **kwargs):
+    try:
+        ID = 'id'
+        CANDIDATE = 'isSelectCandidate'
+        for vehicleData in data['vehicleList']:
+            vehicle = crew_return.itemsCache.items.getItemByCD(vehicleData[ID])
+            check, _ = crew_return.isAccelerateTraining(vehicle)
+            vehicleData[CANDIDATE] &= check
+    except Exception as error:
+        logError(config.ID, 'CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
+    finally:
+        return func(self, data, *args, **kwargs)
