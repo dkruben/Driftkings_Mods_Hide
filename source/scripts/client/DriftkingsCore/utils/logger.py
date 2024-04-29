@@ -38,8 +38,8 @@ def logInfo(modID, message):
     BigWorld.logInfo(modID, str(message), None)
 
 
-def logDebug(modID, isDebug, message, *args, **kwargs):
-    if isDebug.get('debug', False):
+def logDebug(modID, isDebug=False, message='', *args, **kwargs):
+    if isDebug:
         BigWorld.logDebug(modID, str(message).format(*args, **kwargs), None)
 
 

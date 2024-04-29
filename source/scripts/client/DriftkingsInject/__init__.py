@@ -10,4 +10,4 @@ from views import *
 from common import *
 
 
-logInfo(__CORE_NAME__, ', version %s, is loaded' % __MOD_CORE__)
+logInfo(__CORE_NAME__, 'version %s, is loaded' % __MOD_CORE__)

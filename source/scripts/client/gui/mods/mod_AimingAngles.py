@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
+import math
 from functools import partial
 
 import BigWorld
+from Avatar import PlayerAvatar
+from AvatarInputHandler import AvatarInputHandler, MapCaseMode
 from AvatarInputHandler.DynamicCameras.ArcadeCamera import ArcadeCamera
 from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.SniperCamera import SniperCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
-from account_helpers.settings_core import settings_constants
-from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
-from Avatar import PlayerAvatar
-from AvatarInputHandler import AvatarInputHandler, MapCaseMode
 from AvatarInputHandler.cameras import FovExtended
 from Vehicle import Vehicle
+from account_helpers.settings_core import settings_constants
 from account_helpers.settings_core.options import InterfaceScaleSetting
 from aih_constants import CTRL_MODE_NAME
-import math
-from gui.shared.personality import ServicesLocator as SL
+from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
+from gui.shared.personality import ServicesLocator
 
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, callback, cancelCallback
 from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_ALIGN as GF_ALIGN, COMPONENT_TYPE as GF_TYPE
-from DriftkingsCore import SimpleConfigInterface, Analytics, override
+from gambiter.flash import COMPONENT_ALIGN, COMPONENT_TYPE
 
 ARCADE_MODE = 'arc'
 SNIPER_MODE = 'sn'
@@ -80,11 +80,11 @@ class ConfigsInterface(SimpleConfigInterface):
         override(Vehicle, '_Vehicle__onVehicleDeath', self.Vehicle__onVehicleDeath)
         override(Vehicle, 'set_gunAnglesPacked', self.set_gunAnglesPacked)
         override(FovExtended, 'setFovByMultiplier', self.setFovByMultiplier)
-        g_guiFlash.createComponent(self.ID, GF_TYPE.PANEL, {'x': 0, 'y': 0, 'alignX': GF_ALIGN.CENTER, 'alignY': GF_ALIGN.CENTER, 'width': 0, 'height': 0, 'limit': False})
-        g_guiFlash.createComponent(self.ID + '.L', GF_TYPE.IMAGE, {'alignX': GF_ALIGN.CENTER, 'alignY': GF_ALIGN.CENTER, 'limit': False})
-        g_guiFlash.createComponent(self.ID + '.R', GF_TYPE.IMAGE, {'alignX': GF_ALIGN.CENTER, 'alignY': GF_ALIGN.CENTER, 'limit': False})
-        g_guiFlash.createComponent(self.ID + '.lo', GF_TYPE.IMAGE, {'x': 0, 'alignX': GF_ALIGN.CENTER, 'alignY': GF_ALIGN.CENTER, 'limit': False})
-        g_guiFlash.createComponent(self.ID + '.hi', GF_TYPE.IMAGE, {'x': 0, 'alignX': GF_ALIGN.CENTER, 'alignY': GF_ALIGN.CENTER, 'limit': False})
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.PANEL, {'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.CENTER, 'width': 0, 'height': 0, 'limit': False})
+        g_guiFlash.createComponent(self.ID + '.L', COMPONENT_TYPE.IMAGE, {'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.CENTER, 'limit': False})
+        g_guiFlash.createComponent(self.ID + '.R', COMPONENT_TYPE.IMAGE, {'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.CENTER, 'limit': False})
+        g_guiFlash.createComponent(self.ID + '.lo', COMPONENT_TYPE.IMAGE, {'x': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.CENTER, 'limit': False})
+        g_guiFlash.createComponent(self.ID + '.hi', COMPONENT_TYPE.IMAGE, {'x': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.CENTER, 'limit': False})
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -135,7 +135,7 @@ class ConfigsInterface(SimpleConfigInterface):
     def updateHor(self):
         rotation = 0
         if self.aimMode == STRATEGIC_MODE:
-            if SL.settingsCore.getSetting(settings_constants.SPGAim.SPG_STRATEGIC_CAM_MODE) == 0:
+            if ServicesLocator.settingsCore.getSetting(settings_constants.SPGAim.SPG_STRATEGIC_CAM_MODE) == 0:
                 rotation = self.rotation
         g_guiFlash.updateComponent(self.ID, {'rotation': rotation}, {'duration': 0.05})
         marker = self.data['horizontal']
@@ -168,11 +168,11 @@ class ConfigsInterface(SimpleConfigInterface):
             'y': hi, 'alpha': max(350 + hi, 0) / 100.0, 'image': '../AimingAngles/%s/Top%s.png' % (
                 marker, ('_limit' if not int(hi - self.yVert + 12) else ''))}, {'duration': 0.05})
 
-    def AvatarInputHandler_onControlModeChanged(self, base, base_self, eMode, *a, **k):
-        result = base(base_self, eMode, *a, **k)
+    def AvatarInputHandler_onControlModeChanged(self, func, b_self, eMode, *a, **k):
+        result = func(b_self, eMode, *a, **k)
         try:
             oldAimMMode = self.aimMode
-            if base_self._AvatarInputHandler__isArenaStarted:
+            if b_self._AvatarInputHandler__isArenaStarted:
                 if eMode == CTRL_MODE_NAME.ARCADE:
                     self.y = - BigWorld.screenHeight() * SHIFT
                     self.yVert = - BigWorld.screenHeight() * SHIFT
@@ -196,17 +196,17 @@ class ConfigsInterface(SimpleConfigInterface):
         finally:
             return result
 
-    def InterfaceScaleSetting_setSystemValue(self, base, base_self, value, *args, **kwargs):
+    def InterfaceScaleSetting_setSystemValue(self, func, b_self, value, *args, **kwargs):
         try:
             self.y = - BigWorld.screenHeight() * SHIFT if self.aimMode == ARCADE_MODE else 0.0
             self.ON_AIM_MODE()
         finally:
-            return base(base_self, value, *args, **kwargs)
+            return func(b_self, value, *args, **kwargs)
 
-    def Vehicle_onEnterWorld(self, base, base_self, prereqs, *args, **kwargs):
-        result = base(base_self, prereqs, *args, **kwargs)
+    def Vehicle_onEnterWorld(self, func, b_self, prereqs, *args, **kwargs):
+        result = func(b_self, prereqs, *args, **kwargs)
         try:
-            if not base_self.isVehicleAlive:
+            if not b_self.isVehicleAlive:
                 return
             self.y = - BigWorld.screenHeight() * SHIFT
             self.yVert = - BigWorld.screenHeight() * SHIFT
@@ -215,8 +215,8 @@ class ConfigsInterface(SimpleConfigInterface):
         finally:
             return result
 
-    def plugins_makeSettingsVO(self, base, base_self, *a, **k):
-        data = base(base_self, *a, **k)
+    def plugins_makeSettingsVO(self, func, b_self, *args, **kwargs):
+        data = func(b_self, *args, **kwargs)
         try:
             self.ON_AIM_MODE()
         finally:
@@ -229,8 +229,8 @@ class ConfigsInterface(SimpleConfigInterface):
         self.dataHor = [-COORDINATE_OFF_SCREEN, COORDINATE_OFF_SCREEN]
         self.dataVert = [COORDINATE_OFF_SCREEN, -COORDINATE_OFF_SCREEN]
 
-    def anglesAiming_activateMapCase(self, base, *a, **k):
-        result = base(*a, **k)
+    def anglesAiming_activateMapCase(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.isMapCase = True
             self.hideCorners()
@@ -238,8 +238,8 @@ class ConfigsInterface(SimpleConfigInterface):
         finally:
             return result
 
-    def anglesAiming_turnOffMapCase(self, base, *a, **k):
-        result = base(*a, **k)
+    def anglesAiming_turnOffMapCase(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.isMapCase = False
         finally:
@@ -249,7 +249,7 @@ class ConfigsInterface(SimpleConfigInterface):
         if self.isMapCase:
             return
         if self.smoothingID is not None:
-            BigWorld.cancelCallback(self.smoothingID)
+            cancelCallback(self.smoothingID)
             self.smoothingID = None
         verticalFov = BigWorld.projection().fov
         horizontalFov = verticalFov * BigWorld.getAspectRatio()
@@ -272,39 +272,39 @@ class ConfigsInterface(SimpleConfigInterface):
         if self.visible or old_visible:
             self.ON_ANGLES_AIMING()
 
-    def ArcadeAimingSystem_enable(self, base, *a, **k):
-        result = base(*a, **k)
+    def ArcadeAimingSystem_enable(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.updateCoordinates()
         finally:
             return result
 
-    def SniperAimingSystem_enable(self, base, *a, **k):
-        result = base(*a, **k)
+    def SniperAimingSystem_enable(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.updateCoordinates()
         finally:
             return result
 
-    def ArtyAimingSystem_enable(self, base, *a, **k):
-        result = base(*a, **k)
+    def ArtyAimingSystem_enable(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.updateCoordinates()
         finally:
             return result
 
-    def StrategicAimingSystem_enable(self, base, *a, **k):
-        result = base(*a, **k)
+    def StrategicAimingSystem_enable(self, func, *args, **kwargs):
+        result = func(*args, **kwargs)
         try:
             self.updateCoordinates()
         finally:
             return result
 
-    def StrategicAimingSystem_cameraUpdate(self, base, base_self, *a, **k):
-        result = base(base_self, *a, **k)
+    def StrategicAimingSystem_cameraUpdate(self, func, b_self, *args, **kwargs):
+        result = func(b_self, *args, **kwargs)
         try:
-            vehicle = BigWorld.player().getVehicleAttached()
-            diff = base_self.aimingSystem.planePosition - vehicle.position
+            vehicle = getPlayer().getVehicleAttached()
+            diff = b_self.aimingSystem.planePosition - vehicle.position
             rotation = math.degrees(math.atan2(diff.x, diff.z))
             if rotation != self.rotation:
                 self.rotation = rotation
@@ -312,18 +312,18 @@ class ConfigsInterface(SimpleConfigInterface):
         finally:
             return result
 
-    def Vehicle__onAppearanceReady(self, base, base_self, *a, **k):
-        result = base(base_self, *a, **k)
+    def Vehicle__onAppearanceReady(self, func, b_self, *args, **kwargs):
+        result = func(b_self, *args, **kwargs)
         try:
-            if not base_self.isPlayerVehicle:
+            if not b_self.isPlayerVehicle:
                 return
             self.smoothingID = None
             self.yaw = self.old_yaw = 0.0
             self.pitch = self.old_pitch = 0.0
             self.old_multiplier = 1.0
             self.old_gunAnglesPacked = 0
-            self.isAlive = base_self.isAlive
-            gun = base_self.typeDescriptor.gun
+            self.isAlive = b_self.isAlive
+            gun = b_self.typeDescriptor.gun
             self.minBound, self.maxBound = gun.pitchLimits['absolute']
             self.pitchStep = (self.maxBound - self.minBound) / 63.0
             self.showHorCorners = not ((gun.staticTurretYaw is not None) or (gun.turretYawLimits is None))
@@ -337,16 +337,16 @@ class ConfigsInterface(SimpleConfigInterface):
             self.maxPitch = gun.pitchLimits['maxPitch']
             self.minPitch = gun.pitchLimits['minPitch']
             self.visible = True
-            self.turretPitch = base_self.typeDescriptor.hull.turretPitches[0]
-            self.gunJointPitch = base_self.typeDescriptor.turret.gunJointPitch
+            self.turretPitch = b_self.typeDescriptor.hull.turretPitches[0]
+            self.gunJointPitch = b_self.typeDescriptor.turret.gunJointPitch
             self.updateCoordinates()
         finally:
             return result
 
-    def Vehicle__onVehicleDeath(self, base, base_self, *a, **k):
-        result = base(base_self, *a, **k)
+    def Vehicle__onVehicleDeath(self, func, b_self, *args, **kwargs):
+        result = func(b_self, *args, **kwargs)
         try:
-            if not base_self.isPlayerVehicle:
+            if not b_self.isPlayerVehicle:
                 return
             self.isAlive = False
             self.hideCorners()
@@ -355,25 +355,24 @@ class ConfigsInterface(SimpleConfigInterface):
         finally:
             return result
 
-    def set_gunAnglesPacked(self, base, base_self, *a, **k):
-        result = base(base_self, *a, **k)
+    def set_gunAnglesPacked(self, func, b_self, *args, **kwargs):
+        result = func(b_self, *args, **kwargs)
         try:
-            if not base_self.isPlayerVehicle or base_self.gunAnglesPacked == self.old_gunAnglesPacked or not \
-                    self.showCorners or self.isMapCase:
+            if not b_self.isPlayerVehicle or b_self.gunAnglesPacked == self.old_gunAnglesPacked or not self.showCorners or self.isMapCase:
                 return
-            if BigWorld.player() is None or BigWorld.player().isObserver():
+            if getPlayer() is None or getPlayer().isObserver():
                 self.hideCorners()
                 return
-            _pitch = base_self.gunAnglesPacked & 63
+            _pitch = b_self.gunAnglesPacked & 63
             if ((self.old_gunAnglesPacked & 63) == _pitch) and not self.showHorCorners:
                 return
-            self.old_gunAnglesPacked = base_self.gunAnglesPacked
-            self.yaw = YAW_STEP_CORNER * (base_self.gunAnglesPacked >> 6 & 1023) - math.pi
+            self.old_gunAnglesPacked = b_self.gunAnglesPacked
+            self.yaw = YAW_STEP_CORNER * (b_self.gunAnglesPacked >> 6 & 1023) - math.pi
             self.pitch = self.minBound + _pitch * self.pitchStep
             self.currentStepPitch = (self.pitch - self.old_pitch) * STEP
             self.currentStepYaw = (self.yaw - self.old_yaw) * STEP
             if self.smoothingID is not None:
-                BigWorld.cancelCallback(self.smoothingID)
+                cancelCallback(self.smoothingID)
                 self.smoothingID = None
             self.smoothing(self.old_yaw + self.currentStepYaw, self.old_pitch + self.currentStepPitch, STEP)
             self.old_yaw = 0 if not self.showHorCorners else self.yaw
@@ -384,14 +383,13 @@ class ConfigsInterface(SimpleConfigInterface):
     def smoothing(self, stepYaw, stepPitch, step):
         self.dataHor, self.dataVert = self.coordinate(stepYaw, stepPitch)
         if (step + STEP) < 1.001:
-            self.smoothingID = BigWorld.callback(TIME_STEP, partial(
-                self.smoothing, stepYaw + self.currentStepYaw, stepPitch + self.currentStepPitch, step + STEP))
+            self.smoothingID = callback(TIME_STEP, partial(self.smoothing, stepYaw + self.currentStepYaw, stepPitch + self.currentStepPitch, step + STEP))
         else:
             self.smoothingID = None
         self.updateLabels()
 
-    def setFovByMultiplier(self, base, base_self, multiplier, *a, **k):
-        result = base(base_self, multiplier, *a, **k)
+    def setFovByMultiplier(self, func, b_self, multiplier, *args, **kwargs):
+        result = func(b_self, multiplier, *args, **kwargs)
         try:
             if self.old_multiplier == multiplier or not self.showCorners or self.isMapCase:
                 return
@@ -410,8 +408,7 @@ class ConfigsInterface(SimpleConfigInterface):
             xLeft = - COORDINATE_OFF_SCREEN
             xRight = COORDINATE_OFF_SCREEN
         if self.showVerCorners:
-            pHi, pLo = BigWorld.wg_calcGunPitchLimits(
-                _yaw, self.minPitch, self.maxPitch, self.turretPitch, self.gunJointPitch)
+            pHi, pLo = BigWorld.wg_calcGunPitchLimits(_yaw, self.minPitch, self.maxPitch, self.turretPitch, self.gunJointPitch)
             dif_pitch = pLo - _pitch
             yLo = int((self.scaleVert * dif_pitch + self.yVert) if dif_pitch > self.pitchStep else self.yVert)
             dif_pitch = pHi - _pitch
