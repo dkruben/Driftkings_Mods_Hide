@@ -109,8 +109,7 @@ class RemoveConfirmDialogButtons:
     def __init__(self):
         pass
 
-    @staticmethod
-    def getLabels():
+    def getLabels(self):
         return [
             {'id': DIALOG_BUTTON_ID.SUBMIT, 'label': config.i18n['UI_setting_delete'], 'focused': True},
             {'id': DIALOG_BUTTON_ID.CLOSE, 'label': config.i18n['UI_setting_cancel'], 'focused': False}
@@ -122,8 +121,7 @@ class AccountsManager(AbstractWindowView):
         AbstractWindowView.__init__(self)
         self._loginMode = createLoginMode(self)
 
-    @staticmethod
-    def py_log(text):
+    def py_log(self, text):
         print('[AccountsManager]: %s' % text)
 
     def py_setLoginDataById(self, id, form):
@@ -137,8 +135,7 @@ class AccountsManager(AbstractWindowView):
             self._loginMode.resetToken()
             self.destroy()
 
-    @staticmethod
-    def py_getTranslate():
+    def py_getTranslate(self):
         return {
             'submit_l10n': config.i18n['UI_setting_enter'],
             'edit_l10n': config.i18n['UI_setting_edit'],
@@ -205,8 +202,7 @@ class AccountsManager(AbstractWindowView):
         if self._isDAAPIInited():
             self.flashObject.as_callToFlash(data)
 
-    @staticmethod
-    def as_isModalS():
+    def as_isModalS(self):
         return True
 
     def onWindowClose(self):
@@ -225,15 +221,13 @@ class AccountsManagerSubWindow(AbstractWindowView):
                 self.__clusters.append({'label': cluster[1], 'data': cluster[1]})
         AbstractWindowView.__init__(self)
 
-    @staticmethod
-    def py_log(text):
+    def py_log(self, text):
         print('[AccountsManagerSubWindow]: %s' % text)
 
     def py_get_clusters(self):
         return self.__clusters
 
-    @staticmethod
-    def py_getTranslate():
+    def py_getTranslate(self):
         return {
             'save_l10n': config.i18n['UI_setting_save'],
             'cancel_l10n': '#settings:cancel_button',
@@ -282,13 +276,18 @@ class AccountsManagerSubWindow(AbstractWindowView):
         self.destroy()
         loadWindow('AccountsManager')
 
-    @staticmethod
-    def as_isModalS():
+    def as_isModalS(self):
         return True
 
     def onWindowClose(self):
         self.destroy()
         loadWindow('AccountsManager')
+
+
+# def init():
+BigWorld.wh_data = UserAccounts()
+g_entitiesFactories.addSettings(ViewSettings('AccountsManager', AccountsManager, 'AccountsManager.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings('AccountsManagerSubWindow', AccountsManagerSubWindow, 'AccountsManagerWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
 class AccountsManagerButtonController(object):
@@ -342,21 +341,16 @@ class AccountsManagerLoginButton(View):
         if self._isDAAPIInited():
             self.flashObject.as_setLoginMode(enabled)
 
-    @staticmethod
-    def py_log(text):
+    def py_log(self, text):
         print('[AccountsManagerLoginButton]: %s' % text)
 
-    @staticmethod
-    def py_openAccMngr():
-        loadWindow('AccountsManager')
+    def py_openAccMngr(self):
+        app = ServicesLocator.appLoader.getApp()
+        app.loadView(SFViewLoadParams('AccountsManager'))
 
-    @staticmethod
-    def py_getTranslate():
+    def py_getTranslate(self):
         return {'tooltip_l10n': 'Account Manager'}
 
 
 g_AccMngr = AccountsManagerButtonController()
-BigWorld.wh_data = UserAccounts()
-g_entitiesFactories.addSettings(ViewSettings('AccountsManager', AccountsManager, 'AccountsManager.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings('AccountsManagerSubWindow', AccountsManagerSubWindow, 'AccountsManagerWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings('AccountsManagerLoginButton', AccountsManagerLoginButton, 'AccountsManagerLoginButton.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
