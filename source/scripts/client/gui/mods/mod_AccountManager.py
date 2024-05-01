@@ -160,7 +160,7 @@ class AccountsManager(AbstractWindowView):
 
     def py_openAddAccountWindow(self):
         BigWorld.wh_current = M_obj()
-        BigWorld.wh_current.mode = AM_MODES.ADD
+        BigWorld.wh_current.mode = 'add'
         loadWindow('AccountsManagerSubWindow')
         self.destroy()
 
@@ -263,13 +263,13 @@ class AccountsManagerSubWindow(AbstractWindowView):
         loadWindow('AccountsManager')
 
     def py_setEditAccount(self, id, title, email, password, cluster):
-        for edit in BigWorld.wh_data.accounts:
-            if str(edit['id']) != str(id):
+        for it in BigWorld.wh_data.accounts:
+            if str(it['id']) != str(id):
                 continue
-            edit['title'] = title
-            edit['cluster'] = cluster
-            edit['email'] = BigWorld.wg_cpdata(email)
-            edit['password'] = BigWorld.wg_cpdata(password)
+            it['title'] = title
+            it['cluster'] = cluster
+            it['email'] = BigWorld.wg_cpdata(email)
+            it['password'] = BigWorld.wg_cpdata(password)
             break
         BigWorld.wh_data.write_accounts()
         BigWorld.wh_data.renew_accounts()
@@ -284,7 +284,6 @@ class AccountsManagerSubWindow(AbstractWindowView):
         loadWindow('AccountsManager')
 
 
-# def init():
 BigWorld.wh_data = UserAccounts()
 g_entitiesFactories.addSettings(ViewSettings('AccountsManager', AccountsManager, 'AccountsManager.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings('AccountsManagerSubWindow', AccountsManagerSubWindow, 'AccountsManagerWindow.swf', WindowLayer.WINDOW, None, ScopeTemplates.DEFAULT_SCOPE))

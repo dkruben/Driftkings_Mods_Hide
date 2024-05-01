@@ -166,8 +166,8 @@ class DateTimes(DateTimesMeta):
         super(DateTimes, self)._dispose()
 
     @staticmethod
-    def checkDecoder(_string):
-        for char in _string:
+    def checkDecoder(string):
+        for char in string:
             if char not in printable:
                 return locale.getpreferredencoding()
         return None
@@ -189,22 +189,22 @@ g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, DateTimes, None, WindowL
 # disable commander voices
 @override(SpecialSoundCtrl, '__setSpecialVoiceByTankmen')
 @override(SpecialSoundCtrl, '__setSpecialVoiceByCommanderSkinID')
-def new_setSoundMode(base, *args, **kwargs):
+def new_setSoundMode(func, *args, **kwargs):
     if config.data['enabled'] and config.data['disableSoundCommander']:
         return False
-    return base(*args, **kwargs)
+    return func(*args, **kwargs)
 
 
 # disable dogTag
 @override(_ClientArenaVisitor, 'hasDogTag')
-def new_hasDogTag(base, *args, **kwargs):
-    return False if config.data['enabled'] and config.data['showPostmortemDogTag'] else base(*args, **kwargs)
+def new_hasDogTag(func, *args, **kwargs):
+    return False if config.data['enabled'] and config.data['showPostmortemDogTag'] else func(*args, **kwargs)
 
 
 # disable battle hints
 @override(hint_plugins, 'createPlugins')
-def new_createPlugins(base, *args, **kwargs):
-    result = base(*args, **kwargs)
+def new_createPlugins(func, *args, **kwargs):
+    result = func(*args, **kwargs)
     if config.data['enabled'] and config.data['showBattleHint']:
         result.clear()
     return result
@@ -239,10 +239,10 @@ def new_playStunSoundIfNeed(base, *args, **kwargs):
 
 
 @override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
-def new_onVehicleStateUpdated(base, eq, state, value):
+def new_onVehicleStateUpdated(func, self, state, value):
     if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
         return
-    return base(eq, state, value)
+    return func(self, state, value)
 
 
 # mute battle bases

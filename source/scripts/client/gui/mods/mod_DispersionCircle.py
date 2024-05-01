@@ -41,6 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
     def __init__(self):
         self.enabled = False
         self.server = False
+        super(ConfigInterface, self).__init__()
         override(BattleReplay, 'setUseServerAim', self.replaySetUseServerAim)
         override(gm_factory, 'createComponents', self.createOverrideComponents)
         override(gm_factory, 'overrideComponents', self.createOverrideComponents)
@@ -52,7 +53,6 @@ class ConfigInterface(SimpleConfigInterface):
         override(VehicleGunRotator, 'setShotPosition', self.setShotPosition)
         override(CrosshairDataProxy, '__onServerGunMarkerStateChanged', self.onServerGunMarkerStateChanged)
         override(CrosshairPanelContainer, 'setGunMarkerColor', self.setGunMarkerColor)
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'

@@ -76,7 +76,7 @@ def writeJsonFile(path, data):
 
 
 def openIgnoredVehicles():
-    path = os.path.join(getCachePath(), 'crewIgnored.json')
+    path = os.path.join(getCachePath(), 'crew_ignored.json')
     if not os.path.exists(path):
         writeJsonFile(path, {'vehicles': []})
         return set()
@@ -87,7 +87,7 @@ ignored_vehicles = openIgnoredVehicles()
 
 
 def updateIgnoredVehicles(vehicles):
-    path = os.path.join(getCachePath(), 'crewIgnored.json')
+    path = os.path.join(getCachePath(), 'crew_ignored.json')
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 

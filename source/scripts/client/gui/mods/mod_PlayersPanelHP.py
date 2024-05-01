@@ -149,14 +149,14 @@ class PlayersPanelController(SimpleConfigInterface):
             self.setHPField(vehicleID)
 
 
-g_config = None
+config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
 
-    g_config = PlayersPanelController()
-    statistic_mod = Analytics(g_config.ID, g_config.version, 'UA-121940539-1')
+    config = PlayersPanelController()
+    statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 except ImportError:
-    logWarning(g_config.ID, 'Battle Flash API not found.')
+    logWarning(config.ID, 'Battle Flash API not found.')
 except StandardError:
     traceback.print_exc()
 else:
@@ -166,9 +166,9 @@ else:
         try:
             for vehicleID, entry2 in self._entries.iteritems():
                 if entry == entry2 and isInAoI:
-                    if vehicleID in g_config.vCache:
+                    if vehicleID in config.vCache:
                         break
-                    g_config.updateHealth(vehicleID)
+                    config.updateHealth(vehicleID)
         except StandardError:
             traceback.print_exc()
         finally:
@@ -180,8 +180,8 @@ else:
         result = func(self, vehicle, *args, **kwargs)
         try:
             vehicleID = vehicle.id
-            g_config.validateCache(vehicleID)
-            g_config.updateHealth(vehicleID)
+            config.validateCache(vehicleID)
+            config.updateHealth(vehicleID)
         except StandardError:
             traceback.print_exc()
         finally:
@@ -192,7 +192,7 @@ else:
     def new_vehicle_onHealthChanged(func, self, newHealth, *args, **kwargs):
         result = func(self, newHealth, *args, **kwargs)
         try:
-            g_config.updateHealth(self.id, newHealth)
+            config.updateHealth(self.id, newHealth)
         except StandardError:
             traceback.print_exc()
         finally:
@@ -201,6 +201,6 @@ else:
 
     @override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS')
     def new_setPanelHPBarVisibilityStateS(func, self, value):
-        if g_config.data['enabled']:
+        if config.data['enabled']:
             return
         func(self, value)

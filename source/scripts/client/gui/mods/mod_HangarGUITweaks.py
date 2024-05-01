@@ -313,7 +313,7 @@ def new_generateMapping(func, _, *args, **kwargs):
 
 @override(TankCarouselFilterPopover, '_update')
 def new_update(func, self, isInitial=False, *args, **kwargs):
-    func(self, isInitial, *args, **k)
+    func(self, isInitial, *args, **kwargs)
     if g_config.data['enabled'] and (g_config.data['filter_vehicleCarousel_normal'] or g_config.data['filter_vehicleCarousel_alliance']) and not isInitial:
         filters = self._carousel.filter.getFilters(self._VehiclesFilterPopover__usedFilters)
         xpRateMultiplier = self.itemsCache.items.shop.dailyXPFactor
