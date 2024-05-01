@@ -5,8 +5,8 @@ from functools import partial
 from random import choice
 
 import BigWorld
-import ResMgr
 import Math
+import ResMgr
 import SoundGroups
 from PlayerEvents import g_playerEvents
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES

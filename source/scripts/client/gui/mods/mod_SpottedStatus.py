@@ -2,9 +2,9 @@
 import traceback
 
 from Avatar import PlayerAvatar
+from gui.Scaleform.daapi.view.battle.shared.minimap.plugins import ArenaVehiclesPlugin
 from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
-from gui.Scaleform.daapi.view.battle.shared.minimap.plugins import ArenaVehiclesPlugin
 from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import SimpleConfigInterface, override, Analytics, logWarning, getPlayer

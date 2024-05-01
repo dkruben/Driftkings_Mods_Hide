@@ -1,6 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-from functools import partial
 import traceback
+from functools import partial
 from math import degrees
 
 import Keys
@@ -11,7 +11,6 @@ from messenger import MessengerEntry
 from nations import NAMES
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback
-
 
 MACROS = [
     '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',

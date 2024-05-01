@@ -15,16 +15,15 @@ from constants import ARENA_BONUS_TYPE
 from dossiers2.ui.achievements import ACHIEVEMENT_BLOCK
 from gui import InputHandler, g_guiResetters
 from gui.Scaleform.daapi.view.lobby.profile.ProfileUtils import ProfileUtils
-from gui.impl.lobby.crew.widget.crew_widget import CrewWidget
 from gui.battle_control.controllers import feedback_events
+from gui.impl.lobby.crew.widget.crew_widget import CrewWidget
 from gui.shared.gui_items.dossier.achievements.mark_on_gun import MarkOnGunAchievement
 from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
-
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage
 
 DAMAGE_EVENTS = frozenset([BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST, BATTLE_EVENT_TYPE.DAMAGE, BATTLE_EVENT_TYPE.TANKING, BATTLE_EVENT_TYPE.RECEIVED_DAMAGE])
 

@@ -4,7 +4,7 @@ import re
 import traceback
 
 from Avatar import PlayerAvatar
-from constants import ARENA_BONUS_TYPE, ARENA_GUI_TYPE
+from constants import ARENA_BONUS_TYPE
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
 from gui.Scaleform.daapi.view.battle.shared.ribbons_aggregator import RibbonsAggregator
 from gui.Scaleform.daapi.view.battle.shared.ribbons_panel import BattleRibbonsPanel
