@@ -30,14 +30,14 @@ class Analytics(object):
 
     def template(self, old=False):
         return {
-            'v': 1,  # Protocol version
-            'tid': '%s' % self.mod_id_analytics,  # Mod Analytics ID ('UA-XXX-Y')
-            'cid': '%s' % self.old_user if old else self.user,  # User ID
-            'an': '%s' % self.mod_description,  # Mod name
-            'av': '%s %s' % (self.mod_description, self.mod_version),  # App version.
-            'cd': '%s (Cluster: [%s], lang: [%s])' % (self.old_playerName if old else self.playerName, AUTH_REALM, self.lang),  # Readable user name
-            'ul': '%s' % self.lang,  # client language
-            't': 'event'  # Hit type
+            'v': 1,
+            'tid': '%s' % self.mod_id_analytics,
+            'cid': '%s' % self.old_user if old else self.user,
+            'an': '%s' % self.mod_description,
+            'av': '%s %s' % (self.mod_description, self.mod_version),
+            'cd': '%s (Cluster: [%s], lang: [%s])' % (self.old_playerName if old else self.playerName, AUTH_REALM, self.lang),
+            'ul': '%s' % self.lang,
+            't': 'event'
         }
 
     def analytics_start(self):
@@ -57,7 +57,7 @@ class Analytics(object):
             self.lastTime = BigWorld.time()
             try:
                 urllib2.urlopen(url='https://www.google-analytics.com/collect?', data=urllib.urlencode(params)).read()
-            except IOError:  # URLError
+            except IOError:
                 pass
 
     # noinspection PyProtectedMember
@@ -79,6 +79,6 @@ class Analytics(object):
             self.lang = str(getClientLanguage()).upper()
             try:
                 urllib2.urlopen(url='https://www.google-analytics.com/collect?', data=urllib.urlencode(dict(self.template(True), sc='end', ec='session', ea='end'))).read()
-            except IOError:  # URLError
+            except IOError:
                 pass
             self.analytics_started = False

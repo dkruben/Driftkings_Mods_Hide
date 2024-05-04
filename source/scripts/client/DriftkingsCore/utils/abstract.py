@@ -6,17 +6,17 @@ __all__ = ('redirect_traceback',)
 
 def redirect_traceback(callback, func_code):
     # noinspection PyUnusedLocal
-    def result(*a, **k):
+    def result(*args, **kwargs):
         info = None
         try:
-            return callback(*a, **k)
-        except Exception:  # Code to remove this wrapper from traceback
+            return callback(*args, **kwargs)
+        except Exception:
             info = sys.exc_info()
-            new_tb = info[2].tb_next  # https://stackoverflow.com/q/44813333
-            if new_tb is None:  # exception occurs inside this wrapper, not inside the callback [1]
-                if func_code is None:  # we have no idea where to redirect the traceback to
+            new_tb = info[2].tb_next
+            if new_tb is None:
+                if func_code is None:
                     raise
-                new_tb = _generate_new_tb(func_code)  # [1] so we point to the place of callback definition
+                new_tb = _generate_new_tb(func_code)
             raise info[0], info[1], new_tb
         finally:
             del info
@@ -24,7 +24,7 @@ def redirect_traceback(callback, func_code):
     return result
 
 
-def _generate_new_tb(co):  # https://unterwaditzer.net/2018/python-custom-tracebacks.html
+def _generate_new_tb(co):
     ns = {}
     exec (compile(''.join(('\n' * (co.co_firstlineno - 1), 'def ', co.co_name, '(): 1/0')), co.co_filename, 'exec'), ns)
     tb_obj = None

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from constants import DEFAULT_LANGUAGE
+
 from ..template_builders import DummyTemplateBuilder
 
 

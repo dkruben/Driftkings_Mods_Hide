@@ -77,7 +77,6 @@ def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
         return partial(override, obj, prop)
 
 
-# ----! HOOKS !----
 class EventHook(object):
 
     def __init__(self):

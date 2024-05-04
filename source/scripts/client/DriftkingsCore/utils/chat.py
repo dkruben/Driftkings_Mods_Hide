@@ -33,7 +33,7 @@ def __sendChatMessagePart(msg, chanId):
     proto = proto_getter(PROTO_TYPE.BW_CHAT2).get()
     if proto is None or BattleReplay.isPlaying():
         MessengerEntry.g_instance.gui.addClientMessage('OFFLINE: %s' % msg, True)
-    elif chanId in (0, 1):  # 0 == 'All', 1 == 'Team'
+    elif chanId in (0, 1):
         proto.arenaChat.broadcast(msg, int(not chanId))
     elif chanId == 2:
         proto.unitChat.broadcast(msg, 1)

@@ -130,17 +130,7 @@ class TotalLog(TotalLogMeta):
 
     def update_top_log_start_params(self):
         template = config.data['templateMainDMG']
-        self.top_log.update(
-            config.data['icons'],
-            tankDamageAvgColor='#FFFFFF',
-            tankAssistAvgColor='#FFFFFF',
-            tankBlockedAvgColor='#FFFFFF',
-            tankStunAvgColor='#FFFFFF',
-            tankAvgDamage=cachedVehicleData.efficiencyAvgData.damage,
-            tankAvgAssist=cachedVehicleData.efficiencyAvgData.assist,
-            tankAvgStun=cachedVehicleData.efficiencyAvgData.stun,
-            tankAvgBlocked=cachedVehicleData.efficiencyAvgData.blocked
-        )
+        self.top_log.update(config.data['icons'], tankDamageAvgColor='#FFFFFF', tankAssistAvgColor='#FFFFFF', tankBlockedAvgColor='#FFFFFF', tankStunAvgColor='#FFFFFF', tankAvgDamage=cachedVehicleData.efficiencyAvgData.damage, tankAvgAssist=cachedVehicleData.efficiencyAvgData.assist, tankAvgStun=cachedVehicleData.efficiencyAvgData.stun, tankAvgBlocked=cachedVehicleData.efficiencyAvgData.blocked)
         if not self.isSPG():
             self.top_log.update(stun='', stunIcon='')
             template = [line for line in template if 'stunIcon' not in line]

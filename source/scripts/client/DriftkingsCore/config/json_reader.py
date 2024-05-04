@@ -17,7 +17,6 @@ __all__ = ('loadJson', 'loadJsonOrdered',)
 class JSONObjectEncoder(JSONEncoder):
     def encode(self, o, i=0):
         try:
-            # Special Processing for lists
             dedent = ' ' * i
             i += self.indent
             indent = ' ' * i
@@ -175,7 +174,6 @@ class JSONLoader(object):
         if not success:
             read_contents = cls.json_dumps(oldConfig, sort_keys)
         read_data = cls.json_loads(read_contents, True)
-        # maintains ordering
         if rewrite:
             updated = read_data != oldConfig
             read_data = oldConfig

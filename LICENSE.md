@@ -1,8 +1,8 @@
 GNU Lesser General Public License
 =================================
 
-_Version 3, 29 June 2007_2022
-_Copyright © 2022 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
+_Version 3, 29 June 2007_2024
+_Copyright © 2024 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
 
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.

@@ -212,7 +212,6 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y'),
                 self.tb.createSlider('rows', 1, 10, 1, '{{value}} ' + ' Rows'),
                 self.tb.createControl('smallCarousel')
-
             ]
         }
 
