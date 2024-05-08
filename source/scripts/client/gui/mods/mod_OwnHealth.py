@@ -1,21 +1,20 @@
 # -*- coding:utf-8 -*-
+from PlayerEvents import g_playerEvents
+from aih_constants import CTRL_MODE_NAME
 from constants import ARENA_GUI_TYPE
+from constants import ARENA_PERIOD
 from frameworks.wulf import WindowLayer
+from gui.Scaleform.daapi.view.battle.shared.formatters import getHealthPercent, normalizeHealth
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
-from gui.shared.personality import ServicesLocator
-from constants import ARENA_PERIOD
 from gui.battle_control import avatar_getter
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.prebattle_setups_ctrl import IPrebattleSetupsListener
-from gui.Scaleform.daapi.view.battle.shared.formatters import getHealthPercent, normalizeHealth
-from PlayerEvents import g_playerEvents
-from aih_constants import CTRL_MODE_NAME
+from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, isDisabledByBattleType
 from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
-
 
 AS_SWF = 'OwnHealth.swf'
 AS_BATTLE = 'OwnHealthView'

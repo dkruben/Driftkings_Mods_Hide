@@ -18,7 +18,7 @@ class ConfigInterface(SimpleConfigInterface):
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.__addVehicleStatusUpdate)
         override(PlayerAvatar, 'shoot', self.__shoot)
         override(PlayerAvatar, 'onBecomePlayer', self.__onBecomePlayer)
-        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.___startGUI)
+        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGUI)
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
 
     def init(self):
@@ -132,7 +132,7 @@ class ConfigInterface(SimpleConfigInterface):
         func(b_self)
         self.isEventBattle = getPlayer().guiSessionProvider.arenaVisitor.gui.isEventBattle()
 
-    def ___startGUI(self, func, *args):
+    def __startGUI(self, func, *args):
         func(*args)
         self.startBattle()
 

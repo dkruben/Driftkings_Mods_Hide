@@ -37,8 +37,8 @@ class ConfigsInterface(SimpleConfigInterface):
                 'stepsOnly': False
             },
             'zoomSteps': {
-                'enabled': False,
-                'steps': [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0, 25.0, 30.0]
+                'enabled': True,
+                'steps': [4.0, 6.0, 8.0, 12.0, 16.0, 25.0, 30.0]
             }
         }
 
@@ -52,7 +52,7 @@ class ConfigsInterface(SimpleConfigInterface):
             'UI_setting_noShockWave_tooltip': 'Remove camera shaking when hit by tank.',
             'UI_setting_noSniperDynamic_text': 'Sniper Dynamic',
             'UI_setting_noSniperDynamic_tooltip': 'Disable dynamic camera in sniper mode.',
-            'UI_setting_disableCamAfterShot_text': 'Sisable Cam After Shot',
+            'UI_setting_disableCamAfterShot_text': 'Disable Cam After Shot',
             'UI_setting_disableCamAfterShot_tooltip': 'Disable sniper mode after the shot.',
             'UI_setting_disableCamAfterShotLatency_text': 'Disable Cam After Shot Latency',
             'UI_setting_disableCamAfterShotLatency_tooltip': 'Delay automatic shutdown of the camera.',
@@ -106,10 +106,6 @@ def new__readConfigs(func, self, data):
                 exposure.insert(0, exposure[0] + 0.1)
     if config.settingsCache['dynamicZoom']:
         self.setSniperZoomSettings(-1)
-        # if settingsCache[SNIPER.STEPS_ONLY]:
-        #     settingsCache[SNIPER.METERS] = math.ceil(SNIPER.MAX_DIST / camera._cfg[SNIPER.ZOOMS][GLOBAL.LAST])
-        # else:
-        #     settingsCache[SNIPER.METERS] = DEFAULT_X_METERS
 
 
 @override(SniperZoomSetting, 'setSystemValue')

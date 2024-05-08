@@ -2,12 +2,12 @@
 import binascii
 import codecs
 import json
-from json import JSONDecoder, JSONEncoder
 import os
 import re
 import traceback
 import zlib
 from collections import OrderedDict
+from json import JSONDecoder, JSONEncoder
 
 from .utils import smart_update
 
@@ -43,13 +43,13 @@ class JSONObjectEncoder(JSONEncoder):
 
 
 class JSONObjectDecoder(JSONDecoder):
-    def __init__(self, *a, **k):
-        super(JSONObjectDecoder, self).__init__(*a, **k)
+    def __init__(self, *args, **kwargs):
+        super(JSONObjectDecoder, self).__init__(*args, **kwargs)
         self.old_parse_array = self.parse_array
         self.parse_array = self.new_parse_array
 
-    def new_parse_array(self, *a, **k):
-        values, end = self.old_parse_array(*a, **k)
+    def new_parse_array(self, *args, **kwargs):
+        values, end = self.old_parse_array(*args, **kwargs)
         return tuple(values), end
 
 

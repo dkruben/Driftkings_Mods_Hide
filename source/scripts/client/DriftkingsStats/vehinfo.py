@@ -15,7 +15,7 @@ HOST = 'https://static.modxvm.com/'
 URL_WN8 = HOST + 'wn8-data-exp/json/wn8exp.json'
 URL_XTE = HOST + 'xte.json'
 URL_XTDB = HOST + 'xtdb.json'
-URL_XVMSCALE = HOST + 'xvmscales.json'
+URL_XVM_SCALE = HOST + 'xvmscales.json'
 
 VEHICLE_TYPE_XML_PATH = 'scripts/item_defs/vehicles/'
 UNKNOWN_VEHICLE_DATA = {
@@ -32,7 +32,7 @@ UNKNOWN_VEHICLE_DATA = {
     'tierLo': 0,
     'tierHi': 0,
     'shortName': 'unknown',
-    'isReserved': False,
+    'isReserved': False
 }
 
 VEHICLE_CLASS_TAGS = frozenset(('lightTank', 'mediumTank', 'heavyTank', 'SPG', 'AT-SPG'))
@@ -111,7 +111,7 @@ class ScaleValues(object):
     def _loadXvmScaleData(self):
         xvmScales_path = '/'.join([self.config_path, 'xvmScales.json'])
         try:
-            urllib.urlretrieve(URL_XVMSCALE, xvmScales_path)
+            urllib.urlretrieve(URL_XVM_SCALE, xvmScales_path)
         except StandardError:
             pass
 
@@ -239,7 +239,6 @@ class ScaleValues(object):
         minF = avgF * 0.4
         d = max(0, 1 + dD / (topD - avgD) if dmg_per_battle >= avgD else 1 + dD / (avgD - minD))
         f = max(0, 1 + dF / (topF - avgF) if frg_per_battle >= avgF else 1 + dF / (avgF - minF))
-
         t = (d * CD + f * CF) / (CD + CF) * 1000.0
 
         # calculate XVM Scale

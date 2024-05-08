@@ -6,10 +6,15 @@ from time import strftime
 from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
+from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
+from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
+from gui.app_loader.settings import APP_NAME_SPACE
+from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 from gui.battle_control.arena_info.arena_vos import VehicleTypeInfoVO
 from gui.battle_control.arena_visitor import _ClientArenaVisitor
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -19,14 +24,9 @@ from gui.battle_control.controllers.team_bases_ctrl import BattleTeamsBasesContr
 from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
+from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
-from frameworks.wulf import WindowLayer
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.app_loader.settings import APP_NAME_SPACE
-from gui.shared.personality import ServicesLocator
-from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent

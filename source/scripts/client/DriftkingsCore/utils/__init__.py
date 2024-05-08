@@ -5,12 +5,12 @@ from . import events
 from .abstract import *
 from .analytics import *
 from .chat import *
+from .colorRatting import *
 from .game import *
 from .iter import *
 from .logger import *
 from .monkeypatch import *
 from .wgUtils import *
-from .colorRatting import *
 
 
 def __import_delayed():

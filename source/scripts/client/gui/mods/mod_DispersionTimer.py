@@ -2,10 +2,10 @@
 from collections import defaultdict
 from math import ceil, log
 
+from VehicleGunRotator import VehicleGunRotator
 from aih_constants import CTRL_MODE_NAME
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from VehicleGunRotator import VehicleGunRotator
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.avatar_getter import getInputHandler

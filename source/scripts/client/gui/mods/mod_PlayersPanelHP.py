@@ -7,10 +7,10 @@ from Avatar import PlayerAvatar
 from Vehicle import Vehicle
 from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.minimap.plugins import ArenaVehiclesPlugin
+from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 from gui.battle_control.arena_info import vos_collections
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
-from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, override, logWarning, getEntity, getPlayer
 
