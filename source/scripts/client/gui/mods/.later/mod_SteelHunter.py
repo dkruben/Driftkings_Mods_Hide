@@ -9,7 +9,6 @@ try:
     from battle_royale.gui.Scaleform.daapi.view.battle.minimap import plugins
     from battle_royale.gui.Scaleform.daapi.view.battle.minimap.settings import MarkersAs3Descr
     from shared_utils import findFirst
-
     from battleground.loot_object import LootObject
 except StandardError:
     BattleUpgradePanel = False

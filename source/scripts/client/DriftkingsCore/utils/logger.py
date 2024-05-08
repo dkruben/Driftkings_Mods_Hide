@@ -1,33 +1,9 @@
 # -*- coding: utf-8 -*-
+import traceback
+
 import BigWorld
 
 __all__ = ('logDebug', 'logInfo', 'logError', 'logWarning', 'logException', 'logTrace',)
-
-
-class Logger(object):
-
-    def logException(self, func):
-        def exception(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except StandardError:
-                self.logTrace(func)
-        return exception
-
-    @staticmethod
-    def logTrace(exc=None):
-        print('=============================')
-        import traceback
-        if exc is not None:
-            logError('DriftkingsCore', str(exc))
-            traceback.print_exc()
-        else:
-            traceback.print_stack()
-        print('=============================')
-
-
-logTrace = Logger().logTrace
-logException = Logger().logException
 
 
 def logError(modID, message, *args, **kwargs):
@@ -45,3 +21,22 @@ def logDebug(modID, isDebug=False, message='', *args, **kwargs):
 
 def logWarning(modID, message):
     BigWorld.logWarning(modID, str(message), None)
+
+
+def logTrace(exc=None):
+    print '=' * 45
+    if exc is not None:
+        logError('DriftkingsCore', exc)
+        traceback.print_exc()
+    else:
+        traceback.print_stack()
+    print '=' * 45
+
+
+def logException(func):
+    def exception(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except:
+            logTrace(func)
+    return exception

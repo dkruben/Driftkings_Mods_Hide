@@ -10,7 +10,8 @@ from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
 from gui.shared.personality import ServicesLocator
 from gui.battle_control.controllers.battle_field_ctrl import IBattleFieldListener
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, DriftkingsInjector, DriftkingsView, g_events, loadJson
+from DriftkingsCore import SimpleConfigInterface, Analytics, loadJson
+from DriftkingsInject import DriftkingsView, DriftkingsInjector, g_events
 
 USE_PARS = True
 AS_SWF = 'TeamsHealth.swf'
