@@ -17,10 +17,10 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         self._spotted_cache = {}
         self.as_create = False
         CallbackDelayer.__init__(self)
-        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new_startGui)
-        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new_destroyGUI)
         self.place = '/'.format(['..', 'mods', 'configs', 'Driftkings', '%(mod_ID)s', 'icons', ''])
         super(ConfigInterface, self).__init__()
+        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGui)
+        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -76,13 +76,13 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         self._spotted_cache = {}
         self.clearCallbacks()
 
-    def new_startGui(self, func, *args):
+    def __startGui(self, func, *args):
         func(*args)
         self.vehiclesInfo()
         self.start()
         self.delayCallback(0.3, self.start)
 
-    def new_destroyGUI(self, func, *args):
+    def __destroyGUI(self, func, *args):
         func(*args)
         self.clear()
 
@@ -156,14 +156,13 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         self.getSpottedStatus()
 
 
-g_config = None
+config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-
-    g_config = ConfigInterface()
-    statistic_mod = Analytics(g_config.ID, g_config.version, 'UA-76792179-11')
+    config = ConfigInterface()
+    statistic_mod = Analytics(config.ID, config.version, 'UA-76792179-11')
 except ImportError:
-    logWarning(g_config.ID, 'Battle Flash API not found.')
+    logWarning(config.ID, 'Battle Flash API not found.')
 except StandardError:
     traceback.print_exc()
 else:
@@ -172,8 +171,8 @@ else:
         result = func(self, entry, isInAoI)
         try:
             for vehicleID, entry2 in self._entries.iteritems():
-                if entry == entry2 and g_config.data['enabled']:
-                    g_config.arenaVehiclesPlugin(vehicleID, isInAoI)
+                if entry == entry2 and config.data['enabled']:
+                    config.arenaVehiclesPlugin(vehicleID, isInAoI)
                     break
         except StandardError:
             traceback.print_exc()

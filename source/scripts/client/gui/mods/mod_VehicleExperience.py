@@ -194,7 +194,7 @@ class ConfigInterface(SimpleConfigInterface):
     def getVehicleExperience(self):
         exp, avgXP, freeXP = self.getExperienceInfo()
         vehicles = self.itemsCache.items.getVehicles(REQ_CRITERIA.EMPTY)
-        modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady = self.getExperinceStatus(vehicles)
+        modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady = self.getExperienceStatus(vehicles)
         data = self.getModuleStatus(modulesNeedXP, isModulesReady)
         data.extend(self.getEliteStatus(isEliteReady, eliteNeedXP, eliteDiscountXP))
         data.extend(self.getNextTankStatus(researchVehicles))
@@ -343,7 +343,7 @@ class ConfigInterface(SimpleConfigInterface):
         return 0 if avgXP is None else avgXP
 
     @staticmethod
-    def getExperinceStatus(vehicles):
+    def getExperienceStatus(vehicles):
         modulesNeedXP = 0
         eliteNeedXP = 0
         eliteDiscountXP = 0
