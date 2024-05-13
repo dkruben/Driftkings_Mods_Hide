@@ -65,8 +65,7 @@ class ConfigInterface(SimpleConfigInterface):
             'inBattle': True,
             'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
             'directivesOnlyFromStorage': False,
-            'position': {'x': -870, 'y': 1},
-            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.'))))
+            'position': {'x': -870, 'y': 1}
         }
 
         self.i18n = {
@@ -110,7 +109,6 @@ class ConfigInterface(SimpleConfigInterface):
         colorLabel['tooltip'] %= {'color': self.data['color']}
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('showBattleHint'),

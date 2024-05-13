@@ -42,8 +42,7 @@ class ConfigInterface(SimpleConfigInterface):
             'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
             # Battle result
             'battleResultsWindow': True,
-            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>',
-            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.'))))
+            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -83,7 +82,6 @@ class ConfigInterface(SimpleConfigInterface):
         xColorList = ('NoobMeter', 'XVM', 'WotLabs')
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('textLock'),

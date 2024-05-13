@@ -25,7 +25,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_logSwapper_text': 'Enable Reverse Log.',
             'UI_setting_logSwapper_tooltip': 'Reverses the position of the damage log.',
             'UI_setting_wgLogHideCritics_text': 'WG Log Hide Critics',

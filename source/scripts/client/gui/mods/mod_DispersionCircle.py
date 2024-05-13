@@ -66,7 +66,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_replaceOriginalCircle_text': 'Replace Original Circle',
             'UI_setting_replaceOriginalCircle_tooltip': '',
             'UI_setting_useServerDispersion_text': 'Enable server scope (extra lap)',

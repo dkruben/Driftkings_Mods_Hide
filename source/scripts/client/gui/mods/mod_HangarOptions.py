@@ -110,8 +110,7 @@ class ConfigInterface(SimpleConfigInterface):
             'x': 1900,
             'y': 47,
             'rows': 2,
-            'smallCarousel': False,
-            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'smallCarousel': False
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -180,7 +179,6 @@ class ConfigInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('autoLogin'),

@@ -41,7 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_buttonShowDot_text': 'Button: show|hide Dot',
             'UI_setting_buttonShowDot_tooltip': '',
             'UI_setting_buttonShowSplash_text': 'Button: show|hide Splash',

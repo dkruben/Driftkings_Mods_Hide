@@ -60,7 +60,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_hideAvailableBooster_text': 'Hide available booster icon and quantity',
             'UI_setting_hideAvailableBooster_tooltip': 'Hides default plus icon and quantity of available boosters',
         }

@@ -48,7 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_sound_text': 'Use sound in battle',
             'UI_setting_sound_tooltip': '',
             'UI_setting_sound_default': 'Default: %s' % ('On' if self.data['sound'] else 'Off'),

@@ -66,8 +66,7 @@ class ConfigInterface(SimpleConfigInterface):
             'colorDrawCircle': '2B28D1',
             'colorMaxViewCircle': 'E02810',
             'colorMinSpottingCircle': '35DE46',
-            'colorViewCircle': 'FF7FFF',
-            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'colorViewCircle': 'FF7FFF'
         }
 
         self.i18n = {
@@ -116,7 +115,6 @@ class ConfigInterface(SimpleConfigInterface):
 
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('permanentMinimapDeath'),

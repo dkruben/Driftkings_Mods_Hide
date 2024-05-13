@@ -61,7 +61,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_displayOnAllies_text': 'Display On Allies',
             'UI_setting_displayOnAllies_tooltip': '',
             'UI_noDamage': 'Critical hit, no damage.',

@@ -99,7 +99,7 @@ class ConfigsInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_horizontal_text': 'Horizontal marker type',
             'UI_setting_horizontal_tooltip': ('Type of markers to the left and right of the crosshair showing horizontal edge positions of your gun.\n\n' + '\t'.join(' '.join("<img src='img://gui/AimingAngles/%s/%s.png'>" % (i, side) for side in ('Left', 'Right')) for i in xrange(1, 7))),
             'UI_setting_horizontal_0': 'Disabled',
