@@ -32,10 +32,7 @@ class ConfigsInterface(SimpleConfigInterface):
             'disableCamAfterShot': False,
             'disableCamAfterShotLatency': 0.5,
             'disableCamAfterShotSkipClip': True,
-            'dynamicZoom': {
-                'enabled': False,
-                'stepsOnly': False
-            },
+            'dynamicZoom': {'enabled': False, 'stepsOnly': False},
             'zoomSteps': {
                 'enabled': True,
                 'steps': [4.0, 6.0, 8.0, 12.0, 16.0, 25.0, 30.0]

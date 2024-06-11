@@ -102,7 +102,6 @@ class ConfigInterface(SimpleConfigInterface):
         else:
             self.server = False
 
-
     def replaySetUseServerAim(self, func, b_self, enabled):
         return func(b_self, False if self.server else enabled)
 
