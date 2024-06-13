@@ -59,11 +59,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_textLock_text': 'Disable text mouse dragging',
             'UI_setting_textLock_tooltip': 'This setting controls whether you are able to move text window with a mouse or not.',
             'UI_setting_showFor_text': 'Show For',
-            'UI_setting_showFor_tooltip': (
-                            ' • <b>Ally</b> - Just show to \'ALLY\' players tanks.\n'
-                            ' • <b>Enemy</b> - Just show to \'ENEMY\' players tanks.\n'
-                            ' • <b>All</b> - Show to \'ALL\' players tanks.'
-            ),
+            'UI_setting_showFor_tooltip': ' • <b>Ally</b> - Just show to \'ALLY\' players tanks.\n • <b>Enemy</b> - Just show to \'ENEMY\' players tanks.\n • <b>All</b> - Show to \'ALL\' players tanks.',
             'UI_showFor_ally': 'Ally',
             'UI_showFor_enemy': 'Enemy',
             'UI_showFor_all': 'All',
