@@ -40,7 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_activateMessage_text': 'Show Activation Message',
             'UI_setting_activateMessage_tooltip': 'Show Activation Message in battle',
             'UI_setting_fixAccuracyInMove_text': 'Fix Accuracy',

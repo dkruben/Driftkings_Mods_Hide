@@ -3,8 +3,6 @@
     "ext": ".wotmod",
     "files": {
         "res/scripts/client/gui/mods/mod_MarksOnGunTechTree.pyc": "build/scripts/client/gui/mods/mod_MarksOnGunTechTree.pyc",
-		"res/gui/flash/marksInTechtree.swf": "res/flash/marksInTechtree.swf",
-        "res/objects/ui_extended.png": "res/res/objects/ui_extended.png",
-        "res/objects/ui_simple.png": "res/res/objects/ui_simple.png"
+		"res/gui/flash/marksInTechtree.swf": "res/flash/marksInTechtree.swf"
     }
 }

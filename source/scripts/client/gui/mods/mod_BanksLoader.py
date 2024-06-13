@@ -40,7 +40,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
             'debug': False
         }
         self.i18n = {
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_restart_header': 'Banks Loader by Driftkings : restart',
             'UI_restart_reason_new': 'You have installed new audio mods, so the game config was changed.',
             'UI_restart_reason_update': 'Game client update was detected, so game config changes were re-applied anew.',

@@ -68,38 +68,23 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'name': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_showCompatibles_text': 'Show compatible vehicles for modules in tech tree',
-            'UI_setting_showCompatibles_tooltip': (
-                'This setting adds the list of compatible vehicles into tooltips of vehicle modules, '
-                'removing the need to open the info window to see it.'),
+            'UI_setting_showCompatibles_tooltip': 'This setting adds the list of compatible vehicles into tooltips of vehicle modules, removing the need to open the info window to see it.',
             'UI_setting_removeFromOther_customization_text': 'Add option to remove a customization from other vehicle',
-            'UI_setting_removeFromOther_customization_tooltip': (
-                'This setting adds a context menu option to take off the customization item from another vehicle.\n'
-                'The option is only added for items that can\'t be installed on current vehicle without removing it '
-                'from another one.'),
+            'UI_setting_removeFromOther_customization_tooltip': 'This setting adds a context menu option to take off the customization item from another vehicle.\nThe option is only added for items that can\'t be installed on current vehicle without removing it from another one.',
             'UI_setting_removeFromOther_devices_text': 'Add option to remove an optional device from other vehicle',
-            'UI_setting_removeFromOther_devices_tooltip': (
-                'This setting adds a context menu option to take off the optional device from another vehicle.\n'
-                'The option is only added for items that can\'t be installed on current vehicle without removing it '
-                'from another one.'),
+            'UI_setting_removeFromOther_devices_tooltip': 'This setting adds a context menu option to take off the optional device from another vehicle.\nThe option is only added for items that can\'t be installed on current vehicle without removing it from another one.',
             'UI_setting_sort_personalReserves_text': 'Change sorting of personal reserves in Storage view',
-            'UI_setting_sort_personalReserves_tooltip': (
-                'This setting changes sorting priority of personal reserves from type-tier-time to tier-type-time.\n'
-                'In other words, all the best personal reserves are displayed first.'),
+            'UI_setting_sort_personalReserves_tooltip': 'This setting changes sorting priority of personal reserves from type-tier-time to tier-type-time.\nIn other words, all the best personal reserves are displayed first.',
             'UI_setting_sort_progressionDecals_text': 'Change sorting of progression decals in Exterior view',
-            'UI_setting_sort_progressionDecals_tooltip': (
-                'This setting changes sorting order of progression decals to make easier ones appear first in the list.'),
+            'UI_setting_sort_progressionDecals_tooltip': 'This setting changes sorting order of progression decals to make easier ones appear first in the list.',
             'UI_setting_sort_vehicleCarousel_text': 'Change sorting of vehicles in Hangar carousel',
-            'UI_setting_sort_vehicleCarousel_tooltip': (
-                'This setting changes sorting order of vehicles to make higher tiers appear first in the list.'),
+            'UI_setting_sort_vehicleCarousel_tooltip': 'This setting changes sorting order of vehicles to make higher tiers appear first in the list.',
             'UI_setting_filter_vehicleCarousel_normal_text': 'Add "Not researched" vehicle filter into Hangar carousel',
-            'UI_setting_filter_vehicleCarousel_normal_tooltip': (
-                'This setting adds a new filter button into vehicle filter popover that shows only non-elite vehicles.'),
+            'UI_setting_filter_vehicleCarousel_normal_tooltip': 'This setting adds a new filter button into vehicle filter popover that shows only non-elite vehicles.',
             'UI_setting_filter_vehicleCarousel_alliance_text': 'Add per-Alliance vehicle filter into Hangar carousel',
-            'UI_setting_filter_vehicleCarousel_alliance_tooltip': (
-                'This setting adds new filter buttons into vehicle filter popover that show only vehicles that belong to '
-                'a certain Alliance.'),
+            'UI_setting_filter_vehicleCarousel_alliance_tooltip': 'This setting adds new filter buttons into vehicle filter popover that show only vehicles that belong to a certain Alliance.',
         }
         super(ConfigInterface, self).init()
 

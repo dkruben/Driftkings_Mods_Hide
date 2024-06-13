@@ -4,11 +4,6 @@
     "files": {
         "res/scripts/client/gui/mods/mod_HangarEfficiency.pyc": "build/scripts/client/gui/mods/mod_HangarEfficiency.pyc",
 		
-		"res/gui/maps/icons/HangarEfficiency/armor.png": "res/res/maps/icons/HangarEfficiency/armor.png",
-		"res/gui/maps/icons/HangarEfficiency/damage.png": "res/res/maps/icons/HangarEfficiency/damage.png",
-		"res/gui/maps/icons/HangarEfficiency/detection.png": "res/res/maps/icons/HangarEfficiency/detection.png",
-		"res/gui/maps/icons/HangarEfficiency/help.png": "res/res/maps/icons/HangarEfficiency/help.png",
-		"res/gui/maps/icons/HangarEfficiency/stun.png": "res/res/maps/icons/HangarEfficiency/stun.png",
-		"res/gui/maps/icons/HangarEfficiency/wins.png": "res/res/maps/icons/HangarEfficiency/wins.png"
+		"res/gui/maps/icons/HangarEfficiency/**": "res/res/maps/icons/HangarEfficiency/**"
     }
 }

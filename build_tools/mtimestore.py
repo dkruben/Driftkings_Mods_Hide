@@ -1,12 +1,7 @@
-"""
-https://github.com/kareltucek/git-mtime-extension/
-Pythonized and repurposed by Polyacov_Yury
-"""
-import sys
-
 import codecs
 import os
 import subprocess
+import sys
 
 
 def change_date(timestamp, filename):

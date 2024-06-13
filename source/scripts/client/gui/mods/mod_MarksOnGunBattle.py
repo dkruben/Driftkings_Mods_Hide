@@ -164,7 +164,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_message': 'MoE change visual %s',
             'UI_setting_buttonShow_text': 'Button: Change Style',
             'UI_setting_buttonShow_tooltip': '',

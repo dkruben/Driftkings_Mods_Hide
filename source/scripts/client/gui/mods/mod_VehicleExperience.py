@@ -48,7 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_useFreeExp_text': 'Factor Free Experience',
             'UI_setting_useFreeExp_tooltip': '',
             'UI_setting_isTruncateNumbers_text': 'Short numbers',
@@ -194,7 +194,7 @@ class ConfigInterface(SimpleConfigInterface):
     def getVehicleExperience(self):
         exp, avgXP, freeXP = self.getExperienceInfo()
         vehicles = self.itemsCache.items.getVehicles(REQ_CRITERIA.EMPTY)
-        modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady = self.getExperinceStatus(vehicles)
+        modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady = self.getExperienceStatus(vehicles)
         data = self.getModuleStatus(modulesNeedXP, isModulesReady)
         data.extend(self.getEliteStatus(isEliteReady, eliteNeedXP, eliteDiscountXP))
         data.extend(self.getNextTankStatus(researchVehicles))
@@ -343,7 +343,7 @@ class ConfigInterface(SimpleConfigInterface):
         return 0 if avgXP is None else avgXP
 
     @staticmethod
-    def getExperinceStatus(vehicles):
+    def getExperienceStatus(vehicles):
         modulesNeedXP = 0
         eliteNeedXP = 0
         eliteDiscountXP = 0

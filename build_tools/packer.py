@@ -26,7 +26,7 @@ def pack_dir(path, o_dir, max_levels=10, v_str=None, v_date=None, force=False, q
     try:
         names = os.listdir(path)
     except os.error:
-        print "Can't list", path
+        print 'Can\'t list', path
         names = []
     success = True
     for name in sorted(names):
@@ -249,10 +249,14 @@ def main():
     quiet = False
     version_file = None
     for o, a in opts:
-        if o == '-l': max_levels = 0
-        if o == '-f': force = True
-        if o == '-q': quiet = True
-        if o == '-v': version_file = a
+        if o == '-l':
+            max_levels = 0
+        if o == '-f':
+            force = True
+        if o == '-q':
+            quiet = True
+        if o == '-v':
+            version_file = a
     if len(args) != 2:
         print 'packer only needs to know where to pick configs from and where to put the results to'
         sys.exit(2)

@@ -47,7 +47,7 @@ class ConfigsInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_min_text': 'Min Zoom Out',
             'UI_setting_min_tooltip': '',
             'UI_setting_max_text': 'Max Zoom Out',

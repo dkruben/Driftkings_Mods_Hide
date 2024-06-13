@@ -25,7 +25,7 @@ def compile_dir(path, max_levels=10, d_dir=None, o_dir=None, force=False, quiet=
     try:
         names = os.listdir(path)
     except os.error:
-        print "Can't list", path
+        print 'Can\'t list', path
         names = []
     success = True
     for name in sorted(names):
@@ -99,12 +99,18 @@ def main():
     force = 0
     quiet = 0
     for o, a in opts:
-        if o == '-l': max_levels = 0
-        if o == '-f': force = True
-        if o == '-q': quiet = True
-        if o == '-p': p_dir = a
-        if o == '-d': d_dir = a
-        if o == '-o': o_dir = a
+        if o == '-l':
+            max_levels = 0
+        if o == '-f':
+            force = True
+        if o == '-q':
+            quiet = True
+        if o == '-p':
+            p_dir = a
+        if o == '-d':
+            d_dir = a
+        if o == '-o':
+            o_dir = a
     Orion_path = p_dir
     if o_dir:
         if len(args) != 1 and not os.path.isdir(args[0]):
@@ -122,7 +128,7 @@ def main():
             print 'One or more arguments required to compile'
             success = False
     except KeyboardInterrupt:
-        print "\n[interrupted]"
+        print '\n[interrupted]'
         success = 0
     return success
 
@@ -152,7 +158,7 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
                     if m_time > maxTS:
                         maxTS = m_time
             else:
-                maxTS = long(timeStr)  # if __init__ is the newest - it will be reflected in folder's commit date
+                maxTS = long(timeStr)
     codestring = codestring.replace('%(file_compile_date)s', time.strftime('%d.%m.%Y', time.localtime(maxTS))).replace(
         '%(mod_ID)s', os.path.basename(modName).replace('.py', '').replace('mod_', ''))
     if '# -*- obfuscated -*-' in codestring:

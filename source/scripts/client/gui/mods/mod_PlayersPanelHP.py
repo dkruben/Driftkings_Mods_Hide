@@ -36,8 +36,7 @@ class PlayersPanelController(SimpleConfigInterface):
             'enabled': True,
             'textFields': {},
             'mode': 0,
-            'toggle_key': self.defaultKeys['toggle_key'],
-            'version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.'))))
+            'toggle_key': self.defaultKeys['toggle_key']
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -58,7 +57,6 @@ class PlayersPanelController(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])

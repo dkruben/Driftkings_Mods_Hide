@@ -107,7 +107,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': self.version,
+            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
             'UI_setting_crewReturn_text': 'Crew Auto-Return',
             'UI_setting_crewReturn_tooltip': 'Return crew tanks.',
             'UI_setting_crewTraining_text': 'Crew Training',
