@@ -4,11 +4,11 @@ import Keys
 
 from functools import partial
 
-__all__ = ('BigWorld_callback', 'sendPanelMessage', 'checkKeys', 'refreshCurrentVehicle', 'Sound', 'checkKeySet',)
+__all__ = ('BigWorld_callback', 'sendPanelMessage', 'checkKeys', 'refreshCurrentVehicle', 'Sound',)
 
 
-def BigWorld_callback(delay, func, *a, **k):
-    return BigWorld.callback(delay, partial(func, *a, **k))
+def BigWorld_callback(delay, func, *args, **kwargs):
+    return BigWorld.callback(delay, partial(func, *args, **kwargs))
 
 
 def checkKeys(keys, key=None):  # thx to P0LIR0ID
@@ -22,46 +22,6 @@ VKEYS_MAP = {
     VKEY_CONTROL: (Keys.KEY_LCONTROL, Keys.KEY_RCONTROL),
     VKEY_SHIFT: (Keys.KEY_LSHIFT, Keys.KEY_RSHIFT),
 }
-
-
-def checkKeySet(keys, keyCode=None):
-    """Verify is keys is pressed
-    :param keys: list of keys to be checked
-    :param keyCode: pressed keyCode"""
-    result, fromSet = True, False
-    if not keys:
-        result = False
-    for key in keys:
-        if isinstance(key, int):
-            # virtual special keys
-            if key in (VKEY_ALT, VKEY_CONTROL, VKEY_SHIFT):
-                result &= any(map(BigWorld.isKeyDown, VKEYS_MAP[key]))
-                fromSet |= keyCode in VKEYS_MAP[key]
-            # BW Keys
-            elif not BigWorld.isKeyDown(key):
-                result = False
-                fromSet |= keyCode == key
-        # old special keys
-        if isinstance(key, list):
-            result &= any(map(BigWorld.isKeyDown, key))
-            fromSet |= keyCode in key
-        if keyCode is not None:
-            return result, fromSet
-        return result
-
-
-def _checkKeySet(keySet):
-    """Verify is keys is pressed
-    :param keySet: list of keys to be checked"""
-    result = True
-    if not keySet:
-        result = False
-    for item in keySet:
-        if isinstance(item, int) and not BigWorld.isKeyDown(item):
-            result = False
-        if isinstance(item, list):
-            result = result and any(map(BigWorld.isKeyDown, item))
-    return result
 
 
 def refreshCurrentVehicle():
@@ -82,14 +42,34 @@ def refreshCurrentVehicle():
 
 
 def sendPanelMessage(text='', colour='Green', panel='Player'):
+    """
+    This function sends a message to the specified panel in the game interface.
+    Args:
+        text (str): The text of the message.
+        colour (str): The color of the message. Default is 'Green'.
+        panel (str): The panel to display the message in. Default is 'Player'.
+    Returns:
+        None
+    The panel can be one of the following:
+        - 'Player': The player's message panel.
+        - 'Vehicle': The vehicle's message panel.
+        - 'VehicleError': The vehicle error message panel.
+    The colour can be one of the following:
+        - 'Red': Red color.
+        - 'Purple': Purple color.
+        - 'Green': Green color.
+        - 'Gold': Gold color.
+        - 'Yellow': Yellow color.
+        - 'Self': Self color.
+    """
+    # Import the necessary modules
     from gui.Scaleform.framework import WindowLayer
     from gui.shared.personality import ServicesLocator
-    """
-    panel = 'Player', 'Vehicle', 'VehicleError'
-    colour = 'Red', 'Purple', 'Green', 'Gold', 'Yellow', 'Self'
-    """
+    # Get the battle page
     battle_page = ServicesLocator.appLoader.getDefBattleApp().containerManager.getContainer(WindowLayer.VIEW).getView()
+    # If the battle page is not None, show the message
     if battle_page is not None:
+        # Get the method to show the message based on the panel and color
         getattr(battle_page.components['battle%sMessages' % panel], 'as_show%sMessageS' % colour, None)(None, text)
     else:
         BigWorld.callback(0.5, partial(sendPanelMessage, text, colour, panel))

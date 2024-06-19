@@ -6,6 +6,9 @@ from DriftkingsCore import SimpleConfigInterface, override, Analytics, callback,
 
 
 class ConfigInterface(SimpleConfigInterface):
+    def __init__(self):
+        self.player = getPlayer()
+        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -53,11 +56,10 @@ class ConfigInterface(SimpleConfigInterface):
 
     def waitCallback(self):
         if self.data['enabled']:
-            getPlayer()
-            if not getPlayer():
+            if not self.player:
                 return
             try:
-                vehicleType = Vehicle.getVehicleClassTag(getPlayer().getVehicleDescriptor().type.tags)
+                vehicleType = Vehicle.getVehicleClassTag(self.player.getVehicleDescriptor().type.tags)
             except StandardError:
                 vehicleType = None
             showServerMarker = vehicleType in self.data and self.data[vehicleType]
@@ -72,14 +74,14 @@ class ConfigInterface(SimpleConfigInterface):
         self.checkServerAimStatus()
 
     def checkServerAimStatus(self, showServerMarker=None):
-        if not getPlayer() or not self.data['enabled']:
+        if not self.player or not self.data['enabled']:
             return
         try:
             if showServerMarker is None:
-                showServerMarker = getPlayer().gunRotator.settingsCore.getSetting('useServerAim')
-            getPlayer().gunRotator.showServerMarker = showServerMarker
+                showServerMarker = self.player.gunRotator.settingsCore.getSetting('useServerAim')
+            self.player.gunRotator.showServerMarker = showServerMarker
             # noinspection PyProtectedMember
-            getPlayer().gunRotator._VehicleGunRotator__set_showServerMarker(showServerMarker)
+            self.player.gunRotator._VehicleGunRotator__set_showServerMarker(showServerMarker)
             return True
         except StandardError:
             return

@@ -157,7 +157,7 @@ class HooksDecorators(object):
             setattr(cls, new_m, getattr(cls, method))
             e = getattr(cls, evt)
             m = getattr(cls, new_m)
-            l = lambda *a, **k: self.__event_handler(prepend, e, m, *a, **k)
+            l = lambda *args, **kwargs: self.__event_handler(prepend, e, m, *args, **kwargs)
             l.__name__ = method
             setattr(cls, method, l)
         e += handler

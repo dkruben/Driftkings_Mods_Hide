@@ -150,8 +150,19 @@ except StandardError:
 
 
 def set_text(text):
+    """
+     Set the text with the specified style.
+     Args:
+         text (str): The text to be styled.
+     Returns:
+         str: The styled text HTML string.
+     """
+    # Get the text style from the configuration data
     textStyle = g_config.data['textStyle']
-    return '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
+    # Create the styled text HTML string
+    styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
+    return styled_text
+    # return '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
 
 
 def getDataIDs(offset):
@@ -244,14 +255,17 @@ class BattleEfficiency(object):
         self.__init__()
 
     @staticmethod
-    def readColors(*args, **kwargs):
-        return getColor(COLOR_TABLES[g_config.data['colorRatting']].get('colors'), *args, **kwargs)
+    def read_colors(ratting_color, ratting_value):
+        colors = COLOR_TABLES[g_config.data['colorRatting']].get('colors')
+        color = getColor(colors, ratting_color, ratting_value)
+        return color
 
     @staticmethod
     def check_macros(macros):
         for i in TEXT_LIST:
             if macros in g_config.data[i]:
                 return True
+        return False
 
     def format_recreate(self):
         self.format_string = {
@@ -285,37 +299,37 @@ class BattleEfficiency(object):
         if self.check_macros('{wm8}'):
             self.format_string['wn8'] = self.wn8
         if self.check_macros('{c_wn8}'):
-            self.format_string['c_wn8'] += self.readColors('wn8', self.wn8)
+            self.format_string['c_wn8'] += self.read_colors('wn8', self.wn8)
         # xwn8 / c:xwn8
         if self.check_macros('{xwn8}'):
             self.format_string['xwn8'] = self.xwn8
         if self.check_macros('{c_xwn8}'):
-            self.format_string['c_wn8'] += self.readColors('x', self.xwn8)
+            self.format_string['c_wn8'] += self.read_colors('x', self.xwn8)
         # eff / c:eff
         if self.check_macros('{eff}'):
             self.format_string['eff'] = self.eff
         if self.check_macros('{c_eff}'):
-            self.format_string['c_eff'] += self.readColors('eff', self.eff)
+            self.format_string['c_eff'] += self.read_colors('eff', self.eff)
         # xeff / c:xeff
         if self.check_macros('{xeff}'):
             self.format_string['xeff'] = self.xeff
         if self.check_macros('{c_xeff}'):
-            self.format_string['c_xeff'] += self.readColors('x', self.xeff)
+            self.format_string['c_xeff'] += self.read_colors('x', self.xeff)
         # xte / c:xte
         if self.check_macros('{xte}'):
-            self.format_string['xte'] = ''
+            self.format_string['xte'] = self.xte
         if self.check_macros('{c_xte}'):
-            self.format_string['c_xte'] += self.readColors('x', self.xte)
+            self.format_string['c_xte'] += self.read_colors('x', self.xte)
         # diff / c:diff
         if self.check_macros('{diff}'):
             self.format_string['diff'] = self.diff
         if self.check_macros('{c_diff}'):
-            self.format_string['c_diff'] += self.readColors('diff', self.diff)
+            self.format_string['c_diff'] += self.read_colors('diff', self.diff)
         # dmg / c:dmg
         if self.check_macros('{dmg}'):
             self.format_string['dmg'] = self.dmg
         if self.check_macros('{c_dmg}'):
-            self.format_string['c_dmg'] += self.readColors('tdb', self.dmg)
+            self.format_string['c_dmg'] += self.read_colors('tdb', self.dmg)
 
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return self.stopBattle()
@@ -437,12 +451,12 @@ def new_setDataS(func, self, data):
         msg = msg.replace('{xeff}', str(xeff))
         msg = msg.replace('{xte}', str(xte))
         msg = msg.replace('{dmg}', str(dmg))
-        msg = msg.replace('{c:wn8}', g_battleEfficiency.readColors('wn8', wn8))
-        msg = msg.replace('{c:xwn8}', g_battleEfficiency.readColors('x', xwn8))
-        msg = msg.replace('{c:eff}', g_battleEfficiency.readColors('eff', eff))
-        msg = msg.replace('{c:xeff}', g_battleEfficiency.readColors('x', xeff))
-        msg = msg.replace('{c:xte}', g_battleEfficiency.readColors('x', xte))
-        msg = msg.replace('{c:dmg}', g_battleEfficiency.readColors('tdb', dmg))
+        msg = msg.replace('{c:wn8}', g_battleEfficiency.read_colors('wn8', wn8))
+        msg = msg.replace('{c:xwn8}', g_battleEfficiency.read_colors('x', xwn8))
+        msg = msg.replace('{c:eff}', g_battleEfficiency.read_colors('eff', eff))
+        msg = msg.replace('{c:xeff}', g_battleEfficiency.read_colors('x', xeff))
+        msg = msg.replace('{c:xte}', g_battleEfficiency.read_colors('x', xte))
+        msg = msg.replace('{c:dmg}', g_battleEfficiency.read_colors('tdb', dmg))
 
         data['common']['arenaStr'] = msg
     except StandardError:

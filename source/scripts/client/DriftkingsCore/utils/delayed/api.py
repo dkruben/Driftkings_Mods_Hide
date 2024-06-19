@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import traceback
 from functools import partial
-
-from Event import SafeEvent
 
 from DriftkingsCore import loadJson, override, logError, smart_update
 
@@ -36,15 +34,18 @@ def try_import():
         return modsListApi, None, None
     try:
         # WG
-        from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
+        from Event import SafeEvent
         from gui.shared.personality import ServicesLocator
+        from gui.shared.utils.functions import makeTooltip
+        from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
         from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
         # modSettingsApi
         from gui.modsSettingsApi.api import ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
+        from gui.modsSettingsApi.l10n import l10n
         from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow, HotkeyContextHandler
-        from gui.modsSettingsApi._constants import MOD_ICON, MOD_NAME, MOD_DESCRIPTION, STATE_TOOLTIP, VIEW_ALIAS
+        from gui.modsSettingsApi._constants import MOD_ICON, VIEW_ALIAS
     except ImportError as e:
         logError('DriftkingsCore: ModsSettingsApi package not loaded:', e)
         return modsListApi, None, None
@@ -63,47 +64,52 @@ def try_import():
             self._ContextMenuManager__currentHandler.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
 
     class DriftkingsSettings(ModsSettingsApi):
+        """
+        Custom class for Driftkings mod settings.
+        """
         def __init__(self, modsGroup, ID, langID, i18n):
+            # Initialize instance variables
             self.modsGroup = modsGroup
             self.ID = ID
             self.lang = langID
-            # folder to core p1
             self.modSettingsID = 'Driftkings_GUI'
             self.isMSAWindowOpen = False
             self.activeMods = set()
             self.config = {'templates': {}, 'settings': {}, 'data': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
-            # Events
             self.onSettingsChanged = SafeEvent()
             self.onButtonClicked = SafeEvent()
             self.onWindowClosed = SafeEvent()
             self.updateHotKeys = SafeEvent()
             self.onWindowOpened = SafeEvent()
-            # folder to core p2
+            # Initialize hotkeys controller
             self.hotkeys = HotkeysController(self)
             self.hotkeys.onUpdated += self.updateHotKeys
+            # Initialize user settings
             self.userSettings = {
-                'modsListApiName': MOD_NAME,
-                'modsListApiDescription': MOD_DESCRIPTION,
-                'modsListApiIcon': 'gui/maps/icons/Driftkings/small.png',
-                'windowTitle': MOD_NAME,
-                'enableButtonTooltip': STATE_TOOLTIP,
+                'modsListApiName': l10n('name'),
+                'modsListApiDescription': l10n('description'),
+                'modsListApiIcon': 'gui/maps/icons/Driftkings/small.png' or MOD_ICON,
+                'windowTitle': l10n('name'),
+                'enableButtonTooltip': makeTooltip(l10n('stateswitcher/tooltip/header'), l10n('stateswitcher/tooltip/body')),
             }
             smart_update(self.userSettings, i18n)
+            # Load settings and config
             self.settingsLoad()
             self.configLoad()
+            # Add modification to modsListApi
             modsListApi.addModification(
                 id=ID,
-                name=self.userSettings['modsListApiName'],
-                description=self.userSettings['modsListApiDescription'],
-                icon=self.userSettings['modsListApiIcon'],
+                name=self.userSettings.get('modsListApiName'),
+                description=self.userSettings.get('modsListApiDescription'),
+                icon=self.userSettings.get('modsListApiIcon'),
                 enabled=True,
                 login=True,
                 lobby=True,
-                # callback=functools.partial(loadView, self)
                 callback=self.MSAPopulate
             )
+            # Register dispose event
             self.onWindowClosed += self.MSADispose
 
         @staticmethod
@@ -119,11 +125,11 @@ def try_import():
         def MSADispose(self):
             self.isMSAWindowOpen = False
 
-        def MSAApply(self, alias, *a, **kw):
-            self.settingsListeners[alias](*a, **kw)
+        def MSAApply(self, alias, *args, **kwargs):
+            self.settingsListeners[alias](*args, **kwargs)
 
-        def MSAButton(self, alias, *a, **kw):
-            self.buttonListeners[alias](*a, **kw)
+        def MSAButton(self, alias, *args, **kwargs):
+            self.buttonListeners[alias](*args, **kwargs)
 
         def settingsLoad(self):
             smart_update(self.userSettings, loadJson(self.ID, self.lang, self.userSettings, 'mods/configs/%s/%s/i18n/' % (self.modsGroup, self.ID)))

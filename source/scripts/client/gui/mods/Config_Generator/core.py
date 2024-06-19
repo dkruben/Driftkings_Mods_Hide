@@ -5,17 +5,32 @@ import traceback
 from json_load import loadJson, loadJsonOrdered
 
 
-def smart_update(dict1, dict2):
+def smart_update(orig, new):
+    """
+    Recursively updates the values in the `orig` dictionary with the values from the `new` dictionary.
+    Args:
+        orig (dict): The original dictionary to be updated.
+        new (dict): The dictionary containing the new values.
+    Returns:
+        bool: True if any values were updated, False otherwise.
+    """
     changed = False
-    for k in dict1:
-        v = dict2.get(k)
+    # Iterate over each key in the original dictionary
+    for k in orig:
+        v = new.get(k)
+        # If the value is a dictionary, recursively update it
         if isinstance(v, dict):
-            changed |= smart_update(dict1[k], v)
+            changed |= smart_update(orig[k], v)
+        # If the value is not None, update the original dictionary
         elif v is not None:
+            # If the value is a unicode string, encode it to utf-8
             if isinstance(v, unicode):
                 v = v.encode('utf-8')
-            changed |= dict1[k] != v
-            dict1[k] = v
+            # Check if the value has changed
+            changed |= orig[k] != v
+            # Update the original dictionary with the new value
+            orig[k] = v
+    # Return True if any values were updated, False otherwise
     return changed
 
 

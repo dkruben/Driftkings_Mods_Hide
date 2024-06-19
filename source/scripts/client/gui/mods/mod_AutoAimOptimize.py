@@ -5,7 +5,8 @@ import BigWorld
 import CommandMapping
 import Math
 from Avatar import PlayerAvatar
-from AvatarInputHandler import cameras, control_modes
+from AvatarInputHandler import cameras
+from AvatarInputHandler.control_modes import SniperControlMode, StrategicControlMode, ArcadeControlMode, ArtyControlMode
 from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, getEntity
@@ -124,28 +125,28 @@ def new_startGUI(func, *args):
     config.startBattle()
 
 
-@override(control_modes.SniperControlMode, 'handleKeyEvent')
+@override(SniperControlMode, 'handleKeyEvent')
 def new_keyEventSniper(func, *args):
     if config.injectButton(args[1], args[2]):
         return True
     func(*args)
 
 
-@override(control_modes.StrategicControlMode, 'handleKeyEvent')
+@override(StrategicControlMode, 'handleKeyEvent')
 def new_keyEventStrategic(func, *args):
     if not config.data['disableArtyMode'] and config.injectButton(args[1], args[2]):
         return True
     func(*args)
 
 
-@override(control_modes.ArtyControlMode, 'handleKeyEvent')
+@override(ArtyControlMode, 'handleKeyEvent')
 def new_keyEventArty(func, *args):
     if not config.data['disableArtyMode'] and config.injectButton(args[1], args[2]):
         return True
     func(*args)
 
 
-@override(control_modes.ArcadeControlMode, 'handleKeyEvent')
+@override(ArcadeControlMode, 'handleKeyEvent')
 def new_keyEventArcade(func, *args):
     if config.injectButton(args[1], args[2]):
         return True
