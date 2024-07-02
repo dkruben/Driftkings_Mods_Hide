@@ -135,16 +135,16 @@ class HooksDecorators(object):
         self._override(cls, method, setter)
 
     @staticmethod
-    def __event_handler(prepend, e, m, *a, **k):
+    def __event_handler(prepend, event, method, *args, **kwargs):
         try:
             if prepend:
-                e.fire(*a, **k)
-                r = m(*a, **k)
+                event.fire(*args, **kwargs)
+                r = method(*args, **kwargs)
             else:
-                r = m(*a, **k)
-                e.fire(*a, **k)
+                r = method(*args, **kwargs)
+                event.fire(*args, **kwargs)
             return r
-        except StandardError:
+        except:
             logTrace(__file__)
 
     def _registerEvent(self, handler, cls, method, prepend=False):
@@ -152,14 +152,15 @@ class HooksDecorators(object):
         if hasattr(cls, evt):
             e = getattr(cls, evt)
         else:
-            new_m = '__orig_%i_%s' % ((1 if prepend else 0), method)
+            newm = '__orig_%i_%s' % ((1 if prepend else 0), method)
             setattr(cls, evt, EventHook())
-            setattr(cls, new_m, getattr(cls, method))
+            setattr(cls, newm, getattr(cls, method))
             e = getattr(cls, evt)
-            m = getattr(cls, new_m)
-            l = lambda *args, **kwargs: self.__event_handler(prepend, e, m, *args, **kwargs)
-            l.__name__ = method
-            setattr(cls, method, l)
+            m = getattr(cls, newm)
+            setattr(cls, method, lambda *args, **kwargs: self.__event_handler(prepend, e, m, *args, **kwargs))
+            # l = lambda *args, **kwargs: self.__event_handler(prepend, e, m, *args, **kwargs)
+            # l.__name__ = method
+            # setattr(cls, method, l)
         e += handler
 
     @staticmethod
@@ -186,7 +187,6 @@ class HooksDecorators(object):
             else:
                 logError('DriftkingsCore', 'overrideMethod error: {} in {} is not callable or undefined in {}', (getter, class_name, new_method.__name__))
             return new_method
-
         return outer
 
 

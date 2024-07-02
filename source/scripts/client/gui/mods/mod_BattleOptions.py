@@ -346,7 +346,7 @@ def onVehicleChanged(vehicle):
         value = battleBooster.inventoryCount > 0
         if value != isAuto:
             changeValue(vehicle, value)
-            logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}'.format(value, vehicle.userName, battleBooster.userName))
+            logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}', value, vehicle.userName, battleBooster.userName)
 
 
 def onGuiCacheSyncCompleted(_):

@@ -150,19 +150,9 @@ except StandardError:
 
 
 def set_text(text):
-    """
-     Set the text with the specified style.
-     Args:
-         text (str): The text to be styled.
-     Returns:
-         str: The styled text HTML string.
-     """
-    # Get the text style from the configuration data
     textStyle = g_config.data['textStyle']
-    # Create the styled text HTML string
     styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
     return styled_text
-    # return '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
 
 
 def getDataIDs(offset):

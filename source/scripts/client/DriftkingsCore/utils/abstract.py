@@ -20,7 +20,6 @@ def redirect_traceback(callback, func_code):
             raise info[0], info[1], new_tb
         finally:
             del info
-
     return result
 
 

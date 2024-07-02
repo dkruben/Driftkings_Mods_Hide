@@ -14,7 +14,7 @@ from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
 from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback, logException
+from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback
 
 COMPLEX_ITEM = {
     'leftTrack0': 'chassis',
@@ -365,7 +365,6 @@ class Repair(object):
             if checkKeys(config.data['buttonRepair']) and event.isKeyDown():
                 self.repairAll()
 
-    @logException
     def autoUse(self, state, value):
         if not config.data['autoRepair']:
             return

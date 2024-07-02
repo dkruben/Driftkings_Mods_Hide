@@ -6,37 +6,21 @@ from json_load import loadJson, loadJsonOrdered
 
 
 def smart_update(orig, new):
-    """
-    Recursively updates the values in the `orig` dictionary with the values from the `new` dictionary.
-    Args:
-        orig (dict): The original dictionary to be updated.
-        new (dict): The dictionary containing the new values.
-    Returns:
-        bool: True if any values were updated, False otherwise.
-    """
     changed = False
-    # Iterate over each key in the original dictionary
     for k in orig:
         v = new.get(k)
-        # If the value is a dictionary, recursively update it
         if isinstance(v, dict):
             changed |= smart_update(orig[k], v)
-        # If the value is not None, update the original dictionary
         elif v is not None:
-            # If the value is a unicode string, encode it to utf-8
             if isinstance(v, unicode):
                 v = v.encode('utf-8')
-            # Check if the value has changed
             changed |= orig[k] != v
-            # Update the original dictionary with the new value
             orig[k] = v
-    # Return True if any values were updated, False otherwise
     return changed
 
 
 class DummyConfigInterface(object):
     def __init__(self):
-        """Declaration for attribute placeholders, all attributes should be defined in init(), getData() and loadLang()"""
         self.ID = ''
         self.modsGroup = ''
         self.lang = 'en'
@@ -46,97 +30,47 @@ class DummyConfigInterface(object):
         self.load()
 
     def init(self):
-        """
-        self.ID = 'AwesomeMod'  - mod ID
-        self.modSettingsID = 'AwesomeModSettings' - mod settings container ID.
-            Be careful, this will be an alias for a ViewSettings Object!
-        """
         pass
 
     def getData(self):
-        """
-        :return: dict with your mod settings (if they are stored elsewhere, otherwise you should use ConfigInterface instead)
-        """
         raise NotImplementedError
 
     def loadLang(self):
-        """
-        self.i18n = {} - your mod texts for messages, setting labels, etc.
-        """
         pass
 
     def createTemplate(self):
-        """
-        :return: dict representing your mod's settings template.
-        """
         raise NotImplementedError
 
     def migrateConfigs(self):
-        """
-        Called before initial config load. Should contain code that updates configs from old version
-        """
         pass
 
     def readData(self, quiet=True):
-        """
-        Is called upon mod loading and every time settings window is opened.
-        Loading main config data from main file should be placed here.
-        :param quiet: optional, if you have debug mode in your mod - this will be useful
-        """
         pass
 
     def readCurrentSettings(self, quiet=True):
-        """
-        Is called upon mod loading and every time settings window is opened.
-        Loading additional config data should be placed here.
-        :param quiet: optional, if you have debug mode in your mod - this will be useful
-        """
         pass
 
     def onApplySettings(self, settings):
-        """
-        Is called when user clicks the "Apply" button in settings window.
-        And also upon mod loading because settings API thinks that it is the only place to store mod settings.
-        :param settings: new setting values.
-        """
         raise NotImplementedError
 
     def updateMod(self):
-        """
-        A function to update mod template after config actions are complete.
-        """
         pass
 
     def onMSAPopulate(self):
-        """
-        Called when mod settings window is about to start opening.
-        :return:
-        """
         self.readData()
         self.readCurrentSettings()
         self.updateMod()
 
     def onMSADestroy(self):
-        """
-        Is called when mod settings window has closed.
-        """
         pass
 
     def onButtonPress(self, vName, value):
-        """
-        Called when a "preview' button for corresponding setting is pressed.
-        :param vName: settings value name
-        :param value: currently selected setting value (may differ from currently applied. As said, used for settings preview)
-        """
         pass
 
     def registerSettings(self):
         pass
 
     def load(self):
-        """
-        Called after mod __init__() is complete.
-        """
         self.migrateConfigs()
         self.registerSettings()
         self.readData(False)
@@ -175,9 +109,9 @@ class SimpleCreated(object):
         configs_dir = self.configPath + dir_name + '/'
         if not os.path.isdir(configs_dir):
             if error_not_exist and not quiet:
-                print '=' * 30
-                print self.LOG, 'config directory not found:', configs_dir
-                print '=' * 30
+                print('=' * 30)
+                print(self.LOG, 'config directory not found:', configs_dir)
+                print('=' * 30)
             if make_dir:
                 os.makedirs(configs_dir)
         for dir_path, sub_dirs, names in os.walk(configs_dir):
@@ -198,7 +132,7 @@ class SimpleCreated(object):
                 except StandardError:
                     traceback.print_exc()
                 if not json_data:
-                    print self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid'
+                    print(self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid')
                     continue
                 try:
                     if ext == '.json':
@@ -210,15 +144,12 @@ class SimpleCreated(object):
                     traceback.print_exc()
 
     def onMigrateConfig(self, quiet, path, dir_path, name, json_data, sub_dirs, names):
-        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
         pass
 
     def onReadConfig(self, quiet, dir_path, name, json_data, sub_dirs, names):
-        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
         pass
 
     def onReadDataSection(self, quiet, path, dir_path, name, data_section, sub_dirs, names):
-        """clearing sub_dirs and/or names using slice assignment breaks the corresponding loop"""
         pass
 
     def onApplySettings(self, settings):
@@ -229,9 +160,9 @@ class SimpleCreated(object):
         return '%s v.%s %s' % (self.ID, self.version, self.author)
 
     def load(self):
-        print '=' * 30
-        print self.message() + ': initialised.'
-        print '=' * 30
+        print('=' * 30)
+        print(self.message() + ': Initialised.')
+        print('=' * 30)
 
 
 class ConfigInterface(SimpleCreated, DummyConfigInterface):

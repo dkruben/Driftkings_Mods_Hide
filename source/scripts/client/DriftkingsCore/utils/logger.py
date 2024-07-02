@@ -1,32 +1,35 @@
 # -*- coding: utf-8 -*-
-import traceback
-
 import BigWorld
 
 __all__ = ('logDebug', 'logInfo', 'logError', 'logWarning', 'logException', 'logTrace',)
 
 
+def _formatMessage(message, *args, **kwargs):
+    return str(message).format(*args, **kwargs)
+
+
 def logError(modID, message, *args, **kwargs):
-    BigWorld.logError(modID, str(message).format(*args, **kwargs), None)
+    BigWorld.logError(modID, _formatMessage(message, *args, **kwargs), None)
 
 
-def logInfo(modID, message):
-    BigWorld.logInfo(modID, str(message), None)
+def logInfo(modID, message, *args, **kwargs):
+    BigWorld.logInfo(modID, _formatMessage(message, *args, **kwargs), None)
 
 
 def logDebug(modID, isDebug=False, message='', *args, **kwargs):
     if isDebug:
-        BigWorld.logDebug(modID, str(message).format(*args, **kwargs), None)
+        BigWorld.logDebug(modID, _formatMessage(message, *args, **kwargs), None)
 
 
-def logWarning(modID, message):
-    BigWorld.logWarning(modID, str(message), None)
+def logWarning(modID, message, *args, **kwargs):
+    BigWorld.logWarning(modID, _formatMessage(message, *args, **kwargs), None)
 
 
 def logTrace(exc=None):
+    import traceback
     print '=' * 45
     if exc is not None:
-        logError('DriftkingsCore', exc)
+        logError('DriftkingsCore:', exc)
         traceback.print_exc()
     else:
         traceback.print_stack()

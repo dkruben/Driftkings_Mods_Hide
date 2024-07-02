@@ -45,7 +45,7 @@ class Settings(ConfigInterface):
             'UI_setting_noShockWave_tooltip': 'Remove camera shaking when hit by tank.',
             'UI_setting_noSniperDynamic_text': 'Sniper Dynamic',
             'UI_setting_noSniperDynamic_tooltip': 'Disable dynamic camera in sniper mode.',
-            'UI_setting_disableCamAfterShot_text': 'Sisable Cam After Shot',
+            'UI_setting_disableCamAfterShot_text': 'Disable Cam After Shot',
             'UI_setting_disableCamAfterShot_tooltip': 'Disable sniper mode after the shot.',
             'UI_setting_disableCamAfterShotLatency_text': 'Disable Cam After Shot Latency',
             'UI_setting_disableCamAfterShotLatency_tooltip': 'Delay automatic shutdown of the camera.',
@@ -57,14 +57,23 @@ class Settings(ConfigInterface):
 
 generator = Settings()
 
+
+def _formatMessage(message, *args, **kwargs):
+    return str(message).format(*args, **kwargs)
+
+
+def do_log(message, *args, **kwargs):
+    print(_formatMessage(message, *args, **kwargs))
+
+
 if __name__ == '__main__':
     try:
         if generator.enabled:
-            print '=' * 25
+            do_log('=' * 25)
             Settings()
     except Exception as err:
-        print '[ERROR]: %s' % err
+        print do_log('[ERROR]:', err)
     else:
-        print 'Status OK'
-        print 'Mod Name {}, v.{} and author {}'.format(generator.ID, generator.version, generator.author)
-        print '=' * 25
+        do_log('Status OK')
+        do_log('Mod Name: {}, v.{} and author {}', generator.ID, generator.version, generator.author)
+        do_log('=' * 25)

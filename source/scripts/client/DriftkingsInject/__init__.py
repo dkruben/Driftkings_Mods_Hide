@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-__MOD_CORE__ = '1.0.0'
+__MOD_CORE__ = '1.0.5'
 __CORE_NAME__ = 'DriftkingsInject'
 __MOD_DATE__ = '(%(file_compile_date)s)'
 
@@ -10,4 +10,4 @@ from views import *
 from common import *
 
 
-logInfo(__CORE_NAME__, 'version %s, is loaded' % __MOD_CORE__)
+logInfo(__CORE_NAME__, 'version {}, is loaded', __MOD_CORE__)

@@ -1,35 +1,23 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 import os
 from io import open
 
 import BigWorld
 from CurrentVehicle import g_currentVehicle
 from external_strings_utils import unicode_from_utf8
-from frameworks.wulf import WindowLayer
 from gui import SystemMessages
-from gui.Scaleform.daapi.view.lobby.exchange.ExchangeXPWindow import ExchangeXPWindow
-from gui.impl.dialogs import dialogs
-from gui.impl.dialogs.builders import InfoDialogBuilder
-from gui.impl.pub.dialog_window import DialogButtons
+from gui.Scaleform.daapi.view.lobby.cyberSport.VehicleSelectorPopup import VehicleSelectorPopup
 from gui.shared.gui_items.processors.tankman import TankmanReturn
-from gui.shared.gui_items.processors.vehicle import VehicleTmenXPAccelerator
 from gui.shared.utils import decorators
-from gui.veh_post_progression.models.progression import PostProgressionCompletion
 from helpers import dependency
-from skeletons.gui.app_loader import IAppLoader
+from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
-from wg_async import AsyncReturn, wg_async, wg_await
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logInfo, logError
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback
 
-IMG_DIR = 'img://../mods/configs/Driftkings/Driftkings_GUI'
-
-
-def getLogo(big=True):
-    if big:
-        return '<img src=\'%s/big.png\' width=\'500\' height=\'32\' vspace=\'16\'>' % IMG_DIR
-    return '<img src=\'%s/small.png\' width=\'220\' height=\'14\' vspace=\'16\'>' % IMG_DIR
+logger = logging.getLogger(__name__)
 
 
 def getPreferencesDir():
@@ -76,7 +64,7 @@ def writeJsonFile(path, data):
 
 
 def openIgnoredVehicles():
-    path = os.path.join(getCachePath(), 'crew_ignored.json')
+    path = os.path.join(getCachePath(), 'auto_prev_crew.json')
     if not os.path.exists(path):
         writeJsonFile(path, {'vehicles': []})
         return set()
@@ -87,7 +75,7 @@ ignored_vehicles = openIgnoredVehicles()
 
 
 def updateIgnoredVehicles(vehicles):
-    path = os.path.join(getCachePath(), 'crew_ignored.json')
+    path = os.path.join(getCachePath(), 'auto_prev_crew.json')
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 
@@ -95,38 +83,22 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'crewReturn': False,
-            'crewTraining': False,
-            'crewAutoReturn': False
+            'crewAutoReturn': False,
+            'crewReturnByDefault': False
         }
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
-            'UI_setting_crewReturn_text': 'Crew Auto-Return',
-            'UI_setting_crewReturn_tooltip': 'Return crew tanks.',
-            'UI_setting_crewTraining_text': 'Crew Training',
-            'UI_setting_crewTraining_tooltip': 'Monitors whether \'Field Upgrade\' is upgraded/available and enables or disables \'Expedited Crew Training\' accordingly',
-            'UI_setting_crewAutoReturn_text': 'Crew Return By Default',
+            'UI_setting_crewAutoReturn_text': 'Crew Auto Return',
             'UI_setting_crewAutoReturn_tooltip': '',
-            # crew dialogs
-            'UI_dialog_apply': 'Apply',
-            'UI_dialog_cancel': 'Cancel',
-            'UI_dialog_ignore': 'Ignore',
-            #
-            'UI_crewDialogs': {
-                'enabled': '<br>Enable accelerated crew training?',
-                'disabled': '<br>Disable accelerated crew training?',
-                'notAvailable': 'Field upgrades are not available for this vehicle.',
-                'isFullXp': 'You have accumulated the necessary amount of experience to fully upgrade the field upgrade.',
-                'isFullComplete': 'You have pumped the field upgrade to the highest possible level.',
-                'needTurnOff': 'You do not have field upgrades, it is recommended to disable accelerated crew training.'
-            }
+            'UI_setting_crewReturnByDefault_text': 'Crew Return By Default',
+            'UI_setting_crewReturnByDefault_tooltip': '',
         }
         super(ConfigInterface, self).init()
 
@@ -135,138 +107,41 @@ class ConfigInterface(SimpleConfigInterface):
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('crewReturn'),
-                self.tb.createControl('crewTraining'),
+                self.tb.createControl('crewAutoReturn'),
+                self.tb.createControl('crewReturnByDefault')
             ],
             'column2': [
-                self.tb.createControl('crewAutoReturn')
             ]
         }
+    
+
+config = ConfigInterface()
+analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class DialogBase(object):
-    appLoader = dependency.descriptor(IAppLoader)
-
-    @property
-    def view(self):
-        app = self.appLoader.getApp()
-        if app is not None and app.containerManager is not None:
-            return app.containerManager.getView(WindowLayer.VIEW)
-        return None
-
-
-class CrewDialog(DialogBase):
-
-    @wg_async
-    def showCrewDialog(self, vehicleName, message):
-        builder = InfoDialogBuilder()
-        builder.setFormattedTitle(''.join((getLogo(), vehicleName)))
-        builder.setFormattedMessage(message)
-        builder.addButton(DialogButtons.SUBMIT, None, True, rawLabel=config.i18n['UI_dialog_apply'])
-        builder.addButton(DialogButtons.CANCEL, None, False, rawLabel=config.i18n['UI_dialog_cancel'])
-        builder.addButton(DialogButtons.PURCHASE, None, False, rawLabel=config.i18n['UI_dialog_ignore'])
-        result = yield wg_await(dialogs.show(builder.build(self.view)))
-        raise AsyncReturn(result)
-
-
-class CrewWorker(object):
-    appLoader = dependency.descriptor(IAppLoader)
+class Crew(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
         self.intCD = None
-        self.isDialogVisible = False
-        # g_events.onVehicleChangedDelayed += self.updateCrew
+        self.__callbackID = None
 
-    @property
-    def view(self):
-        app = self.appLoader.getApp()
-        if app is not None and app.containerManager is not None:
-            return app.containerManager.getView(WindowLayer.VIEW)
-        return None
-
-    @staticmethod
-    def getLocalizedMessage(value, description):
-        dialog = config.i18n['UI_crewDialogs']
-        return '\n'.join((dialog[description], dialog['enabled'] if value else dialog['disabled']))
-
-    @wg_async
-    def showDialog(self, vehicle, value, description):
-        self.isDialogVisible = True
-        message = self.getLocalizedMessage(value, description)
-        dialog_result = yield wg_await(CrewDialog.showCrewDialog(vehicle.userName, message))
-        if dialog_result.result == DialogButtons.SUBMIT:
-            self.accelerateCrewXp(vehicle, value)
-        elif dialog_result.result == DialogButtons.PURCHASE:
-            ignored_vehicles.add(vehicle.userName)
-            updateIgnoredVehicles(ignored_vehicles)
-        self.isDialogVisible = False
-
-    @decorators.adisp_process('updateTankmen')
-    def accelerateCrewXp(self, vehicle, value):
-        result = yield VehicleTmenXPAccelerator(vehicle, value, confirmationEnabled=False).request()
-        if result.success:
-            logInfo(config.ID, 'The accelerated crew training is %s for \'%s\'' % (value, vehicle.userName))
-
-    @staticmethod
-    def isPostProgressionFullXP(vehicle):
-        iterator = vehicle.postProgression.iterOrderedSteps()
-        currentXP = vehicle.xp
-        needToProgress = sum(x.getPrice().xp for x in iterator if not x.isRestricted() and not x.isReceived())
-        logInfo(config.ID, 'isPPFullXP - %s: %s/%s' % (vehicle.userName, currentXP, needToProgress))
-        return currentXP >= needToProgress
-
-    def isAccelerateTraining(self, vehicle):
-        dialog = config.i18n['UI_crewDialogs']
-        if not vehicle.postProgressionAvailability(unlockOnly=True).result:
-            return True, dialog['notAvailable']
-        elif vehicle.postProgression.getCompletion() is PostProgressionCompletion.FULL:
-            return True, dialog['isFullXp']
-        elif self.isPostProgressionFullXP(vehicle):
-            return True, dialog['isFullComplete']
-        else:
-            return False, dialog['needTurnOff']
-
-    def accelerateCrewTraining(self, vehicle):
-        if vehicle.userName in ignored_vehicles or not vehicle.isElite:
-            return
-        acceleration, description = self.isAccelerateTraining(vehicle)
-        if vehicle.isXPToTman != acceleration and not self.isDialogVisible:
-            self.showDialog(vehicle, acceleration, description)
-
-    def isCrewAvailable(self, vehicle):
-        lastCrewIDs = vehicle.lastCrew
-        if lastCrewIDs is None:
-            return False
-        for lastTankmenInvID in lastCrewIDs:
-            actualLastTankman = self.itemsCache.items.getTankman(lastTankmenInvID)
-            if actualLastTankman is not None and actualLastTankman.isInTank:
-                lastTankmanVehicle = self.itemsCache.items.getVehicle(actualLastTankman.vehicleInvID)
-                if lastTankmanVehicle and lastTankmanVehicle.isLocked:
-                    return False
-        return True
-
-    def updateCrew(self):
+    def init(self):
         vehicle = g_currentVehicle.item
-        if vehicle is None or vehicle.isLocked or vehicle.isInBattle or vehicle.isCrewLocked:
-            return
-        if not config.data['enabled']:
-            return
-        if config.data['crewReturn'] and self.intCD != vehicle.intCD:
-            if not vehicle.isCrewFull and self.isCrewAvailable(vehicle):
-                self.processReturnCrew(vehicle)
-            self.intCD = vehicle.intCD
-        if config.data['crewTraining']:
-            self.accelerateCrewTraining(vehicle)
-        if config.data['crewAutoReturn']:
-            self.processReturnCrewForVehicleSelectorPopup(vehicle)
+        intCD = vehicle.intCD
+        self.intCD = intCD
 
+    def invalidate(self):
+        self.intCD = None
+        if self.__callbackID is not None:
+            cancelCallback(self.__callbackID)
+            self.__callbackID = None
+    
     @decorators.adisp_process('crewReturning')
-    def processReturnCrew(self, vehicle):
-        result = yield TankmanReturn(vehicle).request()
-        if result.userMsg:
+    def processReturnCrew(self, print_message=True):
+        result = yield TankmanReturn(g_currentVehicle.item).request()
+        if len(result.userMsg) and print_message:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo(config.ID, '%s: %s' % (vehicle.userName, result.userMsg))
 
     @decorators.adisp_process('crewReturning')
     def processReturnCrewForVehicleSelectorPopup(self, vehicle):
@@ -278,24 +153,78 @@ class CrewWorker(object):
         result = yield TankmanUnload(g_currentVehicle.item.invID).request()
         if result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
-            logInfo(config.ID, '%s' % result.userMsg)
+
+    def handleVehicleChange(self):
+        if config.data['enabled'] and config.data['crewAutoReturn'] and config.data['crewReturnByDefault']:
+            if self.__callbackID is not None:
+                cancelCallback(self.__callbackID)
+                self.__callbackID = None
+            vehicle = g_currentVehicle.item
+            intCD = vehicle.intCD
+            if intCD != self.intCD:
+                self.__callbackID = callback(1.5, self.returnCrew)
+                self.intCD = intCD
+
+    def handlePopupSelect(self, items):
+        if len(items) == 1:
+            cd = int(items[0])
+            vehicle = self.itemsCache.items.getItemByCD(cd)
+            if vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
+                if config.data['enabled'] and config.data['crewAutoReturn']:
+                    if updateIgnoredVehicles(str(vehicle.invID)):
+                        self.processReturnCrewForVehicleSelectorPopup(vehicle)
+
+    def isLastCrewAvailable(self):
+        vehicle = g_currentVehicle.item
+        lastCrewIDs = vehicle.lastCrew
+        if lastCrewIDs is None:
+            return False
+        for lastTankmenInvID in lastCrewIDs:
+            actualLastTankman = self.itemsCache.items.getTankman(lastTankmenInvID)
+            if actualLastTankman is not None and actualLastTankman.isInTank:
+                lastTankmanVehicle = self.itemsCache.items.getVehicle(actualLastTankman.vehicleInvID)
+                if lastTankmanVehicle and lastTankmanVehicle.isLocked:
+                    return False
+        return True
+
+    def returnCrew(self):
+        self.__callbackID = None
+        if not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull():
+            return
+        if not self.isLastCrewAvailable():
+            return
+        self.processReturnCrew()
 
 
-config = ConfigInterface()
-crew_return = CrewWorker()
-analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+g_crew = Crew()
 
 
-@override(ExchangeXPWindow, 'as_vehiclesDataChangedS')
-def new_onXPExchangeDataChanged(func, self, data, *args, **kwargs):
+# Handlers/AppLoader
+def onGUISpaceEntered(spaceID):
+    if spaceID == GuiGlobalSpaceID.LOBBY:
+        g_crew.init()
+        g_currentVehicle.onChanged += g_currentVehicle_onChanged
+    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE, ):
+        g_crew.invalidate()
+
+
+# Handlers/g_currentVehicle
+def g_currentVehicle_onChanged():
     try:
-        ID = 'id'
-        CANDIDATE = 'isSelectCandidate'
-        for vehicleData in data['vehicleList']:
-            vehicle = crew_return.itemsCache.items.getItemByCD(vehicleData[ID])
-            check, _ = crew_return.isAccelerateTraining(vehicle)
-            vehicleData[CANDIDATE] &= check
-    except Exception as error:
-        logError(config.ID, 'CrewProcessor onXPExchangeDataChanged: {}'.format(repr(error)))
-    finally:
-        return func(self, data, *args, **kwargs)
+        g_crew.handleVehicleChange()
+    except:
+        logger.exception('g_currentVehicle_onChanged')
+
+
+# Handlers/VehicleSelectorPopup
+@override(VehicleSelectorPopup, 'onSelectVehicles')
+def new__onSelectVehicles(func, self, items):
+    func(self, items)
+    try:
+        g_crew.handlePopupSelect(items)
+    except:
+        logger.exception('VehicleSelectorPopup_onSelectVehicles')
+
+
+# Handlers/AppLoader
+dependency.instance(IAppLoader).onGUISpaceEntered += onGUISpaceEntered

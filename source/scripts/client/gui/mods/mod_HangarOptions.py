@@ -108,9 +108,7 @@ class ConfigInterface(SimpleConfigInterface):
             'clock': True,
             'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
             'x': 1900,
-            'y': 47,
-            'rows': 2,
-            'smallCarousel': False
+            'y': 47
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -167,10 +165,6 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_x_tooltip': 'Horizontal position',
             'UI_setting_y_text': 'Position Y',
             'UI_setting_y_tooltip': 'Vertical position',
-            'UI_setting_rows_text': 'Rows',
-            'UI_setting_rows_tooltip': 'Rows Number',
-            'UI_setting_smallCarousel_text': 'Small Carousel',
-            'UI_setting_smallCarousel_tooltip': 'Enable Small Carousel',
             'UI_techTree_shootingRadius': 'Shooting Radius',
             'UI_techTree_m': 'M.'
         }
@@ -207,9 +201,7 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('lootboxesWidget'),
                 self.tb.createControl('clock'),
                 self.tb.createSlider('x', -4000, 4000, 1, '{{value}}%s' % ' X'),
-                self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y'),
-                self.tb.createSlider('rows', 1, 10, 1, '{{value}} ' + ' Rows'),
-                self.tb.createControl('smallCarousel')
+                self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y')
             ]
         }
 
@@ -233,6 +225,13 @@ class ConfigInterface(SimpleConfigInterface):
         self.macros['hours'], delta = divmod(delta, ONE_HOUR)
         self.macros['min'], self.macros['sec'] = divmod(delta, ONE_MINUTE)
         return template % self.macros
+
+    @staticmethod
+    def getEncoding():
+        coding = locale.getpreferredencoding()
+        if coding in locale.locale_encoding_alias:
+            return locale.locale_encoding_alias[coding]
+        return coding
 
     def stopCallback(self):
         if self.callback is not None:
@@ -269,7 +268,7 @@ def new__handleLazyChannelCtlInited(func, self, event):
         ctx = event.ctx
         controller = ctx.get('controller')
         if controller is None:
-            logDebug(config.ID, True, 'Controller is not defined', ctx)
+            logDebug(config.ID, True, 'Controller is not defined {}', ctx)
             return
         else:
             ctx.clear()
@@ -544,7 +543,9 @@ def getGuns():
         xmlPath = '%svehicles/%s/%s.xml' % (ITEM_DEFS_PATH, nation, veh)
         vehicle = ResMgr.openSection(xmlPath)
         turrets0 = vehicle['turrets0']
-        result.update({gun: (result.get(gun, set()) | {makeString(i18n_veh)}) for turret in turrets0.values() for gun in turret['guns'].keys()})
+        for turret in turrets0.values():
+            for gun in turret['guns'].keys():
+                result.setdefault(gun, set()).add(makeString(i18n_veh))
     return result
 
 
@@ -608,19 +609,6 @@ def LootBoxesEntryPointWidget_getIsActive(func, self):
     if not config.data['enabled'] and not config.data['lootboxesWidget']:
         return False
     return func(self)
-
-
-# CAROUSEL
-@override(TankCarousel, 'as_rowCountS')
-def new__rowCountS(func, self, row_count):
-    if config.data['enabled'] and self.getAlias() == HANGAR_ALIASES.TANK_CAROUSEL:
-        row_count = max(config.data['rows'], row_count)
-    return func(self, row_count)
-
-
-@override(TankCarousel, 'as_setSmallDoubleCarouselS')
-def new__setSmallDoubleCarouselS(func, self, small):
-    return func(self, small or config.data['enabled'] and config.data['smallCarousel'])
 
 
 # PremiumTime

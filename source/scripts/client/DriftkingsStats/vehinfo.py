@@ -7,15 +7,16 @@ import nations
 from gui import SystemMessages
 from items import vehicles
 
-from DriftkingsCore import callback, logError
+from DriftkingsCore import callback, logError, getRegion
 from DriftkingsStats import __CORE_NAME__
 
 # URL
+_FLAVOR = 'wg' if getRegion() != 'RU' else 'lesta'
 HOST = 'https://static.modxvm.com/'
-URL_WN8 = HOST + 'wn8-data-exp/json/wn8exp.json'
+URL_WN8 = HOST + 'wn8-data-exp/json/%s/wn8exp.json' % _FLAVOR
 URL_XTE = HOST + 'xte.json'
 URL_XTDB = HOST + 'xtdb.json'
-URL_XVM_SCALE = HOST + 'xvmscales.json'
+URL_XVM_SCALE = HOST + '/xvmscales-%s.json' % _FLAVOR
 
 VEHICLE_TYPE_XML_PATH = 'scripts/item_defs/vehicles/'
 UNKNOWN_VEHICLE_DATA = {

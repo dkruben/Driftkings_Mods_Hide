@@ -40,9 +40,7 @@ class ConfigBase(object):
     def createTB(self):
         return TemplateBuilder(self.data, self.i18n)
 
-    def readConfigDir(
-            self, quiet, recursive=False, dir_name='configs', error_not_exist=True, make_dir=True, ordered=False,
-            encrypted=False, migrate=False, ext='.json'):
+    def readConfigDir(self, quiet, recursive=False, dir_name='configs', error_not_exist=True, make_dir=True, ordered=False, encrypted=False, migrate=False, ext='.json'):
         configs_dir = self.configPath + dir_name + '/'
         if not os.path.isdir(configs_dir):
             if error_not_exist and not quiet:
