@@ -201,6 +201,3 @@ class DispersionCircle(object):
             server = DefaultGunMarkerController(SERVER, factory.getServerProvider())
             dual = _DualAccMarkerController(DUAL_ACC, factory.getDualAccuracyProvider())
         return _GunMarkersDecorator(client, server, dual)
-
-
-DispersionCircle()

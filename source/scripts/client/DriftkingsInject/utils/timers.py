@@ -43,7 +43,8 @@ class SixthSenseTimer(Timer):
         if sound is not None:
             if sound.isPlaying:
                 sound.stop()
-            sound.play()
+            (sound.
+             play())
 
     def setSound(self, soundID):
         self.__soundID = soundID

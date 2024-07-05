@@ -159,8 +159,7 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
                         maxTS = m_time
             else:
                 maxTS = long(timeStr)
-    codestring = codestring.replace('%(file_compile_date)s', time.strftime('%d.%m.%Y', time.localtime(maxTS))).replace(
-        '%(mod_ID)s', os.path.basename(modName).replace('.py', '').replace('mod_', ''))
+    codestring = codestring.replace('%(file_compile_date)s', time.strftime('%d.%m.%Y', time.localtime(maxTS))).replace('%(mod_ID)s', os.path.basename(modName).replace('.py', '').replace('mod_', ''))
     if '# -*- obfuscated -*-' in codestring:
         if Orion_path is None:
             sys.stderr.write('Obfuscated files present, but Orion path is not specified.')

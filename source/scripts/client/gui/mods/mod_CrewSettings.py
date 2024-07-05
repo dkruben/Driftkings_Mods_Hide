@@ -204,7 +204,7 @@ def onGUISpaceEntered(spaceID):
     if spaceID == GuiGlobalSpaceID.LOBBY:
         g_crew.init()
         g_currentVehicle.onChanged += g_currentVehicle_onChanged
-    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE, ):
+    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE,):
         g_crew.invalidate()
 
 

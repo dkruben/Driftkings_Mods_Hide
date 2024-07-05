@@ -69,15 +69,8 @@ class ConfigInterface(SimpleConfigInterface):
         }
     
     def isEnabled(self):
-        """
-        Check if the mod is enabled and not disabled by battle type.
-        bool: True if the mod is enabled and not disabled by battle type, False otherwise.
-        """
-        # Get the enabled status from the data dictionary
         enabled_status = self.data['enabled']
-        # Get the battle types to exclude
         excluded_battle_types = (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING)
-        # Check if the mod is enabled and not disabled by battle type
         return enabled_status and not isDisabledByBattleType(include=excluded_battle_types)
 
     def onBattleLoaded(self):

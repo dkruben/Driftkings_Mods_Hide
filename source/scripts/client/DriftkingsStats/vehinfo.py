@@ -7,7 +7,7 @@ import nations
 from gui import SystemMessages
 from items import vehicles
 
-from DriftkingsCore import callback, logError, getRegion
+from DriftkingsCore import callback, logError, getRegion, logInfo
 from DriftkingsStats import __CORE_NAME__
 
 # URL
@@ -141,8 +141,10 @@ class ScaleValues(object):
         if self.settings['showExpectedTankValuesMessage']:
             if updateExpectedOK:
                 SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[DriftkingsStats]</font>\nExpected Tank Values updated to version: ' + newVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
+                logInfo(__CORE_NAME__, 'Expected Tank Values updated to version: {}', newVersionExpectedTankValues)
             else:
                 SystemMessages.pushMessage('<font color=\'#FFE6B3\'>[DriftkingsStats]</font>\nExpected Tank Values\nversion: ' + localVersionExpectedTankValues, type=SystemMessages.SM_TYPE.Information)
+                logInfo(__CORE_NAME__, 'Expected Tank Values version: {}', localVersionExpectedTankValues)
 
         with open(wn8_cache) as origExpectedValuesJson:
             origExpectedValues = json.load(origExpectedValuesJson)
