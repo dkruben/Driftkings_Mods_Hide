@@ -136,7 +136,7 @@ class AutoClaimClanReward(object):
             self.__claimProgression(to_purchased, next_points.price)
 
     def __onDataReceived(self, data_name, data):
-        logDebug(config.data, "__onDataReceived {} {}", data_name, data)
+        logDebug(config.ID, True, "__onDataReceived {name} {data}", name=data_name, data=data)
         if data_name in (DataNames.QUESTS_INFO, DataNames.QUESTS_INFO_POST):
             self.__cachedQuestsData = data
             if self.__started:
