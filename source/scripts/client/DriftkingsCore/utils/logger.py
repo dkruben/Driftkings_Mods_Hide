@@ -5,7 +5,16 @@ __all__ = ('logDebug', 'logInfo', 'logError', 'logWarning', 'logException', 'log
 
 
 def _formatMessage(message, *args, **kwargs):
-    return str(message).format(*args, **kwargs)
+    """
+    message (str): The message string to format.
+    *args: Positional arguments to insert into the message string.
+    **kwargs: Keyword arguments to insert into the message string.
+    str: The formatted message string.
+    """
+    message = unicode(str(message), 'utf-8', 'ignore')
+    if args or kwargs:
+        return message.format(*args, **kwargs)
+    return message
 
 
 def logError(modID, message, *args, **kwargs):
@@ -29,7 +38,7 @@ def logTrace(exc=None):
     import traceback
     print '=' * 45
     if exc is not None:
-        logError('DriftkingsCore:', exc)
+        logError('DriftkingsCore:', str(exc))
         traceback.print_exc()
     else:
         traceback.print_stack()
@@ -40,6 +49,6 @@ def logException(func):
     def exception(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except:
-            logTrace(func)
+        except Exception as err:
+            logTrace(err)
     return exception

@@ -11,7 +11,7 @@ import nations
 from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from Event import SafeEvent
-from HeroTank import HeroTank
+# from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
 from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
@@ -19,7 +19,6 @@ from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
-from gui.Scaleform.daapi.view.lobby.hangar.carousels import TankCarousel
 from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
 from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
 from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
@@ -35,7 +34,6 @@ from gui.Scaleform.daapi.view.meta.ModuleInfoMeta import ModuleInfoMeta
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.entities.View import View
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
@@ -55,7 +53,7 @@ from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
-from vehicle_systems.tankStructure import ModelStates
+# from vehicle_systems.tankStructure import ModelStates
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback
 from DriftkingsInject import CyclicTimerEvent, g_events
@@ -277,11 +275,11 @@ def new__handleLazyChannelCtlInited(func, self, event):
 
 
 # hide premium vehicle on the background in the hangar
-@override(HeroTank, 'recreateVehicle')
-def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, _=None, outfit=None):
-    if config.data['enabled'] and config.data['showPromoPremVehicle']:
-        return
-    func(self, typeDescriptor, state, _, outfit)
+# @override(HeroTank, 'recreateVehicle')
+# def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, callback=None, outfit=None):
+#    if config.data['enabled'] and config.data['showPromoPremVehicle']:
+#        return
+#    func(self, typeDescriptor, state, callback, outfit)
 
 
 # hide display pop-up messages in the hangar
@@ -449,45 +447,38 @@ def new__construct(func, self):
 
 
 # TechTree
-# noinspection PyTypeChecker
-# noinspection PyUnusedLocal
-# noinspection PyProtectedMember
-def _getRanges(turret, gun, nation, vClass):
-    visionRadius = 0
-    firingRadius = 0
-    artyRadius = 0
-    gunsInfoPath = 'scripts/item_defs/vehicles/' + nation + '/components/guns.xml/shared/'
-    # Turret-dependent
-    visionRadius = int(turret.circularVisionRadius)
-    # Gun-dependent
-    shots = gun.shots
-    for shot in shots:
-        radius = int(shot.maxDistance)
-        if firingRadius < radius:
-            firingRadius = radius
+class RangeCalculator:
+    def __init__(self, turret, gun, nation, v_class):
+        self.turret = turret
+        self.gun = gun
+        self.nation = nation
+        self.v_class = v_class
 
-        if vClass == 'SPG' and shot.shell.kind == 'HIGH_EXPLOSIVE':
-            try:
-                pitchLimit_rad = min(radians(45), -calcPitchLimitsFromDesc(0, gun.pitchLimits)[0])
-            except StandardError:
-                minPitch = radians(-45)
-                for gun in turret.guns:
-                    if gun.name == gun.name:
-                        minPitch = gun.pitchLimits['minPitch'][0][1]
-                        break
-                pitchLimit_rad = min(radians(45), -minPitch)
-            radius = int(pow(shot.speed, 2) * sin(2 * pitchLimit_rad) / shot.gravity)
-            if artyRadius < radius:
-                artyRadius = radius
+    def get_ranges(self):
+        vision_radius = int(self.turret.circularVisionRadius)
+        firing_radius = 0
+        arty_radius = 0
+        # Gun-dependent
+        shots = self.gun.shots
+        for shot in shots:
+            radius = int(shot.maxDistance)
+            if firing_radius < radius:
+                firing_radius = radius
+            if self.v_class == 'SPG' and shot.shell.kind == 'HIGH_EXPLOSIVE':
+                try:
+                    pitch_limit_rad = min(radians(45), -calcPitchLimitsFromDesc(0, self.gun.pitchLimits)[0])
+                except StandardError:
+                    min_pitch = radians(-45)
+                    for gun in self.turret.guns:
+                        if gun.name == self.gun.name:
+                            min_pitch = gun.pitchLimits['minPitch'][0][1]
+                            break
+                    pitch_limit_rad = min(radians(45), -min_pitch)
+                radius = int(pow(shot.speed, 2) * sin(2 * pitch_limit_rad) / shot.gravity)
+                if arty_radius < radius:
+                    arty_radius = radius
+        return vision_radius, firing_radius, arty_radius
 
-        return visionRadius, firingRadius, artyRadius
-
-
-@override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
-def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
-    if config.data['enabled'] and config.data['allowExchangeXPInTechTree']:
-        return unlockStats.getVehTotalXP(nodeCD)
-    return func(self, nodeCD, unlockStats)
 
 
 # add shooting range in gun info window for SPG/machine guns
@@ -500,69 +491,77 @@ def new__setModuleInfoS(func, self, moduleInfo):
             vehicle = itemsCache.items.getItemByCD(veh_id)
             _gun = itemsCache.items.getItemByCD(self.moduleCompactDescr).descriptor
             turret = self._ModuleInfoWindow__vehicleDescr.turret
-            (viewRange, shellRadius, artiRadius) = _getRanges(turret, _gun, vehicle.nationName, vehicle.type)
+            range_calculator = RangeCalculator(turret, _gun, vehicle.nationName, vehicle.type)
+            viewRange, shellRadius, artiRadius = range_calculator.get_ranges()
             if vehicle.type == 'SPG':
-                moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>', 'value': '<h>' + str(artiRadius) + '</h>'})
+                moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>','value': '<h>' + str(artiRadius) + '</h>'})
             elif shellRadius < 707:
                 moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>', 'value': '<h>' + str(shellRadius) + '</h>'})
     except StandardError:
-        traceback.format_exc()
+        traceback.print_exc()
+
     return func(self, moduleInfo)
 
 
+@override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
+def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
+    if config.data['enabled'] and config.data['allowExchangeXPInTechTree']:
+        return unlockStats.getVehTotalXP(nodeCD)
+    return func(self, nodeCD, unlockStats)
+
+
+
 # ToolTips Shell
-shells = {}
-myVehicles = set()
+class VehicleData:
+    def __init__(self):
+        self.item_defs_path = ITEM_DEFS_PATH
+        self.shells = {}
+        self.my_vehicles = set()
 
+    def get_shots(self, nation):
+        xml_path = '%svehicles/%s/components/guns.xml' % (self.item_defs_path, nation)
+        section = ResMgr.openSection(xml_path)
+        shared = section['shared']
+        result = {}
+        for gun, val in shared.items():
+            shots = val['shots']
+            result.update({shot: (result.get(shot, set()) | {gun}) for shot in shots.keys()})
+        return result
 
-# noinspection PyTypeChecker
-# noinspection PyUnusedLocal
-# noinspection PyProtectedMember
-def getShots():
-    xmlPath = '%svehicles/%s/components/guns.xml' % (ITEM_DEFS_PATH, nation)
-    section = ResMgr.openSection(xmlPath)
-    shared = section['shared']
-    result = {}
-    for gun, val in shared.items():
-        shots = val['shots']
-        result.update({shot: (result.get(shot, set()) | {gun}) for shot in shots.keys()})
-    return result
+    def get_guns(self, nation):
+        xml_path = '%svehicles/%s/list.xml' % (self.item_defs_path, nation)
+        vehicles = ResMgr.openSection(xml_path)
+        result = {}
+        for veh, v_v in vehicles.items():
+            if veh in ['Observer', 'xmlns:xmlref']:
+                continue
+            i18n_veh = v_v['userString'].asString
+            xml_path = '%svehicles/%s/%s.xml' % (self.item_defs_path, nation, veh)
+            vehicle = ResMgr.openSection(xml_path)
+            turrets0 = vehicle['turrets0']
+            for turret in turrets0.values():
+                for gun in turret['guns'].keys():
+                    result.setdefault(gun, set()).add(makeString(i18n_veh))
+        return result
 
+    def update_shells(self):
+        for nation in nations.NAMES:
+            shots = self.get_shots(nation)
+            guns = self.get_guns(nation)
+            self.shells[nation] = {}
+            for k_s, v_s in shots.iteritems():
+                for gun in v_s:
+                    self.shells[nation][k_s] = self.shells[nation].get(k_s, set()) | guns.get(gun, set())
 
-# noinspection PyTypeChecker
-# noinspection PyUnusedLocal
-# noinspection PyProtectedMember
-def getGuns():
-    xmlPath = '%svehicles/%s/list.xml' % (ITEM_DEFS_PATH, nation)
-    vehicles = ResMgr.openSection(xmlPath)
-    result = {}
-    for veh, v_v in vehicles.items():
-        if (veh == 'Observer') or (veh == 'xmlns:xmlref'):
-            continue
-        i18n_veh = v_v['userString'].asString
-        xmlPath = '%svehicles/%s/%s.xml' % (ITEM_DEFS_PATH, nation, veh)
-        vehicle = ResMgr.openSection(xmlPath)
-        turrets0 = vehicle['turrets0']
-        for turret in turrets0.values():
-            for gun in turret['guns'].keys():
-                result.setdefault(gun, set()).add(makeString(i18n_veh))
-    return result
+    def update_my_vehicles(self):
+        # global myVehicles
+        items_cache = dependency.instance(IItemsCache)
+        vehicles = items_cache.items.getVehicles()
+        self.my_vehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
 
-
-for nation in nations.NAMES:
-    shots = getShots()
-    guns = getGuns()
-    shells[nation] = {}
-    for k_s, v_s in shots.iteritems():
-        for gun in v_s:
-            shells[nation][k_s] = shells[nation].get(k_s, set()) | guns.get(gun, set())
-
-
-def updateMyVehicles():
-    global myVehicles
-    itemsCache = dependency.instance(IItemsCache)
-    vehicles = itemsCache.items.getVehicles()
-    myVehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
+# Uso da classe
+vehicle_data = VehicleData()
+vehicle_data.update_shells()
 
 
 @override(CommonStatsBlockConstructor, 'construct')
@@ -571,10 +570,10 @@ def new__construct(fun, self):
     if self.configuration.params:
         topPadding = formatters.packPadding(top=5)
         block.append(formatters.packTitleDescBlock(title=text_styles.middleTitle(makeString('#tooltips:quests/vehicles/header')), padding=formatters.packPadding(top=8)))
-        n_shell = shells.get(self.shell.nationName, None)
-        select_shell = n_shell.get(self.shell.name, set())
-        if myVehicles:
-            vehicles = select_shell & myVehicles
+        shell = vehicle_data.shells.get(self.shell.nationName, None)
+        select_shell = shell.get(self.shell.name, set())
+        if vehicle_data.my_vehicles:
+            vehicles = select_shell & vehicle_data.my_vehicles
             block.append(formatters.packTitleDescBlock(title=text_styles.stats(', '.join(vehicles)), padding=topPadding))
             vehicles = select_shell - vehicles
             block.append(formatters.packTitleDescBlock(title=text_styles.standard(', '.join(vehicles)), padding=topPadding))
@@ -586,7 +585,7 @@ def new__construct(fun, self):
 @override(CarouselDataProvider, 'buildList')
 def new__buildList(func, self):
     func(self)
-    updateMyVehicles()
+    vehicle_data.update_my_vehicles()
 
 
 @override(PlayerAccount, 'onArenaCreated')

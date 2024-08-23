@@ -9,17 +9,25 @@ from gui.shared.personality import ServicesLocator
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
 
-def smart_update(dict1, dict2):
+def smart_update(old_conf, new_conf):
     changed = False
-    for k in dict1:
-        v = dict2.get(k)
-        if isinstance(v, dict):
-            changed |= smart_update(dict1[k], v)
-        elif v is not None:
-            if isinstance(v, unicode):
-                v = v.encode('utf-8')
-            changed |= dict1[k] != v
-            dict1[k] = v
+    for k, old_v in old_conf.items():
+        new_v = new_conf.get(k)
+        if isinstance(new_v, dict) and isinstance(old_v, dict):
+            changed |= smart_update(old_v, new_v)
+        elif new_v is not None:
+            if isinstance(new_v, unicode):
+                new_v = new_v.encode('utf-8')
+            if old_v != new_v:
+                old_conf[k] = new_v
+                changed = True
+
+    # Add new keys from new_conf that are not in old_conf
+    for k, v in new_conf.items():
+        if k not in old_conf:
+            old_conf[k] = v.encode('utf-8') if isinstance(v, unicode) else v
+            changed = True
+
     return changed
 
 

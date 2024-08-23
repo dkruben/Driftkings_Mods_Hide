@@ -1,7 +1,7 @@
 @echo off
 :::git checkout develop
-C:\Python27\python.exe build_tools/compiler.py -p C:/PJOrion/PjOrion.exe -d scripts/client/ -o build/scripts/client/ source/scripts/client/
-C:\Python27\python.exe build_tools/packer.py -q -v build_data/GAME_VERSION build_data/wotmods/ build/wotmods/
+F:\Python27\python.exe build_tools/compiler.py -p F:/Programas/PJOrion/PjOrion.exe -d scripts/client/ -o build/scripts/client/ source/scripts/client/
+F:\Python27\python.exe build_tools/packer.py -q -v build_data/GAME_VERSION build_data/wotmods/ build/wotmods/
 "C:\Program Files\Beyond Compare 4\BCompare.exe"
 if ERRORLEVEL 1 (
     echo Beyond Compare not found on PATH, skipping...

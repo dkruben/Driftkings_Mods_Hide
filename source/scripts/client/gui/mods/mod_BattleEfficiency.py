@@ -176,49 +176,59 @@ class EfficiencyCalculator(object):
     def registerVInfoData(self, vehCD):
         self.vehCD = vehCD
         vInfoData = getVehicleInfoData(vehCD)
-
         for item in ('wn8expDamage', 'wn8expSpot', 'wn8expFrag', 'wn8expDef', 'wn8expWinRate'):
             self.expectedValues[item] = vInfoData.get(item, None)
-
         self.vInfoOK = None not in self.expectedValues.values()
 
     def calc(self, damage, spotted, frags, defence, capture, isWin=False):
-        if self.vInfoOK:
-            rDAMAGE = float(damage) / float(self.expectedValues['wn8expDamage'])
-            rSPOT = float(spotted) / float(self.expectedValues['wn8expSpot'])
-            rFRAG = float(frags) / float(self.expectedValues['wn8expFrag'])
-            rDEF = float(defence) / float(self.expectedValues['wn8expDef'])
-            rWIN = (100.0 if isWin else 0) / float(self.expectedValues['wn8expWinRate'])
-
-            rWINc = max(0.0, (rWIN - 0.71) / (1 - 0.71))
-            rDAMAGEc = max(0.0, (rDAMAGE - 0.22) / (1 - 0.22))
-            rSPOTc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rSPOT - 0.38) / (1 - 0.38))))
-            rFRAGc = max(0.0, min(rDAMAGEc + 0.2, max(0.0, (rFRAG - 0.12) / (1 - 0.12))))
-            rDEFc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rDEF - 0.10) / (1 - 0.10))))
-
-            WN8 = int(980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * min(1.8, rWINc))
-            XWN8 = calculateXvmScale('xwn8', WN8)
+        if not self.vInfoOK:
+            return 0, 0, 0, 0, 0, 0, 0
+        try:
+            rDAMAGE, rSPOT, rFRAG, rDEF, rWIN = self.calculate_ratios(damage, spotted, frags, defence, isWin)
+            WN8, XWN8 = self.calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN)
             DIFF = int(damage - self.expectedValues['wn8expDamage'])
-            DMG = int(damage - 0)
-        else:
-            WN8 = 0
-            XWN8 = 0
-            DIFF = 0
-            DMG = 0
+            DMG = int(damage)
+            EFF, XEFF = self.calculate_efficiency(damage, frags, spotted, capture, defence)
+            XTE = self.calculate_XTE(damage, frags)
+
+            return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
+        except (ZeroDivisionError, ValueError) as err:
+            logError(g_config.ID, "Error calculating metrics:", err)
+            return 0, 0, 0, 0, 0, 0, 0
+
+    def calculate_ratios(self, damage, spotted, frags, defence, isWin):
+        rDAMAGE = float(damage) / float(self.expectedValues['wn8expDamage'])
+        rSPOT = float(spotted) / float(self.expectedValues['wn8expSpot'])
+        rFRAG = float(frags) / float(self.expectedValues['wn8expFrag'])
+        rDEF = float(defence) / float(self.expectedValues['wn8expDef'])
+        rWIN = (100.0 if isWin else 0) / float(self.expectedValues['wn8expWinRate'])
+        return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
+
+    @staticmethod
+    def calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN):
+        rWINc = max(0.0, (rWIN - 0.71) / (1 - 0.71))
+        rDAMAGEc = max(0.0, (rDAMAGE - 0.22) / (1 - 0.22))
+        rSPOTc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rSPOT - 0.38) / (1 - 0.38))))
+        rFRAGc = max(0.0, min(rDAMAGEc + 0.2, max(0.0, (rFRAG - 0.12) / (1 - 0.12))))
+        rDEFc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rDEF - 0.10) / (1 - 0.10))))
+        WN8 = int(980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * min(1.8, rWINc))
+        XWN8 = calculateXvmScale('xwn8', WN8)
+        return WN8, XWN8
+
+    def calculate_efficiency(self, damage, frags, spotted, capture, defence):
         EFF = int(max(0, int(damage * (10.0 / (self.avgTier + 2)) * (0.23 + 2 * self.avgTier / 100.0) + frags * 250 + spotted * 150 + math.log(capture + 1, 1.732) * 150 + defence * 150)))
         XEFF = calculateXvmScale('xeff', EFF)
+        return EFF, XEFF
 
-        if self.vehCD is not None:
-            XTE = calculateXTE(self.vehCD, damage, frags)
-        else:
-            XTE = 0
-
-        return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
+    def calculate_XTE(self, damage, frags):
+        return calculateXTE(self.vehCD, damage, frags) if self.vehCD is not None else 0
 
 
 class BattleEfficiency(object):
-
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.frags = 0
         self.damage = 0
         self.spotted = 0
@@ -242,20 +252,16 @@ class BattleEfficiency(object):
         self.format_recreate()
 
     def stopBattle(self):
-        self.__init__()
+        self.reset()
 
     @staticmethod
     def read_colors(ratting_color, ratting_value):
         colors = COLOR_TABLES[g_config.data['colorRatting']].get('colors')
-        color = getColor(colors, ratting_color, ratting_value)
-        return color
+        return getColor(colors, ratting_color, ratting_value)
 
     @staticmethod
     def check_macros(macros):
-        for i in TEXT_LIST:
-            if macros in g_config.data[i]:
-                return True
-        return False
+        return any(macros in g_config.data[i] for i in TEXT_LIST)
 
     def format_recreate(self):
         self.format_string = {
@@ -283,48 +289,34 @@ class BattleEfficiency(object):
             return
         result = g_calculator.calc(self.damage, self.spotted, self.frags, self.defence, self.capture)
         self.wn8, self.xwn8, self.eff, self.xeff, self.xte, self.dmg, self.diff = result
-        #
         self.format_recreate()
-        # wn8 / c:wn8
-        if self.check_macros('{wm8}'):
-            self.format_string['wn8'] = self.wn8
-        if self.check_macros('{c_wn8}'):
-            self.format_string['c_wn8'] += self.read_colors('wn8', self.wn8)
-        # xwn8 / c:xwn8
-        if self.check_macros('{xwn8}'):
-            self.format_string['xwn8'] = self.xwn8
-        if self.check_macros('{c_xwn8}'):
-            self.format_string['c_wn8'] += self.read_colors('x', self.xwn8)
-        # eff / c:eff
-        if self.check_macros('{eff}'):
-            self.format_string['eff'] = self.eff
-        if self.check_macros('{c_eff}'):
-            self.format_string['c_eff'] += self.read_colors('eff', self.eff)
-        # xeff / c:xeff
-        if self.check_macros('{xeff}'):
-            self.format_string['xeff'] = self.xeff
-        if self.check_macros('{c_xeff}'):
-            self.format_string['c_xeff'] += self.read_colors('x', self.xeff)
-        # xte / c:xte
-        if self.check_macros('{xte}'):
-            self.format_string['xte'] = self.xte
-        if self.check_macros('{c_xte}'):
-            self.format_string['c_xte'] += self.read_colors('x', self.xte)
-        # diff / c:diff
-        if self.check_macros('{diff}'):
-            self.format_string['diff'] = self.diff
-        if self.check_macros('{c_diff}'):
-            self.format_string['c_diff'] += self.read_colors('diff', self.diff)
-        # dmg / c:dmg
-        if self.check_macros('{dmg}'):
-            self.format_string['dmg'] = self.dmg
-        if self.check_macros('{c_dmg}'):
-            self.format_string['c_dmg'] += self.read_colors('tdb', self.dmg)
+        self.update_format_string()
 
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return self.stopBattle()
 
         g_flash.addText(set_text(self.textGenerator()))
+
+    def update_format_string(self):
+        # Atualiza format_string com base nas macros
+        for key, value in {
+            'wn8': self.wn8,
+            'c_wn8': self.read_colors('wn8', self.wn8),
+            'xwn8': self.xwn8,
+            'c_xwn8': self.read_colors('x', self.xwn8),
+            'eff': self.eff,
+            'c_eff': self.read_colors('eff', self.eff),
+            'xeff': self.xeff,
+            'c_xeff': self.read_colors('x', self.xeff),
+            'xte': self.xte,
+            'c_xte': self.read_colors('x', self.xte),
+            'diff': self.diff,
+            'c_diff': self.read_colors('diff', self.diff),
+            'dmg': self.dmg,
+            'c_dmg': self.read_colors('tdb', self.dmg)
+        }.items():
+            if self.check_macros('{%s}' % key):
+                self.format_string[key] = value
 
 
 g_battleEfficiency = BattleEfficiency()

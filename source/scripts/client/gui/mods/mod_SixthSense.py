@@ -18,7 +18,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, checkNamesList
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, checkNamesList, calculateVersion
 from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, SixthSenseTimer, g_events
 
 AS_INJECTOR = 'SixthSenseInjector'
@@ -64,7 +64,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_defaultIcon_text': 'Default Icon',
             'UI_setting_defaultIcon_tooltip': 'Use embedded image.',
             'UI_setting_lampShowTime_text': 'Lamp Show Time',

@@ -12,7 +12,7 @@ from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
 
-__all__ = ('getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback', 'getPercent',
+__all__ = ('calculateVersion', 'getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback', 'getPercent',
            'cancelCallback', 'hex_to_decimal', 'isReplay', 'getColor', 'isDisabledByBattleType', 'percentToRGB', 'getAccountDBID', 'checkNamesList',)
 
 
@@ -24,6 +24,10 @@ DEFAULT_EXCLUDED_GUI_TYPES = {
     ARENA_GUI_TYPE.EVENT_BATTLES,
     ARENA_GUI_TYPE.UNKNOWN
 }
+
+
+def calculateVersion(version):
+    return sum(int(x) * (10 ** i) for i, x in enumerate(reversed(version.split(' ')[0].split('.'))))
 
 
 def getAccountDBID():

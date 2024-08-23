@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+import os
 import json
 import urllib
 
@@ -108,14 +109,18 @@ class ScaleValues(object):
         if x is None:
             return None
         return xvm2sup[min(100, x) - 1] if x > 0 else 0.0
-
+    
     def _loadXvmScaleData(self):
         xvmScales_path = '/'.join([self.config_path, 'xvmScales.json'])
+        # Check if the JSON file exists, if not, create a default one
+        if not os.path.exists(xvmScales_path):
+            with open(xvmScales_path, 'w') as f:
+                default_data = {'key': 'value'}
+                json.dump(default_data, f)
         try:
             urllib.urlretrieve(URL_XVM_SCALE, xvmScales_path)
         except StandardError:
             pass
-
         with open(xvmScales_path) as xvm_scale:
             xvm_scale_value = json.load(xvm_scale)
             self.xvmScale_data = xvm_scale_value
@@ -157,32 +162,41 @@ class ScaleValues(object):
                     vinfo['wn8expWinRate'] = float(x['expWinRate'])
                     vinfo['wn8expDef'] = float(x['expDef'])
                     vinfo['wn8expFrag'] = float(x['expFrag'])
-
+    
     def _loadXteData(self):
         xte_path = '/'.join([self.config_path, 'xte.json'])
+        # Verificar se o arquivo JSON existe, se não, criar um arquivo JSON padrão
+        if not os.path.exists(xte_path):
+            with open(xte_path, 'w') as f:
+                default_data = {'key': 'value'}
+                json.dump(default_data, f)
         try:
             urllib.urlretrieve(URL_XTE, xte_path)
         except StandardError:
             pass
-
         with open(xte_path) as xte_scale:
             xte_value = json.load(xte_scale)
             self.xte_data = xte_value
             for key, values in self.xte_data.iteritems():
                 vinfo = self.getVehicleInfoData(int(key))
                 if vinfo is not None:
-                    vinfo['avgdmg'] = float(values['ad'])
-                    vinfo['topdmg'] = float(values['td'])
-                    vinfo['avgfrg'] = float(values['af'])
-                    vinfo['topfrg'] = float(values['tf'])
-
+                    vinfo['avgdmg'] = float(values.get('ad', 0))
+                    vinfo['topdmg'] = float(values.get('td', 0))
+                    vinfo['avgfrg'] = float(values.get('af', 0))
+                    vinfo['topfrg'] = float(values.get('tf', 0))
+    
     def _loadXtdbData(self):
         xtdb_path = '/'.join([self.config_path, 'xtdb.json'])
+        
+        # Check if the JSON file exists, if not, create a default one
+        if not os.path.exists(xtdb_path):
+            with open(xtdb_path, 'w') as f:
+                default_data = {'key': 'value'}
+                json.dump(default_data, f)
         try:
             urllib.urlretrieve(URL_XTDB, xtdb_path)
         except StandardError:
             pass
-
         with open(xtdb_path) as xtdb_scale:
             xtdb_value = json.load(xtdb_scale)
             self.xtdb_data = xtdb_value

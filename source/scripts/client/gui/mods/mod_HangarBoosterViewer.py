@@ -5,7 +5,7 @@ import BigWorld
 from Account import PlayerAccount
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.meta.LobbyHeaderMeta import LobbyHeaderMeta
-from gui.shared.personality import ServicesLocator
+from gui.shared.personality import ServicesLocator as SL
 from gui.shared.utils.requesters.ItemsRequester import REQ_CRITERIA
 from shared_utils import safeCancelCallback
 
@@ -50,7 +50,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by ktulho, HEKPOMAHT, Polyacov_Yury, Driftking\'s'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -86,15 +86,12 @@ class ConfigInterface(SimpleConfigInterface):
             self.updateCallback = safeCancelCallback(self.updateCallback)
         if not self.isBattle:
             self.updateCallback = BigWorld.callback(1, self.update)
-            self.boosters = (ServicesLocator.goodiesCache.getClanReserves().values(), [
-                BoosterCache(b) for b in ServicesLocator.goodiesCache.getBoosters(criteria=REQ_CRITERIA.BOOSTER.ACTIVE).itervalues()])
+            self.boosters = (SL.goodiesCache.getClanReserves().values(), [
+                BoosterCache(b) for b in SL.goodiesCache.getBoosters(criteria=REQ_CRITERIA.BOOSTER.ACTIVE).itervalues()])
         activeCRTypes = OrderedDict((i, j) for (i, j) in ((i, self.type(1, i)) for i in xrange(2)) if j)
         activeRTypes = OrderedDict((i, j) for (i, j) in ((i, self.type(0, i)) for i in xrange(3)) if j)
         g_guiFlash.updateComponent(self.ID + '_1bg', {'image': '../HangarBoosterViewer/bg/%s.png' % (len(activeCRTypes) + len(activeRTypes))})
-        g_guiFlash.updateComponent(self.ID + '_2icons', {'text': (
-                ''.join(('<img src=\'img://gui/HangarBoosterViewer/clan/%s.png\'>' % t for t in activeCRTypes.values()))
-                + ''.join(('<img src=\'img://gui/HangarBoosterViewer/active/%s.png\'>' % t for t in activeRTypes.values())))
-        })
+        g_guiFlash.updateComponent(self.ID + '_2icons', {'text': (''.join(('<img src=\'img://gui/HangarBoosterViewer/clan/%s.png\'>' % t for t in activeCRTypes.values())) + ''.join(('<img src=\'img://gui/HangarBoosterViewer/active/%s.png\'>' % t for t in activeRTypes.values())))})
         g_guiFlash.updateComponent(self.ID + '_3timer', {'text': ('<font color=\'#CCFFFF\' size=\'12\'><textformat tabstops=\'[65,130,195,260]\'>' + '\t'.join([self.leftTime(1, i) for i in activeCRTypes] + [self.leftTime(0, i) for i in activeRTypes]) + '</textformat></font>')})
 
     @staticmethod
@@ -139,14 +136,14 @@ def as_setBoosterDataS(base, self, data, *args, **kwargs):
 
 
 @override(PlayerAccount, 'onArenaCreated')
-def new__onArenaCreated(base, *a, **k):
+def new__onArenaCreated(base, *args, **kwargs):
     config.isBattle = True
-    return base(*a, **k)
+    return base(*args, **kwargs)
 
 
 @override(Hangar, '_populate')
-def new__populate(base, *a, **k):
+def new__populate(base, *args, **kwargs):
     try:
-        return base(*a, **k)
+        return base(*args, **kwargs)
     finally:
         config.isBattle = False

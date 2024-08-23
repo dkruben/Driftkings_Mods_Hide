@@ -5,7 +5,6 @@ from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE as _ETY
 from DriftkingsCore import SimpleConfigInterface, Analytics, override
 
 BASE_WG_LOGS = (DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog)
-validated = {}
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -54,18 +53,23 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-@override(_LogViewComponent, 'addToLog')
-def new__addToLog(func, self, event):
-    if config.data['enabled']:
-        return func(self, [e for e in event if not validated.get(e.getType(), False)])
-    return func(self, event)
-
-
-validated.update({
+def generate_validated():
+    validated = {}
+    validated.update({
         _ETYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
         _ETYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
         _ETYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
         _ETYPE.STUN: config.data['wgLogHideAssist']
     })
-DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog,\
-DamageLogPanel._addToBottomLog = reversed(BASE_WG_LOGS) if config.data['logSwapper'] else BASE_WG_LOGS
+    return validated
+
+
+@override(_LogViewComponent, 'addToLog')
+def new__addToLog(func, self, event):
+    if config.data['enabled']:
+        validated = generate_validated()
+        return func(self, [e for e in event if not validated.get(e.getType(), False)])
+    return func(self, event)
+
+(DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog,
+ DamageLogPanel._addToBottomLog) = reversed(BASE_WG_LOGS) if config.data['logSwapper'] else BASE_WG_LOGS

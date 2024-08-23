@@ -9,7 +9,7 @@ from aih_constants import CTRL_MODE_NAME
 from gui.battle_control.avatar_getter import getOwnVehiclePosition
 from helpers.bound_effects import ModelBoundEffects
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, isReplay, callback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, isReplay, callback, calculateVersion
 
 
 class ConfigsInterface(SimpleConfigInterface):
@@ -24,7 +24,7 @@ class ConfigsInterface(SimpleConfigInterface):
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
-            'enabled': False,
+            'enabled': True,
             'noBinoculars': False,
             'noFlashBang': False,
             'noShockWave': False,
@@ -41,7 +41,7 @@ class ConfigsInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_noBinoculars_text': 'Disable Binoculars.',
             'UI_setting_noBinoculars_tooltip': 'Remove the blackout in sniper mode.',
             'UI_setting_noFlashBang_text': 'Disable Red Flash.',
@@ -62,7 +62,6 @@ class ConfigsInterface(SimpleConfigInterface):
     def createTemplate(self):
         return {
             'modDisplayName': self.i18n['UI_description'],
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('noBinoculars'),

@@ -15,7 +15,7 @@ from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback, calculateVersion
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_crewAutoReturn_text': 'Crew Auto Return',
             'UI_setting_crewAutoReturn_tooltip': '',
             'UI_setting_crewReturnByDefault_text': 'Crew Return By Default',
@@ -155,7 +155,9 @@ class Crew(object):
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
 
     def handleVehicleChange(self):
-        if config.data['enabled'] and config.data['crewAutoReturn'] and config.data['crewReturnByDefault']:
+        if not config.data['enabled']:
+            return
+        if config.data['crewAutoReturn'] and config.data['crewReturnByDefault']:
             if self.__callbackID is not None:
                 cancelCallback(self.__callbackID)
                 self.__callbackID = None

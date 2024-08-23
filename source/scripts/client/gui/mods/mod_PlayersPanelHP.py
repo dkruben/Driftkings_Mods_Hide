@@ -80,8 +80,8 @@ class PlayersPanelController(SimpleConfigInterface):
 
     @staticmethod
     def getVehicleHealth(vehicleID):
+        vehicle = getEntity(vehicleID)
         if hasattr(getEntity(vehicleID), 'health'):
-            vehicle = getEntity(vehicleID)
             return vehicle.health if vehicle.isCrewActive and vehicle.health >= 0 else 0
         else:
             vehicle = getPlayer().arena.vehicles.get(vehicleID)

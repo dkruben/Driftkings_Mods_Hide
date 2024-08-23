@@ -18,7 +18,7 @@ from personal_missions import PM_BRANCH
 from skeletons.gui.server_events import IEventsCache
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculateVersion
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -48,7 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_useFreeExp_text': 'Factor Free Experience',
             'UI_setting_useFreeExp_tooltip': '',
             'UI_setting_isTruncateNumbers_text': 'Short numbers',

@@ -3,7 +3,7 @@ from helpers import dependency
 from skeletons.gui.shared import IItemsCache
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculateVersion
 from DriftkingsInject import cachedVehicleData
 
 
@@ -41,7 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_avgAssist_text': 'Avg Assist',
             'UI_setting_avgAssist_tooltip': '',
             'UI_setting_avgBlocked_text': 'Avg Blocked',
