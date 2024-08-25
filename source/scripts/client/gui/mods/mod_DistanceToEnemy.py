@@ -146,6 +146,8 @@ class Distance(DistanceMeta):
             self.vehicles.pop(vehicleID)
 
     def updateDistance(self):
+        if not config.data['enabled']:
+            return
         distance = None
         vehicle_name = None
         for entity in self.vehicles.itervalues():

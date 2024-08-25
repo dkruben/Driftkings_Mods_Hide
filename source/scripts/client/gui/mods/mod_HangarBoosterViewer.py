@@ -86,8 +86,7 @@ class ConfigInterface(SimpleConfigInterface):
             self.updateCallback = safeCancelCallback(self.updateCallback)
         if not self.isBattle:
             self.updateCallback = BigWorld.callback(1, self.update)
-            self.boosters = (SL.goodiesCache.getClanReserves().values(), [
-                BoosterCache(b) for b in SL.goodiesCache.getBoosters(criteria=REQ_CRITERIA.BOOSTER.ACTIVE).itervalues()])
+            self.boosters = (SL.goodiesCache.getClanReserves().values(), [BoosterCache(b) for b in SL.goodiesCache.getBoosters(criteria=REQ_CRITERIA.BOOSTER.ACTIVE).itervalues()])
         activeCRTypes = OrderedDict((i, j) for (i, j) in ((i, self.type(1, i)) for i in xrange(2)) if j)
         activeRTypes = OrderedDict((i, j) for (i, j) in ((i, self.type(0, i)) for i in xrange(3)) if j)
         g_guiFlash.updateComponent(self.ID + '_1bg', {'image': '../HangarBoosterViewer/bg/%s.png' % (len(activeCRTypes) + len(activeRTypes))})

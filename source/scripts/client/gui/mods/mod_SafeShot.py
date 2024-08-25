@@ -5,7 +5,7 @@ from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculateVersion
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -46,7 +46,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_wasteShotBlock_text': 'Waste Shot Block',
             'UI_setting_wasteShotBlock_tooltip': '',
             'UI_setting_teamShotBlock_text': 'Team Shot Block',

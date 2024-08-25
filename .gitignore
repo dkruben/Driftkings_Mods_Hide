@@ -39,3 +39,4 @@ res/flash/DateTimes/obj/DateTimesConfig.old
 res/flash/AccountsManager/obj/AccountsManagerConfig.xml
 res/flash/AccountsManager/obj/AccountsManagerLoginButtonConfig.xml
 res/flash/AccountsManager/obj/AccountsManagerWindowConfig.xml
+source/scripts/client/gui/mods/Config_Generator/__init__.py
