@@ -18,7 +18,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, checkNamesList, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, check_names_list, calculateVersion
 from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, SixthSenseTimer, g_events
 
 AS_INJECTOR = 'SixthSenseInjector'
@@ -55,7 +55,7 @@ class ConfigInterface(SimpleConfigInterface):
             'userSound': True,
             'spottedMessage': True,
             'helpMessage': False,
-            'defaultIconName': checkNamesList('gui/maps/icons/SixthSense/'),
+            'defaultIconName': check_names_list('gui/maps/icons/SixthSense/'),
             'userIcon': 'mods/configs/Driftkings/' + self.ID + '/SixthSenseIcon.png',
             'spottedText': 'I\'m Spotted at %(pos)s!',
             'delay': 4,

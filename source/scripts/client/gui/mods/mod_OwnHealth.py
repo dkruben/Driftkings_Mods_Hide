@@ -13,7 +13,7 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.prebattle_setups_ctrl import IPrebattleSetupsListener
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, isDisabledByBattleType
+from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, isDisabledByBattleType
 from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
 
 AS_SWF = 'OwnHealth.swf'
@@ -148,7 +148,7 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
 
     @staticmethod
     def getAVGColor(percent=1.0):
-        return percentToRGB(percent, **config.data['avgColor'])
+        return percent_to_rgb(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):
         if health > self.__maxHealth:

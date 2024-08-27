@@ -12,8 +12,9 @@ from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
 
-__all__ = ('calculateVersion', 'getPlayer', 'getTarget', 'getEntity', 'getDistanceTo', 'distanceToEntityVehicle', 'getVehCD', 'getRegion', 'callback', 'getPercent',
-           'cancelCallback', 'hex_to_decimal', 'isReplay', 'getColor', 'isDisabledByBattleType', 'percentToRGB', 'getAccountDBID', 'checkNamesList',)
+__all__ = ('calculateVersion', 'callback', 'cancelCallback', 'check_names_list', 'distanceToEntityVehicle', 'getAccountDBID',
+           'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'get_color', 'get_percent', 'get_region',
+           'hex_to_decimal', 'isDisabledByBattleType', 'isReplay', 'percent_to_rgb', 'replace_macros',)
 
 
 DEFAULT_EXCLUDED_GUI_TYPES = {
@@ -61,12 +62,12 @@ def distanceToEntityVehicle(self, entityID):
     return 0.0
 
 
-def getVehCD(vID):
-    return avatar_getter.getArena().vehicles[vID]['vehicleType'].type.compactDescr
+def getVehCD(v_type):
+    return avatar_getter.getArena().vehicles[v_type]['vehicleType'].type.compactDescr
 
 
 # noinspection PyUnresolvedReferences
-def getRegion():
+def get_region():
     return importlib.import_module('constants').AUTH_REALM
 
 
@@ -78,7 +79,7 @@ def cancelCallback(callbackID):
     return BigWorld.cancelCallback(callbackID)
 
 
-def percentToRGB(percent, saturation=0.5, brightness=1.0, **__):
+def percent_to_rgb(percent, saturation=0.5, brightness=1.0, **__):
     position = min(0.8333, percent * 0.3333)
     r, g, b = (int(math.ceil(i * 255)) for i in hsv_to_rgb(position, saturation, brightness))
     return '#{:02X}{:02X}{:02X}'.format(r, g, b)
@@ -95,35 +96,29 @@ def hex_to_decimal(*args):
     return decimal
 
 
-def checkNamesList(directory):
+def check_names_list(directory):
     folder = ResMgr.openSection(directory)
     return sorted(folder.keys())
 
 
-# def getColor(linkage, *args, **kwargs):
-#    _var = linkage[args[0]]
-#    if args[1] is not None and _var is not None:
-#        for val in _var:
-#            if val['value'] > args[1]:
-#                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
-
-#    elif kwargs is not None:
-#        colors_x = linkage['x']
-#        for val in colors_x:
-#            if val['value'] > kwargs:
-#                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
-
-
-def getColor(linkage, ratting_color, value=None, kwargs=None):
-    if ratting_color in linkage:
-        category_values = linkage[ratting_color]
+def get_color(data, ratting_color, value=None, kwargs=None):
+    """
+    Retrieves the color based on the provided linkage, rating color, and optional value or kwargs.
+    :param data: (dict) A dictionary containing color information.
+    :param ratting_color: (str) The rating color to use for retrieving the color.
+    :param value: (float, optional) The value to use for retrieving the color.
+    :param kwargs: (dict, optional) Additional keyword arguments to use for retrieving the color.
+    :return: (str) The formatted hexadecimal color code.
+    """
+    if ratting_color in data:
+        category_values = data[ratting_color]
         if value is not None:
             for item in category_values:
                 if item['value'] > value:
                     return format_color(item['color'])
 
         if kwargs is not None:
-            colors_x = linkage.get('x', [])
+            colors_x = data.get('x', [])
             for item in colors_x:
                 if item['value'] > kwargs:
                     return format_color(item['color'])
@@ -131,10 +126,32 @@ def getColor(linkage, ratting_color, value=None, kwargs=None):
 
 
 def format_color(color):
+    """
+    Formats a color string to a valid hexadecimal color code.
+    :param color: (str) The color string to format. Can be in the format '0xFFFFFF' or '#FFFFFF'.
+    :return: (str) The formatted hexadecimal color code.
+    """
     return '#' + color[2:] if color.startswith('0x') else color
 
 
-def getPercent(param_a, param_b):
+def replace_macros(text_format, data):
+    """
+    Replaces macros in a text format with their corresponding values.
+    :param text_format: (str) The text format containing macros to be replaced.
+    :param data: (dict) A dictionary mapping macros to their replacement values.
+    :return: (str) The text format with macros replaced by their values.
+    example:
+        text_format = "Hello, {name}! You have {points} points."
+        data = {"name": "John", "points": 10}
+        result = replace_macros(text_format, data)
+        # Output: "Hello, John! You have 10 points."
+    """
+    for macro, value in data.items():
+        text_format = text_format.replace(macro, value)
+    return text_format
+
+
+def get_percent(param_a, param_b):
     if param_b <= 0:
         return 0.0
     return float(normalizeHealth(param_a)) / param_b

@@ -8,7 +8,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRGB, getPercent, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, get_percent, calculateVersion
 from DriftkingsInject import DriftkingsInjector, TotalLogMeta, cachedVehicleData, g_events
 
 AS_INJECTOR = 'TotalLogInjector'
@@ -165,7 +165,7 @@ class TotalLog(TotalLogMeta):
         if avg_value_macros is not None:
             value = self.top_log[value_macros]
             avg_value = self.top_log[avg_value_macros]
-            self.top_log[avg_color_macros] = self.getAVGColor(getPercent(value, avg_value))
+            self.top_log[avg_color_macros] = self.getAVGColor(get_percent(value, avg_value))
         self.as_updateTopLogS(self.top_log_template % self.top_log)
 
     @staticmethod
@@ -182,7 +182,7 @@ class TotalLog(TotalLogMeta):
 
     @staticmethod
     def getAVGColor(percent):
-        return percentToRGB(percent, **config.data['avgColor']) if percent else '#FFFFFF'
+        return percent_to_rgb(percent, **config.data['avgColor']) if percent else '#FFFFFF'
 
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))

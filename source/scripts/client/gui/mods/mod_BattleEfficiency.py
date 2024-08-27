@@ -13,10 +13,10 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, get_color, color_tables, replace_macros
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
-TEXT_LIST = ['format']
+# TEXT_LIST = ['format']
 # BATTLE_RESULTS
 DEF_RESULTS_LEN = 16
 RANKED_OFFSET = 4
@@ -34,7 +34,7 @@ class ConfigInterface(SimpleConfigInterface):
         self.data = {
             'enabled': True,
             'colorRatting': 0,
-            'format': 'WN8: <font color=\'{c_wn8}\'>{wn8}</font> EFF: <font color=\'{c_eff}\'>{eff}</font> DIFF: <font color=\'{c_diff}\'>{diff}</font>',
+            'format': 'WN8: <font color=\'{c:wn8}\'>{wn8}</font> EFF: <font color=\'{c:eff}\'>{eff}</font> DIFF: <font color=\'{c:diff}\'>{diff}</font>',
             'textStyle': {'font': '$TitleFont', 'color': '#FFFFFF', 'size': 16, 'align': 'center'},
             'textLock': False,
             # flash
@@ -226,97 +226,54 @@ class EfficiencyCalculator(object):
 
 class BattleEfficiency(object):
     def __init__(self):
-        self.reset()
-
-    def reset(self):
-        self.frags = 0
-        self.damage = 0
-        self.spotted = 0
-        self.defence = 0
-        self.capture = 0
-        self.wn8 = 0
-        self.c_wn8 = '#FFFFFF'
-        self.xwn8 = 0
-        self.c_xwn8 = '#FFFFFF'
-        self.eff = 0
-        self.c_eff = '#FFFFFF'
-        self.xeff = 0
-        self.c_xeff = '#FFFFFF'
-        self.xte = 0
-        self.c_xte = '#FFFFFF'
-        self.diff = 0
-        self.c_diff = '#FFFFFF'
-        self.dmg = 0
-        self.c_dmg = '#FFFFFF'
-        self.format_string = {}
-        self.format_recreate()
-
-    def stopBattle(self):
-        self.reset()
-
-    @staticmethod
-    def read_colors(ratting_color, ratting_value):
-        colors = color_tables[g_config.data['colorRatting']].get('colors')
-        return getColor(colors, ratting_color, ratting_value)
-
-    @staticmethod
-    def check_macros(macros):
-        return any(macros in g_config.data[i] for i in TEXT_LIST)
-
-    def format_recreate(self):
-        self.format_string = {
-            'wn8': self.wn8,
-            'c_wn8': '',
-            'xwn8': self.xwn8,
-            'c_xwn8': '',
-            'eff': self.eff,
-            'c_eff': '',
-            'xeff': self.xeff,
-            'c_xeff': '',
-            'xte': self.xte,
-            'c_xte': '',
-            'diff': self.diff,
-            'c_diff': '',
-            'dmg': self.dmg,
-            'c_dmg': ''
+        self._stats = {
+            'frags': 0, 'damage': 0, 'spotted': 0, 'defence': 0, 'capture': 0,
+            'wn8': 0, 'xwn8': 0, 'eff': 0, 'xeff': 0, 'xte': 0, 'diff': 0, 'dmg': 0
         }
+        self._colors = {key: '#FFFFFF' for key in ['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'diff', 'dmg']}
 
-    def textGenerator(self):
-        return g_config.data['format'].format(**self.format_string)
+    @property
+    def stats(self):
+        return self._stats
+
+    @property
+    def colors(self):
+        return self._colors
+
+
+    def update_stat(self, key, value):
+        if key in self._stats:
+            self._stats[key] = value
+
+    @staticmethod
+    def read_colors(rating_color, rating_value):
+        colors = color_tables[g_config.data['colorRatting']].get('colors')
+        return get_color(colors, rating_color, rating_value)
 
     def startBattle(self):
         if not g_config.data['enabled']:
             return
-        result = g_calculator.calc(self.damage, self.spotted, self.frags, self.defence, self.capture)
-        self.wn8, self.xwn8, self.eff, self.xeff, self.xte, self.dmg, self.diff = result
-        self.format_recreate()
-        self.update_format_string()
-
-        if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
-            return self.stopBattle()
-
-        g_flash.addText(set_text(self.textGenerator()))
+        try:
+            result = g_calculator.calc(self._stats['damage'], self._stats['spotted'], self._stats['frags'], self._stats['defence'], self._stats['capture'])
+            self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
+            self.update_format_string()
+        except Exception as err:
+            logError(g_config.ID, "Error in startBattle: {}".format(err))
 
     def update_format_string(self):
-        # Atualiza format_string com base nas macros
-        for key, value in {
-            'wn8': self.wn8,
-            'c_wn8': self.read_colors('wn8', self.wn8),
-            'xwn8': self.xwn8,
-            'c_xwn8': self.read_colors('x', self.xwn8),
-            'eff': self.eff,
-            'c_eff': self.read_colors('eff', self.eff),
-            'xeff': self.xeff,
-            'c_xeff': self.read_colors('x', self.xeff),
-            'xte': self.xte,
-            'c_xte': self.read_colors('x', self.xte),
-            'diff': self.diff,
-            'c_diff': self.read_colors('diff', self.diff),
-            'dmg': self.dmg,
-            'c_dmg': self.read_colors('tdb', self.dmg)
-        }.items():
-            if self.check_macros('{%s}' % key):
-                self.format_string[key] = value
+        macro_data = {}
+        for key, value in self._stats.iteritems():
+            macro_data['{%s}' % key] = str(value)
+            if key in self._colors:
+                color_key = 'x' + key if key.startswith('x') else key
+                color_value = self.read_colors(color_key, value)
+                macro_data['{c:%s}' % key] = str(color_value) if color_value is not None else ''
+
+        if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+            return
+
+        format_text = replace_macros(g_config.data['format'], macro_data)
+        g_flash.addText(set_text(format_text))
 
 
 g_battleEfficiency = BattleEfficiency()
@@ -350,13 +307,13 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
         return
 
     if ribbonType == BATTLE_EFFICIENCY_TYPES.DETECTION:
-        g_battleEfficiency.spotted += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
+        g_battleEfficiency._stats['spotted'] += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DESTRUCTION:
-        g_battleEfficiency.frags += 1
+        g_battleEfficiency._stats['frags'] += 1
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DEFENCE:
-        g_battleEfficiency.defence = min(100, g_battleEfficiency.defence + int(leftFieldStr))
+        g_battleEfficiency._stats['defence'] = min(100, g_battleEfficiency._stats['defence'] + int(leftFieldStr))
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.CAPTURE:
-        g_battleEfficiency.capture = int(leftFieldStr)
+        g_battleEfficiency._stats['capture'] = int(leftFieldStr)
 
     g_battleEfficiency.startBattle()
 
@@ -367,7 +324,7 @@ def new_onTotalEfficiencyUpdated(func, self, diff):
     if not g_config.data['enabled']:
         return
     if PERSONAL_EFFICIENCY_TYPE.DAMAGE in diff:
-        g_battleEfficiency.damage = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
+        g_battleEfficiency._stats['damage'] = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
         g_battleEfficiency.startBattle()
 
 
@@ -376,7 +333,7 @@ def new_destroyGUI(func, *args):
     func(*args)
     if not g_config.data['enabled']:
         return
-    g_battleEfficiency.stopBattle()
+    # g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
 
 
@@ -423,22 +380,25 @@ def new_setDataS(func, self, data):
 
         result = g_calculator.calc(int(damageDealt), int(spotted), int(kills), int(defence), int(capture), isWin)
         wn8, xwn8, eff, xeff, xte, dmg, _ = result
+        macro_data = {
+            '{mapName}': mapName,
+            '{battleType}': battleType,
+            '{wn8}': str(wn8),
+            '{xwn8}': str(xwn8),
+            '{eff}': str(eff),
+            '{xeff}': str(xeff),
+            '{xte}': str(xte),
+            '{dmg}': str(dmg),
+            '{c:wn8}': g_battleEfficiency.read_colors('wn8', wn8),
+            '{c:xwn8}': g_battleEfficiency.read_colors('x', xwn8),
+            '{c:eff}': g_battleEfficiency.read_colors('eff', eff),
+            '{c:xeff}': g_battleEfficiency.read_colors('x', xeff),
+            '{c:xte}': g_battleEfficiency.read_colors('x', xte),
+            '{c:dmg}': g_battleEfficiency.read_colors('tdb', dmg)
+        }
 
         msg = g_config.data['battleResultsFormat']
-        msg = msg.replace('{mapName}', mapName)
-        msg = msg.replace('{battleType}', battleType)
-        msg = msg.replace('{wn8}', str(wn8))
-        msg = msg.replace('{xwn8}', str(xwn8))
-        msg = msg.replace('{eff}', str(eff))
-        msg = msg.replace('{xeff}', str(xeff))
-        msg = msg.replace('{xte}', str(xte))
-        msg = msg.replace('{dmg}', str(dmg))
-        msg = msg.replace('{c:wn8}', g_battleEfficiency.read_colors('wn8', wn8))
-        msg = msg.replace('{c:xwn8}', g_battleEfficiency.read_colors('x', xwn8))
-        msg = msg.replace('{c:eff}', g_battleEfficiency.read_colors('eff', eff))
-        msg = msg.replace('{c:xeff}', g_battleEfficiency.read_colors('x', xeff))
-        msg = msg.replace('{c:xte}', g_battleEfficiency.read_colors('x', xte))
-        msg = msg.replace('{c:dmg}', g_battleEfficiency.read_colors('tdb', dmg))
+        msg = replace_macros(msg, macro_data)
 
         data['common']['arenaStr'] = msg
     except StandardError:
