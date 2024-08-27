@@ -14,7 +14,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, isDisabledByBattleType
+from DriftkingsCore import SimpleConfigInterface, Analytics, isDisabledByBattleType, calculate_version
 from DriftkingsInject import DriftkingsInjector, MainGunMeta, g_events
 
 AS_SWF = 'MainGun.swf'
@@ -45,7 +45,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_progressBar_text': 'ProgressBar',
             'UI_setting_progressBar_tooltip': '',
             'UI_setting_x_text': 'Position X',

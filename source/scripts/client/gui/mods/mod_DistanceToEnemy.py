@@ -13,7 +13,7 @@ from gui.battle_control.avatar_getter import getInputHandler
 from gui.battle_control.battle_constants import PLAYER_GUI_PROPS
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, logDebug
+from DriftkingsCore import SimpleConfigInterface, Analytics, logDebug, calculate_version
 from DriftkingsInject import DriftkingsInjector, DistanceMeta, CyclicTimerEvent, g_events
 
 AS_INJECTOR = 'DistanceInjector'
@@ -43,7 +43,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_template_text': 'Template',
             'UI_setting_template_tooltip': 'Macros \'%(distance).1f\', %(name)s',
             'UI_setting_x_text': 'Position X',

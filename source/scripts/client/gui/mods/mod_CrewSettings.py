@@ -15,7 +15,7 @@ from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback, calculate_version
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_crewAutoReturn_text': 'Crew Auto Return',
             'UI_setting_crewAutoReturn_tooltip': '',
             'UI_setting_crewReturnByDefault_text': 'Crew Return By Default',

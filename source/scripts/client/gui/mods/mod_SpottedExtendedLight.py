@@ -4,7 +4,7 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 from gui.battle_control.controllers import feedback_events
 from gui.battle_control.controllers.personal_efficiency_ctrl import _AGGREGATED_DAMAGE_EFFICIENCY_TYPES, _createEfficiencyInfoFromFeedbackEvent
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, sendPanelMessage, getPlayer, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, override, Analytics, sendPanelMessage, getPlayer, calculate_version
 
 
 SOUND_LIST = ['soundSpotted', 'soundAssist']
@@ -48,7 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_sound_text': 'Use sound in battle',
             'UI_setting_sound_tooltip': '',
             'UI_setting_sound_default': 'Default: %s' % ('On' if self.data['sound'] else 'Off'),

@@ -17,7 +17,7 @@ from skeletons.gui.shared import IItemsCache
 from skeletons.gui.shared.utils import IHangarSpace
 from skeletons.gui.web import IWebController
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, logWarning, logDebug, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, logWarning, logDebug, calculate_version
 
 REWARD_STATUS_OK = (QuestStatus.REWARD_AVAILABLE, QuestStatus.REWARD_PENDING)
 NEXT_DOUBLE = (3, 8, 13, 18)
@@ -36,7 +36,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_claimRewards_text': 'Claim Rewards',
             'UI_setting_claimRewards_tooltip': '',
         }

@@ -18,7 +18,7 @@ from helpers import dependency
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException, calculate_version
 from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
@@ -61,7 +61,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_displayOnAllies_text': 'Display On Allies',
             'UI_setting_displayOnAllies_tooltip': '',
             'UI_noDamage': 'Critical hit, no damage.',

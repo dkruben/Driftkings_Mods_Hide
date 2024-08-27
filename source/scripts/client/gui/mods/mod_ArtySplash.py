@@ -9,7 +9,7 @@ from gui import InputHandler
 from gui.shared.gui_items import Vehicle
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException
+from DriftkingsCore import SimpleConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException, calculate_version
 from DriftkingsInject.common.markers import _StaticWorldObjectMarker3D
 
 
@@ -41,7 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_buttonShowDot_text': 'Button: show|hide Dot',
             'UI_setting_buttonShowDot_tooltip': '',
             'UI_setting_buttonShowSplash_text': 'Button: show|hide Splash',

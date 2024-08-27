@@ -13,11 +13,9 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, get_color, color_tables, replace_macros
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, get_color, color_tables, replace_macros, calculate_version
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
-# TEXT_LIST = ['format']
-# BATTLE_RESULTS
 DEF_RESULTS_LEN = 16
 RANKED_OFFSET = 4
 DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun': 14, 'defAndCap_vehWStun': 17}
@@ -46,29 +44,29 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_textLock_text': 'Text Lock',
             'UI_setting_textLock_tooltip': 'Drag Text in battle',
             'UI_setting_format_text': 'Text Format, Available Macros:',
             'UI_setting_format_tooltip': ('Macros:'
-                                          '\n WN8:\'{wn8}\', Color:\'{c_wn8}\''
-                                          '\nXWN8:\'{xwn8}\', Color:\'{c_xwn8}\''
-                                          '\nEFF:\'{eff}\', Color:\'{c_eff}\''
-                                          '\nXEFF:\'{xeff}}\', Color:\'{c_xeff}\''
+                                          '\n WN8:\'{wn8}\', Color:\'{c:wn8}\''
+                                          '\nXWN8:\'{xwn8}\', Color:\'{c:x}\''
+                                          '\nEFF:\'{eff}\', Color:\'{c:eff}\''
+                                          '\nXEFF:\'{xeff}}\', Color:\'{c:x}\''
                                           '\nDIFF:\'{diff}}\', Color:\'{c:dif}\''
                                           '\nDMG:\'{dmg}}\', Color:\'{c:dmg}\''
-                                          '\nXTE:\'{xte}\',   Color:\'{c:xte}\''),
+                                          '\nXTE:\'{xte}\',   Color:\'{c:x}\''),
             'UI_setting_battleResultsWindow_text': 'Battle Results Window',
             'UI_setting_battleResultsWindow_tooltip': 'Enable battle Results Window.',
             'UI_setting_battleResultsFormat_text': 'Battle results window modifying',
             'UI_setting_battleResultsFormat_tooltip': ('Macros:'
                                                        '\nWN8:\'{wn8}\', Color: \'{c:wn8}\''
-                                                       '\nXWN8:\'{xwn8}\', Color: \'{c:xwn8}\''
+                                                       '\nXWN8:\'{xwn8}\', Color: \'{c:x}\''
                                                        '\nEFF:\'{eff}\', Color: \'{c:eff}\''
-                                                       '\nXEFF:\'{xeff}\', Color: \'{c:xeff}\''
+                                                       '\nXEFF:\'{xeff}\', Color: \'{c:x}\''
                                                        '\nDIFF:\'{diff}\', Color: \'{c:dif}\''
                                                        '\nDMG:\'{dmg}\', Color: \'{c:dmg}\''
-                                                       '\nXTE:\'{xte}\', Color: \'{c:xte}\''),
+                                                       '\nXTE:\'{xte}\', Color: \'{c:x}\''),
             'UI_setting_colorRatting_text': 'Choose Color Ratting',
             'UI_setting_colorRatting_tooltip': '',
             'UI_setting_colorRatting_NoobMeter': 'NoobMeter',

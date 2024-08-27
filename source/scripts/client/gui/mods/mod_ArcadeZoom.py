@@ -7,7 +7,7 @@ from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
 from debug_utils import LOG_CURRENT_EXCEPTION
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version
 
 MinMax = namedtuple('MinMax', ('min', 'max'))
 
@@ -47,7 +47,7 @@ class ConfigsInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_min_text': 'Min Zoom Out',
             'UI_setting_min_tooltip': '',
             'UI_setting_max_text': 'Max Zoom Out',

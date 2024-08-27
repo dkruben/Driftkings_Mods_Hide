@@ -7,7 +7,7 @@ from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, logWarning, getPlayer, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version
 
 
 class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
@@ -38,7 +38,7 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_neverSeen_text': 'Never Seen',
             'UI_setting_neverSeen_tooltip': '',
             'UI_setting_spotted_text': 'Spotted',

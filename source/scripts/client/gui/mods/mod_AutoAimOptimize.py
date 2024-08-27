@@ -9,7 +9,7 @@ from AvatarInputHandler import cameras
 from AvatarInputHandler.control_modes import SniperControlMode, StrategicControlMode, ArcadeControlMode, ArtyControlMode
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, getEntity
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, getEntity, calculate_version
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -32,7 +32,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_angle_text': 'Set angle to catch target',
             'UI_setting_angle_value': 'x',
             'UI_setting_catchHiddenTarget_text': 'Catch target hidden behind an obstacle',

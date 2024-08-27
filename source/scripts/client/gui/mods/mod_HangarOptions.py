@@ -55,7 +55,7 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 # from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
@@ -110,7 +110,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_autoLogin_text': 'Auto-Login',
             'UI_setting_autoLogin_tooltip': 'Auto enter to the game',
             'UI_setting_showReferralButton_text': 'Referral Button',

@@ -17,7 +17,7 @@ from aih_constants import CTRL_MODE_NAME
 from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, callback, cancelCallback
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, callback, cancelCallback, calculate_version
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_ALIGN, COMPONENT_TYPE
 
@@ -99,7 +99,7 @@ class ConfigsInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_horizontal_text': 'Horizontal marker type',
             'UI_setting_horizontal_tooltip': ('Type of markers to the left and right of the crosshair showing horizontal edge positions of your gun.\n\n' + '\t'.join(' '.join("<img src='img://gui/AimingAngles/%s/%s.png'>" % (i, side) for side in ('Left', 'Right')) for i in xrange(1, 7))),
             'UI_setting_horizontal_0': 'Disabled',

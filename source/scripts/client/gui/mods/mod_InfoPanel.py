@@ -10,7 +10,7 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback
+from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback, calculate_version
 
 MACROS = [
     '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',
@@ -55,7 +55,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_textLock_text': 'Disable text mouse dragging',
             'UI_setting_textLock_tooltip': 'This setting controls whether you are able to move text window with a mouse or not.',
             'UI_setting_showFor_text': 'Show For',

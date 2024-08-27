@@ -8,7 +8,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, get_percent, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, get_percent, calculate_version
 from DriftkingsInject import DriftkingsInjector, TotalLogMeta, cachedVehicleData, g_events
 
 AS_INJECTOR = 'TotalLogInjector'
@@ -64,7 +64,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_separate_text': 'Separate',
             'UI_setting_separate_tooltip': '',
             'UI_setting_inCenter_text': 'In Center',

@@ -14,7 +14,7 @@ from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
 from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback
+from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback, calculate_version
 
 COMPLEX_ITEM = {
     'leftTrack0': 'chassis',
@@ -94,7 +94,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_buttonChassis_text': 'Button: Restore Chassis',
             'UI_setting_buttonChassis_tooltip': '',
             'UI_setting_buttonRepair_text': 'Button: Smart Repair',
@@ -370,10 +370,10 @@ class Repair(object):
             return
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
-        if self.ctrl.vehicleState.getControllingVehicleID() != selfVehicle.id:
+        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
         time = random.uniform(config.data['timerMin'], config.data['timerMax'])
         if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
@@ -387,12 +387,12 @@ class Repair(object):
                     itemName = COMPLEX_ITEM[deviceName]
                 else:
                     itemName = deviceName
-                equipmentTag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
-                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
+                equipment_tag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
+                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
                 if itemName in specific:
-                    if config.data['healCrew'] and equipmentTag == 'medkit':
+                    if config.data['healCrew'] and equipment_tag == 'medkit':
                         callback(time, partial(self.useItem, 'medkit', deviceName))
-                    if config.data['repairDevices'] and equipmentTag == 'repairkit':
+                    if config.data['repairDevices'] and equipment_tag == 'repairkit':
                         callback(time, partial(self.useItem, 'repairkit', deviceName))
                         time += 0.1
 

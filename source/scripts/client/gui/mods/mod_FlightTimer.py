@@ -9,7 +9,7 @@ from gui.battle_control import avatar_getter
 from gui.shared.personality import ServicesLocator
 from math_utils import VectorConstant
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, calculate_version
 from DriftkingsInject import FlightTimeMeta, DriftkingsInjector, g_events
 
 AS_INJECTOR = 'FlightTimerInjector'
@@ -38,7 +38,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_template_text': 'Template',
             'UI_setting_template_tooltip': 'Macros \'%(flightTime).1fs\', %(distance)dm',
             #

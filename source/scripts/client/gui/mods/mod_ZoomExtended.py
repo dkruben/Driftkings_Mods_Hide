@@ -9,7 +9,7 @@ from aih_constants import CTRL_MODE_NAME
 from gui.battle_control.avatar_getter import getOwnVehiclePosition
 from helpers.bound_effects import ModelBoundEffects
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, isReplay, callback, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, isReplay, callback, calculate_version
 
 
 class ConfigsInterface(SimpleConfigInterface):
@@ -41,7 +41,7 @@ class ConfigsInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_noBinoculars_text': 'Disable Binoculars.',
             'UI_setting_noBinoculars_tooltip': 'Remove the blackout in sniper mode.',
             'UI_setting_noFlashBang_text': 'Disable Red Flash.',

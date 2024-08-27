@@ -5,7 +5,7 @@ from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replace_macros
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -46,7 +46,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_wasteShotBlock_text': 'Waste Shot Block',
             'UI_setting_wasteShotBlock_tooltip': '',
             'UI_setting_teamShotBlock_text': 'Team Shot Block',
@@ -109,24 +109,28 @@ class ConfigInterface(SimpleConfigInterface):
     def __shoot(self, func, b_self, isRepeat=False):
         if not (self.data['enabled'] and not self.is_hot_key_event and not self.isEventBattle):
             return func(b_self, isRepeat)
-        else:
-            if getTarget() is None:
-                if self.data['wasteShotBlock']:
-                    sendPanelMessage(text=self.data['clientMessages']['wasteShotBlockedMessage'], colour='Yellow')
+
+        target = getTarget()
+        if target is None:
+            if self.data['wasteShotBlock']:
+                sendPanelMessage(text=self.data['clientMessages']['wasteShotBlockedMessage'], colour='Yellow')
+                return
+        elif hasattr(target.publicInfo, 'team'):
+            player = getPlayer()
+            if self.data['teamShotBlock'] and player.team is target.publicInfo.team and target.isAlive():
+                if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
+                    macros_data = {'{name}': target.publicInfo.name, '{vehicle}': target.typeDescriptor.type.shortUserString}
+                    text = replace_macros(self.data['format'], macros_data)
+                    sendChatMessage(fullMsg=text, chanId=1, delay=2)
+                    sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
                     return
-            elif hasattr(getTarget().publicInfo, 'team'):
-                if self.data['teamShotBlock'] and getPlayer().team is getTarget().publicInfo.team and getTarget().isAlive():
-                    if not (self.data['teamKillerShotUnblock'] and getPlayer().guiSessionProvider.getArenaDP().isTeamKiller(getTarget().id)):
-                        text = self.data['format']
-                        text = text.replace('{name}', getTarget().publicInfo.name)
-                        text = text.replace('{vehicle}', getTarget().typeDescriptor.type.shortUserString)
-                        sendChatMessage(fullMsg=text, chanId=1, delay=2)
-                        sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
-                        return
-                elif self.data['deadShotBlock'] and not getTarget().isAlive() and (self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(getTarget().id, 0) < self.data['deadShotBlockTimeOut']):
+            elif self.data['deadShotBlock'] and not target.isAlive():
+                if self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(target.id, 0) < self.data[
+                    'deadShotBlockTimeOut']:
                     sendPanelMessage(text=self.data['clientMessages']['deadShotBlockedMessage'], colour='Yellow')
                     return
-            return func(b_self, isRepeat)
+
+        return func(b_self, isRepeat)
 
     def __onBecomePlayer(self, func, b_self):
         func(b_self)

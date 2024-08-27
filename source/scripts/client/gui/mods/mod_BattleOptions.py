@@ -28,7 +28,7 @@ from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay, calculate_version
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -70,7 +70,7 @@ class ConfigInterface(SimpleConfigInterface):
 
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
             'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
             'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',

@@ -2,7 +2,7 @@
 from Avatar import PlayerAvatar
 from gui.shared.gui_items import Vehicle
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, callback, getPlayer, sendPanelMessage
+from DriftkingsCore import SimpleConfigInterface, override, Analytics, callback, getPlayer, sendPanelMessage, calculate_version
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -26,7 +26,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_lightTank_text': 'to LT',
             'UI_setting_lightTank_tooltip': '',
             'UI_setting_mediumTank_text': 'to MT',

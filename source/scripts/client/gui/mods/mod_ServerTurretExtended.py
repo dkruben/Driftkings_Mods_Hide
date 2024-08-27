@@ -12,7 +12,7 @@ from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 
-from DriftkingsCore import SimpleConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculateVersion
+from DriftkingsCore import SimpleConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculate_version
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -40,7 +40,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': calculateVersion(self.version),
+            'UI_version': calculate_version(self.version),
             'UI_setting_activateMessage_text': 'Show Activation Message',
             'UI_setting_activateMessage_tooltip': 'Show Activation Message in battle',
             'UI_setting_fixAccuracyInMove_text': 'Fix Accuracy',

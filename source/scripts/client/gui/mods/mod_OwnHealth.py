@@ -13,7 +13,7 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.prebattle_setups_ctrl import IPrebattleSetupsListener
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, isDisabledByBattleType
+from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, isDisabledByBattleType, calculate_version
 from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
 
 AS_SWF = 'OwnHealth.swf'
@@ -49,7 +49,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': '',
             'UI_setting_y_text': 'Position Y',
