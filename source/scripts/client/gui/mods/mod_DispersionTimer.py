@@ -13,7 +13,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, calculateVersion
 from DriftkingsInject import DispersionTimerMeta, DriftkingsInjector, g_events
 
 AS_INJECTOR = 'DispersionTimerInjector'
@@ -47,7 +47,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculateVersion(self.version),
             'UI_setting_template_text': 'Template',
             'UI_setting_template_tooltip': 'Macros \'%(color)s\', %(timer).1fs, %(percent)d%%',
             'UI_setting_colorRed_text': 'Choose Color for dispersion timer bad:',

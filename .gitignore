@@ -40,3 +40,5 @@ res/flash/AccountsManager/obj/AccountsManagerConfig.xml
 res/flash/AccountsManager/obj/AccountsManagerLoginButtonConfig.xml
 res/flash/AccountsManager/obj/AccountsManagerWindowConfig.xml
 source/scripts/client/gui/mods/Config_Generator/__init__.py
+res/flash/FlightTimer/FlightTimer.as3proj
+res/flash/FlightTimer/obj/FlightTimerConfig.xml

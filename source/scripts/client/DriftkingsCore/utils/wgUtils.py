@@ -100,18 +100,38 @@ def checkNamesList(directory):
     return sorted(folder.keys())
 
 
-def getColor(linkage, *args, **kwargs):
-    _var = linkage[args[0]]
-    if args[1] is not None and _var is not None:
-        for val in _var:
-            if val['value'] > args[1]:
-                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
+# def getColor(linkage, *args, **kwargs):
+#    _var = linkage[args[0]]
+#    if args[1] is not None and _var is not None:
+#        for val in _var:
+#            if val['value'] > args[1]:
+#                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
 
-    elif kwargs is not None:
-        colors_x = linkage['x']
-        for val in colors_x:
-            if val['value'] > kwargs:
-                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
+#    elif kwargs is not None:
+#        colors_x = linkage['x']
+#        for val in colors_x:
+#            if val['value'] > kwargs:
+#                return '#' + val['color'][2:] if val['color'][:2] == '0x' else val['color']
+
+
+def getColor(linkage, ratting_color, value=None, kwargs=None):
+    if ratting_color in linkage:
+        category_values = linkage[ratting_color]
+        if value is not None:
+            for item in category_values:
+                if item['value'] > value:
+                    return format_color(item['color'])
+
+        if kwargs is not None:
+            colors_x = linkage.get('x', [])
+            for item in colors_x:
+                if item['value'] > kwargs:
+                    return format_color(item['color'])
+    return None
+
+
+def format_color(color):
+    return '#' + color[2:] if color.startswith('0x') else color
 
 
 def getPercent(param_a, param_b):
@@ -121,12 +141,6 @@ def getPercent(param_a, param_b):
 
 
 def isDisabledByBattleType(exclude=None, include=tuple()):
-    """
-    In mod use (false)
-    Example: config.data['enabled'] and not isDisabledByBattleType(include=(BATTLE ARENA)))
-    param exclude: remove battle arena
-    param include: battle arena type (excluded battle arena)
-    """
     if not exclude:
         exclude = DEFAULT_EXCLUDED_GUI_TYPES
     if not hasattr(getPlayer(), 'arena') or getPlayer().arena is None:

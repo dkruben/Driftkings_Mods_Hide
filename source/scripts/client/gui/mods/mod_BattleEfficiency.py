@@ -13,7 +13,7 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, COLOR_TABLES
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 TEXT_LIST = ['format']
@@ -256,7 +256,7 @@ class BattleEfficiency(object):
 
     @staticmethod
     def read_colors(ratting_color, ratting_value):
-        colors = COLOR_TABLES[g_config.data['colorRatting']].get('colors')
+        colors = color_tables[g_config.data['colorRatting']].get('colors')
         return getColor(colors, ratting_color, ratting_value)
 
     @staticmethod

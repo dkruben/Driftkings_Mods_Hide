@@ -1,0 +1,9 @@
+{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_FlightTimer.pyc": "build/scripts/client/gui/mods/mod_FlightTimer.pyc",
+
+        "res/gui/flash/FlightTimer.swf": "res/flash/FlightTimer.swf"
+    }
+}
