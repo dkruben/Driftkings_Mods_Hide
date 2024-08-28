@@ -573,40 +573,41 @@ class InfoPanel(DataConstants):
         self.__init__()
         g_macros.reset()
 
-    def getFuncResponse(self, funcName):
-        if not hasattr(self, funcName):
-            return None
-        func = getattr(self, funcName, None)
-        if (func is not None) and callable(func):
+    def get_func_response(self, func_name):
+        func = getattr(self, func_name, None)
+        if callable(func):
             result = func()
             return str(result) if result is not None else ''
-        else:
-            return None
+        return None
 
-    def setTextsFormatted(self):
-        textFormat = self.textFormats
+    def set_texts_formatted(self):
+        if not self.textFormats:
+            return ''
+        text_format = self.textFormats
         for macro in MACROS:
-            if macro in textFormat:
-                funcName = macro.replace('{', '').replace('}', '')
-                funcResponse = self.getFuncResponse(funcName)
-                textFormat = textFormat.replace(macro, funcResponse)
+            if macro in text_format:
+                func_name = macro.strip('{}')
+                func_response = self.get_func_response(func_name)
+                text_format = text_format.replace(macro, func_response or '')
         for macro in COMPARE_MACROS:
-            if macro in textFormat:
-                reader = textFormat[textFormat.find(macro + '('):textFormat.find(')', textFormat.index(macro + '(') + 6) + 1]
+            if macro in text_format:
+                start_index = text_format.find(macro + '(')
+                end_index = text_format.find(')', start_index) + 1
+                reader = text_format[start_index:end_index]
                 func = reader[:reader.find('(')]
-                arg1 = reader[reader.find('(') + 1:reader.find(',')]
-                arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
-                g_macros.setData(arg1, arg2)
-                funcRes = getattr(g_macros, func)
-                textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
-
-        return textFormat
+                args = reader[reader.find('(') + 1:reader.find(')')].split(',')
+                if len(args) == 2:
+                    arg1, arg2 = args[0].strip(), args[1].strip()
+                    g_macros.setData(arg1, arg2)
+                    func_res = getattr(g_macros, func, lambda: None)()  # Chama a função com um fallback
+                    text_format = text_format.replace('{{' + reader + '}}', str(func_res))
+        return text_format
 
     def handleKey(self, isDown):
         if isDown:
             self.onUpdateVehicle(getPlayer().getVehicleAttached())
             self.hotKeyDown = True
-        elif not isDown:
+        else:
             self.hotKeyDown = False
             target = getTarget()
             if _isEntitySatisfiesConditions(target):
@@ -623,10 +624,9 @@ class InfoPanel(DataConstants):
     def onUpdateBlur(self):
         if self.hotKeyDown or (getPlayer().getVehicleAttached() is None):
             return
-        else:
-            if self.timer is not None and self.timer.isStarted():
-                self.timer.stop()
-                self.timer = None
+        if self.timer is not None and self.timer.isStarted():
+            self.timer.stop()
+            self.timer = None
         self.timer = TimeInterval(config.data['delay'], self, 'hide')
         self.timer.start()
 
@@ -634,16 +634,15 @@ class InfoPanel(DataConstants):
         player = getPlayer()
         if self.hotKeyDown:
             return
-        else:
-            playerVehicle = player.getVehicleAttached()
-            if playerVehicle is not None:
-                self.visible = True
-                if hasattr(vehicle, 'typeDescriptor'):
-                    self.init(vehicle, playerVehicle)
-                elif hasattr(playerVehicle, 'typeDescriptor'):
-                    self.init(None, playerVehicle)
 
-                g_flash.addText(self.setTextsFormatted())
+        player_vehicle = player.getVehicleAttached()
+        if player_vehicle is not None:
+            self.visible = True
+            if hasattr(vehicle, 'typeDescriptor'):
+                self.init(vehicle, player_vehicle)
+            elif hasattr(player_vehicle, 'typeDescriptor'):
+                self.init(None, player_vehicle)
+            g_flash.addText(self.set_texts_formatted())
 
 
 g_macros = CompareMacros()

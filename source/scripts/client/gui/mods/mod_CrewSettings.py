@@ -21,8 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def getPreferencesDir():
-    preferencesFilePath = unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]
-    return os.path.normpath(os.path.dirname(preferencesFilePath))
+    return os.path.normpath(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]))
 
 
 preferencesDir = getPreferencesDir()
