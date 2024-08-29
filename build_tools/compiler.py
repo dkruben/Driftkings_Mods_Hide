@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import __builtin__
 import imp
 import marshal
@@ -133,34 +134,34 @@ def main():
     return success
 
 
-def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
+def do_compile(f_path, d_file=None, o_file=None, raises=False, time_str=''):
     with open(f_path, 'U') as f:
-        if timeStr:
-            maxTS = timestamp = long(timeStr)
+        if time_str:
+            max_ts = timestamp = long(time_str)
         else:
             try:
-                maxTS = timestamp = long(os.fstat(f.fileno()).st_mtime)
+                max_ts = timestamp = long(os.fstat(f.fileno()).st_mtime)
             except AttributeError:
-                maxTS = timestamp = long(os.stat(f_path).st_mtime)
-        codestring = f.read()
-    modName = f_path
+                max_ts = timestamp = long(os.stat(f_path).st_mtime)
+        code_string = f.read()
+    mod_name = f_path
     if '__init__' in f_path:
-        modName = os.path.dirname(f_path)
-        if '%(file_compile_date)s' in codestring:
-            timeStr = get_git_date(modName)
-            if not timeStr:
-                print 'Non-versioned mod folder detected:', modName
-                for path in ('/'.join((x[0], y)).replace(os.sep, '/') for x in os.walk(modName) for y in x[2]):
+        mod_name = os.path.dirname(f_path)
+        if '%(file_compile_date)s' in code_string:
+            time_str = get_git_date(mod_name)
+            if not time_str:
+                print 'Non-versioned mod folder detected:', mod_name
+                for path in ('/'.join((x[0], y)).replace(os.sep, '/') for x in os.walk(mod_name) for y in x[2]):
                     if not path.endswith('.py'):
                         continue
-                    timeStr = get_git_date(path)
-                    m_time = long(timeStr) if timeStr else long(os.stat(path).st_mtime)
-                    if m_time > maxTS:
-                        maxTS = m_time
+                    time_str = get_git_date(path)
+                    m_time = long(time_str) if time_str else long(os.stat(path).st_mtime)
+                    if m_time > max_ts:
+                        max_ts = m_time
             else:
-                maxTS = long(timeStr)
-    codestring = codestring.replace('%(file_compile_date)s', time.strftime('%d.%m.%Y', time.localtime(maxTS))).replace('%(mod_ID)s', os.path.basename(modName).replace('.py', '').replace('mod_', ''))
-    if '# -*- obfuscated -*-' in codestring:
+                max_ts = long(time_str)
+    code_string = code_string.replace('%(file_compile_date)s', time.strftime('%d.%m.%Y', time.localtime(max_ts))).replace('%(mod_ID)s', os.path.basename(mod_name).replace('.py', '').replace('mod_', ''))
+    if '# -*- obfuscated -*-' in code_string:
         if Orion_path is None:
             sys.stderr.write('Obfuscated files present, but Orion path is not specified.')
             sys.exit(2)
@@ -169,7 +170,7 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
         if not os.path.isdir(obf_dir):
             os.makedirs(obf_dir)
         with open(obf_path, 'wb') as fo:
-            fo.write(codestring)
+            fo.write(code_string)
         try:
             # subprocess.check_call([Orion_path, '/obfuscate-text-file', os.getcwd() + '/' + obf_path, '/exit'])
             subprocess.check_call([Orion_path, '/obfuscate-bytecode-file', os.getcwd() + '/' + obf_path, '/exit'])
@@ -177,10 +178,10 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
         except subprocess.CalledProcessError, err:
             sys.stderr.write(err.message + '\n')
         else:
-            if timeStr:
+            if time_str:
                 os.utime(obf_path + 'c', (time.time(), timestamp))
     try:
-        code_object = __builtin__.compile(codestring, d_file or f_path, 'exec')
+        code_object = __builtin__.compile(code_string, d_file or f_path, 'exec')
     except Exception, err:
         py_exc = py_compile.PyCompileError(err.__class__, err, d_file or f_path)
         if raises:
@@ -199,7 +200,7 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, timeStr=''):
         fc.flush()
         fc.seek(0, 0)
         fc.write(py_compile.MAGIC)
-    if timeStr or timestamp:
+    if time_str or timestamp:
         os.utime(o_file, (time.time(), timestamp))
     return True
 

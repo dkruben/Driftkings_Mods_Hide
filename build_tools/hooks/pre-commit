@@ -1,13 +1,9 @@
 #!/bin/bash
-# Copia todos os hooks do diretório build_tools/hooks para .git/hooks
 cp build_tools/hooks/* .git/hooks/
-# Verifica se há um merge em andamento
 git rev-parse -q --verify MERGE_HEAD > /dev/null 2>&1
 if [ $? -ne 0 ]; then
-    # Se não houver um merge, executa o script mtimestore.py no modo de salvamento
-    F:/python27/python.exe -2 ../../build_tools/mtimestore.py -s
+    py -2 build_tools/mtimestore.py -s
     git add '*.mtimes*'
 else
-    # Se houver um merge, executa o script mtimestore.py no modo de restauração
-    F:/python27/python.exe -2 build_tools/mtimestore.py -r
+    py -2 build_tools/mtimestore.py -r
 fi
