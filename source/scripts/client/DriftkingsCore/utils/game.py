@@ -44,12 +44,10 @@ def refreshCurrentVehicle():
 def sendPanelMessage(text='', colour='Green', panel='Player'):
     """
     This function sends a message to the specified panel in the game interface.
-    Args:
-        text (str): The text of the message.
-        colour (str): The color of the message. Default is 'Green'.
-        panel (str): The panel to display the message in. Default is 'Player'.
-    Returns:
-        None
+    :param text: (str) The text of the message.
+    :param colour: (str) The color of the message. Default is 'Green'.
+    :param panel: (str) The panel to display the message in. Default is 'Player'.
+    :return: None
     The panel can be one of the following:
         - 'Player': The player's message panel.
         - 'Vehicle': The vehicle's message panel.

@@ -51,12 +51,12 @@ def getEntity(entity_id):
     return BigWorld.entity(entity_id)
 
 
-def getDistanceTo(self, targetPos):
-    return self.getPlayer().position.distTo(targetPos)
+def getDistanceTo(self, target_pos):
+    return self.getPlayer().position.distTo(target_pos)
 
 
-def distanceToEntityVehicle(self, entityID):
-    entity_vehicle = self.getEntity(entityID)
+def distanceToEntityVehicle(self, entity_id):
+    entity_vehicle = self.getEntity(entity_id)
     if entity_vehicle is not None:
         return self.getDistanceTo(entity_vehicle.position)
     return 0.0
@@ -71,12 +71,12 @@ def get_region():
     return importlib.import_module('constants').AUTH_REALM
 
 
-def callback(delay, callMethod, *args, **kwargs):
-    return BigWorld.callback(delay, partial(callMethod, *args, **kwargs) if args or kwargs else callMethod)
+def callback(delay, call_method, *args, **kwargs):
+    return BigWorld.callback(delay, partial(call_method, *args, **kwargs) if args or kwargs else call_method)
 
 
-def cancelCallback(callbackID):
-    return BigWorld.cancelCallback(callbackID)
+def cancelCallback(callback_id):
+    return BigWorld.cancelCallback(callback_id)
 
 
 def percent_to_rgb(percent, saturation=0.5, brightness=1.0, **__):

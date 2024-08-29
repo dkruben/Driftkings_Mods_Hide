@@ -161,3 +161,18 @@ whether future versions of the GNU Lesser General Public License shall
 apply, that proxy's public statement of acceptance of any version is
 permanent authorization for you to choose that version for the
 Library.
+
+### 7. Use at Your Own Risk:
+* The User uses the Library and any Modifications at their own risk.
+The Library and any Modifications are provided "as is," without warranty of
+any kind, express or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose, and non-infringement.
+The Developer does not guarantee seamless operation, compliance with expectations,
+or absence of conflicts with other software or modifications.
+In no event shall the Developer be liable for any claim, damages, or other liability,
+whether in an action of contract, tort, or otherwise, arising from, out of, or in
+connection with the Library, Modifications, or the use or other dealings in the
+Library or Modifications.
+This disclaimer of warranty and limitation of liability shall be interpreted in
+a manner that, to the extent possible, most closely approximates an absolute disclaimer
+and waiver of all liability, while still complying with applicable law.

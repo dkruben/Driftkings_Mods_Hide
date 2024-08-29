@@ -6,9 +6,9 @@ __all__ = ('logDebug', 'logInfo', 'logError', 'logWarning', 'logException', 'log
 
 def _formatMessage(message, *args, **kwargs):
     """
-    message (str): The message string to format.
-    *args: Positional arguments to insert into the message string.
-    **kwargs: Keyword arguments to insert into the message string.
+    :param message(str): The message string to format.
+    :param *args: Positional arguments to insert into the message string.
+    :param **kwargs: Keyword arguments to insert into the message string.
     str: The formatted message string.
     """
     message = unicode(str(message), 'utf-8', 'ignore')

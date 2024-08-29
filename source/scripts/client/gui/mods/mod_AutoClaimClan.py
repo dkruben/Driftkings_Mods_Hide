@@ -3,9 +3,8 @@ from threading import Thread
 
 from adisp import adisp_process
 from gui import SystemMessages
-from gui.ClientUpdateManager import g_clientUpdateManager
 from gui.clans.clan_cache import g_clanCache
-from gui.clans.data_wrapper.clan_supply import DataNames, QuestStatus
+from gui.clans.data_wrapper.clan_supply import DataNames, PointStatus, QuestStatus
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.shared.money import Currency
@@ -65,90 +64,98 @@ class AutoClaimClanReward(object):
     def __init__(self):
         self.__hangarSpace.onSpaceCreate += self.onCreate
         self.__cachedProgressData = None
-        self.__cachedSettingsData = None
         self.__cachedQuestsData = None
+        self.__cachedSettingsData = None
+        self.__claim_started = False
         self.__enabled = config.data['enabled'] and config.data['claimRewards']
-        self.__started = False
+        self.__maximum_level = '21'
 
     def onCreate(self):
-        if not self.__started and self.__enabled and g_clanCache.isInClan:
-            self.start()
-        elif self.__started and not self.__enabled and g_clanCache.isInClan:
-            self.stop()
-        if self.__cachedSettingsData is None:
-            self.__requestClanData()
-
-    def __requestClanData(self):
-        g_clanCache.clanSupplyProvider.onDataReceived += self.__onDataReceived
-        g_clanCache.clanSupplyProvider._requestData(DataNames.QUESTS_INFO_POST)
-        g_clanCache.clanSupplyProvider._requestData(DataNames.PROGRESSION_SETTINGS)
-        g_clanCache.clanSupplyProvider._requestData(DataNames.PROGRESSION_PROGRESS)
-
-    def start(self):
+        self.__hangarSpace.onSpaceCreate -= self.onCreate
+        if not g_clanCache.isInClan:
+            return
         g_wgncEvents.onProxyDataItemShowByDefault += self.__onProxyDataItemShow
-        g_clientUpdateManager.addCurrencyCallback(Currency.TOUR_COIN, self.__onTourcoin)
-        self.__started = True
+        g_clanCache.clanSupplyProvider.onDataReceived += self.__onDataReceived
+        self.updateCache()
 
-    def stop(self):
-        g_wgncEvents.onProxyDataItemShowByDefault -= self.__onProxyDataItemShow
-        g_clientUpdateManager.removeCurrencyCallback(Currency.TOUR_COIN, self.__onTourcoin)
-        self.__started = False
+    def updateCache(self):
+        self.__cachedQuestsData = g_clanCache.clanSupplyProvider.getQuestsInfo().data
+        self.__cachedSettingsData = g_clanCache.clanSupplyProvider.getProgressionSettings().data
+        self.__cachedProgressData = g_clanCache.clanSupplyProvider.getProgressionProgress().data
 
     def __onProxyDataItemShow(self, _, item):
-        if item.getType() == WGNC_DATA_PROXY_TYPE.CLAN_SUPPLY_QUEST_UPDATE and item.getStatus() in REWARD_STATUS_OK:
-            self.__claimRewards()
-
-    def __onTourcoin(self, *args):
-        if all([self.__cachedProgressData, self.__cachedSettingsData]):
-            self.parseProgression(self.__cachedProgressData)
+        if not self.__enabled:
+            return
+        if item.getType() == WGNC_DATA_PROXY_TYPE.CLAN_SUPPLY_QUEST_UPDATE:
+            status = item.getStatus()
+            if not self.__claim_started and status in REWARD_STATUS_OK:
+                self.__claimRewards()
+            elif status == QuestStatus.COMPLETE and all([self.__cachedProgressData, self.__cachedSettingsData]):
+                self.parseProgression(self.__cachedProgressData)
+            logDebug(item)
 
     @adisp_process
     def __claimRewards(self):
+        self.__claim_started = True
         response = yield self.__webController.sendRequest(ctx=ClaimRewardsCtx())
         if not response.isSuccess():
-            SystemMessages.pushMessage("DriftkingsCore: Auto Claim Clan Reward - " + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error)
-            logWarning(config.ID, 'Failed to claim rewards. Code: {}', response.getCode())
+            SystemMessages.pushMessage('Drinftkings Core: Auto Claim Clan Reward - ' + backport.text(
+                R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error)
+            logWarning(config.ID, 'Failed to claim rewards. Code: {code}', code=response.getCode())
+        else:
+            self.__claim_started = False
 
     @adisp_process
     def __claimProgression(self, stageID, price):
         response = yield self.__webController.sendRequest(ctx=PurchaseProgressionStageCtx(stageID, price))
         if not response.isSuccess():
-            SystemMessages.pushMessage("DriftkingsCore: Auto Claim Clan Reward - Failed to claim Progression.", type=SystemMessages.SM_TYPE.Error)
-            logWarning(config.ID, 'Failed to claim Progression. Code: {}', response.getCode())
-
-    def __handleClaimError(self, action, response):
-        SystemMessages.pushMessage("DriftkingsCore: Auto Claim Clan Reward - Failed to {}.".format(action), type=SystemMessages.SM_TYPE.Error)
-        logWarning(config.data, 'Failed to {}, Code: {}'.format(action, response.getCode()))
+            SystemMessages.pushMessage('Drinftkings Core: Auto Claim Clan Reward - Failed to claim Progression.', type=SystemMessages.SM_TYPE.Error)
+            logWarning(config.ID, 'Failed to claim Progression. Code: {code}', code=response.getCode())
 
     def parseQuests(self, data):
-        if any(q.status in REWARD_STATUS_OK for q in data.quests):
+        if not self.__claim_started and any(q.status in REWARD_STATUS_OK for q in data.quests):
             self.__claimRewards()
 
     @property
     def currency(self):
         return self.__itemsCache.items.stats.dynamicCurrencies.get(Currency.TOUR_COIN, 0)
 
+    def isMaximumPurchased(self, data):
+        maximum_progress = data.points.get(self.__maximum_level)
+        return maximum_progress is not None and maximum_progress.status == PointStatus.PURCHASED
+
     def parseProgression(self, data):
+        if not self.__cachedSettingsData.enabled:
+            return
         last_purchased = int(data.last_purchased or 0)
-        to_purchased = last_purchased + 1 if last_purchased not in NEXT_DOUBLE else last_purchased + 2
+        to_purchased = 0
+        if self.isMaximumPurchased(data):
+            for stateID, stageProgress in sorted(data.points.items(), key=lambda i: int(i[0])):
+                if stageProgress.status == PointStatus.AVAILABLE:
+                    to_purchased = stateID
+                    break
+        else:
+            to_purchased = last_purchased + 1 if last_purchased not in NEXT_DOUBLE else last_purchased + 2
+        if not to_purchased:
+            return
         next_points = self.__cachedSettingsData.points.get(str(to_purchased))
         if next_points is not None and self.currency >= next_points.price:
             self.__claimProgression(to_purchased, next_points.price)
 
-    def __onDataReceived(self, data_name, data):
-        logDebug(config.ID, True, "__onDataReceived {name} {data}", name=data_name, data=data)
-        if data_name in (DataNames.QUESTS_INFO, DataNames.QUESTS_INFO_POST):
+    def __onDataReceived(self, dataName, data):
+        logDebug(config.ID, True, '__onDataReceived {} {}', dataName, data)
+        if dataName in (DataNames.QUESTS_INFO, DataNames.QUESTS_INFO_POST):
             self.__cachedQuestsData = data
-            if self.__started:
+            if self.__enabled:
                 self.parseQuests(data)
-        elif data_name == DataNames.PROGRESSION_PROGRESS:
+        elif dataName == DataNames.PROGRESSION_PROGRESS:
             self.__cachedProgressData = data
-            if self.__started:
+            if self.__enabled:
                 self.parseProgression(data)
-        elif data_name == DataNames.PROGRESSION_SETTINGS:
+        elif dataName == DataNames.PROGRESSION_SETTINGS:
             self.__cachedSettingsData = data
 
 
-g_autoClaimClanReward = Thread(target=AutoClaimClanReward, name="mod_AutoClaimClanReward")
+g_autoClaimClanReward = Thread(target=AutoClaimClanReward, name='mod_AutoClaimClanReward')
 g_autoClaimClanReward.daemon = True
 g_autoClaimClanReward.start()

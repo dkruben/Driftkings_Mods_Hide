@@ -574,34 +574,37 @@ class InfoPanel(DataConstants):
         g_macros.reset()
 
     def get_func_response(self, func_name):
+        if not hasattr(self, func_name):
+            return None
         func = getattr(self, func_name, None)
-        if callable(func):
+        if (func is not None) and callable(func):
             result = func()
             return str(result) if result is not None else ''
-        return None
+        else:
+            return None
 
     def set_texts_formatted(self):
-        if not self.textFormats:
-            return ''
-        text_format = self.textFormats
+        if not config.data['enabled']:
+            return
+
+        textFormat = self.textFormats
         for macro in MACROS:
-            if macro in text_format:
-                func_name = macro.strip('{}')
-                func_response = self.get_func_response(func_name)
-                text_format = text_format.replace(macro, func_response or '')
+            if macro in textFormat:
+                funcName = macro.replace('{', '').replace('}', '')
+                funcResponse = self.get_func_response(funcName)
+                textFormat = textFormat.replace(macro, funcResponse)
+
         for macro in COMPARE_MACROS:
-            if macro in text_format:
-                start_index = text_format.find(macro + '(')
-                end_index = text_format.find(')', start_index) + 1
-                reader = text_format[start_index:end_index]
+            if macro in textFormat:
+                reader = textFormat[textFormat.find(macro + '('):textFormat.find(')', textFormat.index(macro + '(') + 6) + 1]
                 func = reader[:reader.find('(')]
-                args = reader[reader.find('(') + 1:reader.find(')')].split(',')
-                if len(args) == 2:
-                    arg1, arg2 = args[0].strip(), args[1].strip()
-                    g_macros.setData(arg1, arg2)
-                    func_res = getattr(g_macros, func, lambda: None)()  # Chama a função com um fallback
-                    text_format = text_format.replace('{{' + reader + '}}', str(func_res))
-        return text_format
+                arg1 = reader[reader.find('(') + 1:reader.find(',')]
+                arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
+                g_macros.setData(arg1, arg2)
+                funcRes = getattr(g_macros, func)
+                textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
+
+        return textFormat
 
     def handleKey(self, isDown):
         if isDown:

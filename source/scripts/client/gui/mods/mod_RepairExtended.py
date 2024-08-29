@@ -188,106 +188,106 @@ class Repair(object):
         if self.ctrl.equipments is not None:
             self.ctrl.equipments.onEquipmentUpdated -= self.onEquipmentUpdated
         #
-        for equipmentTag in self.items:
-            self.items[equipmentTag][2] = None
-            self.items[equipmentTag][3] = None
+        for equipment_tag in self.items:
+            self.items[equipment_tag][2] = None
+            self.items[equipment_tag][3] = None
         self.items['repairkit'][1] = 1531
 
     def checkBattleStarted(self):
         if hasattr(getPlayer(), 'arena') and getPlayer().arena.period is 3:
-            for equipmentTag in self.items:
-                self.items[equipmentTag][2] = self.ctrl.equipments.getEquipment(self.items[equipmentTag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][0]) else None
-                self.items[equipmentTag][3] = self.ctrl.equipments.getEquipment(self.items[equipmentTag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][1]) else None
-            equipmentTag = 'repairkit'
+            for equipment_tag in self.items:
+                self.items[equipment_tag][2] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
+                self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
+            equipment_tag = 'repairkit'
             if self.ctrl.equipments.hasEquipment(46331):
-                self.items[equipmentTag][1] = 46331
-                self.items[equipmentTag][3] = self.ctrl.equipments.getEquipment(self.items[equipmentTag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][1]) else None
+                self.items[equipment_tag][1] = 46331
+                self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
         else:
             callback(0.1, self.checkBattleStarted)
 
-    def useItem(self, equipmentTag, item=None):
+    def useItem(self, equipment_tag, item=None):
         if not config.data['enabled']:
             return
         if BattleReplay.g_replayCtrl.isPlaying:
             return
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
         sound = False
-        equipment = self.ctrl.equipments.getEquipment(self.items[equipmentTag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][0]) else None
+        equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
             # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipmentTag][0], item)
+            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][0], item)
             sound = True
         else:
             if config.data['useGoldKits']:
-                equipment = self.ctrl.equipments.getEquipment(self.items[equipmentTag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][1]) else None
+                equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
                 if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
                     # noinspection PyProtectedMember
-                    self.consumablesPanel._handleEquipmentPressed(self.items[equipmentTag][1])
+                    self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][1])
                     sound = True
         if sound:
             sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
             callback(1.0, sound.play)
 
-    def useItemManual(self, equipmentTag, item=None):
+    def useItemManual(self, equipment_tag, item=None):
         if not config.data['enabled']:
             return
         if BattleReplay.g_replayCtrl.isPlaying:
             return
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
-        if self.ctrl.vehicleState.getControllingVehicleID() != selfVehicle.id:
+        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
-        equipment = self.ctrl.equipments.getEquipment(self.items[equipmentTag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][0]) else None
+        equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
             # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipmentTag][0], item)
+            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][0], item)
             sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
             callback(1.0, sound.play)
 
-    def useItemGold(self, equipmentTag):
+    def useItemGold(self, equipment_tag):
         if not config.data['enabled']:
             return
         if BattleReplay.g_replayCtrl.isPlaying:
             return
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
-        if self.ctrl.vehicleState.getControllingVehicleID() != selfVehicle.id:
+        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
-        equipment = self.ctrl.equipments.getEquipment(self.items[equipmentTag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipmentTag][1]) else None
+        equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
             # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipmentTag][1])
+            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][1])
             sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
             callback(1.0, sound.play)
 
     def extinguishFire(self):
         if self.ctrl.vehicleState.getStateValue(VEHICLE_VIEW_STATE.FIRE):
-            equipmentTag = 'extinguisher'
-            if self.items[equipmentTag][2]:
-                self.useItemManual(equipmentTag)
+            equipment_tag = 'extinguisher'
+            if self.items[equipment_tag][2]:
+                self.useItemManual(equipment_tag)
 
     def removeStun(self):
         if self.ctrl.vehicleState.getStateValue(VEHICLE_VIEW_STATE.STUN):
-            equipmentTag = 'medkit'
-            if self.items[equipmentTag][2]:
-                self.useItemManual(equipmentTag)
-            elif config.data['useGoldKits'] and self.items[equipmentTag][3]:
-                self.useItemGold(equipmentTag)
+            equipment_tag = 'medkit'
+            if self.items[equipment_tag][2]:
+                self.useItemManual(equipment_tag)
+            elif config.data['useGoldKits'] and self.items[equipment_tag][3]:
+                self.useItemGold(equipment_tag)
 
-    def repair(self, equipmentTag):
-        specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
-        if config.data['useGoldKits'] and self.items[equipmentTag][3]:
-            equipment = self.items[equipmentTag][3]
+    def repair(self, equipment_tag):
+        specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
+        if config.data['useGoldKits'] and self.items[equipment_tag][3]:
+            equipment = self.items[equipment_tag][3]
             if equipment is not None:
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state != DEVICE_STATE_NORMAL]
                 result = []
@@ -299,11 +299,11 @@ class Repair(object):
                     if itemName in specific:
                         result.append(device)
                 if len(result) > 1:
-                    self.useItemGold(equipmentTag)
+                    self.useItemGold(equipment_tag)
                 elif result:
-                    self.useItemManual(equipmentTag, result[0])
-        elif self.items[equipmentTag][2]:
-            equipment = self.items[equipmentTag][2]
+                    self.useItemManual(equipment_tag, result[0])
+        elif self.items[equipment_tag][2]:
+            equipment = self.items[equipment_tag][2]
             if equipment is not None:
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state != DEVICE_STATE_NORMAL]
                 result = []
@@ -315,17 +315,17 @@ class Repair(object):
                     if itemName in specific:
                         result.append(device)
                 if len(result) > 1:
-                    self.useItemGold(equipmentTag)
+                    self.useItemGold(equipment_tag)
                 elif result:
-                    self.useItemManual(equipmentTag, result[0])
+                    self.useItemManual(equipment_tag, result[0])
 
     def repairAll(self):
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
-        if self.ctrl.vehicleState.getControllingVehicleID() != selfVehicle.id:
+        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
         if config.data['extinguishFire']:
             self.extinguishFire()
@@ -344,18 +344,18 @@ class Repair(object):
     def repairChassis(self):
         if self.ctrl is None:
             return
-        selfVehicle = getPlayer().getVehicleAttached()
-        if selfVehicle is None:
+        self_vehicle = getPlayer().getVehicleAttached()
+        if self_vehicle is None:
             return
-        if self.ctrl.vehicleState.getControllingVehicleID() != selfVehicle.id:
+        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
-        equipmentTag = 'repairkit'
-        for intCD, equipment in self.ctrl.equipments.iterEquipmentsByTag(equipmentTag):
+        equipment_tag = 'repairkit'
+        for intCD, equipment in self.ctrl.equipments.iterEquipmentsByTag(equipment_tag):
             if equipment.isReady and equipment.isAvailableToUse:
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state in DEVICE_STATE_DESTROYED]
                 for name in devices:
                     if name in CHASSIS:
-                        self.useItem(equipmentTag, name)
+                        self.useItem(equipment_tag, name)
                         return
 
     def onHotkeyPressed(self, event):

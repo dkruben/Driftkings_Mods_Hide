@@ -2,6 +2,7 @@
 import math
 import re
 import traceback
+from collections import namedtuple
 
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
@@ -18,7 +19,8 @@ from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 DEF_RESULTS_LEN = 16
 RANKED_OFFSET = 4
-DATA_IDS = {'damageDealt': 3, 'spotted': 11, 'kills': 12, 'defAndCap_vehWOStun': 14, 'defAndCap_vehWStun': 17}
+DataIDs = namedtuple('DataIDs', ('damageDealt', 'spotted', 'kills', 'defAndCap_vehWOStun', 'defAndCap_vehWStun'))
+data_ids = DataIDs(3, 11, 12, 14, 17)
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -76,14 +78,14 @@ class ConfigInterface(SimpleConfigInterface):
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
-        xColorKey = 'UI_setting_colorRatting_'
-        xColorList = ('NoobMeter', 'XVM', 'WotLabs')
+        x_color_key = 'UI_setting_colorRatting_'
+        x_color_list = ('NoobMeter', 'XVM', 'WotLabs')
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('textLock'),
-                self.tb.createOptions('colorRatting', [self.i18n[xColorKey + x] for x in xColorList]),
+                self.tb.createOptions('colorRatting', [self.i18n[x_color_key + x] for x in x_color_list]),
                 self.tb.createControl('format', self.tb.types.TextInput, 400)
             ],
             'column2': [
@@ -126,8 +128,8 @@ class Flash(object):
         g_config.onApplySettings({'textPosition': data})
 
     def addText(self, text):
-        textStyle = g_config.data['textStyle']
-        text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['font'], textStyle['color'], textStyle['align'], text)
+        text_style = g_config.data['textStyle']
+        text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
         self.createBox()
         g_guiFlash.updateComponent(self.ID, {'text': text})
 
@@ -148,16 +150,16 @@ except StandardError:
 
 
 def set_text(text):
-    textStyle = g_config.data['textStyle']
-    styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (textStyle['size'], textStyle['color'], textStyle['font'], textStyle['align'], text)
+    text_style = g_config.data['textStyle']
+    styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['color'], text_style['font'], text_style['align'], text)
     return styled_text
 
 
-def getDataIDs(offset):
+def get_data_ids(offset):
     if not offset:
-        return DATA_IDS
+        return data_ids
     else:
-        return {key: value + offset for key, value in DATA_IDS.iteritems()}
+        return DataIDs(*(value + offset for value in data_ids))
 
 
 class EfficiencyCalculator(object):
@@ -230,6 +232,9 @@ class BattleEfficiency(object):
         }
         self._colors = {key: '#FFFFFF' for key in ['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'diff', 'dmg']}
 
+    def stopBattle(self):
+        self.__init__()
+
     @property
     def stats(self):
         return self._stats
@@ -237,7 +242,6 @@ class BattleEfficiency(object):
     @property
     def colors(self):
         return self._colors
-
 
     def update_stat(self, key, value):
         if key in self._stats:
@@ -256,7 +260,7 @@ class BattleEfficiency(object):
             self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
             self.update_format_string()
         except Exception as err:
-            logError(g_config.ID, "Error in startBattle: {}".format(err))
+            logError(g_config.ID, "Error in startBattle: {}", err)
 
     def update_format_string(self):
         macro_data = {}
@@ -266,13 +270,12 @@ class BattleEfficiency(object):
                 color_key = 'x' + key if key.startswith('x') else key
                 color_value = self.read_colors(color_key, value)
                 macro_data['{c:%s}' % key] = str(color_value) if color_value is not None else ''
-
+        if not getPlayer().arena:
+            return
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return
-
         format_text = replace_macros(g_config.data['format'], macro_data)
         g_flash.addText(set_text(format_text))
-
 
 g_battleEfficiency = BattleEfficiency()
 g_calculator = EfficiencyCalculator()
@@ -300,19 +303,16 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
     func(self, ribbonID, ribbonType, leftFieldStr, **kwargs)
     if not g_config.data['enabled']:
         return
-
     if ribbonType not in (BATTLE_EFFICIENCY_TYPES.DETECTION, BATTLE_EFFICIENCY_TYPES.DESTRUCTION, BATTLE_EFFICIENCY_TYPES.DEFENCE, BATTLE_EFFICIENCY_TYPES.CAPTURE):
         return
-
     if ribbonType == BATTLE_EFFICIENCY_TYPES.DETECTION:
-        g_battleEfficiency._stats['spotted'] += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
+        g_battleEfficiency.stats['spotted'] += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DESTRUCTION:
-        g_battleEfficiency._stats['frags'] += 1
+        g_battleEfficiency.stats['frags'] += 1
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DEFENCE:
-        g_battleEfficiency._stats['defence'] = min(100, g_battleEfficiency._stats['defence'] + int(leftFieldStr))
+        g_battleEfficiency.stats['defence'] = min(100, g_battleEfficiency.stats['defence'] + int(leftFieldStr))
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.CAPTURE:
-        g_battleEfficiency._stats['capture'] = int(leftFieldStr)
-
+        g_battleEfficiency.stats['capture'] = int(leftFieldStr)
     g_battleEfficiency.startBattle()
 
 
@@ -322,7 +322,7 @@ def new_onTotalEfficiencyUpdated(func, self, diff):
     if not g_config.data['enabled']:
         return
     if PERSONAL_EFFICIENCY_TYPE.DAMAGE in diff:
-        g_battleEfficiency._stats['damage'] = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
+        g_battleEfficiency.stats['damage'] = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
         g_battleEfficiency.startBattle()
 
 
@@ -331,7 +331,7 @@ def new_destroyGUI(func, *args):
     func(*args)
     if not g_config.data['enabled']:
         return
-    # g_battleEfficiency.stopBattle()
+    g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
 
 
@@ -367,12 +367,13 @@ def new_setDataS(func, self, data):
                 g_calculator.registerVInfoData(playerDict['vehicleCD'])
                 break
 
-        dataIDs = getDataIDs(offset)
-        damageDealt = _normalizeString(statValues[dataIDs['damageDealt']]['value'])
-        spotted = _normalizeString(statValues[dataIDs['spotted']]['value'])
-        kills = _normalizeString(statValues[dataIDs['kills']]['value']).split('/')
+        dataIDs = get_data_ids(offset)
+        damageDealt = _normalizeString(statValues[dataIDs.damageDealt]['value'])
+        spotted = _normalizeString(statValues[dataIDs.spotted]['value'])
+        kills = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
         kills = kills[1]
-        defAndCap = _normalizeString(statValues[dataIDs['defAndCap_' + stunStatus]]['value']).split('/')
+        defAndCap_key = 'defAndCap_' + stunStatus
+        defAndCap = _normalizeString(statValues[getattr(dataIDs, defAndCap_key)]['value']).split('/')
         capture = defAndCap[0]
         defence = defAndCap[1]
 

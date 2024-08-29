@@ -10,7 +10,7 @@ from frameworks.wulf import WindowLayer
 from gui.impl.dialogs import dialogs
 from gui.impl.dialogs.builders import WarningDialogBuilder
 from gui.impl.pub.dialog_window import DialogButtons as DButtons
-from gui.shared.personality import ServicesLocator
+from gui.shared.personality import ServicesLocator as SL
 from helpers import getClientVersion
 from wg_async import wg_await, wg_async
 
@@ -85,7 +85,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         for ID, key in (DButtons.PURCHASE, 'restart'), (DButtons.RESEARCH, 'shutdown'), (DButtons.SUBMIT, 'close'):
             builder.addButton(ID, None, ID == DButtons.PURCHASE, rawLabel=self.i18n['UI_restart_button_%s' % key])
         try:
-            parent = ServicesLocator.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
+            parent = SL.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
         except (AttributeError, TypeError):
             parent = None
         result = yield wg_await(dialogs.show(builder.build(parent)))
@@ -186,7 +186,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         while True:
             orig_engine = ResMgr.openSection('engine_config.xml')
             if orig_engine is None:
-                print self.LOG, 'ERROR: engine_config.xml not found'
+                print config.LOG, 'ERROR: engine_config.xml not found'
                 return
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
@@ -220,8 +220,10 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
             profile = soundMgr[soundMgr[profile_name].asString]
             self.manageProfileMemorySettings(profile_type, profile)
             self.manageProfileBanks(profile_type, profile, bankFiles)
-        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml', ('delete', 'move', 'remap'))
-        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml', ('delete', 'move', 'create', 'memory'))
+        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',
+                         ('delete', 'move', 'remap'))
+        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',
+                         ('delete', 'move', 'create', 'memory'))
 
     def collectBankFiles(self, mediaPath):
         bankFiles = {
@@ -268,43 +270,14 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         audio_mods_new = ResMgr.openSection(mediaPath + '/audio_mods_edited.xml', True)
         audio_mods_banks = []
         if audio_mods is None:
-            print self.LOG, 'audio_mods.xml not found, will be created if needed'
+            print config.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
-            {
-                'name': 'events',
-                'key': 'event',
-                'keys': ('name', 'mod'),
-                'data': ()
-            },
-            {
-                'name': 'switches',
-                'key': 'switch',
-                'keys': ('name', 'mod'),
-                'data': {
-                    'name': 'states',
-                    'key': 'state',
-                    'keys': ('name', 'mod'),
-                    'data': ()
-                }
-            },
-            {
-                'name': 'RTPCs',
-                'key': 'RTPC',
-                'keys': ('name', 'mod'),
-                'data': ()
-            },
-            {
-                'name': 'states',
-                'key': 'stateGroup',
-                'keys': ('name', 'mod'),
-                'data': {
-                    'name': 'stateNames',
-                    'key': 'state',
-                    'keys': ('name', 'mod'),
-                    'data': ()
-                }
-            }
-        ]
+            {'name': 'events', 'key': 'event', 'keys': ('name', 'mod'), 'data': ()},
+            {'name': 'switches', 'key': 'switch', 'keys': ('name', 'mod'),
+             'data': {'name': 'states', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}},
+            {'name': 'RTPCs', 'key': 'RTPC', 'keys': ('name', 'mod'), 'data': ()},
+            {'name': 'states', 'key': 'stateGroup', 'keys': ('name', 'mod'),
+             'data': {'name': 'stateNames', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}}]
         data_old, data_new = {}, {}
         for struct in data_structure:
             key = struct['name']
@@ -349,8 +322,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         return audio_mods_new
 
     def manageMemorySettings(self, soundMgr):
-        for mgrKey in ('memoryLimit',):
-            # in case they add something later
+        for mgrKey in ('memoryLimit',):  # in case they add something later
             value = soundMgr[mgrKey]
             if value is not None and value.asInt != int(self.data[mgrKey]):
                 self.editedBanks['memory'].append(mgrKey)
@@ -358,11 +330,9 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
                 print self.LOG, 'changing value for memory setting:', mgrKey
 
     def manageProfileMemorySettings(self, profile_type, profile):
-        poolKeys = {
-            'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
-            'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
-            'soundRender': ('max_voices',)
-        }
+        poolKeys = {'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+                    'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+                    'soundRender': ('max_voices',)}
         for poolKey, poolValuesList in poolKeys.iteritems():
             for poolValue in poolValuesList:
                 value = profile[poolKey][poolValue]
@@ -424,6 +394,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         for new_path in (new_dir + new_name, './res/' + new_path, './' + new_path):
             if os.path.isfile(new_path):
                 os.rename(new_path, orig_path)
+                break
 
 
 config = ConfigInterface()

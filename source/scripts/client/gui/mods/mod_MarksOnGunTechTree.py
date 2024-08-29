@@ -77,23 +77,25 @@ class ConfigInterface(SimpleConfigInterface):
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-MARKS = [
-    '   ',
-    '<font face="Arial" color="%s"><b>  &#11361;</b></font>' % config.data['colorRatting']['good'],
-    '<font face="Arial" color="%s"><b> &#11361;&#11361;</b></font>' % config.data['colorRatting']['very_good'],
-    '<font face="Arial" color="%s"><b>&#11361;&#11361;&#11361;</b></font>' % config.data['colorRatting']['unique']
+
+
+color_ratings = config.data['colorRatting']
+battleDamageRating = [
+    color_ratings['neutral'],  # 0
+    color_ratings['very_bad'],  # 20
+    color_ratings['bad'],       # 40
+    color_ratings['normal'],    # 65
+    color_ratings['good'],      # 85
+    color_ratings['very_good'],  # 95
+    color_ratings['unique']     # 100
 ]
 
-battleDamageRating0 = config.data['colorRatting']['very_bad']
-battleDamageRating20 = config.data['colorRatting']['very_bad']
-battleDamageRating40 = config.data['colorRatting']['bad']
-battleDamageRating55 = config.data['colorRatting']['bad']
-battleDamageRating65 = config.data['colorRatting']['normal']
-battleDamageRating85 = config.data['colorRatting']['good']
-battleDamageRating95 = config.data['colorRatting']['very_good']
-battleDamageRating100 = config.data['colorRatting']['unique']
-
-battleDamageRating = [battleDamageRating0, battleDamageRating20, battleDamageRating40, battleDamageRating55, battleDamageRating65, battleDamageRating85, battleDamageRating95, battleDamageRating100]
+MARKS = [
+    '   ',
+    '<font face="Arial" color="%s"><b>  &#11361;</b></font>' % battleDamageRating[4],
+    '<font face="Arial" color="%s"><b> &#11361;&#11361;</b></font>' % battleDamageRating[5],
+    '<font face="Arial" color="%s"><b>&#11361;&#11361;&#11361;</b></font>' % battleDamageRating[6],
+]
 
 LEVELS = [0.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0]
 
@@ -165,15 +167,11 @@ def makeHeaderVO(func, *args):
         moeStart = ''
         moeEnd = ''
         if damageRating:
-            damage = ProfileUtils.getValueOrUnavailable(
-                ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
+            damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
             # noinspection PyProtectedMember
-            track = ProfileUtils.getValueOrUnavailable(
-                targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2,
-                                                         targetData.getRandomStats().getDamageAssistedTrack))
+            track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
             # noinspection PyProtectedMember
-            radio = ProfileUtils.getValueOrUnavailable(
-                targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
+            radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
             stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
             currentDamage = int(damage + max(track, radio, stun))
             movingAvgDamage = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'movingAvgDamage')
@@ -211,16 +209,11 @@ def makeHeaderVO(func, *args):
         moeStart = ''
         moeEnd = ''
         if damageRating:
-            damage = ProfileUtils.getValueOrUnavailable(
-                ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
+            damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
             # noinspection PyProtectedMember
-            track = ProfileUtils.getValueOrUnavailable(
-                targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2,
-                                                         targetData.getRandomStats().getDamageAssistedTrack))
+            track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
             # noinspection PyProtectedMember
-            radio = ProfileUtils.getValueOrUnavailable(
-                targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2,
-                                                         targetData.getRandomStats().getDamageAssistedRadio))
+            radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
             stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
             currentDamage = int(damage + max(track, radio, stun))
             movingAvgDamage = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'movingAvgDamage')
@@ -235,18 +228,17 @@ def makeHeaderVO(func, *args):
                 'currentDamage': currentDamaged if currentDamage > movingAvgDamage else currentMovingAvgDamage,
                 'nextPercent': '<font color="%s">%s%%</font>' % (battleDamageRating[LEVELS.index(filter(lambda x: x >= pC, LEVELS)[0])], pC),
                 'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
-                'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (config.data['colorRatting']['very_bad'], g_marks.normalizeDigits(p20)),
-                'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (config.data['colorRatting']['bad'], g_marks.normalizeDigits(p40)),
-                'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (config.data['colorRatting']['normal'], g_marks.normalizeDigits(p55)),
-                'c_damageToMark65': '<font color="%s"><b>65%%:%s</b></font>' % (config.data['colorRatting']['good'], g_marks.normalizeDigits(p65)),
-                'c_damageToMark85': '<font color="%s"><b>85%%:%s</b></font>' % (config.data['colorRatting']['very_good'], g_marks.normalizeDigits(p85)),
-                'c_damageToMark95': '<font color="%s"><b>95%%:%s</b></font>' % (config.data['colorRatting']['unique'], g_marks.normalizeDigits(p95)),
-                'c_damageToMark100': '<font color="%s"><b>100%%:%s</b></font>' % (config.data['colorRatting']['unique'], g_marks.normalizeDigits(p100))
+                'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (battleDamageRating[1], g_marks.normalizeDigits(p20)),
+                'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (battleDamageRating[2], g_marks.normalizeDigits(p40)),
+                'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (battleDamageRating[3], g_marks.normalizeDigits(p55)),
+                'c_damageToMark65': '<font color="%s"><b>65%%:%s</b></font>' % (battleDamageRating[4], g_marks.normalizeDigits(p65)),
+                'c_damageToMark85': '<font color="%s"><b>85%%:%s</b></font>' % (battleDamageRating[5], g_marks.normalizeDigits(p85)),
+                'c_damageToMark95': '<font color="%s"><b>95%%:%s</b></font>' % (battleDamageRating[6], g_marks.normalizeDigits(p95)),
+                'c_damageToMark100': '<font color="%s"><b>100%%:%s</b></font>' % (battleDamageRating[6], g_marks.normalizeDigits(p100))
             }
             moeStart = text_styles.promoSubTitle(config.i18n['UI_HangarStatsStart'].format(**data))
             moeEnd = text_styles.stats(config.i18n['UI_HangarStatsEnd'].format(**data))
-        oldData = '%s%s %s' % (moeStart, text_styles.promoSubTitle(vehicle.shortUserName),
-                               text_styles.stats(MU.levels_roman(vehicle.level)))
+        oldData = '%s%s %s' % (moeStart, text_styles.promoSubTitle(vehicle.shortUserName), text_styles.stats(MU.levels_roman(vehicle.level)))
         result['tankInfo'] = text_styles.concatStylesToMultiLine(oldData, moeEnd)
     return result
 

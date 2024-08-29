@@ -1,3 +1,4 @@
+﻿# -*- coding: utf-8 -*-
 import codecs
 import glob
 import json
@@ -53,8 +54,17 @@ def pack_file(conf_name, out_path, v_str=None, v_date=None, force=False, quiet=F
     printed = False
     if not quiet:
         ch_print(conf_name, True)
+    # with codecs.open(conf_name, 'r', 'utf-8-sig') as fp:
+    #    data = json.load(fp, 'utf-8-sig')
+    
+    # Load JSON while ignoring comments
     with codecs.open(conf_name, 'r', 'utf-8-sig') as fp:
-        data = json.load(fp, 'utf-8-sig')
+        content = fp.read()
+        # Remove single-line comments
+        content = re.sub(r'//.*$', '', content, flags=re.MULTILINE)
+        # Remove multi-line comments
+        content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+        data = json.loads(content)
     if not data['enabled']:
         ch_print(conf_name, quiet, 'Archive disabled.')
         return True
@@ -290,7 +300,6 @@ def main():
         print "\n[interrupted]"
         success = False
     return success
-
 
 if __name__ == '__main__':
     sys.exit(int(not main()))
