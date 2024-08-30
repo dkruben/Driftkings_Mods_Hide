@@ -536,29 +536,34 @@ class CompareMacros(object):
         self.value2 = None
 
     def reset(self):
-        self.__init__()
+        self.value1 = None
+        self.value2 = None
 
-    def setData(self, value1, value2):
-        self.value1 = float(value1)
-        self.value2 = float(value2)
-
-    @property
-    def compareDelim(self):
-        if self.value1 > self.value2:
-            return config.data['compareValues']['moreThan']['delim']
-        elif self.value1 == self.value2:
-            return config.data['compareValues']['equal']['delim']
-        elif self.value1 < self.value2:
-            return config.data['compareValues']['lessThan']['delim']
+    def set_data(self, value1, value2):
+        try:
+            self.value1 = float(value1)
+            self.value2 = float(value2)
+        except ValueError:
+            raise ValueError('Values must be numeric.')
 
     @property
-    def compareColor(self):
+    def compare_delim(self):
+        return self._get_compare_attribute('delim')
+
+    @property
+    def compare_color(self):
+        return self._get_compare_attribute('color')
+
+    def _get_compare_attribute(self, attribute):
+        if self.value1 is None or self.value2 is None:
+            raise ValueError('Values must be defined before comparison.')
+
         if self.value1 > self.value2:
-            return config.data['compareValues']['moreThan']['color']
+            return config.data['compareValues']['moreThan'][attribute]
         elif self.value1 == self.value2:
-            return config.data['compareValues']['equal']['color']
+            return config.data['compareValues']['equal'][attribute]
         elif self.value1 < self.value2:
-            return config.data['compareValues']['lessThan']['color']
+            return config.data['compareValues']['lessThan'][attribute]
 
 
 class InfoPanel(DataConstants):
@@ -587,24 +592,24 @@ class InfoPanel(DataConstants):
         if not config.data['enabled']:
             return
 
-        textFormat = self.textFormats
+        text_format = self.textFormats
         for macro in MACROS:
-            if macro in textFormat:
-                funcName = macro.replace('{', '').replace('}', '')
-                funcResponse = self.get_func_response(funcName)
-                textFormat = textFormat.replace(macro, funcResponse)
+            if macro in text_format:
+                func_name = macro.replace('{', '').replace('}', '')
+                func_response = self.get_func_response(func_name)
+                text_format = text_format.replace(macro, func_response)
 
         for macro in COMPARE_MACROS:
-            if macro in textFormat:
-                reader = textFormat[textFormat.find(macro + '('):textFormat.find(')', textFormat.index(macro + '(') + 6) + 1]
+            if macro in text_format:
+                reader = text_format[text_format.find(macro + '('):text_format.find(')', text_format.index(macro + '(') + 6) + 1]
                 func = reader[:reader.find('(')]
                 arg1 = reader[reader.find('(') + 1:reader.find(',')]
                 arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
-                g_macros.setData(arg1, arg2)
-                funcRes = getattr(g_macros, func)
-                textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
+                g_macros.set_data(arg1, arg2)
+                func_res = getattr(g_macros, func)
+                text_format = text_format.replace('{{' + reader + '}}', str(func_res))
 
-        return textFormat
+        return text_format
 
     def handleKey(self, isDown):
         if isDown:

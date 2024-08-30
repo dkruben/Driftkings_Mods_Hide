@@ -3,11 +3,14 @@ import locale
 from string import printable
 from time import strftime
 
+import BattleReplay
 from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
+from constants import ATTACK_REASONS, SPECIAL_VEHICLE_HEALTH
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
+from gui.Scaleform.daapi.view.battle.shared.markers2d.vehicle_plugins import VehicleMarkerPlugin
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
@@ -44,7 +47,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.1.5 (%(file_compile_date)s)'
+        self.version = '2.2.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -325,6 +328,19 @@ def new__VehicleArenaInfoVO(func, self, **kwargs):
         if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
             kwargs['clanAbbrev'] = ''
     return func(self, **kwargs)
+
+
+# Squad damage color
+@override(VehicleMarkerPlugin, '_updateVehicleHealth')
+def new_updateVehicleHealth(func, self, vehicleID, handle, newHealth, aInfo, attackReasonID):
+    if newHealth < 0 and not SPECIAL_VEHICLE_HEALTH.IS_AMMO_BAY_DESTROYED(newHealth):
+        newHealth = 0
+    replayCtrl = BattleReplay.g_replayCtrl
+    if replayCtrl.isPlaying and replayCtrl.isTimeWarpInProgress:
+        self._invokeMarker(handle, 'setHealth', newHealth)
+    else:
+        yellow = False if aInfo is None else aInfo.isSquadMan() or aInfo.vehicleID == self._playerVehicleID
+        self._invokeMarker(handle, 'updateHealth', newHealth, yellow, ATTACK_REASONS[attackReasonID])
 
 
 @adisp_process

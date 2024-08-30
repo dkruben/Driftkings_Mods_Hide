@@ -50,25 +50,29 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_textLock_text': 'Text Lock',
             'UI_setting_textLock_tooltip': 'Drag Text in battle',
             'UI_setting_format_text': 'Text Format, Available Macros:',
-            'UI_setting_format_tooltip': ('Macros:'
-                                          '\n WN8:\'{wn8}\', Color:\'{c:wn8}\''
-                                          '\nXWN8:\'{xwn8}\', Color:\'{c:x}\''
-                                          '\nEFF:\'{eff}\', Color:\'{c:eff}\''
-                                          '\nXEFF:\'{xeff}}\', Color:\'{c:x}\''
-                                          '\nDIFF:\'{diff}}\', Color:\'{c:dif}\''
-                                          '\nDMG:\'{dmg}}\', Color:\'{c:dmg}\''
-                                          '\nXTE:\'{xte}\',   Color:\'{c:x}\''),
+            'UI_setting_format_tooltip': (
+                'Available Macros:'
+                '\n WN8:\'{wn8}\', Color:\'{c:wn8}\''
+                '\nXWN8:\'{xwn8}\', Color:\'{c:x}\''
+                '\nEFF:\'{eff}\', Color:\'{c:eff}\''
+                '\nXEFF:\'{xeff}}\', Color:\'{c:x}\''
+                '\nDIFF:\'{diff}}\', Color:\'{c:dif}\''
+                '\nDMG:\'{dmg}}\', Color:\'{c:dmg}\''
+                '\nXTE:\'{xte}\',   Color:\'{c:x}\''
+            ),
             'UI_setting_battleResultsWindow_text': 'Battle Results Window',
             'UI_setting_battleResultsWindow_tooltip': 'Enable battle Results Window.',
             'UI_setting_battleResultsFormat_text': 'Battle results window modifying',
-            'UI_setting_battleResultsFormat_tooltip': ('Macros:'
-                                                       '\nWN8:\'{wn8}\', Color: \'{c:wn8}\''
-                                                       '\nXWN8:\'{xwn8}\', Color: \'{c:x}\''
-                                                       '\nEFF:\'{eff}\', Color: \'{c:eff}\''
-                                                       '\nXEFF:\'{xeff}\', Color: \'{c:x}\''
-                                                       '\nDIFF:\'{diff}\', Color: \'{c:dif}\''
-                                                       '\nDMG:\'{dmg}\', Color: \'{c:dmg}\''
-                                                       '\nXTE:\'{xte}\', Color: \'{c:x}\''),
+            'UI_setting_battleResultsFormat_tooltip': (
+                'Available Macros:'
+                '\nWN8:\'{wn8}\', Color: \'{c:wn8}\''
+                '\nXWN8:\'{xwn8}\', Color: \'{c:x}\''
+                '\nEFF:\'{eff}\', Color: \'{c:eff}\''
+                '\nXEFF:\'{xeff}\', Color: \'{c:x}\''
+                '\nDIFF:\'{diff}\', Color: \'{c:dif}\''
+                '\nDMG:\'{dmg}\', Color: \'{c:dmg}\''
+                '\nXTE:\'{xte}\', Color: \'{c:x}\''
+            ),
             'UI_setting_colorRatting_text': 'Choose Color Ratting',
             'UI_setting_colorRatting_tooltip': '',
             'UI_setting_colorRatting_NoobMeter': 'NoobMeter',
@@ -173,11 +177,11 @@ class EfficiencyCalculator(object):
     def stopBattle(self):
         self.__init__()
 
-    def registerVInfoData(self, vehCD):
-        self.vehCD = vehCD
-        vInfoData = getVehicleInfoData(vehCD)
+    def registerVInfoData(self, veh_cd):
+        self.vehCD = veh_cd
+        v_info_data = getVehicleInfoData(veh_cd)
         for item in ('wn8expDamage', 'wn8expSpot', 'wn8expFrag', 'wn8expDef', 'wn8expWinRate'):
-            self.expectedValues[item] = vInfoData.get(item, None)
+            self.expectedValues[item] = v_info_data.get(item, None)
         self.vInfoOK = None not in self.expectedValues.values()
 
     def calc(self, damage, spotted, frags, defence, capture, isWin=False):

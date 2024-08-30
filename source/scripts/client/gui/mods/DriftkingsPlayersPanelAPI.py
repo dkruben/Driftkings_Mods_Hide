@@ -27,7 +27,6 @@ def smart_update(old_conf, new_conf):
         if k not in old_conf:
             old_conf[k] = v.encode('utf-8') if isinstance(v, unicode) else v
             changed = True
-
     return changed
 
 
@@ -74,11 +73,9 @@ class PlayersPanelUI(View):
         super(PlayersPanelUI, self)._populate()
         for linkage, data in g_cache.items.iteritems():
             self.as_createS(linkage, data['config'])
-
         g_events.create += self.as_createS
         g_events.update += self.as_updateS
         g_events.delete += self.as_deleteS
-
         g_events.onUIReady()
 
     def _dispose(self):

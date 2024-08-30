@@ -1,17 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 import math
 
-# import TriggersManager
+import TriggersManager
 from AvatarInputHandler.DynamicCameras.SniperCamera import SniperCamera
 from AvatarInputHandler.control_modes import SniperControlMode
+from PlayerEvents import g_playerEvents
 from account_helpers.settings_core.options import SniperZoomSetting
 from aih_constants import CTRL_MODE_NAME
 from gui.battle_control.avatar_getter import getOwnVehiclePosition
 from helpers.bound_effects import ModelBoundEffects
-from helpers import dependency
-from PlayerEvents import g_playerEvents
-from skeletons.gui.battle_session import IBattleSessionProvider
-
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, isReplay, callback, calculate_version, getPlayer
 
@@ -23,7 +20,7 @@ class ConfigsInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -135,87 +132,58 @@ def new__enable(func, self, targetPos, saveZoom):
     return func(self, targetPos, saveZoom)
 
 
-# class AfterShoot(TriggersManager.ITriggerListener):
-class ChangeCameraModeAfterShoot(object):
-    sessionProvider = dependency.descriptor(IBattleSessionProvider)
+class ChangeCameraModeAfterShoot(TriggersManager.ITriggerListener):
 
     def __init__(self):
         self.latency = 0
         self.skip_clip = False
         self.subscribed = False
+        self.avatar = None
+        self.__trigger_type = TriggersManager.TRIGGER_TYPE.PLAYER_DISCRETE_SHOOT
 
     def updateSettings(self):
         enabled = config.data['disableCamAfterShot'] and config.data['enabled']
         self.latency = float(config.data['disableCamAfterShotLatency'])
         self.skip_clip = config.data['disableCamAfterShotSkipClip']
         if not self.subscribed and enabled:
-            g_playerEvents.onAvatarBecomePlayer += self.onStart
+            g_playerEvents.onAvatarReady += self.onStart
             g_playerEvents.onAvatarBecomeNonPlayer += self.onFinish
             self.subscribed = True
         elif self.subscribed and not enabled:
-            g_playerEvents.onAvatarBecomePlayer -= self.onStart
+            g_playerEvents.onAvatarReady -= self.onStart
             g_playerEvents.onAvatarBecomeNonPlayer -= self.onFinish
             self.subscribed = False
 
     def onStart(self):
-        feedback = self.sessionProvider.shared.feedback
-        if feedback is not None:
-            feedback.onDiscreteShotDone += self.changeControlMode
+        self.avatar = getPlayer()
+        TriggersManager.g_manager.addListener(self)
 
     def onFinish(self):
-        feedback = self.sessionProvider.shared.feedback
-        if feedback is not None:
-            feedback.onDiscreteShotDone -= self.changeControlMode
+        self.avatar = None
+        TriggersManager.g_manager.delListener(self)
+
+    def onTriggerActivated(self, params):
+        if params.get('type') == self.__trigger_type:
+            callback(max(self.latency, 0), self.changeControlMode)
 
     def changeControlMode(self):
-        avatar = getPlayer()
-        input_handler = avatar.inputHandler
-        if input_handler is not None and input_handler.ctrlModeName == CTRL_MODE_NAME.SNIPER:
-            v_desc = avatar.getVehicleDescriptor()
+        if self.avatar is None:
+            return
+        input_handler = self.avatar.inputHandler
+        if self.avatar.inputHandler is not None and input_handler.ctrlModeName == CTRL_MODE_NAME.SNIPER:
+            v_desc = self.avatar.getVehicleDescriptor()
             caliber_skip = v_desc.shot.shell.caliber <= 60
             if caliber_skip or self.skip_clip and 'clip' in v_desc.gun.tags:
                 return
-            latency = max(self.latency, 0)
             aiming_system = input_handler.ctrl.camera.aimingSystem
-            callback(latency, input_handler.onControlModeChanged, CTRL_MODE_NAME.ARCADE,
-                     prevModeName=input_handler.ctrlModeName,
-                     preferredPos=aiming_system.getDesiredShotPoint(),
-                     turretYaw=aiming_system.turretYaw,
-                     gunPitch=aiming_system.gunPitch,
-                     aimingMode=input_handler.ctrl._aimingMode,
-                     closesDist=False)
-
-        # g_playerEvents.onAvatarBecomePlayer += self.onStartScript
-        # g_playerEvents.onAvatarBecomeNonPlayer += self.onFinishScript
-        # self.enabled = False
-
-    # def onStartScript(self):
-    #    if self.enabled:
-    #        manager = TriggersManager.g_manager
-    #        if manager:
-    #            manager.addListener(self)
-
-    # def onFinishScript(self):
-    #    if self.enabled:
-    #        manager = TriggersManager.g_manager
-    #        if manager:
-    #            manager.delListener(self)
-
-    # def onTriggerActivated(self, params):
-    #    if params.get('type') == TriggersManager.TRIGGER_TYPE.PLAYER_DISCRETE_SHOOT:
-    #        callback(max(config.data['disableCamAfterShotLatency'], 0), self.changeControlMode)
-
-    # @staticmethod
-    # def changeControlMode():
-    #    avatar = getPlayer()
-    #    input_handler = avatar.inputHandler
-    #    if input_handler is not None and input_handler.ctrlModeName == CTRL_MODE_NAME.SNIPER:
-    #        v_desc = avatar.getVehicleDescriptor()
-    #        caliberSkip = v_desc.shot.shell.caliber <= 60
-    #        if caliberSkip or config.data['disableCamAfterShotSkipClip'] and 'clip' in v_desc.gun.tags:
-    #            return
-    #        aiming_system = input_handler.ctrl.camera.aimingSystem
-    #        input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE, prevModeName=input_handler.ctrlModeName, preferredPos=aiming_system.getDesiredShotPoint(), turretYaw=aiming_system.turretYaw, gunPitch=aiming_system.gunPitch, aimingMode=input_handler.ctrl._aimingMode, closesDist=False)
+            input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE,
+                                               prevModeName=input_handler.ctrlModeName,
+                                               preferredPos=aiming_system.getDesiredShotPoint(),
+                                               turretYaw=aiming_system.turretYaw,
+                                               gunPitch=aiming_system.gunPitch,
+                                               aimingMode=input_handler.ctrl._aimingMode,
+                                               closesDist = False,
+                                               curVehicleID = self.avatar.playerVehicleID)
 
 
 ChangeCameraModeAfterShoot()
