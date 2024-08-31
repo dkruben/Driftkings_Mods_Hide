@@ -74,9 +74,9 @@ def sendPanelMessage(text='', colour='Green', panel='Player'):
 
 
 class Sound(object):
-    def __init__(self, soundPath):
+    def __init__(self, sound_path):
         import SoundGroups
-        self.__sndPath = soundPath
+        self.__sndPath = sound_path
         self.__sndTick = SoundGroups.g_instance.getSound2D(self.__sndPath)
         self.__isPlaying = True
         self.stop()

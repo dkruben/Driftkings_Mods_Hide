@@ -14,7 +14,7 @@ from gui.shared.personality import ServicesLocator as SL
 from helpers import getClientVersion
 from wg_async import wg_await, wg_async
 
-from DriftkingsCore import ConfigNoInterface, SimpleConfigInterface, remDups, Analytics, events, curCV
+from DriftkingsCore import ConfigNoInterface, SimpleConfigInterface, remDups, Analytics, events, curCV, calculate_version
 
 
 class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
@@ -40,7 +40,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
             'debug': False
         }
         self.i18n = {
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_restart_header': 'Banks Loader by Driftkings : restart',
             'UI_restart_reason_new': 'You have installed new audio mods, so the game config was changed.',
             'UI_restart_reason_update': 'Game client update was detected, so game config changes were re-applied anew.',
@@ -186,7 +186,7 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         while True:
             orig_engine = ResMgr.openSection('engine_config.xml')
             if orig_engine is None:
-                print config.LOG, 'ERROR: engine_config.xml not found'
+                print self.LOG, 'ERROR: engine_config.xml not found'
                 return
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
@@ -220,23 +220,18 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
             profile = soundMgr[soundMgr[profile_name].asString]
             self.manageProfileMemorySettings(profile_type, profile)
             self.manageProfileBanks(profile_type, profile, bankFiles)
-        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',
-                         ('delete', 'move', 'remap'))
-        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',
-                         ('delete', 'move', 'create', 'memory'))
+        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',('delete', 'move', 'remap'))
+        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',('delete', 'move', 'create', 'memory'))
 
     def collectBankFiles(self, mediaPath):
         bankFiles = {
             'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',),
-            'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*')
-                    if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
+            'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
         for pkgPath in glob.iglob('./res/packages/audioww*.pkg'):
             with zipfile.ZipFile(pkgPath) as pkg:
                 bankFiles['pkg'].update({os.path.basename(name) for name in pkg.namelist()})
         bankFiles['orig'] = bankFiles['res'] | bankFiles['pkg']
-        bankFiles['mods'] = set(
-            x for x in ResMgr.openSection(mediaPath).keys()
-            if os.path.splitext(x)[1] in ('.bnk', '.pck') and not any(y in bankFiles['orig'] for y in (x, x.lower())))
+        bankFiles['mods'] = set(x for x in ResMgr.openSection(mediaPath).keys() if os.path.splitext(x)[1] in ('.bnk', '.pck') and not any(y in bankFiles['orig'] for y in (x, x.lower())))
         bankFiles['all'] = bankFiles['orig'] | bankFiles['mods']
         return bankFiles
 

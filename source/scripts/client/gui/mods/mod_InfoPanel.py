@@ -34,7 +34,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.3.5 %(file_compile_date)s'
+        self.version = '1.4.0 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -536,10 +536,12 @@ class CompareMacros(object):
         self.value2 = None
 
     def reset(self):
+        """Resets the values or Name."""
         self.value1 = None
         self.value2 = None
 
     def set_data(self, value1, value2):
+        """Defines the values, converting them to float."""
         try:
             self.value1 = float(value1)
             self.value2 = float(value2)
@@ -547,22 +549,21 @@ class CompareMacros(object):
             raise ValueError('Values must be numeric.')
 
     @property
-    def compare_delim(self):
+    def compareDelim(self):
         return self._get_compare_attribute('delim')
 
     @property
-    def compare_color(self):
+    def compareColor(self):
         return self._get_compare_attribute('color')
 
     def _get_compare_attribute(self, attribute):
         if self.value1 is None or self.value2 is None:
             raise ValueError('Values must be defined before comparison.')
-
         if self.value1 > self.value2:
             return config.data['compareValues']['moreThan'][attribute]
         elif self.value1 == self.value2:
             return config.data['compareValues']['equal'][attribute]
-        elif self.value1 < self.value2:
+        else:
             return config.data['compareValues']['lessThan'][attribute]
 
 
