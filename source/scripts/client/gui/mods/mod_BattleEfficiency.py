@@ -27,7 +27,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.6.0 %(file_compile_date)s'
+        self.version = '2.6.5 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -111,14 +111,14 @@ class Flash(object):
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def setup(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(g_config.data['position'], drag=not g_config.data['textLock'], border=not g_config.data['textLock'], limit=True))
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['position'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
         self.createBox()
 
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict(g_config.data['position'], drag=not g_config.data['textLock'], border=not g_config.data['textLock']))
+        g_guiFlash.updateComponent(self.ID, dict(config.data['position'], drag=not config.data['textLock'], border=not config.data['textLock']))
 
     def createBox(self):
-        shadow = g_config.data['textShadow']
+        shadow = config.data['textShadow']
         if shadow['enabled']:
             g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
 
@@ -129,32 +129,32 @@ class Flash(object):
     def __updatePosition(self, alias, data):
         if alias != self.ID:
             return
-        g_config.onApplySettings({'textPosition': data})
+        config.onApplySettings({'textPosition': data})
 
     def addText(self, text):
-        text_style = g_config.data['textStyle']
+        text_style = config.data['textStyle']
         text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
         self.createBox()
         g_guiFlash.updateComponent(self.ID, {'text': text})
 
 
 g_flash = None
-g_config = ConfigInterface()
-statistic_mod = Analytics(g_config.ID, g_config.version, 'UA-121940539-1')
+config = ConfigInterface()
+statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
-    g_flash = Flash(g_config.ID)
+    g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(g_config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
+    logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
 except StandardError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
 
 def set_text(text):
-    text_style = g_config.data['textStyle']
+    text_style = config.data['textStyle']
     styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['color'], text_style['font'], text_style['align'], text)
     return styled_text
 
@@ -197,7 +197,7 @@ class EfficiencyCalculator(object):
 
             return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
         except (ZeroDivisionError, ValueError) as err:
-            logError(g_config.ID, "Error calculating metrics:", err)
+            logError(config.ID, "Error calculating metrics:", err)
             return 0, 0, 0, 0, 0, 0, 0
 
     def calculate_ratios(self, damage, spotted, frags, defence, isWin):
@@ -253,18 +253,18 @@ class BattleEfficiency(object):
 
     @staticmethod
     def read_colors(rating_color, rating_value):
-        colors = color_tables[g_config.data['colorRatting']].get('colors')
+        colors = color_tables[config.data['colorRatting']].get('colors')
         return get_color(colors, rating_color, rating_value)
 
     def startBattle(self):
-        if not g_config.data['enabled']:
+        if not config.data['enabled']:
             return
         try:
             result = g_calculator.calc(self._stats['damage'], self._stats['spotted'], self._stats['frags'], self._stats['defence'], self._stats['capture'])
             self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
             self.update_format_string()
         except Exception as err:
-            logError(g_config.ID, "Error in startBattle: {}", err)
+            logError(config.ID, "Error in startBattle: {}", err)
 
     def update_format_string(self):
         macro_data = {}
@@ -278,8 +278,9 @@ class BattleEfficiency(object):
             return
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return
-        format_text = replace_macros(g_config.data['format'], macro_data)
+        format_text = replace_macros(config.data['format'], macro_data)
         g_flash.addText(set_text(format_text))
+
 
 g_battleEfficiency = BattleEfficiency()
 g_calculator = EfficiencyCalculator()
@@ -288,7 +289,7 @@ g_calculator = EfficiencyCalculator()
 @override(PlayerAvatar, 'vehicle_onAppearanceReady')
 def new_onAppearanceReady(func, self, vehicle):
     func(self, vehicle)
-    if not g_config.data['enabled']:
+    if not config.data['enabled']:
         return
     if vehicle.id == self.playerVehicleID:
         g_calculator.registerVInfoData(vehicle.typeDescriptor.type.compactDescr)
@@ -297,7 +298,7 @@ def new_onAppearanceReady(func, self, vehicle):
 
 @override(RibbonsAggregator, 'suspend')
 def new_suspend(func, self):
-    if not g_config.data['enabled']:
+    if not config.data['enabled']:
         func(self)
         return
     self.resume()
@@ -305,7 +306,7 @@ def new_suspend(func, self):
 
 def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs):
     func(self, ribbonID, ribbonType, leftFieldStr, **kwargs)
-    if not g_config.data['enabled']:
+    if not config.data['enabled']:
         return
     if ribbonType not in (BATTLE_EFFICIENCY_TYPES.DETECTION, BATTLE_EFFICIENCY_TYPES.DESTRUCTION, BATTLE_EFFICIENCY_TYPES.DEFENCE, BATTLE_EFFICIENCY_TYPES.CAPTURE):
         return
@@ -323,7 +324,7 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
 @override(DamageLogPanel, '_onTotalEfficiencyUpdated')
 def new_onTotalEfficiencyUpdated(func, self, diff):
     func(self, diff)
-    if not g_config.data['enabled']:
+    if not config.data['enabled']:
         return
     if PERSONAL_EFFICIENCY_TYPE.DAMAGE in diff:
         g_battleEfficiency.stats['damage'] = diff[PERSONAL_EFFICIENCY_TYPE.DAMAGE]
@@ -333,7 +334,7 @@ def new_onTotalEfficiencyUpdated(func, self, diff):
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
-    if not g_config.data['enabled']:
+    if not config.data['enabled']:
         return
     g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
@@ -341,7 +342,7 @@ def new_destroyGUI(func, *args):
 
 @override(BattleResultsWindow, 'as_setDataS')
 def new_setDataS(func, self, data):
-    if g_config.data['enabled'] and not g_config.data['battleResultsWindow']:
+    if config.data['enabled'] and not config.data['battleResultsWindow']:
         return func(self, data)
 
     def _normalizeString(s):
@@ -400,7 +401,7 @@ def new_setDataS(func, self, data):
             '{c:dmg}': g_battleEfficiency.read_colors('tdb', dmg)
         }
 
-        msg = g_config.data['battleResultsFormat']
+        msg = config.data['battleResultsFormat']
         msg = replace_macros(msg, macro_data)
 
         data['common']['arenaStr'] = msg

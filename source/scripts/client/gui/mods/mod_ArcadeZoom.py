@@ -113,9 +113,9 @@ def new__readConfigs(func, self, *args, **kwargs):
 def new__updateProperties(func, self, state=None):
     try:
         if config.data['enabled'] and state is not None:
-            distRange = MinMax(config.data['min'], config.data['max'])
-            scrollSensitivity = config.data['scrollSensitivity']
-            state = state._replace(distRange=distRange, scrollSensitivity=scrollSensitivity)
+            dist_range = MinMax(config.data['min'], config.data['max'])
+            scroll_sensitivity = config.data['scrollSensitivity']
+            state = state._replace(distRange=dist_range, scrollSensitivity=scroll_sensitivity)
     except StandardError:
         LOG_CURRENT_EXCEPTION()
     finally:

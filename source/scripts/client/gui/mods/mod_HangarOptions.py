@@ -213,8 +213,8 @@ class ConfigInterface(SimpleConfigInterface):
         if spaceID == GuiGlobalSpaceID.LOBBY:
             ServicesLocator.appLoader.getApp().loadView(SFViewLoadParams(AS_ALIASES))
 
-    def getPremiumLabelText(self, timeDelta):
-        delta = float(getTimeDeltaFromNow(makeLocalServerTime(timeDelta)))
+    def getPremiumLabelText(self, time_delta):
+        delta = float(getTimeDeltaFromNow(makeLocalServerTime(time_delta)))
         if delta > ONE_DAY:
             template = '<b><font color=\'#FAFAFA\'>%(days)d {0}. %(hours)02d:%(min)02d:%(sec)02d</font></b>'.format(backport.text(R.strings.menu.header.account.premium.days()).replace('.', ''))
         else:

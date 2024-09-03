@@ -54,6 +54,16 @@ noob_meter_colors = {
         {'value': -1, 'color': '#FE0E00'},
         {'value': 0, 'color': '#F3FF3F'},
         {'value': 99999, 'color': '#60FF00'}
+    ],
+    'mog': [
+        {'value': 0.0, 'color': '#FFFFFF'},
+        {'value': 25.0, 'color': '#FF6347'},
+        {'value': 40.0, 'color': '#FE7903'},
+        {'value': 55.0, 'color': '#F8F400'},
+        {'value': 65.0, 'color': '#60FF00'},
+        {'value': 85.0, 'color': '#02C9B3'},
+        {'value': 95.0, 'color': '#D042F3'},
+        {'value': 100.0, 'color': '#FF00FF'}
     ]
 }
 
@@ -94,6 +104,16 @@ xvm_colors = {
         {'value': -1, 'color': '#FE0E00'},
         {'value': 0, 'color': '#F3FF3F'},
         {'value': 99999, 'color': '#60FF00'}
+    ],
+    'mog': [
+        {'value': 0.0, 'color': '#FFFFFF'},
+        {'value': 25.0, 'color': '#FF6347'},
+        {'value': 40.0, 'color': '#FE7903'},
+        {'value': 55.0, 'color': '#F8F400'},
+        {'value': 65.0, 'color': '#60FF00'},
+        {'value': 85.0, 'color': '#02C9B3'},
+        {'value': 95.0, 'color': '#D042F3'},
+        {'value': 100.0, 'color': '#FF00FF'}
     ]
 }
 
@@ -134,6 +154,16 @@ wot_labs_colors = {
         {'value': -1, 'color': '#FE0E00'},
         {'value': 0, 'color': '#F3FF3F'},
         {'value': 99999, 'color': '#60FF00'}
+    ],
+    'mog': [
+        {'value': 0.0, 'color': '#FFFFFF'},
+        {'value': 25.0, 'color': '#FF6347'},
+        {'value': 40.0, 'color': '#FE7903'},
+        {'value': 55.0, 'color': '#F8F400'},
+        {'value': 65.0, 'color': '#60FF00'},
+        {'value': 85.0, 'color': '#02C9B3'},
+        {'value': 95.0, 'color': '#D042F3'},
+        {'value': 100.0, 'color': '#FF00FF'}
     ]
 }
 

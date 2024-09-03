@@ -3,8 +3,8 @@ import locale
 from string import printable
 from time import strftime
 
-import BattleReplay
 from Avatar import PlayerAvatar
+from BattleReplay import g_replayCtrl
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from constants import ATTACK_REASONS, SPECIAL_VEHICLE_HEALTH
@@ -28,8 +28,10 @@ from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from gui.shared.personality import ServicesLocator
+from helpers import dependency
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
+from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay, calculate_version
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
@@ -41,13 +43,14 @@ _cache = set()
 
 
 class ConfigInterface(SimpleConfigInterface):
+
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.2.0 (%(file_compile_date)s)'
+        self.version = '2.2.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -331,15 +334,51 @@ def new__VehicleArenaInfoVO(func, self, **kwargs):
 
 
 # Squad damage color
+class Squad(object):
+    sessionProvider = dependency.descriptor(IBattleSessionProvider)
+    __slots__ = ("__squad_mans",)
+
+    def __init__(self):
+        self.__squad_mans = set()
+
+    def start(self):
+        g_playerEvents.onAvatarReady += self.updateSquadMans
+        dynSquads = self.sessionProvider.dynamic.dynSquads
+        if dynSquads is not None:
+            dynSquads.onDynSquadCreatedOrJoined += self.updateSquadMans
+
+    def stop(self):
+        g_playerEvents.onAvatarReady -= self.updateSquadMans
+        dynSquads = self.sessionProvider.dynamic.dynSquads
+        if dynSquads is not None:
+            dynSquads.onDynSquadCreatedOrJoined -= self.updateSquadMans
+
+    def updateSquadMans(self, *args):
+        self.__squad_mans.clear()
+        arena_dp = self.sessionProvider.getArenaDP()
+        player_vehicle_id = arena_dp.getPlayerVehicleID()
+        player_squad = arena_dp.getVehicleInfo(player_vehicle_id).squadIndex
+        if not player_squad:
+            self.__squad_mans.add(player_vehicle_id)
+        else:
+            for vInfo in arena_dp.getVehiclesInfoIterator():
+                if not vInfo.isEnemy() and player_squad == vInfo.squadIndex:
+                    self.__squad_mans.add(vInfo.vehicleID)
+
+    @property
+    def members(self):
+        return self.__squad_mans
+
+
 @override(VehicleMarkerPlugin, '_updateVehicleHealth')
 def new_updateVehicleHealth(func, self, vehicleID, handle, newHealth, aInfo, attackReasonID):
     if newHealth < 0 and not SPECIAL_VEHICLE_HEALTH.IS_AMMO_BAY_DESTROYED(newHealth):
         newHealth = 0
-    replayCtrl = BattleReplay.g_replayCtrl
-    if replayCtrl.isPlaying and replayCtrl.isTimeWarpInProgress:
+    if g_replayCtrl.isPlaying and g_replayCtrl.isTimeWarpInProgress:
         self._invokeMarker(handle, 'setHealth', newHealth)
     else:
-        yellow = False if aInfo is None else aInfo.isSquadMan() or aInfo.vehicleID == self._playerVehicleID
+        members = Squad().members
+        yellow = False if aInfo is None or not members else aInfo.vehicleID in members
         self._invokeMarker(handle, 'updateHealth', newHealth, yellow, ATTACK_REASONS[attackReasonID])
 
 
@@ -356,11 +395,11 @@ def onVehicleChanged(vehicle):
     if not hasattr(vehicle, 'battleBoosters') or vehicle.battleBoosters is None:
         logDebug(config.ID, True, 'No battle boosters available for this vehicle: {}', vehicle.userName)
         return
-    isAuto = vehicle.isAutoBattleBoosterEquip()
+    is_auto = vehicle.isAutoBattleBoosterEquip()
     boosters = vehicle.battleBoosters.installed.getItems()
     for battleBooster in boosters:
         value = battleBooster.inventoryCount > 0
-        if value != isAuto:
+        if value != is_auto:
             changeValue(vehicle, value)
             logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}', value, vehicle.userName, battleBooster.userName)
 

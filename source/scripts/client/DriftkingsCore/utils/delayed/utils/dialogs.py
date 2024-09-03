@@ -10,4 +10,5 @@ __all__ = ()
 def _setLayerBlur(func, self, blur, *args, **kwargs):
     if self._battle is None:
         return func(self, blur, *args, **kwargs)
-    self._battle.blurBackgroundViews(blur.ownLayer, blur.blurAnimRepeatCount)
+    self._battle.blurBackgroundViews(blur.ownLayer, blur.blurAnimRepeatCount, blur.uiBlurRadius)
+    # self._battle.blurBackgroundViews(blur.ownLayer, blur.blurAnimRepeatCount)

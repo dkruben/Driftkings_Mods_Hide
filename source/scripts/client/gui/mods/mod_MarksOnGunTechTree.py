@@ -13,7 +13,7 @@ from gui.Scaleform.lobby_entry import LobbyEntry
 from gui.Scaleform.locale.MENU import MENU as MU
 from gui.shared.formatters import text_styles
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version, color_tables, get_color
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -26,6 +26,7 @@ class ConfigInterface(SimpleConfigInterface):
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
+            'colorRatting': 0,
             'showInTechTree': True,
             'showInTechTreeMarkOfGunPercent': True,
             'showInTechTreeMastery': True,
@@ -34,15 +35,6 @@ class ConfigInterface(SimpleConfigInterface):
             'techTreeY': -12,
             'techTreeHeight': 16,
             'techTreeWidth': 54,
-            'colorRatting': {
-                'neutral': '#FFFFFF',
-                'very_bad': '#FF6347',
-                'bad': '#FE7903',
-                'normal': '#F8F400',
-                'good': '#60FF00',
-                'very_good': '#02C9B3',
-                'unique': '#D042F3'
-            }
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -74,33 +66,27 @@ class ConfigInterface(SimpleConfigInterface):
             'column2': []
         }
 
+    def read_colors(self, rating_color, rating_value):
+        colors = color_tables[self.data['colorRatting']].get('colors')
+        return get_color(colors, rating_color, rating_value)
+
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-color_ratings = config.data['colorRatting']
-battleDamageRating = [
-    color_ratings['neutral'],  # 0
-    color_ratings['very_bad'],  # 20
-    color_ratings['bad'],       # 40
-    color_ratings['normal'],    # 65
-    color_ratings['good'],      # 85
-    color_ratings['very_good'],  # 95
-    color_ratings['unique']     # 100
-]
-
-MARKS = [
-    '   ',
-    '<font face="Arial" color="%s"><b>  &#11361;</b></font>' % battleDamageRating[4],
-    '<font face="Arial" color="%s"><b> &#11361;&#11361;</b></font>' % battleDamageRating[5],
-    '<font face="Arial" color="%s"><b>&#11361;&#11361;&#11361;</b></font>' % battleDamageRating[6],
-]
-
-LEVELS = [0.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0]
-
-
 class MarksInTechTree(object):
+
+    def marks_mog(self):
+        return [
+            '   ',
+            '<font face="Arial" color="%s"><b>  &#11361;</b></font>' % config.read_colors('moe', 65.0),
+            '<font face="Arial" color="%s"><b> &#11361;&#11361;</b></font>' % config.read_colors('moe', 85.0),
+            '<font face="Arial" color="%s"><b>&#11361;&#11361;&#11361;</b></font>' % config.read_colors('moe', 95.0)
+        ]
+
+    def levels_mog(self):
+        return [0.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0]
 
     @staticmethod
     def normalizeDigits(value):
@@ -115,7 +101,6 @@ class MarksInTechTree(object):
         while start <= end < 100.001 and ema < 30000:
             ema += 0.1
             start = ema / d * p
-
         return ema
 
     def statistics(self, p, d):
@@ -129,117 +114,95 @@ class MarksInTechTree(object):
         p95 = self.percent(0, 0.0, 95.0, d, p)
         p100 = self.percent(0, 0.0, 100.0, d, p)
         data = [0, p20, p40, p55, p65, p85, p95, p100]
-        idx = filter(lambda x: x >= p, LEVELS)[0]
+        idx = next((x for x in self.levels_mog() if x >= p), None)
+        if idx is None:
+            raise ValueError("No level found for the given percent.")
         limit1 = dC
-        limit2 = data[LEVELS.index(idx)]
-        check = LEVELS.index(idx)
+        limit2 = data[self.levels_mog().index(idx)]
+        check = self.levels_mog().index(idx)
         delta = limit2 - limit1
-        for value in xrange(len(data)):
+        for value in range(len(data)):
             if data[value] == limit1 or data[value] == limit2:
                 continue
             if value > check:
                 data[value] = self.normalizeDigitsCoEff(data[value] + delta)
-
         if pC == 101:
             pC = 100
             dC = data[7]
         return pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7]
 
+    @staticmethod
+    def calculate_damage_data(targetData, damageRating):
+        damage = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage())
+        track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
+        radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
+        stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
+        currentDamage = int(damage + max(track, radio, stun))
+        movingAvgDamage = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'movingAvgDamage')
+        pC, dC, p20, p40, p55, p65, p85, p95, p100 = g_marks.statistics(damageRating, movingAvgDamage)
+        return currentDamage, movingAvgDamage, pC, dC, p20, p40, p55, p65, p85, p95, p100
+
+    @staticmethod
+    def htmlHangarBuilder():
+        self = BigWorld.MoEHangarHTML
+        if self.flashObject:
+            self.flashObject.txtTankInfoName.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="LEFT"><FONT FACE="$FieldFont" SIZE="16" COLOR="#FEFEEC" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeStart
+            self.flashObject.txtTankInfoLevel.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="LEFT"><FONT FACE="$FieldFont" SIZE="14" COLOR="#E9E2BF" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeEnd
+
 
 g_marks = MarksInTechTree()
 
 
-def htmlHangarBuilder():
-    self = BigWorld.MoEHangarHTML
-    if self.flashObject:
-        self.flashObject.txtTankInfoName.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="LEFT"><FONT FACE="$FieldFont" SIZE="16" COLOR="#FEFEEC" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeStart
-        self.flashObject.txtTankInfoLevel.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="LEFT"><FONT FACE="$FieldFont" SIZE="14" COLOR="#E9E2BF" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeEnd
-
-
 @override(HangarHeader, '_makeHeaderVO')
-def makeHeaderVO(func, *args):
+def new_makeHeaderVO(func, *args):
     result = func(*args)
     if config.data['showInHangar'] and 'tankInfoName' in result:
         self = args[0]
         vehicle = self._currentVehicle.item
         targetData = g_currentVehicle.getDossier()
         damageRating = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0
-        moeStart = ''
-        moeEnd = ''
-        if damageRating:
-            damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
-            # noinspection PyProtectedMember
-            track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
-            # noinspection PyProtectedMember
-            radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
-            stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
-            currentDamage = int(damage + max(track, radio, stun))
-            movingAvgDamage = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'movingAvgDamage')
-            pC, dC, p20, p40, p55, p65, p85, p95, p100 = g_marks.statistics(damageRating, movingAvgDamage)
-            color = ['#F8F400', '#F8F400', '#60FF00', '#02C9B3', '#D042F3', '#D042F3']
-            levels = [p55, p65, p85, p95, p100, 10000000]
-            currentDamaged = '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage)
-            currentMovingAvgDamage = '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage)
-            data = {
-                'currentPercent': '%s%%' % damageRating,
-                'currentMovingAvgDamage': currentMovingAvgDamage,
-                'currentDamage': currentDamaged if currentDamage > movingAvgDamage else currentMovingAvgDamage,
-                'nextPercent': '<font color="%s">%s%%</font>' % (battleDamageRating[LEVELS.index(filter(lambda x: x >= pC, LEVELS)[0])], pC),
-                'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
-                'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (config.data['colorRatting']['very_bad'], g_marks.normalizeDigits(p20)),
-                'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (config.data['colorRatting']['bad'], g_marks.normalizeDigits(p40)),
-                'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (config.data['colorRatting']['normal'], g_marks.normalizeDigits(p55)),
-                'c_damageToMark65': '<font color="%s"><b>65%%:%s</b></font>' % (config.data['colorRatting']['good'], g_marks.normalizeDigits(p65)),
-                'c_damageToMark85': '<font color="%s"><b>85%%:%s</b></font>' % (config.data['colorRatting']['very_good'], g_marks.normalizeDigits(p85)),
-                'c_damageToMark95': '<font color="%s"><b>95%%:%s</b></font>' % (config.data['colorRatting']['unique'], g_marks.normalizeDigits(p95)),
-                'c_damageToMark100': '<font color="%s"><b>100%%:%s</b></font>' % (config.data['colorRatting']['unique'], g_marks.normalizeDigits(p100))
-            }
-            moeStart = text_styles.promoSubTitle(config.i18n['UI_HangarStatsStart'].format(**data))
-            moeEnd = text_styles.stats(config.i18n['UI_HangarStatsEnd'].format(**data))
+        if not damageRating:
+            return result
+        currentDamage, movingAvgDamage, pC, dC, p20, p40, p55, p65, p85, p95, p100 = g_marks.calculate_damage_data(targetData, damageRating)
+        colors = [
+            config.read_colors('very_bad', 20.0),
+            config.read_colors('bad', 40.0),
+            config.read_colors('normal', 55.0),
+            config.read_colors('good', 65.0),
+            config.read_colors('very_good', 85.0),
+            config.read_colors('unique', 95.0),
+            config.read_colors('super_unique', 100.0)
+        ]
+        levels = [p55, p65, p85, p95, p100, 10000000]
+        currentDamageColorIndex = next((index for index, value in enumerate(levels) if value >= currentDamage), None)
+        movingAvgDamageColorIndex = next((index for index, value in enumerate(levels) if value >= movingAvgDamage), None)
+        currentDamaged = '<font color="%s">%s</font>' % (colors[currentDamageColorIndex], currentDamage)
+        currentMovingAvgDamage = '<font color="%s">%s</font>' % (colors[movingAvgDamageColorIndex], movingAvgDamage)
+        data = {
+            'currentPercent': '%s%%' % damageRating,
+            'currentMovingAvgDamage': currentMovingAvgDamage,
+            'currentDamage': currentDamaged if currentDamage > movingAvgDamage else currentMovingAvgDamage,
+            'nextPercent': '<font color="%s">%s%%</font>' % (config.read_colors('good', pC), pC),
+            'needDamage': '<font color="%s">%s</font>' % (
+            colors[next((index for index, value in enumerate(levels) if value >= int(dC)), None)], int(dC)),
+            'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (colors[0], g_marks.normalizeDigits(p20)),
+            'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (colors[1], g_marks.normalizeDigits(p40)),
+            'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (colors[2], g_marks.normalizeDigits(p55)),
+            'c_damageToMark65': '<font color="%s"><b>65%%:%s</b></font>' % (colors[3], g_marks.normalizeDigits(p65)),
+            'c_damageToMark85': '<font color="%s"><b>85%%:%s</b></font>' % (colors[4], g_marks.normalizeDigits(p85)),
+            'c_damageToMark95': '<font color="%s"><b>95%%:%s</b></font>' % (colors[5], g_marks.normalizeDigits(p95)),
+            'c_damageToMark100': '<font color="%s"><b>100%%:%s</b></font>' % (colors[6], g_marks.normalizeDigits(p100))
+        }
+        moeStart = text_styles.promoSubTitle(config.i18n['UI_HangarStatsStart'].format(**data))
+        moeEnd = text_styles.stats(config.i18n['UI_HangarStatsEnd'].format(**data))
         oldData = '<b>%s%s %s</b>' % (moeStart, text_styles.promoSubTitle(vehicle.shortUserName), text_styles.stats(MU.levels_roman(vehicle.level)))
         self.moeStart = text_styles.concatStylesToMultiLine(oldData, moeEnd)
         self.moeEnd = moeEnd
         BigWorld.MoEHangarHTML = self
-        callback(0.1, htmlHangarBuilder)
-    if config.data['showInHangar'] and 'tankInfo' in result:
-        self = args[0]
-        vehicle = self._currentVehicle.item
-        targetData = g_currentVehicle.getDossier()
-        damageRating = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0
-        moeStart = ''
-        moeEnd = ''
-        if damageRating:
-            damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
-            # noinspection PyProtectedMember
-            track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
-            # noinspection PyProtectedMember
-            radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
-            stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
-            currentDamage = int(damage + max(track, radio, stun))
-            movingAvgDamage = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'movingAvgDamage')
-            pC, dC, p20, p40, p55, p65, p85, p95, p100 = g_marks.statistics(damageRating, movingAvgDamage)
-            color = ['#F8F400', '#F8F400', '#60FF00', '#02C9B3', '#D042F3', '#D042F3']
-            levels = [p55, p65, p85, p95, p100, 10000000]
-            currentDamaged = '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage)
-            currentMovingAvgDamage = '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage)
-            data = {
-                'currentPercent': '%s%%' % damageRating,
-                'currentMovingAvgDamage': currentMovingAvgDamage,
-                'currentDamage': currentDamaged if currentDamage > movingAvgDamage else currentMovingAvgDamage,
-                'nextPercent': '<font color="%s">%s%%</font>' % (battleDamageRating[LEVELS.index(filter(lambda x: x >= pC, LEVELS)[0])], pC),
-                'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
-                'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (battleDamageRating[1], g_marks.normalizeDigits(p20)),
-                'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (battleDamageRating[2], g_marks.normalizeDigits(p40)),
-                'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (battleDamageRating[3], g_marks.normalizeDigits(p55)),
-                'c_damageToMark65': '<font color="%s"><b>65%%:%s</b></font>' % (battleDamageRating[4], g_marks.normalizeDigits(p65)),
-                'c_damageToMark85': '<font color="%s"><b>85%%:%s</b></font>' % (battleDamageRating[5], g_marks.normalizeDigits(p85)),
-                'c_damageToMark95': '<font color="%s"><b>95%%:%s</b></font>' % (battleDamageRating[6], g_marks.normalizeDigits(p95)),
-                'c_damageToMark100': '<font color="%s"><b>100%%:%s</b></font>' % (battleDamageRating[6], g_marks.normalizeDigits(p100))
-            }
-            moeStart = text_styles.promoSubTitle(config.i18n['UI_HangarStatsStart'].format(**data))
-            moeEnd = text_styles.stats(config.i18n['UI_HangarStatsEnd'].format(**data))
-        oldData = '%s%s %s' % (moeStart, text_styles.promoSubTitle(vehicle.shortUserName), text_styles.stats(MU.levels_roman(vehicle.level)))
-        result['tankInfo'] = text_styles.concatStylesToMultiLine(oldData, moeEnd)
+        callback(0.1, g_marks.htmlHangarBuilder)
+        # Atualização de 'tankInfo'
+        if 'tankInfo' in result:
+            result['tankInfo'] = oldData + moeEnd
     return result
 
 
@@ -262,8 +225,7 @@ def getExtraInfo(func, *args):
             percent = ''
             markOfGun = dossier.getTotalStats().getAchievement(MARK_ON_GUN_RECORD)
             markOfGunValue = markOfGun.getValue()
-            markOfGunStars = '%s ' % MARKS[markOfGun.getValue()]
-            color = ['#F8F400', '#60FF00', '#02C9B3', '#D042F3']
+            markOfGunStars = '%s ' % g_marks.marks_mog()[markOfGun.getValue()]
             percents = float(dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0)
             if config.data['showInTechTreeMarkOfGunPercent'] and percents:
                 percent = '%.2f' % percents if percents < 100 else '100.0'
@@ -272,7 +234,7 @@ def getExtraInfo(func, *args):
             masteryValue = mastery.getValue()
             if config.data['showInTechTreeMastery'] and masteryValue and masteryValue < 5:
                 markOfGunStars = '<img src="%s" width="16" height="16" vspace="-16"/></img>' % mastery.getSmallIcon().replace('../', '')
-            percentText = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (markOfGunStars, color[markOfGunValue], percent, config.data['techTreeX'], config.data['techTreeY'], config.data['techTreeHeight'], config.data['techTreeWidth'])
+            percentText = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (markOfGunStars, config.read_colors('moe', markOfGunValue), percent, config.data['techTreeX'], config.data['techTreeY'], config.data['techTreeHeight'], config.data['techTreeWidth'])
             result['nameString'] += percentText
     return result
 
