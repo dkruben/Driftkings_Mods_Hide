@@ -76,17 +76,15 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
 class MarksInTechTree(object):
-
-    def marks_mog(self):
-        return [
+    def __init__(self):
+        self.marks_mog = [
             '   ',
             '<font face="Arial" color="%s"><b>  &#11361;</b></font>' % config.read_colors('moe', 65.0),
             '<font face="Arial" color="%s"><b> &#11361;&#11361;</b></font>' % config.read_colors('moe', 85.0),
             '<font face="Arial" color="%s"><b>&#11361;&#11361;&#11361;</b></font>' % config.read_colors('moe', 95.0)
         ]
+        self.levels_mog = [0.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0]
 
-    def levels_mog(self):
-        return [0.0, 20.0, 40.0, 55.0, 65.0, 85.0, 95.0, 100.0]
 
     @staticmethod
     def normalizeDigits(value):
@@ -114,12 +112,12 @@ class MarksInTechTree(object):
         p95 = self.percent(0, 0.0, 95.0, d, p)
         p100 = self.percent(0, 0.0, 100.0, d, p)
         data = [0, p20, p40, p55, p65, p85, p95, p100]
-        idx = next((x for x in self.levels_mog() if x >= p), None)
+        idx = next((x for x in self.levels_mog if x >= p), None)
         if idx is None:
             raise ValueError("No level found for the given percent.")
         limit1 = dC
-        limit2 = data[self.levels_mog().index(idx)]
-        check = self.levels_mog().index(idx)
+        limit2 = data[self.levels_mog.index(idx)]
+        check = self.levels_mog.index(idx)
         delta = limit2 - limit1
         for value in range(len(data)):
             if data[value] == limit1 or data[value] == limit2:
@@ -207,7 +205,7 @@ def new_makeHeaderVO(func, *args):
 
 
 @override(NationObjDumper, '_getVehicleData')
-def getExtraInfo(func, *args):
+def new__getExtraInfo(func, *args):
     result = func(*args)
     if config.data['enabled'] and config.data['showInTechTree']:
         dossier = None
@@ -225,7 +223,8 @@ def getExtraInfo(func, *args):
             percent = ''
             markOfGun = dossier.getTotalStats().getAchievement(MARK_ON_GUN_RECORD)
             markOfGunValue = markOfGun.getValue()
-            markOfGunStars = '%s ' % g_marks.marks_mog()[markOfGun.getValue()]
+            markOfGunStars = '%s ' % g_marks.marks_mog[markOfGun.getValue()]
+            color = ['#F8F400', '#60FF00', '#02C9B3', '#D042F3']
             percents = float(dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0)
             if config.data['showInTechTreeMarkOfGunPercent'] and percents:
                 percent = '%.2f' % percents if percents < 100 else '100.0'
@@ -234,7 +233,7 @@ def getExtraInfo(func, *args):
             masteryValue = mastery.getValue()
             if config.data['showInTechTreeMastery'] and masteryValue and masteryValue < 5:
                 markOfGunStars = '<img src="%s" width="16" height="16" vspace="-16"/></img>' % mastery.getSmallIcon().replace('../', '')
-            percentText = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (markOfGunStars, config.read_colors('moe', markOfGunValue), percent, config.data['techTreeX'], config.data['techTreeY'], config.data['techTreeHeight'], config.data['techTreeWidth'])
+            percentText = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (markOfGunStars, color[markOfGunValue], percent, config.data['techTreeX'], config.data['techTreeY'], config.data['techTreeHeight'], config.data['techTreeWidth'])
             result['nameString'] += percentText
     return result
 
