@@ -176,14 +176,7 @@ class ChangeCameraModeAfterShoot(TriggersManager.ITriggerListener):
             if caliber_skip or self.skip_clip and 'clip' in v_desc.gun.tags:
                 return
             aiming_system = input_handler.ctrl.camera.aimingSystem
-            input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE,
-                                               prevModeName=input_handler.ctrlModeName,
-                                               preferredPos=aiming_system.getDesiredShotPoint(),
-                                               turretYaw=aiming_system.turretYaw,
-                                               gunPitch=aiming_system.gunPitch,
-                                               aimingMode=input_handler.ctrl._aimingMode,
-                                               closesDist = False,
-                                               curVehicleID = self.avatar.playerVehicleID)
+            input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE, prevModeName=input_handler.ctrlModeName, preferredPos=aiming_system.getDesiredShotPoint(), turretYaw=aiming_system.turretYaw, gunPitch=aiming_system.gunPitch, aimingMode=input_handler.ctrl._aimingMode, closesDist = False, curVehicleID = self.avatar.playerVehicleID)
 
 
 ChangeCameraModeAfterShoot()

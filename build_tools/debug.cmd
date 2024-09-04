@@ -31,8 +31,19 @@ for /F "tokens=*" %%A in (build_data\debug_targets.txt) do (
     "C:\Program Files\Beyond Compare 4\BCompare.exe" build\wotmods\ "%%A\mods\%ver%\" /solo
 )
 
+if not exist "res\sound_bank_wwise\SixthSense\GeneratedSoundBanks\Windows\driftkings_sixthsense.bnk" (
+    echo [%date% %time%] File not found: res\sound_bank_wwise\SixthSense\GeneratedSoundBanks\Windows\driftkings_sixthsense.bnk >> %logfile%
+)
+else (
+    "C:\Program Files\7-Zip\7z.exe" a -tzip "res\audioww\driftkings_sixthsense.wotmod" "res\sound_bank_wwise\SixthSense\GeneratedSoundBanks\Windows\driftkings_sixthsense.bnk"
+    if %errorlevel%==0 (
+        echo [%date% %time%] Zipping finished successfully >> %logfile%
+    ) else (
+        echo [%date% %time%] Zipping failed with error level %errorlevel% >> %logfile%
+    )
+)
+
 :not_found
 echo [%date% %time%] Debug script finished >> %logfile%
 echo Exiting. Log file: %logfile%
-pause
 exit

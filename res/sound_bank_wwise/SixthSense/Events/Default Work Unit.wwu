@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{22EEF783-73AC-4AAB-8706-E7B410AE9DFD}" SchemaVersion="119">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{22EEF783-73AC-4AAB-8706-E7B410AE9DFD}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="@ wwise_system" ID="{55A153EB-5EFB-47C0-8C7A-BCBDAD6F3049}" ShortID="594886217">
+					<ChildrenList>
+						<Event Name="emptyEvent" ID="{A9C56131-82C7-4427-B318-AED678FDC270}"/>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="SixthSense" ID="{1B067F29-4F76-4E37-A3DD-84DF6295A55F}" ShortID="147451558">
+					<ChildrenList>
+						<Event Name="SixthSense_01" ID="{1A0D4E87-310E-44F3-81A8-322D40F7AB45}">
+							<ChildrenList>
+								<Action Name="" ID="{B36B1279-186E-4398-B090-CD3A30D775AD}" ShortID="167595727">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_01" ID="{F8EB970E-BA33-4179-806E-EA765A96DA8A}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_02" ID="{42A329E0-49A4-45B4-959E-D8134BB8F5B1}">
+							<ChildrenList>
+								<Action Name="" ID="{5EACBF1C-D43B-472D-B9D8-24B24E6DCB98}" ShortID="472812454">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_02" ID="{7E1C2C07-EAF4-4CD2-AD6E-DE6AAB62F3D3}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_03" ID="{D7FB0318-EB18-4951-9256-A35C05248020}">
+							<ChildrenList>
+								<Action Name="" ID="{9E8BD9A9-A40E-4F32-8CC1-953419D39205}" ShortID="940114676">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_03" ID="{02E45A3A-F6EC-444C-B2B6-777B5155DFA2}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_04" ID="{CA9325E5-2187-4F72-8EE3-2F9233351B1A}">
+							<ChildrenList>
+								<Action Name="" ID="{14B898AE-A612-48EE-8762-0A6A75FD7BDC}" ShortID="31631700">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_04" ID="{2675AD14-2C3C-4DC6-9739-122A24C5CC22}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_05" ID="{8CD81120-593A-4F4C-8287-3DE2AE65A9CD}">
+							<ChildrenList>
+								<Action Name="" ID="{6C3AA754-5966-4450-88CA-E25976505CE7}" ShortID="711839689">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_05" ID="{153695A4-1AD3-44D5-A6F4-2DC6B06A9030}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_06" ID="{2A1EA055-D085-43A0-8CB6-75F1C1B62192}">
+							<ChildrenList>
+								<Action Name="" ID="{120E5026-01E1-45DD-897A-17B7B1FB0A8E}" ShortID="874512382">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_06" ID="{5E78C357-54CB-4D00-B156-8FB9748F557C}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_07" ID="{72796AB1-C968-4142-8BCB-DEB9ACD2839C}">
+							<ChildrenList>
+								<Action Name="" ID="{7FBBD4E2-B87A-4677-A3DE-41AEEA283F19}" ShortID="341629173">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_07" ID="{E3BCF190-FA35-4A3C-9629-CD2423E308A9}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_08" ID="{EA3927D5-4179-4E52-B9AA-DF47B58CF2DE}">
+							<ChildrenList>
+								<Action Name="" ID="{6D44A338-3C70-467F-BCDE-55F83FB40E04}" ShortID="150376697">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_08" ID="{68839B63-4FE1-4F0F-81BC-DB15DDFED87C}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_09" ID="{B80C4968-48DF-498A-9393-3FAA5B56BB22}">
+							<ChildrenList>
+								<Action Name="" ID="{CD5FCE11-7BB1-4501-982E-AC61365359C1}" ShortID="397156478">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_09" ID="{A63D8A47-CCEF-4324-8C70-E4A650724E45}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="SixthSense_10" ID="{A26E8FBB-1C7A-4EFE-B352-2982AF4A5672}">
+							<ChildrenList>
+								<Action Name="" ID="{F6862A23-E334-4C3C-979D-F77E7B694C69}" ShortID="547527190">
+									<PropertyList>
+										<Property Name="ActionType" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SixthSense_10" ID="{CB90BFBE-803F-409C-A926-1A12E9C97225}" WorkUnitID="{47FEE6D6-CBAB-427C-A250-2BADF4F2CA45}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

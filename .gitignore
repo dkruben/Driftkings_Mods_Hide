@@ -43,3 +43,11 @@ source/scripts/client/gui/mods/Config_Generator/__init__.py
 res/flash/FlightTimer/FlightTimer.as3proj
 res/flash/FlightTimer/obj/FlightTimerConfig.xml
 debug_20243108_
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_XFiles.wav
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_SuperMario.wav
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_Sauron.wav
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense__Electro.wav
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_Buzz.wav
+res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_BuzzTimer.wav
+res/sound_bank_wwise/SixthSense/GeneratedSoundBanks/Windows/driftkings_sixthsense.bnk
+res/sound_bank_wwise/SixthSense/GeneratedSoundBanks/Windows/Init.bnk
