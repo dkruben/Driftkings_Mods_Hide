@@ -1,8 +1,8 @@
 Licença Pública Geral Menor GNU
 ================================
 
-_Versão 3, 29 de junho de 2007_2024
-_Copyright © 2024 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
+Versão 3, 29 de junho de 2007_2024
+Copyright © 2024 Free Software Foundation, Inc. &lt;<http://fsf.org/>&gt;_
 
 Todos têm permissão para copiar e distribuir cópias literais
 deste documento de licença, mas não é permitido alterá-lo.
