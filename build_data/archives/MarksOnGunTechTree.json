@@ -1,5 +1,5 @@
 {
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
 		"mods/configs/Driftkings/MarksOnGunTechTree/MarksOnGunTechTree.json": "res/configs/Driftkings/MarksOnGunTechTree/MarksOnGunTechTree.json",

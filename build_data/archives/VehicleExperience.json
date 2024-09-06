@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/VehicleExperience/VehicleExperience.json": "res/configs/Driftkings/VehicleExperience/VehicleExperience.json",

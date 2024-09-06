@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/MarksOnGunBattle/MarksOnGunBattle.json": "res/configs/Driftkings/MarksOnGunBattle/MarksOnGunBattle.json",

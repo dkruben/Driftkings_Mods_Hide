@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {		
         "mods/configs/Driftkings/LogsSwapper/LogsSwapper.json": "res/configs/Driftkings/LogsSwapper/LogsSwapper.json",

@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json":  "res/configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json",

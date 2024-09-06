@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/ZoomExtended/ZoomExtended.json": "res/configs/Driftkings/ZoomExtended/ZoomExtended.json",

@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",

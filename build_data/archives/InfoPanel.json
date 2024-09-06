@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {		
         "mods/configs/Driftkings/InfoPanel/InfoPanel.json": "res/configs/Driftkings/InfoPanel/InfoPanel.json",

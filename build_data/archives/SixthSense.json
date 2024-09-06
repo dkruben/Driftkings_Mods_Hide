@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
 	    "mods/configs/Driftkings/BanksLoader/BanksLoader.json": "res/configs/Driftkings/BanksLoader/BanksLoader.json",

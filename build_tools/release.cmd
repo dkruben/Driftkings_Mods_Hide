@@ -1,5 +1,5 @@
 @echo off
-C:\Python27\python.exe build_tools/packer.py -q -v build_data/GAME_VERSION build_data/archives/ build/archives/
+F:\Python27\python.exe build_tools/packer.py -q -v build_data/GAME_VERSION build_data/archives/ build/archives/
 "C:\Program Files\Beyond Compare 4\BCompare.exe"
 if ERRORLEVEL 1 (
     echo Beyond Compare not found on PATH, skipping...

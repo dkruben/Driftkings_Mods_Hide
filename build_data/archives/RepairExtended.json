@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/RepairExtended/RepairExtended.json": "res/configs/Driftkings/RepairExtended/RepairExtended.json",

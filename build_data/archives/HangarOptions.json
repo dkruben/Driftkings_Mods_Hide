@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": true,
+    "enabled": false,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/HangarOptions/HangarOptions.json": "res/configs/Driftkings/HangarOptions/HangarOptions.json",
