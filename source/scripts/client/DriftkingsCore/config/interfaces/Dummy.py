@@ -5,9 +5,9 @@ from ..template_builders import DummyTemplateBuilder
 
 
 class DummyConfigInterface(object):
-    modSettingsContainers = {}
-    isMSAOpen = property(lambda self: getattr(self.modSettingsContainers.get(self.modSettingsID), 'isMSAOpen', False))
-    MSAInstance = property(lambda self: self.modSettingsContainers.get(self.modSettingsID))
+    modsSettingsContainers = {}
+    isMSAOpen = property(lambda self: getattr(self.modsSettingsContainers.get(self.modsSettingsID), 'isMSAOpen', False))
+    MSAInstance = property(lambda self: self.modsSettingsContainers.get(self.modsSettingsID))
 
     def __init__(self):
         """Declaration for attribute placeholders, all attributes should be defined in init(), getData() and loadLang()"""
@@ -15,7 +15,7 @@ class DummyConfigInterface(object):
         self.modsGroup = ''
         self.i18n = {}
         self.lang = DEFAULT_LANGUAGE
-        self.modSettingsID = self.ID + '_settings'
+        self.modsSettingsID = self.ID + '_settings'
         self.init()
         self.loadLang()
         self.tb = self.createTB()
@@ -90,7 +90,7 @@ class DummyConfigInterface(object):
         """
         if self.MSAInstance is None:
             return
-        self.MSAInstance.config['templates'][self.ID] = self.template
+        self.MSAInstance.state['templates'][self.ID] = self.template
         self.MSAInstance.updateModSettings(self.ID, self.getData())
 
     def onMSAPopulate(self):

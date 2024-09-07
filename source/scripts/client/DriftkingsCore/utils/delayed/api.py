@@ -1,7 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 import traceback
 from functools import partial
+
 from DriftkingsCore import loadJson, override, logError, smart_update
+
 
 __all__ = ('g_modsListApi', 'registerSettings',)
 
@@ -11,40 +13,33 @@ def try_import():
         from gui.modsListApi import g_modsListApi as modsListApi
     except ImportError:
         logError('DriftkingsCore', 'ModsListApi package not found, ModsSettingsApi check skipped')
-
         class ModsList(object):
             @staticmethod
             def addModification(*_, **__):
                 return NotImplemented
-
             @staticmethod
             def updateModification(*_, **__):
                 return NotImplemented
-
             @staticmethod
             def alertModification(*_, **__):
                 return NotImplemented
-
             @staticmethod
             def clearModificationAlert(*_, **__):
                 return NotImplemented
-
         modsListApi = ModsList()
         return modsListApi, None, None
 
     try:
-        # WG
-        from Event import SafeEvent
+        import Event
         from gui.shared.personality import ServicesLocator
         from gui.shared.utils.functions import makeTooltip
         from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
         from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
-        # modsSettingsApi
         from gui.modsSettingsApi.api import ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
         from gui.modsSettingsApi.l10n import l10n
-        from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow
+        from gui.modsSettingsApi.view import ModsSettingsApiWindow
         from gui.modsSettingsApi.context_menu import HotkeyContextMenuHandler
         from gui.modsSettingsApi._constants import MOD_ICON, VIEW_ALIAS
     except ImportError as e:
@@ -66,10 +61,6 @@ def try_import():
             self._ContextMenuManager__currentHandler.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
 
     class DriftkingsSettings(ModsSettingsApi):
-        """
-        Custom class for Driftkings mod settings.
-        """
-
         def __init__(self, modsGroup, ID, langID, i18n):
             self.modsGroup = modsGroup
             self.ID = ID
@@ -77,20 +68,16 @@ def try_import():
             self.modSettingsID = 'Driftkings_GUI'
             self.isMSAWindowOpen = False
             self.activeMods = set()
-            self.config = {'templates': {}, 'settings': {}, 'data': {}}
+            self.state = {'templates': {}, 'settings': {}, 'storage': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
-            self.onSettingsChanged = SafeEvent()
-            self.onButtonClicked = SafeEvent()
-            self.onWindowClosed = SafeEvent()
-            self.updateHotKeys = SafeEvent()
-            self.onWindowOpened = SafeEvent()
-
-            # Initialize hotkeys controller
+            self.onSettingsChanged = Event.Event()
+            self.onButtonClicked = Event.Event()
+            self.onWindowClosed = Event.Event()
+            self.onWindowOpened = Event.Event()
+            self.onHotkeysUpdated = Event.Event()
             self.hotkeys = HotkeysController(self)
-            self.hotkeys.onUpdated += self.updateHotKeys
 
-            # Initialize user settings
             self.userSettings = {
                 'modsListApiName': l10n('name'),
                 'modsListApiDescription': l10n('description'),
@@ -98,13 +85,11 @@ def try_import():
                 'windowTitle': l10n('name'),
                 'enableButtonTooltip': makeTooltip(l10n('stateswitcher/tooltip/header'), l10n('stateswitcher/tooltip/body')),
             }
+
             smart_update(self.userSettings, i18n)
+            self.loadSettings()
+            self.loadState()
 
-            # Load settings and config
-            self.settingsLoad()
-            self.configLoad()
-
-            # Add modification to modsListApi
             modsListApi.addModification(
                 id=ID,
                 name=self.userSettings.get('modsListApiName'),
@@ -138,36 +123,25 @@ def try_import():
             if alias in self.buttonListeners:
                 self.buttonListeners[alias](*args, **kwargs)
 
-        def settingsLoad(self):
-            try:
-                config_data = loadJson(self.ID, self.lang, self.userSettings, 'mods/configs/%s/%s/i18n/' % (self.modsGroup, self.ID))
-                smart_update(self.userSettings, config_data)
-            except IOError:
-                logError('DriftkingsCore', 'Configuration file not found for ID: %s' % self.ID)
-            except Exception as err:
-                logError('DriftkingsCore', 'Error loading configurations: %s' % str(err))
+        def loadSettings(self):
+            smart_update(self.userSettings, loadJson(self.ID, self.lang, self.userSettings, 'mods/configs/%s/%s/i18n/' % (self.modsGroup, self.ID)))
 
-        def configLoad(self):
+        def loadState(self):
             pass
 
-        def configSave(self):
+        def saveState(self):
             pass
 
-        def setModTemplate(self, linkage, template, callback, buttonHandler):
+        def setModTemplate(self, linkage, template, callback, buttonHandler=None):
             self.settingsListeners[linkage] = callback
             self.buttonListeners[linkage] = buttonHandler
             return super(DriftkingsSettings, self).setModTemplate(linkage, template, self.MSAApply, self.MSAButton)
 
     return modsListApi, ModsSettingsApi, DriftkingsSettings
 
-
 g_modsListApi, MSA_Orig, ModsSettings = try_import()
 
-
 def registerSettings(config):
-    """
-    Register a settings block in this mod's settings window.
-    """
     newLangID = config.lang
     try:
         from helpers import getClientLanguage
@@ -175,17 +149,16 @@ def registerSettings(config):
         if newLangID != config.lang:
             config.lang = newLangID
             config.loadLang()
-    except StandardError:
+    except Exception:
         traceback.print_exc()
-
     if MSA_Orig is None:
         print config.LOG, '=' * 25
         print config.LOG, 'no-GUI mode activated'
         print config.LOG, '=' * 25
         return
-    if config.modSettingsID not in config.modSettingsContainers:
-        config.modSettingsContainers[config.modSettingsID] = ModsSettings(config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
-    msc = config.modSettingsContainers[config.modSettingsID]
+    if config.modsSettingsID not in config.modsSettingsContainers:
+        config.modsSettingsContainers[config.modsSettingsID] = ModsSettings(config.modsGroup, config.modsSettingsID, newLangID, config.container_i18n)
+    msc = config.modsSettingsContainers[config.modsSettingsID]
     msc.onWindowOpened += config.onMSAPopulate
     msc.onWindowClosed += config.onMSADestroy
     if not hasattr(config, 'blockIDs'):

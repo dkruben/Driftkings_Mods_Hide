@@ -51,6 +51,6 @@ res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_Buzz.wav
 res/sound_bank_wwise/SixthSense/Originals/SFX/SixthSense_BuzzTimer.wav
 res/sound_bank_wwise/SixthSense/GeneratedSoundBanks/Windows/driftkings_sixthsense.bnk
 res/sound_bank_wwise/SixthSense/GeneratedSoundBanks/Windows/Init.bnk
-debug_20240609_184527.log
+debug_*_*.log
 /source/scripts/client/modsListApi
 /source/scripts/client/modsSettingsApi
