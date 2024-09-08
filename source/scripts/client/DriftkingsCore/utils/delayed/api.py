@@ -157,7 +157,8 @@ def registerSettings(config):
         print config.LOG, '=' * 25
         return
     if config.modsSettingsID not in config.modsSettingsContainers:
-        config.modsSettingsContainers[config.modsSettingsID] = ModsSettings(config.modsGroup, config.modsSettingsID, newLangID, config.container_i18n)
+        config.modsSettingsContainers[config.modsSettingsID] = ModsSettings(
+            config.modsGroup, config.modsSettingsID, newLangID, config.container_i18n)
     msc = config.modsSettingsContainers[config.modsSettingsID]
     msc.onWindowOpened += config.onMSAPopulate
     msc.onWindowClosed += config.onMSADestroy
@@ -165,5 +166,4 @@ def registerSettings(config):
         msc.setModTemplate(config.ID, config.template, config.onApplySettings, config.onButtonPress)
         return
     templates = config.template
-    for ID in config.blockIDs:
-        msc.setModTemplate(config.ID + ID, templates[ID], partial(config.onApplySettings, blockID=ID), partial(config.onButtonPress, blockID=ID))
+    [msc.setModTemplate(config.ID + ID, templates[ID], partial(config.onApplySettings, blockID=ID), partial(config.onButtonPress, blockID=ID))for ID in config.blockIDs]
