@@ -44,10 +44,10 @@ def try_import():
         from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
         from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
-        from gui.modsSettingsApi.api import loadView, ModsSettingsApi
+        from gui.modsSettingsApi.api import ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
         from gui.modsSettingsApi.l10n import l10n
-        from gui.modsSettingsApi.view import ModsSettingsApiWindow
+        from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow
         from gui.modsSettingsApi.context_menu import HotkeyContextMenuHandler
         from gui.modsSettingsApi._constants import MOD_ICON, VIEW_ALIAS
     except ImportError as err:
@@ -58,14 +58,14 @@ def try_import():
     HotkeyContextMenuHandler.api = None
 
     @override(ModsSettingsApiWindow, '__init__')
-    def new_view_init(func, self, ctx, *_, **__):
+    def new_view_init(func, self, ctx, *args, **kwargs):
         self.api = ctx
+        func(self, ctx, *args, **kwargs)
 
     @override(HotkeyContextMenuHandler, '__init__')
-    def new_ctx_init(base, self, *args, **kwargs):
+    def new_ctx_init(func, self, *args, **kwargs):
         self.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
-        base(self, *args, **kwargs)
-
+        func(self, *args, **kwargs)
 
     class DriftkingsSettings(ModsSettingsApi):
         def __init__(self, modsGroup, ID, langID, i18n):
@@ -75,16 +75,15 @@ def try_import():
             self.modSettingsID = 'Driftkings_GUI'
             self.isMSAWindowOpen = False
             self.activeMods = set()
-            self.state = {'templates': {}, 'settings': {}, 'storage': {}}
+            self.state = {'templates': {}, 'settings': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
+            self.hotkeys = HotkeysController(self)
             self.onSettingsChanged = Event.Event()
             self.onButtonClicked = Event.Event()
             self.onWindowClosed = Event.Event()
             self.onWindowOpened = Event.Event()
             self.onHotkeysUpdated = Event.Event()
-            self.hotkeys = HotkeysController(self)
-
             self.userSettings = {
                 'modsListApiName': l10n('name'),
                 'modsListApiDescription': l10n('description'),
@@ -92,7 +91,6 @@ def try_import():
                 'windowTitle': l10n('name'),
                 'enableButtonTooltip': makeTooltip(l10n('stateswitcher/tooltip/header'), l10n('stateswitcher/tooltip/body')),
             }
-
             smart_update(self.userSettings, i18n)
             self.loadSettings()
             self.loadState()
@@ -134,7 +132,7 @@ def try_import():
         def saveState(self):
             pass
 
-        def setModTemplate(self, linkage, template, callback, buttonHandler=None):
+        def setModTemplate(self, linkage, template, callback, buttonHandler):
             self.settingsListeners[linkage] = callback
             self.buttonListeners[linkage] = buttonHandler
             return super(DriftkingsSettings, self).setModTemplate(linkage, template, self.MSAApply, self.MSAButton)
@@ -142,6 +140,7 @@ def try_import():
     return modsListApi, ModsSettingsApi, DriftkingsSettings
 
 g_modsListApi, MSA_Orig, ModsSettings = try_import()
+
 
 def registerSettings(config):
     newLangID = config.lang
