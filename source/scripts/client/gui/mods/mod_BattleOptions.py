@@ -12,6 +12,7 @@ from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
+import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
@@ -64,6 +65,7 @@ class ConfigInterface(SimpleConfigInterface):
             'color': 'FF002A',
             'showFriends': False,
             'inBattle': True,
+            'maxChatLines': 6,
             'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
             'directivesOnlyFromStorage': False,
             'position': {'x': -870, 'y': 1}
@@ -100,7 +102,9 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_hideBadges_text': 'Hide Badges',
             'UI_setting_hideBadges_tooltip': '',
             'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
-            'UI_setting_hideBattlePrestige_tooltip': ''
+            'UI_setting_hideBattlePrestige_tooltip': '',
+            'UI_setting_maxChatLines_text': 'Max Chat Lines',
+            'UI_setting_maxChatLines_tooltip': 'Limit the number of battle chat lines.',
         }
         super(ConfigInterface, self).init()
 
@@ -119,6 +123,7 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('hideClanName'),
                 self.tb.createControl('hideBadges'),
                 self.tb.createControl('hideBattlePrestige'),
+                self.tb.createSlider('maxChatLines', 1, 15, 1, '{{value}}% Lines')
             ],
             'column2': [
                 self.tb.createControl('muteTeamBaseSound'),
@@ -326,6 +331,13 @@ def new__VehicleArenaInfoVO(func, self, **kwargs):
         if config.data['hideClanName'] and 'clanAbbrev' in kwargs:
             kwargs['clanAbbrev'] = ''
     return func(self, **kwargs)
+
+# limit of lines in battle
+@overrideMethod(messenger_view, '_makeSettingsVO')
+def new__makeSettingsVO(func, self):
+    makeSettingsVO = func(self)
+    makeSettingsVO['numberOfMessagesInHistory'] = config.data['maxChatLines']
+    return makeSettingsVO
 
 
 @adisp_process

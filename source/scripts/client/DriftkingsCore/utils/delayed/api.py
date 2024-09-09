@@ -14,15 +14,23 @@ def try_import():
     except ImportError:
         logError('DriftkingsCore', 'ModsListApi package not found, ModsSettingsApi check skipped')
         class ModsList(object):
+
             @staticmethod
             def addModification(*_, **__):
                 return NotImplemented
+
             @staticmethod
             def updateModification(*_, **__):
                 return NotImplemented
+
+            @staticmethod
+            def removeModification(*_, **__):
+                return NotImplemented
+
             @staticmethod
             def alertModification(*_, **__):
                 return NotImplemented
+
             @staticmethod
             def clearModificationAlert(*_, **__):
                 return NotImplemented
@@ -36,29 +44,28 @@ def try_import():
         from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
         from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
-        from gui.modsSettingsApi.api import ModsSettingsApi
+        from gui.modsSettingsApi.api import loadView, ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
         from gui.modsSettingsApi.l10n import l10n
         from gui.modsSettingsApi.view import ModsSettingsApiWindow
         from gui.modsSettingsApi.context_menu import HotkeyContextMenuHandler
         from gui.modsSettingsApi._constants import MOD_ICON, VIEW_ALIAS
-    except ImportError as e:
-        logError('DriftkingsCore: ModsSettingsApi package not loaded:', e)
+    except ImportError as err:
+        logError('DriftkingsCore: ModsSettingsApi package not loaded:', err)
         return modsListApi, None, None
 
     ModsSettingsApiWindow.api = None
     HotkeyContextMenuHandler.api = None
 
     @override(ModsSettingsApiWindow, '__init__')
-    def new_init(func, self, ctx, *args, **kwargs):
+    def new_view_init(func, self, ctx, *_, **__):
         self.api = ctx
-        return func(self, ctx, *args, **kwargs)
 
-    @override(ContextMenuManager, 'requestOptions')
-    def new_requestOptions(func, self, handlerType, ctx, *args, **kwargs):
-        func(self, handlerType, ctx, *args, **kwargs)
-        if handlerType == 'modsSettingsHotkeyContextMenuHandler':
-            self._ContextMenuManager__currentHandler.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
+    @override(HotkeyContextMenuHandler, '__init__')
+    def new_ctx_init(base, self, *args, **kwargs):
+        self.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
+        base(self, *args, **kwargs)
+
 
     class DriftkingsSettings(ModsSettingsApi):
         def __init__(self, modsGroup, ID, langID, i18n):
@@ -102,15 +109,10 @@ def try_import():
             )
             self.onWindowClosed += self.MSADispose
 
-        @staticmethod
-        def MSALoad(api=None):
-            app = ServicesLocator.appLoader.getApp()
-            app.loadView(SFViewLoadParams(VIEW_ALIAS, VIEW_ALIAS), ctx=api)
-
         def MSAPopulate(self):
             self.isMSAWindowOpen = True
             self.onWindowOpened()
-            self.MSALoad(self)
+            loadView(self)
 
         def MSADispose(self):
             self.isMSAWindowOpen = False
@@ -152,14 +154,13 @@ def registerSettings(config):
     except Exception:
         traceback.print_exc()
     if MSA_Orig is None:
-        print config.LOG, '=' * 25
+        print config.LOG, '=' * 35
         print config.LOG, 'no-GUI mode activated'
-        print config.LOG, '=' * 25
+        print config.LOG, '=' * 35
         return
-    if config.modsSettingsID not in config.modsSettingsContainers:
-        config.modsSettingsContainers[config.modsSettingsID] = ModsSettings(
-            config.modsGroup, config.modsSettingsID, newLangID, config.container_i18n)
-    msc = config.modsSettingsContainers[config.modsSettingsID]
+    if config.modSettingsID not in config.modSettingsContainers:
+        config.modSettingsContainers[config.modSettingsID] = ModsSettings(config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
+    msc = config.modSettingsContainers[config.modSettingsID]
     msc.onWindowOpened += config.onMSAPopulate
     msc.onWindowClosed += config.onMSADestroy
     if not hasattr(config, 'blockIDs'):

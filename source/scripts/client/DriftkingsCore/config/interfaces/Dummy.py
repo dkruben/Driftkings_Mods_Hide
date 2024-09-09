@@ -5,9 +5,9 @@ from ..template_builders import DummyTemplateBuilder
 
 
 class DummyConfigInterface(object):
-    modsSettingsContainers = {}
-    isMSAOpen = property(lambda self: getattr(self.modsSettingsContainers.get(self.modsSettingsID), 'isMSAOpen', False))
-    MSAInstance = property(lambda self: self.modsSettingsContainers.get(self.modsSettingsID))
+    modSettingsContainers = {}
+    isMSAOpen = property(lambda self: getattr(self.modSettingsContainers.get(self.modSettingsID), 'isMSAOpen', False))
+    MSAInstance = property(lambda self: self.modSettingsContainers.get(self.modSettingsID))
 
     def __init__(self):
         """Declaration for attribute placeholders, all attributes should be defined in init(), getData() and loadLang()"""
@@ -15,7 +15,7 @@ class DummyConfigInterface(object):
         self.modsGroup = ''
         self.i18n = {}
         self.lang = DEFAULT_LANGUAGE
-        self.modsSettingsID = self.ID + '_settings'
+        self.modSettingsID = self.ID + '_settings'
         self.init()
         self.loadLang()
         self.tb = self.createTB()
@@ -160,7 +160,7 @@ class DummyConfBlockInterface(DummyConfigInterface):
         templates = self.template
         # saves calls
         for blockID in self.blockIDs:
-            self.MSAInstance.config['templates'][self.ID + blockID] = templates[blockID]
+            self.MSAInstance.state['templates'][self.ID + blockID] = templates[blockID]
             self.MSAInstance.updateModSettings(self.ID + blockID, self.getData(blockID))
 
     def onButtonPress(self, v_name, value, blockID=None):
