@@ -1,6 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 from collections import defaultdict
-from math import ceil
 
 from Event import SafeEvent
 from constants import ARENA_GUI_TYPE
@@ -29,7 +28,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'DriftKing\'s'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -157,7 +156,7 @@ class MainGun(MainGunMeta, IBattleFieldListener):
             self.updateMainGun()
         if self.totalEnemiesHP != totalEnemiesHP:
             self.totalEnemiesHP = totalEnemiesHP
-            self.gunScore = max(1000, int(ceil(totalEnemiesHP * 0.2)))
+            self.gunScore = max(1000, totalEnemiesHP / 5)
             self.updateMainGun()
 
     def updateMainGun(self):

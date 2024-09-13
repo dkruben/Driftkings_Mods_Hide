@@ -34,7 +34,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.0 %(file_compile_date)s'
+        self.version = '1.4.5 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -118,13 +118,14 @@ class Flash(object):
         self.createBox(0)
 
     def createBox(self, idx):
-        g_guiFlash.createComponent(self.ID + '.text%s' % idx, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.TOP})
+        component_id = self._getTextComponentID(idx)
+        g_guiFlash.createComponent(component_id, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.TOP})
         shadow = config.data['textShadow']
         if shadow['enabled']:
-            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'shadow': shadow})
+            g_guiFlash.updateComponent(component_id, {'shadow': shadow})
 
     def removeBox(self, idx):
-        g_guiFlash.deleteComponent(self.ID + '.text%s' % idx)
+        g_guiFlash.deleteComponent(self._getTextComponentID(idx))
 
     def addText(self, text):
         if not config.data['enabled']:
@@ -132,16 +133,20 @@ class Flash(object):
         if self.isTextAdding:
             callback(0.1, partial(self.addText, text))
             return
-        styleConf = config.data['textStyle']
-        text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (styleConf['size'], styleConf['font'], styleConf['align'], text)
-        if len(self.texts):
+        style_conf = config.data['textStyle']
+        formatted_text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (style_conf['size'], style_conf['font'], style_conf['align'], text)
+
+        if self.texts:
             self.removeFirstText()
+
         idx = len(self.texts)
-        self.texts.append(text)
-        if idx:
+        self.texts.append(formatted_text)
+
+        if idx > 0:
             self.createBox(idx)
-        g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': text})
-        g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'alpha': 1.0}, {'duration': 0.5})
+
+        g_guiFlash.updateComponent(self._getTextComponentID(idx), {'text': formatted_text})
+        g_guiFlash.updateComponent(self._getTextComponentID(idx), {'alpha': 1.0}, {'duration': 0.5})
         self.isTextAdding = True
         callback(0.5, self.onTextAddingComplete)
         self.callbacks.append(callback(config.data['delay'] + 0.5, self.removeFirstText))
@@ -151,12 +156,10 @@ class Flash(object):
 
     def onTextRemovalComplete(self):
         self.isTextRemoving = False
-        for idx in xrange(len(self.texts)):
-            y = idx
-            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'text': self.texts[idx], 'alpha': 1.0, 'y': y})
-        idx = len(self.texts)
-        if idx:
-            self.removeBox(idx)
+        for idx in range(len(self.texts)):
+            g_guiFlash.updateComponent(self._getTextComponentID(idx), {'text': self.texts[idx], 'alpha': 1.0, 'y': idx})
+        if len(self.texts) > 0:
+            self.removeBox(len(self.texts))
 
     def removeFirstText(self):
         if self.isTextRemoving:
@@ -173,10 +176,14 @@ class Flash(object):
                 traceback.print_exc()
             del self.callbacks[0]
         self.isTextRemoving = True
-        g_guiFlash.updateComponent(self.ID + '.text0', {'alpha': 0.0}, {'duration': 0.5})
-        for idx in xrange(1, len(self.texts) + 1):
-            g_guiFlash.updateComponent(self.ID + '.text%s' % idx, {'y': 0}, {'duration': 0.5})
+        g_guiFlash.updateComponent(self._getTextComponentID(0), {'alpha': 0.0}, {'duration': 0.5})
+        for idx in range(1, len(self.texts) + 1):
+            g_guiFlash.updateComponent(self._getTextComponentID(idx), {'y': 0}, {'duration': 0.5})
         callback(0.5, self.onTextRemovalComplete)
+
+    def _getTextComponentID(self, idx):
+        """Returns the ID of the formatted text component."""
+        return '{}.text{}'.format(self.ID, idx)
 
 
 g_flash = None
@@ -218,7 +225,7 @@ class DataConstants(object):
         self._playerVehicle = playerVehicle
         self._vehicle = vehicle
         self._typeDescriptor = vehicle.typeDescriptor if vehicle is not None else self._playerVehicle.typeDescriptor
-        self._gunShots = self._typeDescriptor.gun.shots
+        self._gunShots = self._typeDescriptor.gun.shots if self._typeDescriptor else None
 
     def reset(self):
         self._playerVehicle = None
@@ -227,55 +234,52 @@ class DataConstants(object):
         self._gunShots = None
 
     def nick_name(self):
-        return None if not self._vehicle else '%s' % self._vehicle.publicInfo.name
+        return self._vehicle.publicInfo.name if self._vehicle else None
 
     def marks_on_gun(self):
-        return None if not self._vehicle else '%s' % self._vehicle.publicInfo.marksOnGun
+        return self._vehicle.publicInfo.marksOnGun if self._vehicle else None
 
     def vehicle_type(self):
-        vehType = None
-        if self._typeDescriptor is not None and 'lightTank' in self._typeDescriptor.type.tags:
-            vehType = 'LT'
-        elif self._typeDescriptor is not None and 'mediumTank' in self._typeDescriptor.type.tags:
-            vehType = 'MT'
-        elif self._typeDescriptor is not None and 'heavyTank' in self._typeDescriptor.type.tags:
-            vehType = 'HT'
-        elif self._typeDescriptor is not None and 'AT-SPG' in self._typeDescriptor.type.tags:
-            vehType = 'TD'
-        elif self._typeDescriptor is not None and 'SPG' in self._typeDescriptor.type.tags:
-            vehType = 'SPG'
-        return vehType
+        if self._typeDescriptor:
+            tags = self._typeDescriptor.type.tags
+            if 'lightTank' in tags:
+                return 'LT'
+            elif 'mediumTank' in tags:
+                return 'MT'
+            elif 'heavyTank' in tags:
+                return 'HT'
+            elif 'AT-SPG' in tags:
+                return 'TD'
+            elif 'SPG' in tags:
+                return 'SPG'
+        return None
 
     def vehicle_name(self):
-        return None if not self._typeDescriptor else '%s' % self._typeDescriptor.type.userString
+        return self._typeDescriptor.type.userString if self._typeDescriptor else None
 
     def vehicle_system_name(self):
-        return None if not self._typeDescriptor else '%s' % self._typeDescriptor.name
+        return self._typeDescriptor.name if self._typeDescriptor else None
 
     def icon_system_name(self):
-        return None if not self._typeDescriptor else '%s' % (self._typeDescriptor.name.replace(':', '-'))
+        return self._typeDescriptor.name.replace(':', '-') if self._typeDescriptor else None
 
     def gun_name(self):
-        return None if not self._typeDescriptor else '%s' % self._typeDescriptor.gun.shortUserString
-
-    @staticmethod
-    def gun_caliber():
-        return None if not gs else '%d' % gs[0].shell.caliber
+        return self._typeDescriptor.gun.shortUserString if self._typeDescriptor else None
 
     def max_ammo(self):
-        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.gun.maxAmmo
+        return self._typeDescriptor.gun.maxAmmo if self._typeDescriptor else None
 
     def gun_reload(self):
-        return None if not self._typeDescriptor else '%.2f' % self._typeDescriptor.gun.reloadTime
+        return '%.2f' % self._typeDescriptor.gun.reloadTime if self._typeDescriptor else None
 
     def gun_dpm(self):
         if not self._typeDescriptor:
             return None
-        else:
-            time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-            shell = self._typeDescriptor.gun.shots[0].shell
-            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
+        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * \
+               self._typeDescriptor.gun.clip[1]
+        shell = self._typeDescriptor.gun.shots[0].shell
+        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+        return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
 
     def gun_reload_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         if not self._typeDescriptor:
@@ -304,12 +308,11 @@ class DataConstants(object):
     def gun_dpm_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         if not self._typeDescriptor:
             return None
-        else:
-            reload_equip = float(self.gun_reload_equip(eq1, eq2, eq3, eq4))
-            time = reload_equip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-            shell = self._typeDescriptor.gun.shots[0].shell
-            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-            return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
+        reload_equip = float(self.gun_reload_equip(eq1, eq2, eq3, eq4))
+        time = reload_equip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
+        shell = self._typeDescriptor.gun.shots[0].shell
+        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+        return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
 
     def gun_clip(self):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.gun.clip[0])
@@ -439,7 +442,7 @@ class DataConstants(object):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.turret.primaryArmor[2])
 
     def vehicle_weight(self):
-        return None if not self._typeDescriptor else '%.1f' % (round(self._typeDescriptor.physics['weight'] / 1000, 1))
+        return '%.1f' % (round(self._typeDescriptor.physics['weight'] / 1000, 1)) if self._typeDescriptor else None
 
     def chassis_max_weight(self):
         return None if not self._typeDescriptor else '%.1f' % (round(self._typeDescriptor.chassis.maxLoad / 1000, 1))
@@ -453,10 +456,9 @@ class DataConstants(object):
     def engine_power_density(self):
         if not self._typeDescriptor:
             return None
-        else:
-            power = self._typeDescriptor.engine.power / 735.49875
-            weight = self._typeDescriptor.physics['weight'] / 1000
-            return '%.2f' % (round(power / weight, 2))
+        power = self._typeDescriptor.engine.power / 735.49875
+        weight = self._typeDescriptor.physics['weight'] / 1000
+        return '%.2f' % (round(power / weight, 2))
 
     def speed_forward(self):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.physics['speedLimits'][0] * 3.6)
@@ -498,7 +500,7 @@ class DataConstants(object):
         return None if not self._typeDescriptor else '%d' % self._typeDescriptor.type.level
 
     def rlevel(self):
-        _ROMAN_LEVEL = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X')
+        _ROMAN_LEVEL = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI')
         return None if not self._typeDescriptor else _ROMAN_LEVEL[self._typeDescriptor.type.level - 1]
 
     def pl_gun_reload(self):
@@ -531,17 +533,17 @@ class DataConstants(object):
 
 
 class CompareMacros(object):
+    __slots__ = ('value1', 'value2')
+
     def __init__(self):
         self.value1 = None
         self.value2 = None
 
     def reset(self):
-        """Resets the values or Name."""
         self.value1 = None
         self.value2 = None
 
     def set_data(self, value1, value2):
-        """Defines the values, converting them to float."""
         try:
             self.value1 = float(value1)
             self.value2 = float(value2)
@@ -583,33 +585,42 @@ class InfoPanel(DataConstants):
         if not hasattr(self, func_name):
             return None
         func = getattr(self, func_name, None)
-        if (func is not None) and callable(func):
+        if callable(func):
             result = func()
             return str(result) if result is not None else ''
-        else:
-            return None
+        return None
 
     def set_texts_formatted(self):
         if not config.data['enabled']:
-            return
+            return ''
 
         text_format = self.textFormats
-        for macro in MACROS:
+        text_format = self.replace_macros(text_format, MACROS)
+        text_format = self.replace_compare_macros(text_format, COMPARE_MACROS)
+
+        return text_format
+
+    def replace_macros(self, text_format, macros):
+        for macro in macros:
             if macro in text_format:
-                func_name = macro.replace('{', '').replace('}', '')
+                func_name = macro.strip('{}')
                 func_response = self.get_func_response(func_name)
                 text_format = text_format.replace(macro, func_response)
+        return text_format
 
-        for macro in COMPARE_MACROS:
+    def replace_compare_macros(self, text_format, compare_macros):
+        for macro in compare_macros:
             if macro in text_format:
-                reader = text_format[text_format.find(macro + '('):text_format.find(')', text_format.index(macro + '(') + 6) + 1]
-                func = reader[:reader.find('(')]
-                arg1 = reader[reader.find('(') + 1:reader.find(',')]
-                arg2 = reader[reader.find(',') + 2:reader.find(')') - 2]
-                g_macros.set_data(arg1, arg2)
-                func_res = getattr(g_macros, func)
-                text_format = text_format.replace('{{' + reader + '}}', str(func_res))
-
+                start_index = text_format.find(macro + '(')
+                end_index = text_format.find(')', start_index + 6) + 1
+                reader = text_format[start_index:end_index]
+                func = reader.split('(')[0]
+                args = reader[reader.find('(') + 1:reader.find(')')].split(',')
+                if len(args) == 2:
+                    arg1, arg2 = args[0].strip(), args[1].strip()
+                    g_macros.set_data(arg1, arg2)
+                    func_res = getattr(g_macros, func)
+                    text_format = text_format.replace('{{' + reader + '}}', str(func_res))
         return text_format
 
     def handleKey(self, isDown):
@@ -643,7 +654,6 @@ class InfoPanel(DataConstants):
         player = getPlayer()
         if self.hotKeyDown:
             return
-
         player_vehicle = player.getVehicleAttached()
         if player_vehicle is not None:
             self.visible = True
