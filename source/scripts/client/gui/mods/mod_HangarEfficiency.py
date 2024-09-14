@@ -25,7 +25,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -101,7 +101,7 @@ def getAvgData():
 
 
 @override(AmmunitionPanel, 'as_updateVehicleStatusS')
-def updateStatus(func, self, data):
+def new__updateStatus(func, self, data):
     cachedVehicleData.onVehicleChanged()
     if config.data['enabled']:
         if data['message']:

@@ -16,7 +16,7 @@ class CurrentVehicleCachedData(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        self.__default = EfficiencyAVGData(2500, 2500, 2500, 0, 0.0, '', 'Undefined', False, 0.0)
+        self.__default = EfficiencyAVGData(3000, 3000, 3000, 0, 0.0, '', 'Undefined', False, 0.0)
         self.__EfficiencyAVGData = None
 
     def onVehicleChanged(self):
@@ -52,6 +52,10 @@ class CurrentVehicleCachedData(object):
     @property
     def efficiencyAvgData(self):
         return self.__EfficiencyAVGData or self.__default
+
+    @property
+    def default(self):
+        return self.__default
 
 
 cachedVehicleData = CurrentVehicleCachedData()
