@@ -44,9 +44,9 @@ class ConfigBase(object):
         configs_dir = self.configPath + dir_name + '/'
         if not os.path.isdir(configs_dir):
             if error_not_exist and not quiet:
-                print '=' * 30
-                print self.LOG, 'config directory not found:', configs_dir
-                print '=' * 30
+                print('=' * 30)
+                print(self.LOG, 'config directory not found:', configs_dir)
+                print('=' * 30)
             if make_dir:
                 os.makedirs(configs_dir)
         for dir_path, sub_dirs, names in os.walk(configs_dir):
@@ -69,7 +69,7 @@ class ConfigBase(object):
                 except Exception:
                     traceback.print_exc()
                 if not json_data:
-                    print self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid'
+                    print(self.LOG, (dir_path and (dir_path + '/')) + name + ext, 'is invalid')
                     continue
                 try:
                     if ext == '.json':
@@ -101,8 +101,8 @@ class ConfigBase(object):
     def __hotKeyPressed(self, event):
         try:
             self.onHotkeyPressed(event)
-        except StandardError:
-            print self.LOG, 'ERROR at onHotkeyPressed'
+        except Exception:
+            print(self.LOG, 'ERROR at onHotkeyPressed')
             traceback.print_exc()
 
     def onHotkeyPressed(self, event):
@@ -114,9 +114,9 @@ class ConfigBase(object):
         InputHandler.g_instance.onKeyUp += self.__hotKeyPressed
 
     def load(self):
-        print '=' * 30
-        print self.message() + ': initialised.'
-        print '=' * 30
+        print('=' * 30)
+        print(self.message() + ': Initialised.')
+        print('=' * 30)
 
 
 class ConfigNoInterface(object):

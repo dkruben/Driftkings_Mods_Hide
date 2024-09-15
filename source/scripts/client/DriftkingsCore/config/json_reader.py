@@ -7,14 +7,13 @@ import re
 import traceback
 import zlib
 from collections import OrderedDict
-from json import JSONDecoder, JSONEncoder
 
 from .utils import smart_update
 
 __all__ = ('loadJson', 'loadJsonOrdered',)
 
 
-class JSONObjectEncoder(JSONEncoder):
+class JSONObjectEncoder(json.JSONEncoder):
     def encode(self, o, i=0):
         try:
             dedent = ' ' * i
@@ -36,13 +35,13 @@ class JSONObjectEncoder(JSONEncoder):
                 return '{\n%s\n%s}' % (item_sep.join('%s%s%s%s' % (indent, json.dumps(k), self.key_separator, self.encode(o[k], i)) for k in keys), dedent)
             else:
                 return super(JSONObjectEncoder, self).encode(o)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
             print(type(o))
             return str(o)
 
 
-class JSONObjectDecoder(JSONDecoder):
+class JSONObjectDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
         super(JSONObjectDecoder, self).__init__(*args, **kwargs)
         self.old_parse_array = self.parse_array
@@ -56,7 +55,7 @@ class JSONObjectDecoder(JSONDecoder):
 class JSONLoader(object):
     @classmethod
     def byte_ify(cls, inputs, ignore_dicts=False):
-        if isinstance(inputs, unicode):
+        if isinstance(inputs, unicode):  # Mantido para Python 2.7
             return inputs.encode('utf-8')
         elif isinstance(inputs, list):
             return [cls.byte_ify(element, ignore_dicts=True) for element in inputs]
@@ -71,8 +70,7 @@ class JSONLoader(object):
     @classmethod
     def stringed_ints(cls, inputs):
         if inputs and isinstance(inputs, dict):
-            gen_expr = (
-                ((str(key) if isinstance(key, int) else key), cls.stringed_ints(value)) for key, value in inputs.iteritems())
+            gen_expr = (((str(key) if isinstance(key, int) else key), cls.stringed_ints(value)) for key, value in inputs.iteritems())
             if isinstance(inputs, OrderedDict):
                 return OrderedDict(gen_expr)
             return dict(gen_expr)
@@ -108,13 +106,11 @@ class JSONLoader(object):
     @classmethod
     def json_loads(cls, data, ordered=False):
         if ordered:
-            # noinspection PyTypeChecker
             return cls.byte_ify(json.loads(data, cls=JSONObjectDecoder, object_pairs_hook=OrderedDict))
         return cls.byte_ify(json.loads(data, cls=JSONObjectDecoder, object_hook=cls.byte_ify), ignore_dicts=True)
 
     @staticmethod
     def json_dumps(conf, sort):
-        # noinspection PyArgumentEqualDefault
         return json.dumps(conf, sort_keys=sort, indent=4, ensure_ascii=False, encoding='utf-8', separators=(',', ': '), cls=JSONObjectEncoder)
 
     @classmethod
@@ -129,7 +125,7 @@ class JSONLoader(object):
                 if not isEncrypted and encrypted:
                     read_contents = read_contents.decode('utf-8-sig')
                 read_contents, read_excluded = cls.json_comments(read_contents)
-        except StandardError:
+        except Exception:
             print new_path
             traceback.print_exc()
             if not encrypted:
@@ -166,8 +162,8 @@ class JSONLoader(object):
                 return config_new
             try:
                 config_new = cls.json_loads(data)
-            except StandardError:
-                print(new_path)
+            except Exception:
+                print new_path
                 traceback.print_exc()
             return config_new
         read_contents, read_excluded, success = cls.json_file_read(new_path, encrypted)
@@ -212,8 +208,8 @@ class JSONLoader(object):
             return config_new
         try:
             config_new = cls.json_loads(data, True)
-        except StandardError:
-            print(new_path)
+        except Exception:
+            print new_path
             traceback.print_exc()
         return config_new
 
