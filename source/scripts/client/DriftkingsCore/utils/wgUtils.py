@@ -7,24 +7,13 @@ from functools import partial
 import BigWorld
 import ResMgr
 from BattleReplay import isPlaying, isLoading
-from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
 
-__all__ = ('calculate_version', 'callback', 'cancelCallback', 'check_names_list', 'distanceToEntityVehicle', 'getAccountDBID',
-           'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'get_color', 'get_percent', 'get_region',
-           'hex_to_decimal', 'isDisabledByBattleType', 'isReplay', 'percent_to_rgb', 'replace_macros',)
-
-
-DEFAULT_EXCLUDED_GUI_TYPES = {
-    ARENA_GUI_TYPE.EPIC_RANDOM,
-    ARENA_GUI_TYPE.EPIC_BATTLE,
-    ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING,
-    ARENA_GUI_TYPE.EPIC_TRAINING,
-    ARENA_GUI_TYPE.EVENT_BATTLES,
-    ARENA_GUI_TYPE.UNKNOWN
-}
+__all__ = ('calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle', 'getAccountDBID',
+           'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'getColor', 'getPercent', 'getRegion',
+           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros',)
 
 
 def calculate_version(version):
@@ -67,7 +56,7 @@ def getVehCD(v_type):
 
 
 # noinspection PyUnresolvedReferences
-def get_region():
+def getRegion():
     return importlib.import_module('constants').AUTH_REALM
 
 
@@ -79,15 +68,17 @@ def cancelCallback(callback_id):
     return BigWorld.cancelCallback(callback_id)
 
 
-def percent_to_rgb(percent, saturation=0.5, brightness=1.0, **__):
+def percentToRgb(percent, saturation=0.5, brightness=1.0, **__):
     position = min(0.8333, percent * 0.3333)
     r, g, b = (int(math.ceil(i * 255)) for i in hsv_to_rgb(position, saturation, brightness))
     return '#{:02X}{:02X}{:02X}'.format(r, g, b)
 
 
-def hex_to_decimal(*args):
-    hex_decimal_conversion = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
-                              'A': 10, 'a': 10, 'B': 11, 'b': 11, 'C': 12, 'c': 12, 'D': 13, 'd': 13, 'E': 14, 'e': 14, 'F': 15, 'f': 15}
+def hexToDecimal(*args):
+    hex_decimal_conversion = {
+        '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
+        'A': 10, 'a': 10, 'B': 11, 'b': 11, 'C': 12, 'c': 12, 'D': 13, 'd': 13, 'E': 14, 'e': 14, 'F': 15, 'f': 15
+    }
     p = len(args[0]) - 1
     decimal = 0
     for color in args[0]:
@@ -96,12 +87,12 @@ def hex_to_decimal(*args):
     return decimal
 
 
-def check_names_list(directory):
+def checkNamesList(directory):
     folder = ResMgr.openSection(directory)
     return sorted(folder.keys())
 
 
-def get_color(data, ratting_color, value=None, kwargs=None):
+def getColor(data, ratting_color, value=None, kwargs=None):
     """
     Retrieves the color based on the provided linkage, rating color, and optional value or kwargs.
     :param data: (dict) A dictionary containing color information.
@@ -115,17 +106,17 @@ def get_color(data, ratting_color, value=None, kwargs=None):
         if value is not None:
             for item in category_values:
                 if item['value'] > value:
-                    return format_color(item['color'])
+                    return formatColor(item['color'])
 
         if kwargs is not None:
             colors_x = data.get('x', [])
             for item in colors_x:
                 if item['value'] > kwargs:
-                    return format_color(item['color'])
+                    return formatColor(item['color'])
     return None
 
 
-def format_color(color):
+def formatColor(color):
     """
     Formats a color string to a valid hexadecimal color code.
     :param color: (str) The color string to format. Can be in the format '0xFFFFFF' or '#FFFFFF'.
@@ -134,7 +125,7 @@ def format_color(color):
     return '#' + color[2:] if color.startswith('0x') else color
 
 
-def replace_macros(text_format, data):
+def replaceMacros(text_format, data):
     """
     Replaces macros in a text format with their corresponding values.
     :param text_format: (str) The text format containing macros to be replaced.
@@ -151,16 +142,7 @@ def replace_macros(text_format, data):
     return text_format
 
 
-def get_percent(param_a, param_b):
+def getPercent(param_a, param_b):
     if param_b <= 0:
         return 0.0
     return float(normalizeHealth(param_a)) / param_b
-
-
-def isDisabledByBattleType(exclude=None, include=tuple()):
-    if not exclude:
-        exclude = DEFAULT_EXCLUDED_GUI_TYPES
-    if not hasattr(getPlayer(), 'arena') or getPlayer().arena is None:
-        return False
-    else:
-        return True if getPlayer().arena.guiType in exclude and getPlayer().arena.guiType not in include else False

@@ -4,7 +4,7 @@ from Avatar import PlayerAvatar
 from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replace_macros
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replaceMacros
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -132,7 +132,7 @@ class ConfigInterface(SimpleConfigInterface):
             if self.data['teamShotBlock'] and player.team == target.publicInfo.team and target.isAlive():
                 if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
                     macros_data = {'{name}': target.publicInfo.name, '{vehicle}': target.typeDescriptor.type.shortUserString}
-                    text = replace_macros(self.data['format'], macros_data)
+                    text = replaceMacros(self.data['format'], macros_data)
                     sendChatMessage(fullMsg=text, chanId=1, delay=2)
                     sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
                     return

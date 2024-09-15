@@ -10,7 +10,7 @@ from constants import ARENA_GUI_TYPE
 from gui.shared import g_eventBus, EVENT_BUS_SCOPE
 from gui.shared.events import GameEvent
 
-from DriftkingsCore import SimpleConfigInterface, isDisabledByBattleType, getPlayer
+from DriftkingsCore import SimpleConfigInterface, getPlayer
 from indicator import IndicatorsCtrl
 
 
@@ -84,7 +84,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     @property
     def isEnabled(self):
-        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_BATTLE, ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
+        return self.data['enabled']
 
     def isAlly(self, vehicle):
         self.player = getPlayer()

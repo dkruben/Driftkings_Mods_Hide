@@ -13,7 +13,7 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.prebattle_setups_ctrl import IPrebattleSetupsListener
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percent_to_rgb, isDisabledByBattleType, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRgb, calculate_version
 from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
 
 AS_SWF = 'OwnHealth.swf'
@@ -67,14 +67,9 @@ class ConfigInterface(SimpleConfigInterface):
             ],
             'column2': []
         }
-    
-    def isEnabled(self):
-        enabled_status = self.data['enabled']
-        excluded_battle_types = (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING)
-        return enabled_status and not isDisabledByBattleType(include=excluded_battle_types)
 
     def onBattleLoaded(self):
-        if not self.isEnabled:
+        if not self.data['enabled']:
             return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
         if not app:
@@ -148,7 +143,7 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
 
     @staticmethod
     def getAVGColor(percent=1.0):
-        return percent_to_rgb(percent, **config.data['avgColor'])
+        return percentToRgb(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):
         if health > self.__maxHealth:

@@ -16,7 +16,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hex_to_decimal, logError, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hexToDecimal, logError, calculate_version
 from DriftkingsInject import DriftkingsInjector, DriftkingsView, g_events
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
@@ -221,8 +221,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.DRAW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.DRAW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_DRAW_CIRCLE,
-                         hex_to_decimal(config.data['colorDrawCircle']), CIRCLE_STYLE.ALPHA, 565.0)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_DRAW_CIRCLE, hexToDecimal(config.data['colorDrawCircle']), CIRCLE_STYLE.ALPHA, 565.0)
             return super(PersonalEntriesPlugin, self).__addDrawRangeCircle()
 
     def __addMaxViewRangeCircle(self):
@@ -230,8 +229,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.MAX_VIEW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MAX_VIEW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_VIEW_CIRCLE,
-                         hex_to_decimal(config.data['colorMaxViewCircle']), CIRCLE_STYLE.ALPHA, VISIBILITY.MAX_RADIUS)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_VIEW_CIRCLE, hexToDecimal(config.data['colorMaxViewCircle']), CIRCLE_STYLE.ALPHA, VISIBILITY.MAX_RADIUS)
             return super(PersonalEntriesPlugin, self).__addMaxViewRangeCircle()
 
     def __addMinSpottingRangeCircle(self):
@@ -239,9 +237,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.MIN_SPOTTING_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MIN_SPOTTING_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MIN_SPOTTING_CIRCLE,
-                         hex_to_decimal(config.data['colorMinSpottingCircle']), CIRCLE_STYLE.ALPHA,
-                         VISIBILITY.MIN_RADIUS)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MIN_SPOTTING_CIRCLE, hexToDecimal(config.data['colorMinSpottingCircle']), CIRCLE_STYLE.ALPHA, VISIBILITY.MIN_RADIUS)
             return super(PersonalEntriesPlugin, self).__addMinSpottingRangeCircle()
 
     def __addViewRangeCircle(self):
@@ -249,8 +245,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.VIEW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.VIEW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_DYN_CIRCLE,
-                         hex_to_decimal(config.data['colorViewCircle']), CIRCLE_STYLE.ALPHA, self._getViewRangeRadius())
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_DYN_CIRCLE, hexToDecimal(config.data['colorViewCircle']), CIRCLE_STYLE.ALPHA, self._getViewRangeRadius())
             return super(PersonalEntriesPlugin, self).__addViewRangeCircle()
 
 

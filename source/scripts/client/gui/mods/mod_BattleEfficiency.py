@@ -14,7 +14,7 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, get_color, color_tables, replace_macros, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables, replaceMacros, calculate_version
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 DEF_RESULTS_LEN = 16
@@ -254,7 +254,7 @@ class BattleEfficiency(object):
     @staticmethod
     def read_colors(rating_color, rating_value):
         colors = color_tables[config.data['colorRatting']].get('colors')
-        return get_color(colors, rating_color, rating_value)
+        return getColor(colors, rating_color, rating_value)
 
     def startBattle(self):
         if not config.data['enabled']:
@@ -278,7 +278,7 @@ class BattleEfficiency(object):
             return
         if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return
-        format_text = replace_macros(config.data['format'], macro_data)
+        format_text = replaceMacros(config.data['format'], macro_data)
         g_flash.addText(set_text(format_text))
 
 
@@ -402,7 +402,7 @@ def new_setDataS(func, self, data):
         }
 
         msg = config.data['battleResultsFormat']
-        msg = replace_macros(msg, macro_data)
+        msg = replaceMacros(msg, macro_data)
 
         data['common']['arenaStr'] = msg
     except StandardError:

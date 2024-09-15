@@ -5,8 +5,8 @@ import copy
 class CONTAINER(object):
     CheckBox = 'CheckBox'
     Label = 'Label'
-    ColorChoice = 'ColorChoice'  # --> VX -->'TextInputColor'  # --> modSettings -> 'ColorChoice'
-    TextInput = 'TextInput'      # --> VX -->'TextInputField'    # --> modSettings -> 'TextInput'
+    ColorChoice = 'ColorChoice'
+    TextInput = 'TextInput'
     Dropdown = 'Dropdown'
     RadioButtonGroup = 'RadioButtonGroup'
     HotKey = 'HotKey'
@@ -42,22 +42,22 @@ class DummyTemplateBuilder(object):
     def getValue(self, var_name, value):
         return var_name
 
-    # dont remove (for future)
-    def getControlType(self, value, contType):
-        if contType is None:
-            if isinstance(value, str):
-                if value.startswith('#'):
-                    return self.types.ColorChoice
-                return self.types.TextInput
-            elif type(value) == bool:
-                return self.types.CheckBox
-        else:
-            return contType
+    # don't use this method(for now)
+    # def getControlType(self, value, contType):
+    #    if contType is None:
+    #        if isinstance(value, str):
+    #            if value.startswith('#'):
+    #                return self.types.ColorChoice
+    #            return self.types.TextInput
+    #        elif isinstance(value, bool):
+    #            return self.types.CheckBox
+    #    else:
+    #        return contType
 
     @staticmethod
     def createButton(width=None, height=None, text=None, offsetTop=None, offsetLeft=None, icon=None, iconOffsetTop=None, iconOffsetLeft=None):
         """
-        example: templates.createDropdown(varName, options, 0, i18n,  button=templates.createButton(width=30, height=23, offsetTop=0, offsetLeft=0, icon='../maps/icons/buttons/sound.png', iconOffsetTop=0, iconOffsetLeft=1), width=200)
+            example: self.tb.createDropdown(varName, options, 0, i18n,  button=self.tb.createButton(width=30, height=23, offsetTop=0, offsetLeft=0, icon='../maps/icons/buttons/sound.png', iconOffsetTop=0, iconOffsetLeft=1), width=200)
         """
         button = {}
         if width is not None:
@@ -86,7 +86,10 @@ class DummyTemplateBuilder(object):
         return self.i18n['UI_%s_%s_text' % (ctx, var_name)]
 
     def createTooltip(self, var_name, ctx='setting'):
-        return ('{HEADER}%s{/HEADER}{BODY}%s{/BODY}' % tuple(self.i18n['UI_%s_%s_%s' % (ctx, var_name, strType)] for strType in ('text', 'tooltip'))) if self.i18n.get('UI_%s_%s_tooltip' % (ctx, var_name), '') else ''
+        tooltip_key = 'UI_%s_%s_tooltip' % (ctx, var_name)
+        if self.i18n.get(tooltip_key, ''):
+            return '{HEADER}%s{/HEADER}{BODY}%s{/BODY}' % tuple(self.i18n['UI_%s_%s_%s' % (ctx, var_name, strType)] for strType in ('text', 'tooltip'))
+        return ''
 
     def createLabel(self, var_name, ctx='setting'):
         if self._blockID is not None:
@@ -113,8 +116,7 @@ class DummyTemplateBuilder(object):
         return result
 
     def createHotKey(self, var_name, empty=False, value=None):
-        result = self.createControl(var_name, CONTAINER.HotKey, empty=empty, value=value)
-        return result
+        return self.createControl(var_name, CONTAINER.HotKey, empty=empty, value=value)
 
     def _createNumeric(self, var_name, cont_type, step, v_min=0, v_max=0, width=200, empty=False, button=None, value=None):
         result = self.createControl(var_name, cont_type, width, empty, button, value)
@@ -135,7 +137,6 @@ class DummyTemplateBuilder(object):
         result = self._createNumeric(var_name, CONTAINER.RangeSlider, step, v_min, v_max, width, empty, button, value)
         result.update({'divisionLabelStep': label_step, 'divisionStep': div_step, 'minRangeDistance': min_range})
         return result
-
 
 class TemplateBuilder(DummyTemplateBuilder):
     def __init__(self, data, i18n):

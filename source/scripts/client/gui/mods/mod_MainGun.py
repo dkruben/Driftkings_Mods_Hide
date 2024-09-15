@@ -13,7 +13,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, isDisabledByBattleType, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, calculate_version
 from DriftkingsInject import DriftkingsInjector, MainGunMeta, g_events
 
 AS_SWF = 'MainGun.swf'
@@ -67,11 +67,8 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
-    def is_enabled(self):
-        return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
-
     def onBattleLoaded(self):
-        if not self.is_enabled:
+        if not self.data['enabled']:
             return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
         if not app:
@@ -127,8 +124,6 @@ class MainGun(MainGunMeta, IBattleFieldListener):
 
     def _populate(self):
         super(MainGun, self)._populate()
-        if not config.data['enabled']:
-            return
         damage_controller.onPlayerDamaged += self.onPlayerDamaged
         feedback = self.sessionProvider.shared.feedback
         if feedback is not None:

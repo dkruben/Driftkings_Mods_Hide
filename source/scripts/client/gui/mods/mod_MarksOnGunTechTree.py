@@ -13,7 +13,7 @@ from gui.Scaleform.lobby_entry import LobbyEntry
 from gui.Scaleform.locale.MENU import MENU as MU
 from gui.shared.formatters import text_styles
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version, color_tables, get_color
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version, color_tables, getColor
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -68,7 +68,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def read_colors(self, rating_color, rating_value):
         colors = color_tables[self.data['colorRatting']].get('colors')
-        return get_color(colors, rating_color, rating_value)
+        return getColor(colors, rating_color, rating_value)
 
 
 config = ConfigInterface()
