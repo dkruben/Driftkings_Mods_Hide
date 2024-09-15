@@ -67,11 +67,11 @@ class ConfigInterface(SimpleConfigInterface):
             ]
         }
 
-    def isEnabled(self):
+    def is_enabled(self):
         return self.data['enabled'] and not isDisabledByBattleType(include=(ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.EPIC_TRAINING))
 
     def onBattleLoaded(self):
-        if not self.isEnabled:
+        if not self.is_enabled:
             return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
         if not app:
@@ -127,6 +127,8 @@ class MainGun(MainGunMeta, IBattleFieldListener):
 
     def _populate(self):
         super(MainGun, self)._populate()
+        if not config.data['enabled']:
+            return
         damage_controller.onPlayerDamaged += self.onPlayerDamaged
         feedback = self.sessionProvider.shared.feedback
         if feedback is not None:

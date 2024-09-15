@@ -23,20 +23,33 @@ AS_INJECTOR = 'MinimapCentredViewInjector'
 AS_BATTLE = 'MinimapCentredView'
 AS_SWF = 'MinimapCentred.swf'
 
-BATTLES_RANGE = (
-    ARENA_GUI_TYPE.COMP7,
-    ARENA_GUI_TYPE.EPIC_BATTLE,
-    ARENA_GUI_TYPE.EPIC_RANDOM,
-    ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING,
-    ARENA_GUI_TYPE.FORT_BATTLE_2,
-    ARENA_GUI_TYPE.FUN_RANDOM,
-    ARENA_GUI_TYPE.MAPBOX,
-    ARENA_GUI_TYPE.RANDOM,
-    ARENA_GUI_TYPE.RANKED,
-    ARENA_GUI_TYPE.SORTIE_2,
-    ARENA_GUI_TYPE.TRAINING,
-    ARENA_GUI_TYPE.UNKNOWN,
+def create_range(obj, names):
+    _range = set()
+    for name in names:
+        _name = getattr(obj, name)
+        if _name is not None:
+            _range.add(_name)
+        else:
+            logError('%(mod_ID)s', "create_range::{} attribute error:: {}", obj.__class__.__name__, name)
+    return _range
+
+__battle_types = (
+    "COMP7",
+    "EPIC_BATTLE",
+    "EPIC_RANDOM",
+    "EPIC_RANDOM_TRAINING",
+    "FORT_BATTLE_2",
+    "MAPBOX",
+    "RANDOM",
+    "RANKED",
+    "SORTIE_2",
+    "TOURNAMENT_COMP7",
+    "TRAINING",
+    "UNKNOWN",
+    "WINBACK",
 )
+
+BATTLES_RANGE = create_range(ARENA_GUI_TYPE, __battle_types)
 
 
 class ConfigInterface(SimpleConfigInterface):
@@ -276,8 +289,8 @@ class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
 
 
 @override(MinimapComponent, '_setupPlugins')
-def new_setupPlugins(base, plugin, arenaVisitor):
-    res = base(plugin, arenaVisitor)
+def new_setupPlugins(func, self, arenaVisitor):
+    res = func(self, arenaVisitor)
     try:
         allowedMode = arenaVisitor.gui.guiType in BATTLES_RANGE
         if not config.xvmInstalled and allowedMode and config.data['enabled']:

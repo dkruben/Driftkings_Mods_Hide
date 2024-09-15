@@ -11,7 +11,7 @@ import nations
 from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from Event import SafeEvent
-# from HeroTank import HeroTank
+from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
 from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
@@ -53,7 +53,7 @@ from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
-# from vehicle_systems.tankStructure import ModelStates
+from vehicle_systems.tankStructure import ModelStates
 
 from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
 from DriftkingsInject import CyclicTimerEvent, g_events
@@ -164,7 +164,7 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_y_text': 'Position Y',
             'UI_setting_y_tooltip': 'Vertical position',
             'UI_techTree_shootingRadius': 'Shooting Radius',
-            'UI_techTree_m': 'M.'
+            'UI_techTree_m': 'Mt'
         }
         super(ConfigInterface, self).init()
 
@@ -275,11 +275,11 @@ def new__handleLazyChannelCtlInited(func, self, event):
 
 
 # hide premium vehicle on the background in the hangar
-# @override(HeroTank, 'recreateVehicle')
-# def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, callback=None, outfit=None):
-#    if config.data['enabled'] and config.data['showPromoPremVehicle']:
-#        return
-#    func(self, typeDescriptor, state, callback, outfit)
+@override(HeroTank, 'recreateVehicle')
+def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, callback=None, outfit=None):
+    if config.data['enabled'] and config.data['showPromoPremVehicle']:
+        return
+    func(self, typeDescriptor, state, callback, outfit)
 
 
 # hide display pop-up messages in the hangar

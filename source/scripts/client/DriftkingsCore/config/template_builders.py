@@ -94,7 +94,6 @@ class DummyTemplateBuilder(object):
         return {'type': 'Label', 'text': self.getLabel(var_name, ctx), 'tooltip': self.createTooltip(var_name, ctx)}
 
     def createControl(self, var_name, cont_type=CONTAINER.CheckBox, width=200, empty=False, button=None, value=None):
-        # contType: 'ColorChoice', 'TextInput'
         result = self.createLabel(var_name) if not empty else {}
         result.update({'type': cont_type, 'value': self.getValue(var_name, value), 'varName': var_name, 'width': width})
         if button is not None:
@@ -102,7 +101,6 @@ class DummyTemplateBuilder(object):
         return result
 
     def createOptions(self, var_name, options, cont_type=CONTAINER.Dropdown, width=200, empty=False, button=None, value=None):
-        # contType: 'RadioButtonGroup'
         result = self.createControl(var_name, cont_type, width, empty, button, value)
         result['options'] = [{'label': x} for x in options]
         return result
@@ -145,4 +143,4 @@ class TemplateBuilder(DummyTemplateBuilder):
         self.data = copy.deepcopy(data)
 
     def getValue(self, var_name, value):
-        return value if value is not None else (self.data[var_name] if self._blockID is None else self.data[self._blockID][varName])
+        return value if value is not None else (self.data[var_name] if self._blockID is None else self.data[self._blockID][var_name])

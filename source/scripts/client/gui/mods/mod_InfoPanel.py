@@ -182,7 +182,6 @@ class Flash(object):
         callback(0.5, self.onTextRemovalComplete)
 
     def _getTextComponentID(self, idx):
-        """Returns the ID of the formatted text component."""
         return '{}.text{}'.format(self.ID, idx)
 
 
@@ -204,11 +203,11 @@ except StandardError:
 def _isEntitySatisfiesConditions(entity):
     if (entity is None) or not hasattr(entity, 'publicInfo'):
         return False
-    enabledFor = config.data['showFor']
-    isAlly = 0 < getattr(entity.publicInfo, 'team', 0) == getPlayer().team
-    showFor = (enabledFor == 0) or ((enabledFor == 1) and isAlly) or ((enabledFor == 2) and not isAlly)
-    aliveOnly = (not config.data['aliveOnly']) or (config.data['aliveOnly'] and entity.isAlive())
-    return showFor and aliveOnly
+    enabled_for = config.data['showFor']
+    is_ally = 0 < getattr(entity.publicInfo, 'team', 0) == getPlayer().team
+    show_for = (enabled_for == 0) or ((enabled_for == 1) and is_ally) or ((enabled_for == 2) and not is_ally)
+    alive_only = (not config.data['aliveOnly']) or (config.data['aliveOnly'] and entity.isAlive())
+    return show_for and alive_only
 
 
 class DataConstants(object):
