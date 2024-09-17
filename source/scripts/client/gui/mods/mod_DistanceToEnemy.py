@@ -29,7 +29,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 %(file_compile_date)s'
+        self.version = '1.0.5 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -161,7 +161,7 @@ class Distance(DistanceMeta):
         self.as_setDistanceS(config.data['template'] % self.macrosDict)
 
     def onCameraChanged(self, ctrlMode, *_, **__):
-        self.isPostmortem = ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
+        self.isPostmortem = ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
         if self.isPostmortem:
             if self.timeEvent is not None:
                 self.timeEvent.stop()

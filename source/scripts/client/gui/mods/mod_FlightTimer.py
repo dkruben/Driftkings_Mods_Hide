@@ -24,7 +24,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -33,8 +33,8 @@ class ConfigInterface(SimpleConfigInterface):
             'align': 'left',
             'spgOnly': False,
             'template': "<font color='#f5ff8f'>%(flightTime).1fs. - %(distance)dm.</font>",
-            'x': -130,
-            'y': 0
+            'x': 100,
+            'y': 100
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -107,7 +107,7 @@ class FlightTime(FlightTimeMeta):
         super(FlightTime, self)._dispose()
 
     def onCameraChanged(self, ctrlMode, *args, **kwargs):
-        if ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}:
+        if ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}:
             self.as_flightTimeS('')
 
     def __onGunMarkerStateChanged(self, _, position, *__, **___):

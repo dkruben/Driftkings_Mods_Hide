@@ -7,24 +7,9 @@ from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
 from debug_utils import LOG_CURRENT_EXCEPTION
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculate_version
 
 MinMax = namedtuple('MinMax', ('min', 'max'))
-
-
-class PostmortemDelay(object):
-
-    def destroy(self):
-        pass
-
-    def start(self):
-        pass
-
-    def stop(self):
-        pass
-
-    def handleMouseEvent(self, *args):
-        pass
 
 
 class ConfigsInterface(SimpleConfigInterface):
@@ -34,7 +19,7 @@ class ConfigsInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -134,17 +119,8 @@ def new__readConfigs(func, self, *args, **kwargs):
 
 @override(PostMortemControlMode, 'enable')
 def new__enablePostMortem(func, self, **kwargs):
-    if 'postmortemParams' in kwargs:
-        kwargs['postmortemParams'] = (self.camera.angles, config.data['startDeadDist'])
-    kwargs['camMatrix'] = self.camera.camera.matrix
-    kwargs['transitionDuration'] = 1.0
-    respawn = bool(kwargs.get('respawn', False))
-    bPostmortemDelay = bool(kwargs.get('bPostmortemDelay', False))
-    if not ((self._isPostmortemDelayEnabled() or respawn) and bPostmortemDelay):
-        self._PostMortemControlMode__postmortemDelay = PostmortemDelay()
-
-        def setDelayDisabled():
-            self._PostMortemControlMode__postmortemDelay = None
-
-        callback(1.0, setDelayDisabled)
+    if config.data['enabled']:
+        if 'postmortemParams' in kwargs:
+            kwargs['postmortemParams'] = (self.camera.angles, config.data['startDeadDist'])
+            kwargs.setdefault('transitionDuration', 1.0)
     return func(self, **kwargs)

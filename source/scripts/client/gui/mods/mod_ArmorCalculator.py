@@ -37,7 +37,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -89,7 +89,7 @@ class ConfigInterface(SimpleConfigInterface):
     @staticmethod
     def onBattleLoaded():
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if app is None:
+        if not config.data['enabled'] and app is None:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 
@@ -137,7 +137,7 @@ class ArmorCalculator(ArmorCalculatorMeta):
 
     @logException
     def onCameraChanged(self, ctrlMode, *_, **__):
-        _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
+        _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
         if ctrlMode in _CTRL_MODE:
             self.as_armorCalculatorS('')
 

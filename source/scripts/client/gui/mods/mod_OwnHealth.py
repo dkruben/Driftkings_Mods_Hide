@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from PlayerEvents import g_playerEvents
 from aih_constants import CTRL_MODE_NAME
-from constants import ARENA_GUI_TYPE
 from constants import ARENA_PERIOD
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.formatters import getHealthPercent, normalizeHealth
@@ -28,7 +27,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'DriftKing\'s'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -136,7 +135,7 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
             self._updateHealth(value)
 
     def onCameraChanged(self, ctrlMode, *_, **__):
-        self.isAliveMode = ctrlMode not in {CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION}
+        self.isAliveMode = ctrlMode not in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
         self.as_BarVisibleS(self.isBattlePeriod and self.isAliveMode)
 
     @staticmethod
