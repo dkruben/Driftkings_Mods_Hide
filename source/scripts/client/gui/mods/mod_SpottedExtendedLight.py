@@ -26,7 +26,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.0 (%(file_compile_date)s)'
+        self.version = '1.7.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -150,16 +150,15 @@ class ConfigInterface(SimpleConfigInterface):
             'damage': ''
         }
 
-    @staticmethod
-    def sound(assist_type):
-        getPlayer().soundNotifications.play(config.data[SOUND_LIST[assist_type]])
+    def sound(self, assist_type):
+        getPlayer().soundNotifications.play(self.data[SOUND_LIST[assist_type]])
 
     def textGenerator(self, event):
         text, color, macros = GENERATOR[event]
-        return (config.i18n[text], config.data[macros].format(**self.format_str)), config.data[color]
+        return (self.i18n[text], self.data[macros].format(**self.format_str)), self.data[color]
 
     def postMessage(self, events):
-        if not config.data['enabled']:
+        if not self.data['enabled']:
             return
         g_sessionProvider = getPlayer().guiSessionProvider
         self.format_recreate()
@@ -168,7 +167,7 @@ class ConfigInterface(SimpleConfigInterface):
             eventID = feedbackEvent.getBattleEventType()
             if eventID in [BATTLE_EVENT_TYPE.SPOTTED, BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST]:
                 vehicleID = feedbackEvent.getTargetID()
-                icon = '<img src=\'img://%s\' width=\'%s\' height=\'%s\' />' % (g_sessionProvider.getArenaDP().getVehicleInfo(vehicleID).vehicleType.iconPath.replace('..', 'gui'), config.data['iconSizeX'], config.data['iconSizeY'])
+                icon = '<img src=\'img://%s\' width=\'%s\' height=\'%s\' />' % (g_sessionProvider.getArenaDP().getVehicleInfo(vehicleID).vehicleType.iconPath.replace('..', 'gui'), self.data['iconSizeX'], config.data['iconSizeY'])
                 target_info = g_sessionProvider.getCtx().getPlayerFullNameParts(vID=vehicleID)
                 if self.check_macros('{icons}'):
                     self.format_str['icons'] += icon
@@ -187,13 +186,13 @@ class ConfigInterface(SimpleConfigInterface):
                 if self.check_macros('{full}'):
                     self.format_str['full'] += '%s[<b>%s</b>]' % (icon, target_info) if target_info else icon
                 if eventID == BATTLE_EVENT_TYPE.SPOTTED:
-                    if config.data['sound']:
+                    if self.data['sound']:
                         self.sound(0)
                 else:
-                    if config.data['sound']:
+                    if self.data['sound']:
                         self.sound(1)
                 text, color = self.textGenerator(eventID)
-                sendPanelMessage("<font color='{color}'>{text}</font>".format(text=text, color=color))
+                sendPanelMessage(text="<font color='#{text}'>{color}</font>".format(text=text, color=color))
 
 
 config = ConfigInterface()
