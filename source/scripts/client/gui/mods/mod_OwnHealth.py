@@ -68,8 +68,10 @@ class ConfigInterface(SimpleConfigInterface):
         }
 
     def onBattleLoaded(self):
+        if not self.data['enabled']:
+            return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if not self.data['enabled'] and app is None:
+        if app is None:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 
@@ -81,17 +83,17 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
     def __init__(self):
         super(OwnHealth, self).__init__(config.ID)
-        self.isAliveMode = True
-        self.isBattlePeriod = False
-        self.__maxHealth = 0
-        self.__template = '{} • {:.2%}'
+        self.is_alive_mode = True
+        self.is_battle_period = False
+        self.maxHealth = 0
+        self.template = '{} • {:.2%}'
 
     def getSettings(self):
         return config.data
 
     def updateVehicleParams(self, vehicle, *_):
-        if self.__maxHealth != vehicle.descriptor.maxHealth:
-            self.__maxHealth = vehicle.descriptor.maxHealth
+        if self.maxHealth != vehicle.descriptor.maxHealth:
+            self.maxHealth = vehicle.descriptor.maxHealth
             self._updateHealth(self.__maxHealth)
 
     def _populate(self):
@@ -106,13 +108,13 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
             ctrl.onVehicleStateUpdated += self.__onVehicleStateUpdated
         arena = self._arenaVisitor.getArenaSubscription()
         if arena is not None:
-            self.isBattlePeriod = arena.period == ARENA_PERIOD.BATTLE
-            self.isAliveMode = self.getVehicleInfo().isAlive()
-            self.as_BarVisibleS(self.isBattlePeriod and self.isAliveMode)
+            self.is_battle_period = arena.period == ARENA_PERIOD.BATTLE
+            self.is_alive_mode = self.getVehicleInfo().isAlive()
+            self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
 
     def onArenaPeriodChange(self, period, *_):
-        self.isBattlePeriod = period == ARENA_PERIOD.BATTLE
-        self.as_BarVisibleS(self.isBattlePeriod and self.isAliveMode)
+        self.is_battle_period = period == ARENA_PERIOD.BATTLE
+        self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
 
     def _dispose(self):
         handler = avatar_getter.getInputHandler()
@@ -126,8 +128,8 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         super(OwnHealth, self)._dispose()
 
     def __onVehicleControlling(self, vehicle):
-        if self.__maxHealth != vehicle.maxHealth:
-            self.__maxHealth = vehicle.maxHealth
+        if self.maxHealth != vehicle.maxHealth:
+            self.maxHealth = vehicle.maxHealth
         self._updateHealth(vehicle.health)
 
     def __onVehicleStateUpdated(self, state, value):
@@ -135,20 +137,20 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
             self._updateHealth(value)
 
     def onCameraChanged(self, ctrlMode, *_, **__):
-        self.isAliveMode = ctrlMode not in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
-        self.as_BarVisibleS(self.isBattlePeriod and self.isAliveMode)
+        self.is_alive_mode = ctrlMode not in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
+        self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
 
     @staticmethod
     def getAVGColor(percent=1.0):
         return percentToRgb(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):
-        if health > self.__maxHealth:
-            self.__maxHealth = health
-        if self.__maxHealth <= 0:
+        if health > self.maxHealth:
+            self.maxHealth = health
+        if self.maxHealth <= 0:
             return
         percent = getHealthPercent(health, self.__maxHealth)
-        text = self.__template.format(int(normalizeHealth(health)), percent)
+        text = self.template.format(int(normalizeHealth(health)), percent)
         self.as_setOwnHealthS(percent, text, self.getAVGColor(percent))
 
 

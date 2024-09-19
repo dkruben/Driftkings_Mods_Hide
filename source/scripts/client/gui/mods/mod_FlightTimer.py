@@ -67,8 +67,10 @@ class ConfigInterface(SimpleConfigInterface):
         }
 
     def onBattleLoaded(self):
+        if not self.data['enabled']:
+            return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if not self.data['enabled'] and app is None:
+        if app is None:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 
@@ -106,7 +108,7 @@ class FlightTime(FlightTimeMeta):
             handler.onCameraChanged -= self.onCameraChanged
         super(FlightTime, self)._dispose()
 
-    def onCameraChanged(self, ctrlMode, *args, **kwargs):
+    def onCameraChanged(self, ctrlMode, *_, **__):
         if ctrlMode in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}:
             self.as_flightTimeS('')
 

@@ -114,8 +114,10 @@ class ConfigInterface(SimpleConfigInterface):
         }
 
     def onBattleLoaded(self):
+        if not self.data['enabled']:
+            return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if not self.data['enabled'] and app is None:
+        if app is None:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 

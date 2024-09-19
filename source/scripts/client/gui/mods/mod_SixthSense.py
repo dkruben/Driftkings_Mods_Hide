@@ -115,8 +115,9 @@ class ConfigInterface(SimpleConfigInterface):
         folder = ResMgr.openSection(directory)
         return sorted(folder.keys())
 
-    @staticmethod
-    def onBattleLoaded():
+    def onBattleLoaded(self):
+        if not self.data['enabled']:
+            return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
         if app is None:
             return

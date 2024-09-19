@@ -69,7 +69,12 @@ class ConfigInterface(SimpleConfigInterface):
             'UI_setting_altKey_tooltip': 'Key for self vehicle information display.',
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Hide panel delay (in seconds)',
-            'UI_delay_format': ' sec.'
+            'UI_delay_format': ' sec.',
+            "armor_piercing": "AP",
+            "high_explosive": "HE",
+            "armor_piercing_cr": "APCR",
+            "armor_piercing_he": "HESH",
+            "hollow_charge": "HEAT"
         }
         super(ConfigInterface, self).init()
 
@@ -208,6 +213,34 @@ def _isEntitySatisfiesConditions(entity):
     show_for = (enabled_for == 0) or ((enabled_for == 1) and is_ally) or ((enabled_for == 2) and not is_ally)
     alive_only = (not config.data['aliveOnly']) or (config.data['aliveOnly'] and entity.isAlive())
     return show_for and alive_only
+
+def l10n(text):
+    if text is None:
+        return None
+    if text in config.i18n:
+        text = config.i18n[text]
+        if text is None:
+            return None
+    while True:
+        localizedMacroStart = text.find('{{l10n:')
+        if localizedMacroStart == -1:
+            break
+        localizedMacroEnd = text.find('}}', localizedMacroStart)
+        if localizedMacroEnd == -1:
+            break
+        macro = text[localizedMacroStart + 7:localizedMacroEnd]
+        parts = macro.split(':')
+        macro = config.i18n.get(parts[0], parts[0])
+        parts = parts[1:]
+        if len(parts) > 0:
+            try:
+                macro = macro.format(*parts)
+            except Exception as ex:
+                print 'macro:  {}'.format(macro)
+                print 'params: {}'.format(parts)
+                print traceback.format_exc()
+        text = text[:localizedMacroStart] + macro + text[localizedMacroEnd + 2:]
+    return config.i18n.get(text, text)
 
 
 class DataConstants(object):
@@ -358,14 +391,21 @@ class DataConstants(object):
     def shell_power_3(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].piercingPower[0])
 
+
     def shell_type_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else self._gunShots[0].shell.kind.lower()
+        if not self._gunShots or len(self._gunShots) < 1:
+            return None
+        return l10n(self._gunShots[0].shell.kind.lower())
 
     def shell_type_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else self._gunShots[1].shell.kind.lower()
+        if not self._gunShots or len(self._gunShots) < 2:
+            return None
+        return l10n(self._gunShots[1].shell.kind.lower())
 
     def shell_type_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else self._gunShots[2].shell.kind.lower()
+        if not self._gunShots or len(self._gunShots) < 3:
+            return None
+        return l10n(self._gunShots[2].shell.kind.lower())
 
     def shell_speed_1(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % round(self._gunShots[0].speed * 1.25)
@@ -607,7 +647,8 @@ class InfoPanel(DataConstants):
                 text_format = text_format.replace(macro, func_response)
         return text_format
 
-    def replace_compare_macros(self, text_format, compare_macros):
+    @staticmethod
+    def replace_compare_macros(text_format, compare_macros):
         for macro in compare_macros:
             if macro in text_format:
                 start_index = text_format.find(macro + '(')
