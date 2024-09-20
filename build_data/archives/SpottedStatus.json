@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/SpottedStatus/SpottedStatus.json": "res/configs/Driftkings/SpottedStatus/SpottedStatus.json",

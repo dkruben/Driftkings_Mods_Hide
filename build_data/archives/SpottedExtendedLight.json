@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".zip",
     "files": {
         "mods/configs/Driftkings/SpottedExtendedLight/SpottedExtendedLight.json": "res/configs/Driftkings/SpottedExtendedLight/SpottedExtendedLight.json",
