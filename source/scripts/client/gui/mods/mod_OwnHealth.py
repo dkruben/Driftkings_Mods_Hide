@@ -94,7 +94,7 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
     def updateVehicleParams(self, vehicle, *_):
         if self.maxHealth != vehicle.descriptor.maxHealth:
             self.maxHealth = vehicle.descriptor.maxHealth
-            self._updateHealth(self.__maxHealth)
+            self._updateHealth(self.maxHealth)
 
     def _populate(self):
         super(OwnHealth, self)._populate()
@@ -149,7 +149,7 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
             self.maxHealth = health
         if self.maxHealth <= 0:
             return
-        percent = getHealthPercent(health, self.__maxHealth)
+        percent = getHealthPercent(health, self.maxHealth)
         text = self.template.format(int(normalizeHealth(health)), percent)
         self.as_setOwnHealthS(percent, text, self.getAVGColor(percent))
 
