@@ -192,7 +192,6 @@ class ConfigInterface(SimpleConfigInterface):
                     if self.data['sound']:
                         self.sound(1)
                 text, color = self.textGenerator(eventID)
-                print ("<font color='#{}'>{}</font>".format(color, text))
                 sendPanelMessage(text="<font color='#{}'>{}</font>".format(color, text))
 
 
