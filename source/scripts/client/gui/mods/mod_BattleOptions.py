@@ -53,7 +53,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.3.0 (%(file_compile_date)s)'
+        self.version = '2.3.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -323,7 +323,7 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 # Battle Messages
 class Worker(object):
     def __init__(self):
-        self.__macros = {}
+        self.macros = {}
         self.player = None
 
     def getSquarePosition(self):
@@ -353,12 +353,15 @@ class Worker(object):
         return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
 
     def onReload(self, avatar):
-        self.__macros.update({
+        data = {
             'load': int(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())),
-            'pos': self.getSquarePosition(),
-        })
-
-        message = replaceMacros(config.data['loadTxt'], self.__macros)
+            'pos': self.getSquarePosition()
+        }
+        macros = {}
+        for key, value in data.iteritems():
+            if value is None:
+                macros['{%s}' % key] = str(value)
+        message = replaceMacros(config.data['loadTxt'], macros)
         if message:
             avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
         else:
@@ -369,7 +372,6 @@ class Worker(object):
 def handleKey(func, self, isDown, key, mods):
     if not config.data['enabled'] and not config.data['clipLoad']:
         return func(self, isDown, key, mods)
-
     try:
         cmdMap = CommandMapping.g_instance
         if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
@@ -378,7 +380,6 @@ def handleKey(func, self, isDown, key, mods):
             return True
     except Exception as e:
         traceback.print_exc()
-
     return func(self, isDown, key, mods)
 
 

@@ -29,7 +29,7 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.0 (%(file_compile_date)s)'
+        self.version = '1.6.5 (%(file_compile_date)s)'
         self.defaultKeys = {'disableKey': [Keys.KEY_Q]}
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
@@ -131,8 +131,11 @@ class ConfigInterface(SimpleConfigInterface):
             player = getPlayer()
             if self.data['teamShotBlock'] and player.team == target.publicInfo.team and target.isAlive():
                 if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
+                    macros = {}
                     macros_data = {'{name}': target.publicInfo.name, '{vehicle}': target.typeDescriptor.type.shortUserString}
-                    text = replaceMacros(self.data['format'], macros_data)
+                    for key, value in macros_data.iteritems():
+                        macros['{%s}' % key] = str(value)
+                    text = replaceMacros(self.data['format'], macros)
                     sendChatMessage(fullMsg=text, chanId=1, delay=2)
                     sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
                     return
