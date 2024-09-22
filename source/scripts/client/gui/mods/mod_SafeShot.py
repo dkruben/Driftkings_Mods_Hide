@@ -1,4 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
+from collections import defaultdict
+
 import Keys
 from Avatar import PlayerAvatar
 from BigWorld import serverTime
@@ -14,13 +16,13 @@ class ConfigInterface(SimpleConfigInterface):
     DEAD_SHOT_BLOCKED_MSG = 'Dead shot blocked!'
 
     def __init__(self):
+        self.macro = defaultdict(lambda: 'Macros not found!')
         self._disable_key = False
         self.is_hot_key_event = False
         self.deadDict = {}
         self.isEventBattle = False
         super(ConfigInterface, self).__init__()
-
-        # Sobrescrevendo métodos
+        #
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.__addVehicleStatusUpdate)
         override(PlayerAvatar, 'shoot', self.__shoot)
         override(PlayerAvatar, 'onBecomePlayer', self.__onBecomePlayer)
@@ -46,7 +48,7 @@ class ConfigInterface(SimpleConfigInterface):
                 'teamShotBlockedMessage': self.TEAM_SHOT_BLOCKED_MSG,
                 'deadShotBlockedMessage': self.DEAD_SHOT_BLOCKED_MSG
             },
-            'format': '[{name} - {vehicle}], get out of the way!',
+            'format': '[%(name)s - %(vehicle)s], get out of the way!',
             'disableKey': self.defaultKeys['disableKey'],
             'onHold': True,
             'disableMessage': True
@@ -131,11 +133,9 @@ class ConfigInterface(SimpleConfigInterface):
             player = getPlayer()
             if self.data['teamShotBlock'] and player.team == target.publicInfo.team and target.isAlive():
                 if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
-                    macros = {}
-                    macros_data = {'{name}': target.publicInfo.name, '{vehicle}': target.typeDescriptor.type.shortUserString}
-                    for key, value in macros_data.iteritems():
-                        macros['{%s}' % key] = str(value)
-                    text = replaceMacros(self.data['format'], macros)
+                    self.macro['name'] = target.publicInfo.name
+                    self.macro['vehicle'] = target.typeDescriptor.type.shortUserString
+                    text = self.data['format'] % self.macro
                     sendChatMessage(fullMsg=text, chanId=1, delay=2)
                     sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
                     return

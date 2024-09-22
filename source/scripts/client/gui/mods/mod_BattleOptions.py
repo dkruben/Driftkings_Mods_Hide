@@ -2,6 +2,7 @@
 import locale
 import math
 import traceback
+from collections import defaultdict
 from functools import partial
 from string import printable
 from time import strftime
@@ -35,8 +36,7 @@ from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, getPlayer, \
-    isReplay, calculate_version, callback, replaceMacros, logError
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, getPlayer, isReplay, calculate_version, callback, logError
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -68,7 +68,7 @@ class ConfigInterface(SimpleConfigInterface):
             'hideBattlePrestige': False,
             'hideClanName': False,
             'inBattle': True,
-            'loadTxt': 'Reloading at {pos}, for {load} seconds.',
+            'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
             'maxChatLines': 6,
             'muteTeamBaseSound': False,
             'position': {'x': -870, 'y': 1},
@@ -323,7 +323,7 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 # Battle Messages
 class Worker(object):
     def __init__(self):
-        self.macros = {}
+        self.macro = defaultdict(lambda: 'Macros not found')
         self.player = None
 
     def getSquarePosition(self):
@@ -353,34 +353,30 @@ class Worker(object):
         return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
 
     def onReload(self, avatar):
-        data = {
-            'load': int(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())),
-            'pos': self.getSquarePosition()
-        }
-        macros = {}
-        for key, value in data.iteritems():
-            if value is None:
-                macros['{%s}' % key] = str(value)
-        message = replaceMacros(config.data['loadTxt'], macros)
-        if message:
+        self.macro['load'] = math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())
+        self.macro['pos'] = self.getSquarePosition()
+        message = config.data['loadTxt'] % self.macro
+        if len(message) > 0:
             avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
         else:
             avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
 
 
+gmod = Worker()
+
+
 @override(PlayerAvatar, 'handleKey')
-def handleKey(func, self, isDown, key, mods):
-    if not config.data['enabled'] and not config.data['clipLoad']:
-        return func(self, isDown, key, mods)
-    try:
-        cmdMap = CommandMapping.g_instance
-        if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
-            self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
-            callback(0.5, partial(Worker().onReload, self))
-            return True
-    except Exception as e:
-        traceback.print_exc()
-    return func(self, isDown, key, mods)
+def new__handleKey(func, self, isDown, key, mods):
+    if config.data['enabled'] and config.data['clipLoad']:
+        try:
+            cmdMap = CommandMapping.g_instance
+            if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
+                self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
+                callback(0.5, partial(gmod.onReload, self))
+                return True
+        except StandardError:
+            traceback.print_exc()
+    func(self, isDown, key, mods)
 
 
 # hide badges
