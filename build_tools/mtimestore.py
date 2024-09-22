@@ -70,17 +70,25 @@ def main():
     import getopt
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'aAsr')
-    except getopt.error, msg:
-        print msg
+    except getopt.error as msg:
+        print(msg)
         help()
         sys.exit(2)
+
     if args:
-        print 'Unexpected arguments:', args
+        print('Unexpected arguments:', args)
         sys.exit(2)
-    if len(opts) > 1:
-        print 'Only one argument expected, got several:', [o for o, _ in opts]
+
+    if not opts:
+        print('No arguments provided.')
         help()
         sys.exit(2)
+
+    if len(opts) > 1:
+        print('Only one expected argument, several were provided:', [o for o, _ in opts])
+        help()
+        sys.exit(2)
+
     mode = opts[0][0].strip('-')
     if mode == 'r':
         print 'Restoring modification dates'

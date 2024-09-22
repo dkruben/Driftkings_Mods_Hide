@@ -20,7 +20,7 @@ from gui.shared.personality import ServicesLocator
 from predefined_hosts import g_preDefinedHosts
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
-from DriftkingsCore import SimpleConfigInterface, ConfigNoInterface, Analytics, override, callback
+from DriftkingsCore import SimpleConfigInterface, ConfigNoInterface, Analytics, override, callback, calculate_version
 
 
 def getPreferencesDir():
@@ -36,13 +36,13 @@ def loadWindow(alias):
 class ConfigsInterface(ConfigNoInterface, SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = '[by: S0me0ne, reworked by ShadowHunterRUS & spoter & Driftkings]'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_delete': 'Delete',
             'UI_setting_cancel': 'Cancel',
             'UI_setting_enter': '<font color=\'#FFFF33\' size=\'18\'>Enter</font>',
@@ -84,7 +84,7 @@ class UserAccounts:
     __accounts_manager = None
 
     def __init__(self):
-        self.__accounts_manager = os.path.join(getPreferencesDir(), 'accounts.manager')
+        self.__accounts_manager = os.path.join(getPreferencesDir(), 'Driftkings', 'accounts.manager')
         if not os.path.isfile(self.__accounts_manager):
             self.accounts = []
             self.write_accounts()
@@ -348,7 +348,7 @@ class AccountsManagerLoginButton(View):
         app.loadView(SFViewLoadParams('AccountsManager'))
 
     def py_getTranslate(self):
-        return {'tooltip_l10n': 'Account Manager'}
+        return {'tooltip_l10n': config.i18n['UI_description']}
 
 
 g_AccMngr = AccountsManagerButtonController()

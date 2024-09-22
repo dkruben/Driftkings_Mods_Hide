@@ -1,18 +1,24 @@
 ﻿# -*- coding: utf-8 -*-
 import locale
+import math
+import traceback
+from functools import partial
 from string import printable
 from time import strftime
 
+import BigWorld
+import CommandMapping
+import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
+from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
@@ -29,7 +35,8 @@ from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, isReplay, calculate_version
+from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, getPlayer, \
+    isReplay, calculate_version, callback, replaceMacros, logError
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -46,65 +53,71 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.2.5 (%(file_compile_date)s)'
+        self.version = '2.3.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
-            'showBattleHint': False,
-            'postmortemTips': True,
-            'showPostmortemDogTag': True,
-            'disableSoundCommander': False,
-            'stunSound': False,
-            'muteTeamBaseSound': False,
-            'showAnonymous': False,
-            'hideBadges': False,
-            'hideClanName': False,
-            'hideBattlePrestige': False,
+            'clipLoad': True,
             'color': 'FF002A',
-            'showFriends': False,
-            'inBattle': True,
-            'maxChatLines': 6,
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
             'directivesOnlyFromStorage': False,
-            'position': {'x': -870, 'y': 1}
+            'disableSoundCommander': False,
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
+            'hideBadges': False,
+            'hideBattlePrestige': False,
+            'hideClanName': False,
+            'inBattle': True,
+            'loadTxt': 'Reloading at {pos}, for {load} seconds.',
+            'maxChatLines': 6,
+            'muteTeamBaseSound': False,
+            'position': {'x': -870, 'y': 1},
+            'postmortemTips': True,
+            'showAnonymous': False,
+            'showBattleHint': False,
+            'showFriends': False,
+            'showPostmortemDogTag': True,
+            'stunSound': False
         }
 
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
-            'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
-            'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',
-            'UI_setting_postmortemTips_tooltip': 'Disable pop-up panel at the bottom after death.',
-            'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
-            'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
-            'UI_setting_colorCheck_text': 'Choose Map Border Color:',
+            'UI_setting_clipLoad_text': 'ReLoad Status',
+            'UI_setting_clipLoad_tooltip': 'Clip Load Time Massage',
             'UI_setting_color_text': '<font color=\'#%(color)s\'>Current color: #%(color)s</font>',
             'UI_setting_color_tooltip': 'This color will be applied to all Maps',
+            'UI_setting_colorCheck_text': 'Choose Map Border Color:',
+            'UI_setting_directivesOnlyFromStorage_text': 'Directives Only From Storage',
+            'UI_setting_directivesOnlyFromStorage_tooltip': 'Disable overriding directives from the storage.',
             'UI_setting_disableSoundCommander_text': 'Disable Sound Commander',
-            'UI_setting_disableSoundCommander_tooltip': '',
-            'UI_setting_stunSound_text': 'Stun Sound',
-            'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.',
-            'UI_setting_muteTeamBaseSound_text': 'Mute Team Base Sound',
-            'UI_setting_muteTeamBaseSound_tooltip': '',
+            'UI_setting_disableSoundCommander_tooltip': 'Disable Sound Commander in battle.',
+            'UI_setting_hideBadges_text': 'Hide Badges',
+            'UI_setting_hideBadges_tooltip': 'Hide Badges in players panel.',
+            'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
+            'UI_setting_hideBattlePrestige_tooltip': 'Hide Battle Prestige in players panel.',
+            'UI_setting_hideClanName_text': 'Hide Clan Name',
+            'UI_setting_hideClanName_tooltip': 'Remove clan name in players panel.',
             'UI_setting_inBattle_text': 'Clock In Battle',
             'UI_setting_inBattle_tooltip': 'Show clock in battle',
-            'UI_setting_showFriends_text': 'Show Friends',
-            'UI_setting_showFriends_tooltip': '',
-            'UI_setting_directivesOnlyFromStorage_text': 'Directives Only From Storage',
-            'UI_setting_directivesOnlyFromStorage_tooltip': '',
-            'UI_setting_showAnonymous_text': 'Show Anonymous',
-            'UI_setting_showAnonymous_tooltip': '',
-            'UI_setting_hideClanName_text': 'Hide Clan Name',
-            'UI_setting_hideClanName_tooltip': '',
-            'UI_setting_hideBadges_text': 'Hide Badges',
-            'UI_setting_hideBadges_tooltip': '',
-            'UI_setting_hideBattlePrestige_text': 'Hide Battle Prestige',
-            'UI_setting_hideBattlePrestige_tooltip': '',
+            'UI_setting_loadTxt_text': 'Text Format',
+            'UI_setting_loadTxt_tooltip': 'Use macros to edit the message\n (macros: \'{load}\' - \'{pos}\')',
             'UI_setting_maxChatLines_text': 'Max Chat Lines',
             'UI_setting_maxChatLines_tooltip': 'Limit the number of battle chat lines.',
+            'UI_setting_muteTeamBaseSound_text': 'Mute Team Base Sound',
+            'UI_setting_muteTeamBaseSound_tooltip': 'Disable team base sound wen this option is enabled.',
+            'UI_setting_postmortemTips_text': 'Hide Postmortem Tips',
+            'UI_setting_postmortemTips_tooltip': 'Disable pop-up panel at the bottom after death.',
+            'UI_setting_showAnonymous_text': 'Show Anonymous',
+            'UI_setting_showAnonymous_tooltip': 'Show \'Anonymous\' name in players panel.',
+            'UI_setting_showBattleHint_text': 'Hide Trajectory View.',
+            'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
+            'UI_setting_showFriends_text': 'Show Friends',
+            'UI_setting_showFriends_tooltip': 'Show friends in players panel.',
+            'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
+            'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
+            'UI_setting_stunSound_text': 'Stun Sound',
+            'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.'
         }
         super(ConfigInterface, self).init()
 
@@ -123,16 +136,18 @@ class ConfigInterface(SimpleConfigInterface):
                 self.tb.createControl('hideClanName'),
                 self.tb.createControl('hideBadges'),
                 self.tb.createControl('hideBattlePrestige'),
-                self.tb.createSlider('maxChatLines', 1, 15, 1, '{{value}}% Lines')
+                self.tb.createSlider('maxChatLines', 1, 15, 1, '{{value}}% Lines'),
+                self.tb.createControl('muteTeamBaseSound'),
+                self.tb.createControl('postmortemTips')
             ],
             'column2': [
-                self.tb.createControl('muteTeamBaseSound'),
-                self.tb.createControl('postmortemTips'),
                 colorLabel,
                 self.tb.createControl('inBattle'),
                 self.tb.createControl('disableSoundCommander'),
                 self.tb.createControl('directivesOnlyFromStorage'),
-                self.tb.createControl('showFriends')
+                self.tb.createControl('showFriends'),
+                self.tb.createControl('clipLoad'),
+                self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
             ]
         }
 
@@ -303,6 +318,68 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
             self.isPremiumIGR |= kwargs.get('accountDBID') in _cache
         return result
     return func(self, *args, **kwargs)
+
+
+# Battle Messages
+class Worker(object):
+    def __init__(self):
+        self.__macros = {}
+        self.player = None
+
+    def getSquarePosition(self):
+
+        def clamp(val, vMax):
+            vMin = 0.1
+            return max(vMin, min(val, vMax))
+
+        def pos2name(pos):
+            sqrsName = 'KJHGFEDCBA'
+            linesName = '1234567890'
+            return '%s%s' % (sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
+
+        self.player = getPlayer()
+        arena = getattr(self.player, 'arena', None)
+        if arena is None:
+            logError(config.ID, "Invalid Arena")
+
+        boundingBox = arena.arenaType.boundingBox
+        position = BigWorld.entities[self.player.playerVehicleID].position
+        positionRect = (position[0], position[2])
+        bottomLeft, upperRight = boundingBox
+        spaceSize = (upperRight[0] - bottomLeft[0], upperRight[1] - bottomLeft[1])
+        relPos = (positionRect[0] - bottomLeft[0], positionRect[1] - bottomLeft[1])
+        relPos = (clamp(relPos[0], spaceSize[0]), clamp(relPos[1], spaceSize[1]))
+
+        return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
+
+    def onReload(self, avatar):
+        self.__macros.update({
+            'load': int(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())),
+            'pos': self.getSquarePosition(),
+        })
+
+        message = replaceMacros(config.data['loadTxt'], self.__macros)
+        if message:
+            avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
+        else:
+            avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
+
+
+@override(PlayerAvatar, 'handleKey')
+def handleKey(func, self, isDown, key, mods):
+    if not config.data['enabled'] and not config.data['clipLoad']:
+        return func(self, isDown, key, mods)
+
+    try:
+        cmdMap = CommandMapping.g_instance
+        if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
+            self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
+            callback(0.5, partial(Worker().onReload, self))
+            return True
+    except Exception as e:
+        traceback.print_exc()
+
+    return func(self, isDown, key, mods)
 
 
 # hide badges

@@ -82,13 +82,20 @@ class Distance(DistanceMeta):
 
     def __init__(self):
         super(Distance, self).__init__(config.ID)
+        self.settings = config.data
         self.macrosDict = defaultdict(lambda: 'Macros not found', distance=0, name='')
         self.timeEvent = None
         self.isPostmortem = False
         self.vehicles = {}
 
+    def isDistanceToEnemyEnabled(self):
+        if self.isSPG() or self.gui.isInEpicRange():
+            return False
+        return self.settings['enabled']
+
     def getSettings(self):
-        return config.data
+        if self.isDistanceToEnemyEnabled():
+            return self.settings
 
     def _populate(self):
         super(Distance, self)._populate()

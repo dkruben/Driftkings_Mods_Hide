@@ -83,10 +83,18 @@ class FlightTime(FlightTimeMeta):
 
     def __init__(self):
         super(FlightTime, self).__init__(config.ID)
+        self.settings = config.data
         self.macrosDict = defaultdict(lambda: 'Macros not found', flightTime=0, distance=0)
 
+    def isFlightTimeEnabled(self):
+        enabled = self.settings['enabled']
+        if self.settings['spgOnly']:
+            return enabled and self.isSPG()
+        return enabled
+
     def getSettings(self):
-        return config.data
+        if self.isFlightTimeEnabled():
+            return self.settings
 
     def _populate(self):
         super(FlightTime, self)._populate()

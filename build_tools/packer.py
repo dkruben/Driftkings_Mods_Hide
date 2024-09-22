@@ -23,11 +23,11 @@ def get_git_date(path):
 
 def pack_dir(path, o_dir, max_levels=10, v_str=None, v_date=None, force=False, quiet=False):
     if not quiet:
-        print 'Listing', path, '...'
+        print('Listing', path, '...')
     try:
         names = os.listdir(path)
     except os.error:
-        print 'Can\'t list', path
+        print('Can\'t list', path)
         names = []
     success = True
     for name in sorted(names):
@@ -43,10 +43,10 @@ def pack_dir(path, o_dir, max_levels=10, v_str=None, v_date=None, force=False, q
 def ch_print(path, quiet, *args):
     global printed
     if quiet and not printed:
-        print 'Checking', path, '...'
+        print('Checking', path, '...')
         printed = True
     if args:
-        print ' '.join(args)
+        print(' '.join(args))
 
 
 def pack_file(conf_name, out_path, v_str=None, v_date=None, force=False, quiet=False):
@@ -54,9 +54,6 @@ def pack_file(conf_name, out_path, v_str=None, v_date=None, force=False, quiet=F
     printed = False
     if not quiet:
         ch_print(conf_name, True)
-    # with codecs.open(conf_name, 'r', 'utf-8-sig') as fp:
-    #    data = json.load(fp, 'utf-8-sig')
-    
     # Load JSON while ignoring comments
     with codecs.open(conf_name, 'r', 'utf-8-sig') as fp:
         content = fp.read()
@@ -196,8 +193,10 @@ def pack_stuff(zf_new, mode, tree, arc_data, v_str, v_date, v_was, cur_path):
     min_time, max_time = datetime.fromtimestamp(time.time()), datetime(1970, 1, 1)
     for sub_name, sub_data in sorted(tree.iteritems(), key=lambda i: (isinstance(i[1], dict), not bool(i[1]), i[0])):
         sub_path = sub_name if not cur_path else cur_path + sub_name
-        if isinstance(sub_data, dict):  # dicts are directories, strings are files. No exceptions.
-            if sub_data:  # non-empty folder
+        # dicts are directories, strings are files. No exceptions.
+        if isinstance(sub_data, dict):
+            # non-empty folder
+            if sub_data:
                 packed = pack_stuff(zf_new, mode, sub_data, arc_data, v_str, v_date, v_was, sub_path)
                 min_time = min(min_time, packed[0])
                 max_time = max(max_time, packed[1])
@@ -243,16 +242,16 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'lfqv:')
     except getopt.error, msg:
-        print msg
-        print "usage: python %s [-l] [-f] [-q] [-v version_file] configs_dir output_dir" % os.path.basename(sys.argv[0])
-        print '''    arguments:
+        print(msg)
+        print("usage: python %s [-l] [-f] [-q] [-v version_file] configs_dir output_dir" % os.path.basename(sys.argv[0]))
+        print('''    arguments:
         configs_dir: directory to pick configs from
         output_dir: directory to place built archives into
     options:
         -l: don't recurse into subdirectories
         -f: force rebuild even if timestamps are up-to-date
         -q: output only error messages and archive update reasons
-        -v version_file: if a {GAME_VERSION} macro is encountered and this path is not provided - build will fail'''
+        -v version_file: if a {GAME_VERSION} macro is encountered and this path is not provided - build will fail''')
         sys.exit(2)
     max_levels = 10
     force = False
@@ -268,7 +267,7 @@ def main():
         if o == '-v':
             version_file = a
     if len(args) != 2:
-        print 'packer only needs to know where to pick configs from and where to put the results to'
+        print('packer only needs to know where to pick configs from and where to put the results to')
         sys.exit(2)
     success = True
     version_str = None
@@ -281,12 +280,12 @@ def main():
             timeStr = get_git_date(version_file)
             version_date = datetime.fromtimestamp(long(timeStr) if timeStr else long(os.stat(version_file).st_mtime))
         except IOError:
-            print 'WARNING: version file not found:', version_file
+            print('WARNING: version file not found:', version_file)
         except AssertionError:
-            print 'WARNING: version was empty'
+            print('WARNING: version was empty')
             version_str = None
     else:
-        print 'WARNING: version file not provided'
+        print('WARNING: version file not provided')
     try:
         if os.path.exists(args[0]):
             if os.path.isdir(args[0]):
@@ -294,10 +293,10 @@ def main():
             else:
                 success &= pack_file(args[0], args[1], version_str, version_date, force, quiet)
         else:
-            print 'Build config file/directory not found'
+            print('Build config file/directory not found')
             success = False
     except KeyboardInterrupt:
-        print "\n[interrupted]"
+        print("\n[interrupted]")
         success = False
     return success
 

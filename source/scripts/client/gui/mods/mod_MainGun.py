@@ -68,8 +68,10 @@ class ConfigInterface(SimpleConfigInterface):
         }
 
     def onBattleLoaded(self):
+        if not self.data['enabled']:
+            return
         app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if not self.data['enabled'] and app is None:
+        if app is None:
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 
@@ -111,14 +113,19 @@ class MainGun(MainGunMeta, IBattleFieldListener):
 
     def __init__(self):
         super(MainGun, self).__init__(config.ID)
+        self.settings = config.data
         self.gunScore = 0
         self.gunLeft = 0
         self._warning = False
         self.totalEnemiesHP = 0
         self.playerDamage = 0
 
+    def isRandomBattle(self):
+        return self.gui.isRandomBattle() or self.gui.isMapbox()
+
     def getSettings(self):
-        return config.data
+        if self.isRandomBattle():
+            return self.settings
 
     def _populate(self):
         super(MainGun, self)._populate()
