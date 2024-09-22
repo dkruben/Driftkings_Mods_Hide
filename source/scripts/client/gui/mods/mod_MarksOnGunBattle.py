@@ -1269,9 +1269,9 @@ def new_onBattleEvents(func, *args):
 
 
 @override(Vehicle, 'onHealthChanged')
-def new_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID):
+def new_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, attackReasonExtID):
     worker.shots(self, newHealth, attackerID)
-    func(self, newHealth, oldHealth, attackerID, attackReasonID)
+    func(self, newHealth, oldHealth, attackerID, attackReasonID, attackReasonExtID)
 
 
 @override(Vehicle, 'startVisual')

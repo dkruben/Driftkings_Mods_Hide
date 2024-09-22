@@ -255,7 +255,7 @@ g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, SixthSense, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
-@override(SixthSenseIndicator, '_SixthSenseIndicator__show')
+@override(SixthSenseIndicator, '_show')
 def new__show(func, self):
     func(self)
     if getPlayer().isVehicleAlive:
