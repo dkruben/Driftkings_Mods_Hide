@@ -42,42 +42,6 @@ class DummyTemplateBuilder(object):
     def getValue(self, var_name, value):
         return var_name
 
-    # don't use this method(for now)
-    # def getControlType(self, value, contType):
-    #    if contType is None:
-    #        if isinstance(value, str):
-    #            if value.startswith('#'):
-    #                return self.types.ColorChoice
-    #            return self.types.TextInput
-    #        elif isinstance(value, bool):
-    #            return self.types.CheckBox
-    #    else:
-    #        return contType
-
-    @staticmethod
-    def createButton(width=None, height=None, text=None, offsetTop=None, offsetLeft=None, icon=None, iconOffsetTop=None, iconOffsetLeft=None):
-        """
-            example: self.tb.createDropdown(varName, options, 0, i18n,  button=self.tb.createButton(width=30, height=23, offsetTop=0, offsetLeft=0, icon='../maps/icons/buttons/sound.png', iconOffsetTop=0, iconOffsetLeft=1), width=200)
-        """
-        button = {}
-        if width is not None:
-            button['width'] = width
-        if height is not None:
-            button['height'] = height
-        if text is not None:
-            button['text'] = text
-        if offsetTop is not None:
-            button['offsetTop'] = offsetTop
-        if offsetLeft is not None:
-            button['offsetLeft'] = offsetLeft
-        if icon is not None and text is None:
-            button['iconSource'] = icon
-        if iconOffsetTop is not None:
-            button['iconOffsetTop'] = iconOffsetTop
-        if iconOffsetLeft is not None:
-            button['iconOffsetLeft'] = iconOffsetLeft
-        return button
-
     @staticmethod
     def createEmpty():
         return {'type': 'Empty'}
@@ -136,6 +100,11 @@ class DummyTemplateBuilder(object):
     def createRangeSlider(self, var_name, v_min, v_max, label_step, div_step, step, min_range, width=200, empty=False, button=None, value=None):
         result = self._createNumeric(var_name, CONTAINER.RangeSlider, step, v_min, v_max, width, empty, button, value)
         result.update({'divisionLabelStep': label_step, 'divisionStep': div_step, 'minRangeDistance': min_range})
+        return result
+
+    def createItem(self, var_name, list_steps, width=200):
+        result = self.createControl(var_name, CONTAINER.TextInput, width)
+        result['value'] = ', '.join(str(x) for x in list_steps)
         return result
 
 class TemplateBuilder(DummyTemplateBuilder):

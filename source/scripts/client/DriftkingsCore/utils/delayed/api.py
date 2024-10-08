@@ -36,7 +36,6 @@ def try_import():
                 return NotImplemented
         modsListApi = ModsList()
         return modsListApi, None, None
-
     try:
         import Event
         from gui.shared.personality import ServicesLocator

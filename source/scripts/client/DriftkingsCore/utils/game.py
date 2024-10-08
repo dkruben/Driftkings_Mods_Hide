@@ -11,9 +11,15 @@ def BigWorld_callback(delay, func, *args, **kwargs):
     return BigWorld.callback(delay, partial(func, *args, **kwargs))
 
 
-def checkKeys(keys, key=None):  # thx to P0LIR0ID
-    keySets = [data if not isinstance(data, int) else (data,) for data in keys]
-    return (bool(keys) and all(any(BigWorld.isKeyDown(item) for item in keySet) for keySet in keySets) and (key is None or any(key in keySet for keySet in keySets)))
+def checkKeys(keys, key=None):
+    if not keys:
+        return False
+    keySets = [data if isinstance(data, tuple) else (data,) for data in keys]
+    keys_pressed = any(any(BigWorld.isKeyDown(item) for item in keySet) for keySet in keySets)
+    if key is not None:
+        key_found = any(key in keySet for keySet in keySets)
+        return keys_pressed and key_found
+    return keys_pressed
 
 
 VKEY_ALT, VKEY_CONTROL, VKEY_SHIFT = range(-1, -4, -1)
@@ -60,14 +66,10 @@ def sendPanelMessage(text='', colour='Green', panel='Player'):
         - 'Yellow': Yellow color.
         - 'Self': Self color.
     """
-    # Import the necessary modules
     from gui.Scaleform.framework import WindowLayer
     from gui.shared.personality import ServicesLocator
-    # Get the battle page
     battle_page = ServicesLocator.appLoader.getDefBattleApp().containerManager.getContainer(WindowLayer.VIEW).getView()
-    # If the battle page is not None, show the message
     if battle_page is not None:
-        # Get the method to show the message based on the panel and color
         getattr(battle_page.components['battle%sMessages' % panel], 'as_show%sMessageS' % colour, None)(None, text)
     else:
         BigWorld.callback(0.5, partial(sendPanelMessage, text, colour, panel))

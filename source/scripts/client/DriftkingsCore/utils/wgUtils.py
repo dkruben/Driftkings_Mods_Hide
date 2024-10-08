@@ -93,14 +93,6 @@ def checkNamesList(directory):
 
 
 def getColor(data, ratting_color, value=None, kwargs=None):
-    """
-    Retrieves the color based on the provided linkage, rating color, and optional value or kwargs.
-    :param data: (dict) A dictionary containing color information.
-    :param ratting_color: (str) The rating color to use for retrieving the color.
-    :param value: (float, optional) The value to use for retrieving the color.
-    :param kwargs: (dict, optional) Additional keyword arguments to use for retrieving the color.
-    :return: (str) The formatted hexadecimal color code.
-    """
     if ratting_color in data:
         category_values = data[ratting_color]
         if value is not None:
@@ -117,26 +109,10 @@ def getColor(data, ratting_color, value=None, kwargs=None):
 
 
 def formatColor(color):
-    """
-    Formats a color string to a valid hexadecimal color code.
-    :param color: (str) The color string to format. Can be in the format '0xFFFFFF' or '#FFFFFF'.
-    :return: (str) The formatted hexadecimal color code.
-    """
     return '#' + color[2:] if color.startswith('0x') else color
 
 
 def replaceMacros(text_format, data):
-    """
-    Replaces macros in a text format with their corresponding values.
-    :param text_format: (str) The text format containing macros to be replaced.
-    :param data: (dict) A dictionary mapping macros to their replacement values.
-    :return: (str) The text format with macros replaced by their values.
-    example:
-        text_format = "Hello, {name}! You have {points} points."
-        data = {"name": "John", "points": 10}
-        result = replace_macros(text_format, data)
-        # Output: "Hello, John! You have 10 points."
-    """
     for macro, value in data.items():
         text_format = text_format.replace(macro, value)
     return text_format

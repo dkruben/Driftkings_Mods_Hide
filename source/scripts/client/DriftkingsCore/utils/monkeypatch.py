@@ -3,9 +3,8 @@ import inspect
 from functools import partial, update_wrapper
 
 from .abstract import redirect_traceback
-from .logger import logTrace, logError
 
-__all__ = ('registerEvent', 'override', 'overrideMethod', 'overrideStaticMethod', 'overrideClassMethod', 'find_attr', 'find_attr_name')
+__all__ = ('override', 'overrideMethod', 'overrideStaticMethod', 'overrideClassMethod', 'find_attr', 'find_attr_name')
 _sentinel = object()
 
 
@@ -30,14 +29,6 @@ def find_attr(obj, name, default=_sentinel, accept_property=False):
 
 
 def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
-    """
-    :param obj: object, which attribute needs overriding
-    :param prop: attribute name (can be not mangled), attribute must be callable
-    :param getter: f_get function or None
-    :param setter: f_set function or None
-    :param deleter: f_del function or None
-    :return function: unmodified getter or, if getter is None and src is not property, decorator"""
-
     if getter:
         getter_func = getter
         while isinstance(getter_func, partial):
@@ -77,118 +68,33 @@ def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
         return partial(override, obj, prop)
 
 
-class EventHook(object):
-
-    def __init__(self):
-        self.__handlers = []
-
-    def __iadd__(self, handler):
-        self.__handlers.append(handler)
-        return self
-
-    def __isub__(self, handler):
-        if handler in self.__handlers:
-            self.__handlers.remove(handler)
-        return self
-
-    def fire(self, *args, **kwargs):
-        for handler in self.__handlers:
-            handler(*args, **kwargs)
-
-    def clearObjectHandlers(self, inObject):
-        for theHandler in self.__handlers:
-            if theHandler.im_self == inObject:
-                self -= theHandler
+def hookDecorator(func):
+    def decorator1(*args, **kwargs):
+        def decorator2(handler):
+            func(handler, *args, **kwargs)
+        return decorator2
+    return decorator1
 
 
-class HooksDecorators(object):
+def _overrideMethod(cls, method, setter):
+    getter = getattr(cls, method)
+    if type(getter) is not property:
+        setattr(cls, method, setter)
+    else:
+        setattr(cls, method, property(setter))
 
-    def __init__(self):
-        self.registerEvent = self._hook_decorator(self._registerEvent)
-        self.overrideStaticMethod = self._hook_decorator(self._OverrideStaticMethod)
-        self.overrideClassMethod = self._hook_decorator(self._OverrideClassMethod)
+def _OverrideStaticMethod(handler, cls, method):
+    getter = getattr(cls, method)
+    setter = staticmethod(lambda *a, **k: handler(getter, *a, **k))
+    _overrideMethod(cls, method, setter)
 
-    @staticmethod
-    def _hook_decorator(func):
-        def decorator1(*args, **kwargs):
-            def decorator2(handler):
-                func(handler, *args, **kwargs)
-            return decorator2
-        return decorator1
-
-    @staticmethod
-    def _override(cls, method, setter):
-        getter = getattr(cls, method)
-        if type(getter) is not property:
-            setattr(cls, method, setter)
-        else:
-            setattr(cls, method, property(setter))
-
-    def _OverrideStaticMethod(self, handler, cls, method):
-        getter = getattr(cls, method)
-        setter = staticmethod(lambda *a, **k: handler(getter, *a, **k))
-        self._override(cls, method, setter)
-
-    def _OverrideClassMethod(self, handler, cls, method):
-        getter = getattr(cls, method)
-        setter = classmethod(lambda *a, **k: handler(getter, *a, **k))
-        self._override(cls, method, setter)
-
-    @staticmethod
-    def __event_handler(prepend, event, method, *args, **kwargs):
-        try:
-            if prepend:
-                event.fire(*args, **kwargs)
-                r = method(*args, **kwargs)
-            else:
-                r = method(*args, **kwargs)
-                event.fire(*args, **kwargs)
-            return r
-        except:
-            logTrace(__file__)
-
-    def _registerEvent(self, handler, cls, method, prepend=False):
-        evt = '__event_%i_%s' % ((1 if prepend else 0), method)
-        if hasattr(cls, evt):
-            e = getattr(cls, evt)
-        else:
-            newm = '__orig_%i_%s' % ((1 if prepend else 0), method)
-            setattr(cls, evt, EventHook())
-            setattr(cls, newm, getattr(cls, method))
-            e = getattr(cls, evt)
-            m = getattr(cls, newm)
-            setattr(cls, method, lambda *args, **kwargs: self.__event_handler(prepend, e, m, *args, **kwargs))
-        e += handler
-
-    @staticmethod
-    def overrideMethod(setter, getter='__init__'):
-        """
-        setter: class object
-        getter: unicode default __init__
-        """
-        class_name = setter.__name__
-        if not hasattr(setter, getter):
-            if getter.startswith('__'):
-                full_name = '_{0}{1}'.format(class_name, getter)
-                if hasattr(setter, full_name):
-                    getter = full_name
-                elif hasattr(setter, getter[1:]):
-                    getter = getter[1:]
-
-        def outer(new_method):
-            old_method = getattr(setter, getter, None)
-            if old_method is not None and callable(old_method):
-                def __override(*args, **kwargs):
-                    return new_method(old_method, *args, **kwargs)
-                setattr(setter, getter, __override)
-            else:
-                logError('DriftkingsCore', 'overrideMethod error: {} in {} is not callable or undefined in {}', (getter, class_name, new_method.__name__))
-            return new_method
-        return outer
+def _OverrideClassMethod(handler, cls, method):
+    getter = getattr(cls, method)
+    setter = classmethod(lambda *a, **k: handler(getter, *a, **k))
+    _overrideMethod(cls, method, setter)
 
 
 # ---! HooksDecorators !---
-registerEvent = HooksDecorators().registerEvent
-overrideMethod = HooksDecorators().overrideMethod
-overrideStaticMethod = HooksDecorators().overrideStaticMethod
-overrideClassMethod = HooksDecorators().overrideClassMethod
+overrideMethod = hookDecorator(_overrideMethod)
+overrideStaticMethod = hookDecorator(_OverrideStaticMethod)
+overrideClassMethod = hookDecorator(_OverrideClassMethod)

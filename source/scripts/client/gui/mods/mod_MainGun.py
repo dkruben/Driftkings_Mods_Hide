@@ -124,8 +124,9 @@ class MainGun(MainGunMeta, IBattleFieldListener):
         return self.gui.isRandomBattle() or self.gui.isMapbox()
 
     def getSettings(self):
-        if self.isRandomBattle():
-            return self.settings
+        if not self.isRandomBattle():
+            return
+        return self.settings
 
     def _populate(self):
         super(MainGun, self)._populate()

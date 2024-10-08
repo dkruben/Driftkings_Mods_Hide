@@ -28,7 +28,7 @@ class PlayersPanelController(SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.6.0 (%(file_compile_date)s)'
-        self.author = '_DKRuben__EU'
+        self.author = 'by: _DKRuben__EU'
         self.modsGroup = 'Driftkings'
         self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {'toggle_key': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
@@ -150,7 +150,6 @@ class PlayersPanelController(SimpleConfigInterface):
 config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-
     config = PlayersPanelController()
     statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 except ImportError:

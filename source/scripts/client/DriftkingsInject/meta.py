@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import GUI
+from gui import g_guiResetters
 from account_helpers.settings_core.settings_constants import GRAPHICS
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
@@ -18,6 +20,8 @@ class DriftkingsView(BaseDAAPIComponent):
     def __init__(self, ID):
         super(DriftkingsView, self).__init__()
         self.ID = ID
+        self._resolution = [0, 0]
+        self._offset = (0, 0)
         self._arenaDP = self.sessionProvider.getArenaDP()
         self._arenaVisitor = self.sessionProvider.arenaVisitor
 
@@ -53,12 +57,14 @@ class DriftkingsView(BaseDAAPIComponent):
             logInfo(__CORE_NAME__, '{}:{} - {}', self.getAlias(), arg, dir(arg))
 
     def _populate(self):
+        g_guiResetters.add(self.__onChangeScreenResolution)
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._populate()
         g_events.onBattleClosed += self.destroy
         logDebug(__CORE_NAME__, True, '{} is loaded', self.ID)
 
     def _dispose(self):
+        g_guiResetters.discard(self.__onChangeScreenResolution)
         g_events.onBattleClosed -= self.destroy
         # noinspection PyProtectedMember
         super(DriftkingsView, self)._dispose()
@@ -68,6 +74,9 @@ class DriftkingsView(BaseDAAPIComponent):
         if self.getState() != EntityState.CREATED:
             return
         super(DriftkingsView, self).destroy()
+
+    def __onChangeScreenResolution(self):
+        self._resolution = map(int, GUI.screenResolution()[:2])
 
     @property
     def playerVehicleID(self):
@@ -91,4 +100,6 @@ class DriftkingsView(BaseDAAPIComponent):
         return self.flashObject.as_colorBlind(enabled) if self._isDAAPIInited() else None
 
     def as_onCrosshairPositionChangedS(self, x, y):
-        return self.flashObject.as_onCrosshairPositionChanged(x, y) if self._isDAAPIInited() else None
+        offset_x = x - self._resolution[0] / 2
+        offset_y = y - self._resolution[1] / 2
+        return self.flashObject.as_onCrosshairPositionChanged(offset_x, offset_y) if self._isDAAPIInited() else None

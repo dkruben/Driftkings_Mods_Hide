@@ -54,3 +54,9 @@ res/sound_bank_wwise/SixthSense/GeneratedSoundBanks/Windows/Init.bnk
 debug_*_*.log
 /source/scripts/client/modsListApi
 /source/scripts/client/modsSettingsApi
+res/flash/DistanceToEnemy/obj/DistanceToEnemyConfig.xml
+res/flash/DriftkingsPlayersPanelAPI/obj/DriftkingsPlayersPanelAPIConfig.xml
+res/flash/HangarClock/obj/DateTimesConfig.old
+res/flash/HangarClock/obj/DateTimesConfig.xml
+res/flash/OwnHealth/obj/OwnHealthConfig.xml
+res/flash/SixthSense/obj/SixthSenseIconConfig.xml

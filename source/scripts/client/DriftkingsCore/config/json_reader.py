@@ -55,7 +55,7 @@ class JSONObjectDecoder(json.JSONDecoder):
 class JSONLoader(object):
     @classmethod
     def byte_ify(cls, inputs, ignore_dicts=False):
-        if isinstance(inputs, unicode):  # Mantido para Python 2.7
+        if isinstance(inputs, unicode):
             return inputs.encode('utf-8')
         elif isinstance(inputs, list):
             return [cls.byte_ify(element, ignore_dicts=True) for element in inputs]
