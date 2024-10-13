@@ -12,14 +12,8 @@ def BigWorld_callback(delay, func, *args, **kwargs):
 
 
 def checkKeys(keys, key=None):
-    if not keys:
-        return False
-    keySets = [data if isinstance(data, tuple) else (data,) for data in keys]
-    keys_pressed = any(any(BigWorld.isKeyDown(item) for item in keySet) for keySet in keySets)
-    if key is not None:
-        key_found = any(key in keySet for keySet in keySets)
-        return keys_pressed and key_found
-    return keys_pressed
+    keySets = [data if not isinstance(data, int) else (data,) for data in keys]
+    return (bool(keys) and all(any(BigWorld.isKeyDown(x) for x in keySet) for keySet in keySets) and (key is None or any(key in keySet for keySet in keySets)))
 
 
 VKEY_ALT, VKEY_CONTROL, VKEY_SHIFT = range(-1, -4, -1)

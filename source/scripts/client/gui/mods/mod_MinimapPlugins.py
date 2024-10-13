@@ -16,7 +16,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, checkKeys, hexToDecimal, logError, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, checkKeys, hexToDecimal, logError, calculate_version, xvmInstalled
 from DriftkingsInject import DriftkingsInjector, DriftkingsView, g_events
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
@@ -52,7 +52,7 @@ __battle_types = (
 BATTLES_RANGE = create_range(ARENA_GUI_TYPE, __battle_types)
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
@@ -62,10 +62,8 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'
         self.author = '_DKRuben__EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {'button': [Keys.KEY_LCONTROL]}
         self.data = {
             'enabled': True,
@@ -149,14 +147,6 @@ class ConfigInterface(SimpleConfigInterface):
     def notEpicBattle(self):
         return not self.sessionProvider.arenaVisitor.gui.isInEpicRange()
 
-    @property
-    def xvmInstalled(self):
-        try:
-            import xvm_main
-            return True
-        except ImportError:
-            return False
-
     def onHotkeyPressed(self, event):
         if not hasattr(getPlayer(), 'arena') or not self.data['enabled']:
             return
@@ -196,7 +186,7 @@ class MinimapCentredView(DriftkingsView):
         super(MinimapCentredView, self)._dispose()
 
     def onAltKey(self, pressed):
-        if config.notEpicBattle and not config.xvmInstalled:
+        if config.notEpicBattle and not xvmInstalled:
             self.flashObject.as_minimapCentered(pressed, config.data['zoomFactor'])
 
 
@@ -289,7 +279,7 @@ def new_setupPlugins(func, self, arenaVisitor):
     res = func(self, arenaVisitor)
     try:
         allowedMode = arenaVisitor.gui.guiType in BATTLES_RANGE
-        if not config.xvmInstalled and allowedMode and config.data['enabled']:
+        if not xvmInstalled and allowedMode and config.data['enabled']:
             if config.data['permanentMinimapDeath']:
                 res['vehicles'] = ArenaVehiclesPlugin
             res['personal'] = PersonalEntriesPlugin

@@ -12,17 +12,15 @@ from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 
-from DriftkingsCore import SimpleConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculate_version
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.6.5 (%(file_compile_date)s)'
         self.author = ' (orig by spoter)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonMaxMode': [Keys.KEY_R, [Keys.KEY_LCONTROL, Keys.KEY_RCONTROL]]

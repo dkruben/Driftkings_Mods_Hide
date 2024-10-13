@@ -14,7 +14,7 @@ from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
 from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, getPlayer, callback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, getPlayer, callback, calculate_version
 
 COMPLEX_ITEM = {
     'leftTrack0': 'chassis',
@@ -40,14 +40,12 @@ COMPLEX_ITEM = {
 CHASSIS = ['chassis', 'leftTrack', 'rightTrack', 'leftTrack0', 'rightTrack0', 'leftTrack1', 'rightTrack1', 'wheel', 'wheel0', 'wheel1', 'wheel2', 'wheel3', 'wheel4', 'wheel5', 'wheel6', 'wheel7']
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '2.0.0 (%(file_compile_date)s)'
-        self.author = ' (orig by spoter)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
+        self.author = ' (orig by spoter, refactored by DriftKing\'s)'
         self.defaultKeys = {
             'buttonRepair': [Keys.KEY_SPACE],
             'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]

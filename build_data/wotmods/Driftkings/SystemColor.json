@@ -1,5 +1,5 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".wotmod",
     "files": {
         "res/scripts/client/gui/mods/mod_SystemColor.pyc": "build/scripts/client/gui/mods/mod_SystemColor.pyc"

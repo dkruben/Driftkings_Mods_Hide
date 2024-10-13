@@ -9,7 +9,7 @@ from gui.battle_control import avatar_getter
 from gui.shared.personality import ServicesLocator
 from math_utils import VectorConstant
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, calculate_version
 from DriftkingsInject import FlightTimeMeta, DriftkingsInjector, g_events
 
 AS_INJECTOR = 'FlightTimerInjector'
@@ -17,7 +17,7 @@ AS_BATTLE = 'FlightTimerView'
 AS_SWF = 'FlightTimer.swf'
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
@@ -26,8 +26,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'align': 'left',

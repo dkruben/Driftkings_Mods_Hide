@@ -10,7 +10,7 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback, calculate_version
 
 MACROS = [
     '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',
@@ -31,13 +31,11 @@ MACROS = [
 COMPARE_MACROS = ['compareDelim', 'compareColor']
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.4.5 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
             'enabled': True,

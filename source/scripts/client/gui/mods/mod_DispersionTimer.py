@@ -13,7 +13,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logDebug, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logDebug, calculate_version
 from DriftkingsInject import DispersionTimerMeta, DriftkingsInjector, g_events
 
 AS_INJECTOR = 'DispersionTimerInjector'
@@ -21,7 +21,7 @@ AS_BATTLE = 'DispersionTimerView'
 AS_SWF = 'DispersionTimer.swf'
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
@@ -30,8 +30,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'align': 'left',

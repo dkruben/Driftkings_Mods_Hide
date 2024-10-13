@@ -36,7 +36,7 @@ from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideMethod, logInfo, logDebug, getPlayer, isReplay, calculate_version, callback, logError
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logInfo, logDebug, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
 
 AS_SWF = 'BattleClock.swf'
@@ -45,7 +45,7 @@ AS_INJECTOR = 'BattleClockInjector'
 _cache = set()
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
@@ -53,10 +53,8 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.3.1 (%(file_compile_date)s)'
+        self.version = '2.3.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'clipLoad': True,
@@ -303,7 +301,7 @@ def showFriends():
     return config.data['enabled'] and config.data['showFriends'] and not isReplay()
 
 
-@overrideMethod(VehicleTypeInfoVO)
+@override(VehicleTypeInfoVO, '__init__')
 def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
     func(self, *args, **kwargs)
     if config.data['enabled'] and showFriends():
@@ -321,48 +319,15 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 
 
 # Battle Messages
-class Worker(object):
-    def __init__(self):
-        self.macro = defaultdict(lambda: 'Macros not found')
-        self.player = None
-
-    def getSquarePosition(self):
-
-        def clamp(val, vMax):
-            vMin = 0.1
-            return max(vMin, min(val, vMax))
-
-        def pos2name(pos):
-            sqrsName = 'KJHGFEDCBA'
-            linesName = '1234567890'
-            return '%s%s' % (sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
-
-        self.player = getPlayer()
-        arena = getattr(self.player, 'arena', None)
-        if arena is None:
-            logError(config.ID, "Invalid Arena")
-
-        boundingBox = arena.arenaType.boundingBox
-        position = BigWorld.entities[self.player.playerVehicleID].position
-        positionRect = (position[0], position[2])
-        bottomLeft, upperRight = boundingBox
-        spaceSize = (upperRight[0] - bottomLeft[0], upperRight[1] - bottomLeft[1])
-        relPos = (positionRect[0] - bottomLeft[0], positionRect[1] - bottomLeft[1])
-        relPos = (clamp(relPos[0], spaceSize[0]), clamp(relPos[1], spaceSize[1]))
-
-        return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
-
-    def onReload(self, avatar):
-        self.macro['load'] = math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())
-        self.macro['pos'] = self.getSquarePosition()
-        message = config.data['loadTxt'] % self.macro
-        if len(message) > 0:
-            avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
-        else:
-            avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
-
-
-gmod = Worker()
+def onReload(avatar):
+    macro = defaultdict(lambda: 'Macros not found')
+    macro['load'] = math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())
+    macro['pos'] = square_position.getSquarePosition()
+    message = config.data['loadTxt'] % macro
+    if len(message) > 0:
+         avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
+    else:
+        avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
 
 
 @override(PlayerAvatar, 'handleKey')
@@ -372,7 +337,7 @@ def new__handleKey(func, self, isDown, key, mods):
             cmdMap = CommandMapping.g_instance
             if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
                 self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
-                callback(0.5, partial(gmod.onReload, self))
+                callback(0.5, partial(onReload, self))
                 return True
         except StandardError:
             traceback.print_exc()
@@ -407,7 +372,7 @@ def new__VehicleArenaInfoVO(func, self, **kwargs):
     return func(self, **kwargs)
 
 # limit of lines in battle
-@overrideMethod(messenger_view, '_makeSettingsVO')
+@override(messenger_view, '_makeSettingsVO')
 def new__makeSettingsVO(func, self):
     makeSettingsVO = func(self)
     makeSettingsVO['numberOfMessagesInHistory'] = config.data['maxChatLines']

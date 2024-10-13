@@ -20,7 +20,7 @@ from gui.shared.personality import ServicesLocator
 from predefined_hosts import g_preDefinedHosts
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
-from DriftkingsCore import SimpleConfigInterface, ConfigNoInterface, Analytics, override, callback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, ConfigNoInterface, Analytics, override, callback, calculate_version
 
 
 def getPreferencesDir():
@@ -33,13 +33,11 @@ def loadWindow(alias):
     app.loadView(SFViewLoadParams(alias))
 
 
-class ConfigsInterface(ConfigNoInterface, SimpleConfigInterface):
+class ConfigsInterface(ConfigNoInterface, DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = '[by: S0me0ne, reworked by ShadowHunterRUS & spoter & Driftkings]'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),

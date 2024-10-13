@@ -35,7 +35,7 @@ from gui.veh_post_progression.models.progression import PostProgressionCompletio
 from items import vehicles
 from items.components.c11n_constants import CUSTOM_STYLE_POOL_ID, CustomizationType, SeasonType
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
 REMOVE_FROM_OTHER = 'removeFromOther'
 misc_xp_tiers = (300, 200, 100, 50)
@@ -48,13 +48,11 @@ for _alliance in nations.ALLIANCES_TAGS_ORDER:
     DEFAULT_VALUES[KEY_FILTERS][CAROUSEL_FILTER_CLIENT_1][_alliance] = False
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (Polyacov_Yury)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'showCompatibles': True,
@@ -68,7 +66,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'name': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_showCompatibles_text': 'Show compatible vehicles for modules in tech tree',
             'UI_setting_showCompatibles_tooltip': 'This setting adds the list of compatible vehicles into tooltips of vehicle modules, removing the need to open the info window to see it.',
             'UI_setting_removeFromOther_customization_text': 'Add option to remove a customization from other vehicle',

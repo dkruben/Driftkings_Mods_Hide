@@ -12,10 +12,10 @@ from gui.battle_control.arena_info import vos_collections
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, checkKeys, override, logWarning, getEntity, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, override, logWarning, getEntity, getPlayer, calculate_version
 
 
-class PlayersPanelController(SimpleConfigInterface):
+class PlayersPanelController(DriftkingsConfigInterface):
     vCache = property(lambda self: self.__vCache)
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
@@ -29,8 +29,6 @@ class PlayersPanelController(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.6.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben__EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {'toggle_key': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
             'enabled': True,

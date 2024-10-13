@@ -55,7 +55,7 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
@@ -64,7 +64,7 @@ AS_SWF = 'DateTimes.swf'
 AS_ALIASES = 'Driftkings_DateTimes_UI'
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
@@ -77,8 +77,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '3.0.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'autoLogin': False,

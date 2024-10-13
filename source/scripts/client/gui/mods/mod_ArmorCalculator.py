@@ -18,7 +18,7 @@ from helpers import dependency
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, logException, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logException, calculate_version
 from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
@@ -29,7 +29,7 @@ UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None, None, None, False, False)
 FULL_PP_RANGE = (SHELLS.HIGH_EXPLOSIVE, SHELLS.HOLLOW_CHARGE)
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
@@ -37,10 +37,8 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'displayOnAllies': False,
@@ -177,7 +175,11 @@ class ArmorCalculatorAllies(object):
             return UNDEFINED_RESULT
         shot = player.getVehicleDescriptor().shot
         shell = shot.shell
-        full_piercing_power = cls.getFullPiercingPower(hitPoint, piercingMultiplier, shot, player)
+        distance = player.position.flatDistTo(hitPoint)
+        if shot.shell.kind in FULL_PP_RANGE:
+            full_piercing_power = shot.piercingPower[0] * piercingMultiplier
+        else:
+            full_piercing_power = _CrosshairShotResults._computePiercingPowerAtDist(shot.piercingPower, distance, shot.maxDistance, piercingMultiplier)
         is_modern = cls.isModernMechanics(shell)
         armor, piercing_power, ricochet, no_damage = cls.computeArmor(c_details, shell, full_piercing_power, is_modern)
         if no_damage or ricochet:
@@ -193,19 +195,6 @@ class ArmorCalculatorAllies(object):
         if is_modern:
             piercing_power = full_piercing_power
         return shot_result, armor, piercing_power, shell.caliber, ricochet, no_damage
-
-    @staticmethod
-    def getFullPiercingPower(hitPoint, piercingMultiplier, shot, player):
-        p100, p500 = (pp * piercingMultiplier for pp in shot.piercingPower)
-        if shot.shell.kind in FULL_PP_RANGE:
-            return p100
-        else:
-            distance = hitPoint.distTo(player.position)
-            if distance <= 100.0:
-                return p100
-            elif distance < shot.maxDistance:
-                return p100 - (p100 - p500) * (distance - 100.0) / 400.0
-            return p500
 
     @staticmethod
     def isModernMechanics(shell):

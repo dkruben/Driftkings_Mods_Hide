@@ -13,17 +13,15 @@ from gui.Scaleform.lobby_entry import LobbyEntry
 from gui.Scaleform.locale.MENU import MENU as MU
 from gui.shared.formatters import text_styles
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, calculate_version, color_tables, getColor
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, calculate_version, color_tables, getColor
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = 'orig. by spoter'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'colorRatting': 0,

@@ -39,13 +39,9 @@ def try_import():
     try:
         import Event
         from gui.shared.personality import ServicesLocator
-        from gui.shared.utils.functions import makeTooltip
-        from gui.Scaleform.framework.managers.context_menu import ContextMenuManager
-        from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
         from gui.Scaleform.framework.entities.View import ViewKey
         from gui.modsSettingsApi.api import ModsSettingsApi
         from gui.modsSettingsApi.hotkeys import HotkeysController
-        from gui.modsSettingsApi.l10n import l10n
         from gui.modsSettingsApi.view import loadView, ModsSettingsApiWindow
         from gui.modsSettingsApi.context_menu import HotkeyContextMenuHandler
         from gui.modsSettingsApi._constants import MOD_ICON, VIEW_ALIAS
@@ -57,53 +53,52 @@ def try_import():
     HotkeyContextMenuHandler.api = None
 
     @override(ModsSettingsApiWindow, '__init__')
-    def new_view_init(func, self, ctx, *args, **kwargs):
+    def new_view_init(base, self, ctx, *args, **kwargs):
         self.api = ctx
-        func(self, ctx, *args, **kwargs)
+        base(self, ctx, *args, **kwargs)
 
     @override(HotkeyContextMenuHandler, '__init__')
-    def new_ctx_init(func, self, *args, **kwargs):
+    def new_ctx_init(base, self, *args, **kwargs):
         self.api = ServicesLocator.appLoader.getDefLobbyApp().containerManager.getViewByKey(ViewKey(VIEW_ALIAS)).api
-        func(self, *args, **kwargs)
+        base(self, *args, **kwargs)
 
     class DriftkingsSettings(ModsSettingsApi):
         def __init__(self, modsGroup, ID, langID, i18n):
             self.modsGroup = modsGroup
             self.ID = ID
             self.lang = langID
-            self.modSettingsID = 'Driftkings_GUI'
             self.isMSAWindowOpen = False
             self.activeMods = set()
             self.state = {'templates': {}, 'settings': {}}
             self.settingsListeners = {}
             self.buttonListeners = {}
             self.hotkeys = HotkeysController(self)
+            self.onWindowOpened = Event.Event()
+            self.onWindowClosed = Event.Event()
+            self.onHotkeysUpdated = Event.Event()
             self.onSettingsChanged = Event.Event()
             self.onButtonClicked = Event.Event()
-            self.onWindowClosed = Event.Event()
-            self.onWindowOpened = Event.Event()
-            self.onHotkeysUpdated = Event.Event()
             self.userSettings = {
-                'modsListApiName': l10n('name'),
-                'modsListApiDescription': l10n('description'),
+                'modsListApiName': "Driftking's Mods Settings",
+                'modsListApiDescription': "<font color='#DD7700'><b>Driftkings</b></font>'s modification settings",
+                'windowTitle': "Driftking's Mods Settings",
                 'modsListApiIcon': 'gui/maps/icons/Driftkings/small.png' or MOD_ICON,
-                'windowTitle': l10n('name'),
-                'enableButtonTooltip': makeTooltip(l10n('stateswitcher/tooltip/header'), l10n('stateswitcher/tooltip/body')),
+                'enableButtonTooltip': '{HEADER}ON/OFF{/HEADER}{BODY}Enable/Disable this mod{/BODY}'
             }
             smart_update(self.userSettings, i18n)
             self.loadSettings()
             self.loadState()
-
-            modsListApi.addModification(
-                id=ID,
-                name=self.userSettings.get('modsListApiName'),
-                description=self.userSettings.get('modsListApiDescription'),
-                icon=self.userSettings.get('modsListApiIcon'),
-                enabled=True,
-                login=True,
-                lobby=True,
-                callback=self.MSAPopulate
-            )
+            kwargs = {
+                'id': ID,
+                'name': self.userSettings.get('modsListApiName'),
+                'description': self.userSettings.get('modsListApiDescription'),
+                'icon': self.userSettings.get('modsListApiIcon'),
+                'enabled': True,
+                'login': True,
+                'lobby': True,
+                'callback': self.MSAPopulate
+            }
+            modsListApi.addModification(**kwargs)
             self.onWindowClosed += self.MSADispose
 
         def MSAPopulate(self):
@@ -149,7 +144,7 @@ def registerSettings(config):
         if newLangID != config.lang:
             config.lang = newLangID
             config.loadLang()
-    except Exception:
+    except StandardError:
         traceback.print_exc()
     if MSA_Orig is None:
         print config.LOG, '=' * 35
@@ -157,7 +152,8 @@ def registerSettings(config):
         print config.LOG, '=' * 35
         return
     if config.modSettingsID not in config.modSettingsContainers:
-        config.modSettingsContainers[config.modSettingsID] = ModsSettings(config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
+        config.modSettingsContainers[config.modSettingsID] = ModsSettings(
+            config.modsGroup, config.modSettingsID, newLangID, config.container_i18n)
     msc = config.modSettingsContainers[config.modSettingsID]
     msc.onWindowOpened += config.onMSAPopulate
     msc.onWindowClosed += config.onMSADestroy
@@ -165,4 +161,4 @@ def registerSettings(config):
         msc.setModTemplate(config.ID, config.template, config.onApplySettings, config.onButtonPress)
         return
     templates = config.template
-    [msc.setModTemplate(config.ID + ID, templates[ID], partial(config.onApplySettings, blockID=ID), partial(config.onButtonPress, blockID=ID))for ID in config.blockIDs]
+    [msc.setModTemplate(config.ID + ID, templates[ID], partial(config.onApplySettings, blockID=ID), partial(config.onButtonPress, blockID=ID)) for ID in config.blockIDs]

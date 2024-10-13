@@ -3,11 +3,11 @@ from helpers import dependency
 from skeletons.gui.shared import IItemsCache
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 from DriftkingsInject import cachedVehicleData
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
@@ -27,8 +27,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'avgAssist': False,

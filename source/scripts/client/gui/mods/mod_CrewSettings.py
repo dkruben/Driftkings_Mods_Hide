@@ -15,7 +15,7 @@ from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, cancelCallback, calculate_version
 
 logger = logging.getLogger(__name__)
 
@@ -78,14 +78,12 @@ def updateIgnoredVehicles(vehicles):
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'crewAutoReturn': False,

@@ -7,10 +7,10 @@ from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version
 
 
-class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
+class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
@@ -26,8 +26,6 @@ class ConfigInterface(SimpleConfigInterface, CallbackDelayer):
         self.ID = '%(mod_ID)s'
         self.version = '1.4.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'text': {'x': -60, 'y': 0},

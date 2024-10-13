@@ -12,7 +12,7 @@ from shared_utils import safeCancelCallback
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics
 
 BOOSTER_ICON_EMPTY = 'img://gui/maps/icons/filters/empty.png'
 
@@ -29,7 +29,7 @@ class BoosterCache(object):
         return getattr(self.__dict__['_booster'], item)
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.__isBattle = True
         self.boosters = ([], [])
@@ -52,8 +52,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by ktulho, HEKPOMAHT, Polyacov_Yury, Driftking\'s'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'hideAvailableBooster': False

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-import math
 from collections import defaultdict
 from functools import partial
 from random import choice
 
-import BigWorld
-import Math
 import ResMgr
 import SoundGroups
 from PlayerEvents import g_playerEvents
@@ -18,7 +15,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, callback, getPlayer, sendChatMessage, checkNamesList, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, getPlayer, square_position, sendChatMessage, checkNamesList, calculate_version
 from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, SixthSenseTimer, g_events
 
 AS_INJECTOR = 'SixthSenseInjector'
@@ -36,7 +33,7 @@ MESSAGES = (
 )
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
@@ -44,9 +41,7 @@ class ConfigInterface(SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.3.5 (%(file_compile_date)s)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
+        self.version = '1.4.0 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'defaultIcon': True,
@@ -128,37 +123,13 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-class Messages(object):
+class MessagesSpotted(object):
     def __init__(self):
         self.macro = defaultdict(lambda: 'macros not found')
         self.__time = 0.5
 
-    @staticmethod
-    def getSquarePosition():
-        def clamp(val, vMax):
-            vMin = 0.1
-            return vMin if (val < vMin) else vMax if (val > vMax) else val
-
-        def pos2name(pos):
-            sqrsName = 'KJHGFEDCBA'
-            linesName = '1234567890'
-            return '{}{}'.format(sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
-
-        player = getPlayer()
-        boundingBox = player.arena.arenaType.boundingBox
-        position = BigWorld.entities[player.playerVehicleID].position
-
-        positionRect = Math.Vector2(position[0], position[2])
-        bottomLeft, upperRight = boundingBox
-        spaceSize = upperRight - bottomLeft
-        relPos = positionRect - bottomLeft
-        relPos[0] = clamp(relPos[0], spaceSize[0])
-        relPos[1] = clamp(relPos[1], spaceSize[1])
-
-        return pos2name((math.ceil(relPos[0] / spaceSize[0] * 10), math.ceil(relPos[1] / spaceSize[1] * 10)))
-
     def sendMessage(self):
-        self.macro['pos'] = self.getSquarePosition()
+        self.macro['pos'] = square_position.getSquarePosition()
         message = config.data['spottedText'] % self.macro
         if message:
             sendChatMessage(message, 1, config.data['delay'])
@@ -171,7 +142,7 @@ class Messages(object):
             callback(self.__time, partial(message, getPlayer()))
 
 
-g_messages = Messages()
+g_messages = MessagesSpotted()
 
 
 class SixthSense(SixthSenseMeta, SixthSenseTimer):

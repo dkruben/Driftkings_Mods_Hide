@@ -7,12 +7,12 @@ from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
 from debug_utils import LOG_CURRENT_EXCEPTION
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
 MinMax = namedtuple('MinMax', ('min', 'max'))
 
 
-class ConfigsInterface(SimpleConfigInterface):
+class ConfigsInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.camCache = {}
         super(ConfigsInterface, self).__init__()
@@ -21,8 +21,6 @@ class ConfigsInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': False,
             'max': 160.0,

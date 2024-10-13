@@ -14,10 +14,10 @@ from gui.shared.personality import ServicesLocator as SL
 from helpers import getClientVersion
 from wg_async import wg_await, wg_async
 
-from DriftkingsCore import ConfigNoInterface, SimpleConfigInterface, remDups, Analytics, events, curCV, calculate_version
+from DriftkingsCore import ConfigNoInterface, DriftkingsConfigInterface, remDups, Analytics, events, curCV, calculate_version
 
 
-class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
+class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
     def __init__(self):
         self.editedBanks = {'create': [], 'delete': [], 'memory': [], 'move': [], 'remap': set(), 'wotmod': [], 'section': []}
         self.version_changed = False
@@ -29,7 +29,6 @@ class ConfigInterface(ConfigNoInterface, SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.5.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
         self.data = {
             'defaultPool': 36,
             'lowEnginePool': 10,

@@ -13,7 +13,7 @@ from gui.battle_control.avatar_getter import getInputHandler
 from gui.battle_control.battle_constants import PLAYER_GUI_PROPS
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, logDebug, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, logDebug, calculate_version, getPlayer, logInfo
 from DriftkingsInject import DriftkingsInjector, DistanceMeta, CyclicTimerEvent, g_events
 
 AS_INJECTOR = 'DistanceInjector'
@@ -21,7 +21,7 @@ AS_BATTLE = 'DistanceView'
 AS_SWF = 'DistanceToEnemy.swf'
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
@@ -31,8 +31,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': False,
             'align': 'center',
@@ -84,6 +82,7 @@ class Distance(DistanceMeta):
         super(Distance, self).__init__(config.ID)
         self.settings = config.data
         self.macrosDict = defaultdict(lambda: 'Macros not found', distance=0, name='')
+        self.player = None
         self.timeEvent = None
         self.isPostmortem = False
         self.vehicles = {}
@@ -113,6 +112,12 @@ class Distance(DistanceMeta):
         arena = self._arenaVisitor.getArenaSubscription()
         if arena is not None:
             arena.onVehicleKilled += self.onVehicleMarkerRemoved
+            # arena.onVehicleCreated -= self.__arena_onPositionsUpdated
+
+    def __arena_onPositionsUpdated(self):
+        positions = self._arenaVisitor.getArenaPositions()
+        for vehicleID, position in positions.iteritems():
+            logInfo(config.ID, '{} : {}', position, self._arenaDP.getVehicleInfo(vehicleID))
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
@@ -132,16 +137,20 @@ class Distance(DistanceMeta):
         arena = self._arenaVisitor.getArenaSubscription()
         if arena is not None:
             arena.onVehicleKilled -= self.onVehicleMarkerRemoved
+            # arena.onVehicleCreated -= self.__arena_onPositionsUpdated
         super(Distance, self)._dispose()
 
     def onArenaPeriodChange(self, period, *_):
         if period == ARENA_PERIOD.BATTLE and self.timeEvent is None:
-            self.timeEvent = CyclicTimerEvent(0.5, self.updateDistance)
+            self.timeEvent = CyclicTimerEvent(0.2, self.updateDistance)
+            self.player = getPlayer()
             self.timeEvent.start()
+            logDebug(config.ID, True, 'Distance: self.timer.start() {}', ARENA_PERIOD_NAMES[period])
         elif self.timeEvent is not None:
             self.timeEvent.stop()
+            self.player = None
             self.timeEvent = None
-        logDebug(config.ID, True, 'Distance: onArenaPeriodChange: {}', ARENA_PERIOD_NAMES[period])
+            logDebug(config.ID, True, 'Distance: self.timer.stop() {}', ARENA_PERIOD_NAMES[period])
 
     def onVehicleMarkerAdded(self, vProxy, vInfo, guiProps):
         if self.isPostmortem:
@@ -159,7 +168,7 @@ class Distance(DistanceMeta):
         distance = None
         vehicle_name = None
         for entity in self.vehicles.itervalues():
-            dist = getDistanceToTarget(entity)
+            dist = getDistanceToTarget(entity, self.player)
             if distance is None or dist < distance:
                 distance = dist
                 vehicle_name = entity.typeDescriptor.type.shortUserString

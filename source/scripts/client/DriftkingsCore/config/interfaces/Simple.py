@@ -9,7 +9,8 @@ from ..json_reader import loadJson, loadJsonOrdered
 from ..template_builders import TemplateBuilder
 from ..utils import smart_update, processHotKeys
 
-__all__ = ['ConfigNoInterface', 'ConfigInterface', 'SimpleConfigInterface', 'ConfBlockInterface', 'SimpleConfBlockInterface']
+# __all__ = ('ConfigNoInterface', 'ConfigInterface', 'SimpleConfigInterface', 'ConfBlockInterface', 'SimpleConfBlockInterface', 'SettingContainer',)
+__all__ = ('ConfigNoInterface', 'ConfigInterface', 'ConfBlockInterface',)
 
 
 class ConfigBase(object):
@@ -109,6 +110,7 @@ class ConfigBase(object):
         pass
 
     def registerHotkeys(self):
+        # noinspection PyUnresolvedReferences
         from gui import InputHandler
         InputHandler.g_instance.onKeyDown += self.__hotKeyPressed
         InputHandler.g_instance.onKeyUp += self.__hotKeyPressed

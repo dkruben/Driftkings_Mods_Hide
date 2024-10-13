@@ -10,10 +10,10 @@ from aih_constants import CTRL_MODE_NAME
 from gui.battle_control.avatar_getter import getOwnVehiclePosition
 from helpers.bound_effects import ModelBoundEffects
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, isReplay, callback, calculate_version, getPlayer
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, isReplay, callback, calculate_version, getPlayer
 
 
-class ConfigsInterface(SimpleConfigInterface):
+class ConfigsInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.settingsCache = {'dynamicZoom': False, 'zoomXMeters': 20, 'stepsOnly': False}
         super(ConfigsInterface, self).__init__()
@@ -22,8 +22,6 @@ class ConfigsInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'noBinoculars': False,

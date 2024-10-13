@@ -9,18 +9,16 @@ from gui import InputHandler
 from gui.shared.gui_items import Vehicle
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException, calculate_version
 from DriftkingsInject.common.markers import _StaticWorldObjectMarker3D
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.4.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {
             'buttonShowDot': [Keys.KEY_C, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonShowSplash': [Keys.KEY_Z, [Keys.KEY_LALT, Keys.KEY_RALT]]

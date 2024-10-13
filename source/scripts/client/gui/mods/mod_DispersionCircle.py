@@ -2,7 +2,7 @@
 import aih_constants
 from AvatarInputHandler import gun_marker_ctrl
 from AvatarInputHandler.gun_marker_ctrl import _GunMarkersDPFactory, _EmptyGunMarkerController, _DualAccMarkerController, _GunMarkersDecorator, _SPGGunMarkerController, _DefaultGunMarkerController, _MARKER_TYPE
-from BattleReplay import BattleReplay, g_replayCtrl
+from BattleReplay import g_replayCtrl
 from Event import SafeEvent
 from VehicleGunRotator import VehicleGunRotator
 from constants import SERVER_TICK_LENGTH
@@ -12,7 +12,7 @@ from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_factory import _GunMark
 from gui.Scaleform.genConsts.GUN_MARKER_VIEW_CONSTANTS import GUN_MARKER_VIEW_CONSTANTS as _CONSTANTS
 from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, calculate_version
 
 CLIENT = _MARKER_TYPE.CLIENT
 SERVER = _MARKER_TYPE.SERVER
@@ -37,7 +37,7 @@ aih_constants.GUN_MARKER_MIN_SIZE = 10.0
 aih_constants.SPG_GUN_MARKER_MIN_SIZE = 20.0
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     
     def __init__(self):
         self.onModSettingsChanged = SafeEvent()
@@ -45,10 +45,8 @@ class ConfigInterface(SimpleConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.5 (%(file_compile_date)s)'
+        self.version = '1.9.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'replaceOriginalCircle': True,
@@ -57,7 +55,7 @@ class ConfigInterface(SimpleConfigInterface):
         }
         self.i18n = {
             'UI_description': self.ID,
-            'UI_version': sum(int(x) * (10 ** i) for i, x in enumerate(reversed(self.version.split(' ')[0].split('.')))),
+            'UI_version': calculate_version(self.version),
             'UI_setting_replaceOriginalCircle_text': 'Replace aiming circle to dispersion circle',
             'UI_setting_replaceOriginalCircle_tooltip': 'Replace the original aiming circle to dispersion circle (To improve accuracy)',
             'UI_setting_useServerDispersion_text': 'Use server side circle of dispersion',
@@ -142,15 +140,12 @@ class DispersionCircle(object):
         override(VehicleGunRotator, 'setShotPosition', self.setShotPosition)
         override(CrosshairDataProxy, '__onServerGunMarkerStateChanged', self.onServerGunMarkerStateChanged)
         override(CrosshairPanelContainer, 'setGunMarkerColor', self.setGunMarkerColor)
-        override(BattleReplay, 'setUseServerAim', self.replaySetUseServerAim)
-
-    def replaySetUseServerAim(self, func, b_self, enabled):
-        return func(b_self, False if self.server else enabled)
 
     def createOverrideComponents(self, func, *args):
         if not self.server:
             return func(*args)
-        getPlayer().enableServerAim(True)
+        player = getPlayer()
+        player.enableServerAim(True)
         if len(args) == 2:
             return _GunMarkersFactories(*DEV_FACTORIES_COLLECTION).create(*args)
         return _GunMarkersFactories(*DEV_FACTORIES_COLLECTION).override(*args)

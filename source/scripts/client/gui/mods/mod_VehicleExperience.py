@@ -18,10 +18,10 @@ from personal_missions import PM_BRANCH
 from skeletons.gui.server_events import IEventsCache
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     eventsCache = dependency.descriptor(IEventsCache)
     itemsCache = dependency.descriptor(IItemsCache)
 
@@ -32,9 +32,7 @@ class ConfigInterface(SimpleConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
-        self.author = 'DriftKing\'s'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
+        self.author = 'orig. Spoter, Updated by: DriftKing\'s'
         self.data = {
             'enabled': True,
             'useFreeExp': True,

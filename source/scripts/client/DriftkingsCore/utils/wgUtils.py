@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+import os
 import importlib
 import math
 from colorsys import hsv_to_rgb
@@ -10,10 +11,31 @@ from BattleReplay import isPlaying, isLoading
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
+from logger import logError
+
 
 __all__ = ('calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle', 'getAccountDBID',
            'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'getColor', 'getPercent', 'getRegion',
-           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros',)
+           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros','xvmInstalled', 'square_position')
+
+
+def getCurrentModsPath():
+    for sec in ResMgr.openSection(os.path.join(cwd, 'paths.xml'))['Paths'].values():
+        if './mods/' in sec.asString:
+            return os.path.split(os.path.realpath(os.path.join(cwd, os.path.normpath(sec.asString))))
+
+
+cwd = os.getcwdu() if os.path.supports_unicode_filenames else os.getcwd()
+modsPath, gameVersion = getCurrentModsPath()
+
+
+def isXvmInstalled():
+    xfw = os.path.exists(os.path.join(modsPath, gameVersion, 'com.modxvm.xfw'))
+    xvm = os.path.exists(os.path.join(cwd, 'res_mods', 'mods', 'xfw_packages', 'xvm_main'))
+    return xfw and xvm
+
+
+xvmInstalled = isXvmInstalled()
 
 
 def calculate_version(version):
@@ -122,3 +144,37 @@ def getPercent(param_a, param_b):
     if param_b <= 0:
         return 0.0
     return float(normalizeHealth(param_a)) / param_b
+
+
+class SquarePosition(object):
+    def __init__(self):
+        self.player = None
+
+    def getSquarePosition(self):
+
+        def clamp(val, vMax):
+            vMin = 0.1
+            return max(vMin, min(val, vMax))
+
+        def pos2name(pos):
+            sqrsName = 'KJHGFEDCBA'
+            linesName = '1234567890'
+            return '%s%s' % (sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
+
+        self.player = getPlayer()
+        arena = getattr(self.player, 'arena', None)
+        if arena is None:
+            logError('DriftkingsCore', "Invalid Arena {}", self.player.arena)
+
+        boundingBox = arena.arenaType.boundingBox
+        position = BigWorld.entities[self.player.playerVehicleID].position
+        positionRect = (position[0], position[2])
+        bottomLeft, upperRight = boundingBox
+        spaceSize = (upperRight[0] - bottomLeft[0], upperRight[1] - bottomLeft[1])
+        relPos = (positionRect[0] - bottomLeft[0], positionRect[1] - bottomLeft[1])
+        relPos = (clamp(relPos[0], spaceSize[0]), clamp(relPos[1], spaceSize[1]))
+
+        return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
+
+
+square_position = SquarePosition()

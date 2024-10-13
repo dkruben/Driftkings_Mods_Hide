@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-__MOD_CORE__ = '2.8.6'
+__MOD_CORE__ = '2.9.0'
 __CORE_NAME__ = 'Driftkings_Core'
 __MOD_DATE__ = '(%(file_compile_date)s)'
 

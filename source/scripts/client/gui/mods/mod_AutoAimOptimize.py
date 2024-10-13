@@ -9,10 +9,10 @@ from AvatarInputHandler import cameras
 from AvatarInputHandler.control_modes import SniperControlMode, StrategicControlMode, ArcadeControlMode, ArtyControlMode
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, getEntity, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, getEntity, calculate_version
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.player = None
         self.angle = None
@@ -22,8 +22,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.7.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'angle': 1.3,

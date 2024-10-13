@@ -14,7 +14,7 @@ from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TY
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 from realm import CURRENT_REALM
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables, replaceMacros, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables, replaceMacros, calculate_version
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 DEF_RESULTS_LEN = 16
@@ -23,14 +23,12 @@ DataIDs = namedtuple('DataIDs', ('damageDealt', 'spotted', 'kills', 'defAndCap_v
 data_ids = DataIDs(3, 11, 12, 14, 17)
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '2.6.5 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'colorRatting': 0,

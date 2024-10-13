@@ -8,7 +8,7 @@ from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRgb, getPercent, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, percentToRgb, getPercent, calculate_version
 from DriftkingsInject import DriftkingsInjector, TotalLogMeta, cachedVehicleData, g_events
 
 AS_INJECTOR = 'TotalLogInjector'
@@ -24,7 +24,7 @@ _EVENT_TO_TOP_LOG_MACROS = {
 }
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
@@ -33,8 +33,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'separate': '  ',

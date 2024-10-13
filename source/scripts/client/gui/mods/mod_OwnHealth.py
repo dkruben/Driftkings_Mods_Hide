@@ -12,7 +12,7 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.prebattle_setups_ctrl import IPrebattleSetupsListener
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, percentToRgb, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, percentToRgb, calculate_version
 from DriftkingsInject import DriftkingsInjector, OwnHealthMeta, g_events
 
 AS_SWF = 'OwnHealth.swf'
@@ -20,7 +20,7 @@ AS_BATTLE = 'OwnHealthView'
 AS_INJECTOR = 'OwnHealthInjector'
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         g_events.onBattleLoaded += self.onBattleLoaded
         super(ConfigInterface, self).__init__()
@@ -29,8 +29,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'DriftKing\'s'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'x': 0,

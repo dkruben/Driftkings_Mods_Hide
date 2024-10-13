@@ -2,10 +2,10 @@
 from Avatar import PlayerAvatar
 from gui.shared.gui_items import Vehicle
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, callback, getPlayer, sendPanelMessage, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, callback, getPlayer, sendPanelMessage, calculate_version
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.player = getPlayer()
         super(ConfigInterface, self).__init__()
@@ -14,8 +14,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'lightTank': False,

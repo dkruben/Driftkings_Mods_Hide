@@ -21,14 +21,14 @@ from gui.shared.gui_items.dossier.achievements.mark_on_gun import MarkOnGunAchie
 from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage, calculate_version
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 
 DAMAGE_EVENTS = frozenset([BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST, BATTLE_EVENT_TYPE.DAMAGE, BATTLE_EVENT_TYPE.TANKING, BATTLE_EVENT_TYPE.RECEIVED_DAMAGE])
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.values = {}
         self.colors = OrderedDict([
@@ -75,8 +75,8 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.5.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
+        # self.modsGroup = 'Driftkings'
+        # self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {
             'buttonShow': [Keys.KEY_NUMPAD9, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonSizeUp': [Keys.KEY_PGUP, [Keys.KEY_LALT, Keys.KEY_RALT]],

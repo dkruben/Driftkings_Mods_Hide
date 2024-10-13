@@ -4,7 +4,7 @@ from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 from gui.battle_control.controllers import feedback_events
 from gui.battle_control.controllers.personal_efficiency_ctrl import _AGGREGATED_DAMAGE_EFFICIENCY_TYPES, _createEfficiencyInfoFromFeedbackEvent
 
-from DriftkingsCore import SimpleConfigInterface, override, Analytics, sendPanelMessage, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, sendPanelMessage, getPlayer, calculate_version
 
 
 SOUND_LIST = ['soundSpotted', 'soundAssist']
@@ -18,7 +18,7 @@ GENERATOR = {
 }
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.format_str = {}
         self.format_recreate()
@@ -28,8 +28,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.7.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'sound': True,

@@ -17,7 +17,7 @@ from aih_constants import CTRL_MODE_NAME
 from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, callback, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, callback, cancelCallback, calculate_version
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_ALIGN, COMPONENT_TYPE
 
@@ -33,7 +33,7 @@ YAW_STEP_CORNER = math.pi / 512
 COORDINATE_OFF_SCREEN = 20000
 
 
-class ConfigsInterface(SimpleConfigInterface):
+class ConfigsInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.aimMode = ARCADE_MODE
         self.y = 0.0
@@ -90,8 +90,6 @@ class ConfigsInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
         self.data = {
             'enabled': True,
             'vertical': 0,

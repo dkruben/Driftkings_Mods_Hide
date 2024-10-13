@@ -6,10 +6,10 @@ from Avatar import PlayerAvatar
 from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
-from DriftkingsCore import SimpleConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replaceMacros
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replaceMacros
 
 
-class ConfigInterface(SimpleConfigInterface):
+class ConfigInterface(DriftkingsConfigInterface):
     # Mensagens padrão
     WASTE_SHOT_BLOCKED_MSG = 'Waste shot blocked!'
     TEAM_SHOT_BLOCKED_MSG = 'Team shot blocked!'
@@ -33,9 +33,6 @@ class ConfigInterface(SimpleConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.6.5 (%(file_compile_date)s)'
         self.defaultKeys = {'disableKey': [Keys.KEY_Q]}
-        self.modsGroup = 'Driftkings'
-        self.modSettingsID = 'Driftkings_GUI'
-
         self.data = {
             'enabled': True,
             'wasteShotBlock': False,

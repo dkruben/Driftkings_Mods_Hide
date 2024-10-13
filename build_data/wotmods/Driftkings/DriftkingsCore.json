@@ -12,9 +12,10 @@
         "res/scripts/client/DriftkingsCore/config/template_builders.pyc"  : "build/scripts/client/DriftkingsCore/config/template_builders.pyc",
         "res/scripts/client/DriftkingsCore/config/utils.pyc"              : "build/scripts/client/DriftkingsCore/config/utils.pyc",
 
-        "res/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc" : "build/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc",
-        "res/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc"    : "build/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc",
-        "res/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc"   : "build/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc",
+        "res/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc" 			 : "build/scripts/client/DriftkingsCore/config/interfaces/__init__.pyc",
+        "res/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc"    			 : "build/scripts/client/DriftkingsCore/config/interfaces/Dummy.pyc",
+        "res/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc"   			 : "build/scripts/client/DriftkingsCore/config/interfaces/Simple.pyc",
+		"res/scripts/client/DriftkingsCore/config/interfaces/DriftkingsInterface.pyc": "build/scripts/client/DriftkingsCore/config/interfaces/DriftkingsInterface.pyc",
 
         "res/scripts/client/DriftkingsCore/utils/delayed/__init__.pyc"				   : "build/scripts/client/DriftkingsCore/utils/delayed/__init__.pyc",
         "res/scripts/client/DriftkingsCore/utils/delayed/api.pyc"     			       : "build/scripts/client/DriftkingsCore/utils/delayed/api.pyc",
