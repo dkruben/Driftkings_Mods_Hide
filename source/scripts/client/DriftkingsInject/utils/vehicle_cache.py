@@ -9,14 +9,14 @@ from skeletons.gui.shared import IItemsCache
 __all__ = ('cachedVehicleData',)
 
 
-EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate'))
+EfficiencyAVGData = namedtuple('EfficiencyAVGData', ('damage', 'assist', 'stun', 'blocked', 'marksOnGunValue', 'marksOnGunIcon', 'name', 'marksAvailable', 'winRate', 'battles'))
 
 
 class CurrentVehicleCachedData(object):
     itemsCache = dependency.descriptor(IItemsCache)
 
     def __init__(self):
-        self.__default = EfficiencyAVGData(3000, 3000, 3000, 0, 0.0, '', 'Undefined', False, 0.0)
+        self.__default = EfficiencyAVGData(3000, 3000, 3000, 0, 0.0, '', 'Undefined', False, 0.0, 0)
         self.__EfficiencyAVGData = None
 
     def onVehicleChanged(self):
@@ -33,20 +33,17 @@ class CurrentVehicleCachedData(object):
     def setAvgData(self, intCD, name, level):
         dossier = self.itemsCache.items.getVehicleDossier(intCD)
         random = dossier.getRandomStats()
-        marksOnGun = random.getAchievement(MARK_ON_GUN_RECORD)
-        icon = marksOnGun.getIcons()['95x85'][3:]
-        marksOnGunIcon = '<img src=\'img://gui/%s\' width=\'20\' height=\'18\' vspace=\'-8\'>' % icon
+        marks = random.getAchievement(MARK_ON_GUN_RECORD)
         blocked = random.getAvgDamageBlocked() or 0
         self.__EfficiencyAVGData = EfficiencyAVGData(
             int(random.getAvgDamage() or 0),
             int(random.getDamageAssistedEfficiency() or 0),
             int(random.getAvgDamageAssistedStun() or 0),
             int(blocked) if blocked > 99 else round(blocked, 2),
-            round(marksOnGun.getDamageRating(), 2),
-            marksOnGunIcon,
-            name,
-            level > 4,
-            self.getWinsEfficiency(random)
+            round(marks.getDamageRating(), 2),
+            "<img src='img://gui/{}' width='20' height='18' vspace='-8'>".format(marks.getIcons()['95x85'][3:]),
+            name, level > 4, self.getWinsEfficiency(random),
+            int(random.getBattlesCount())
         )
 
     @property

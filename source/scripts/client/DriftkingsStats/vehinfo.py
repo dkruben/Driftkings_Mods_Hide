@@ -18,12 +18,13 @@ URL_XTE = HOST + 'xte.json'
 URL_XTDB = HOST + 'xtdb.json'
 URL_XVM_SCALE = HOST + '/xvmscales-%s.json' % _FLAVOR
 VEHICLE_TYPE_XML_PATH = 'scripts/item_defs/vehicles/'
+
 UNKNOWN_VEHICLE_DATA = {
     'vehCD': 0,
     'key': 'unknown',
     'nation': '',
     'level': 0,
-    'v_class': '',
+    'vClass': '',
     'localizedName': 'unknown',
     'localizedShortName': 'unknown',
     'localizedFullName': 'unknown',
@@ -34,7 +35,9 @@ UNKNOWN_VEHICLE_DATA = {
     'shortName': 'unknown',
     'isReserved': False
 }
+
 VEHICLE_CLASS_TAGS = frozenset(('lightTank', 'mediumTank', 'heavyTank', 'SPG', 'AT-SPG'))
+
 
 class ScaleValues(object):
     def __init__(self):
@@ -76,7 +79,7 @@ class ScaleValues(object):
             'key': descr.name,
             'nation': nation,
             'level': descr.level,
-            'v_class': tuple(VEHICLE_CLASS_TAGS & descr.tags)[0],
+            'vClass': tuple(VEHICLE_CLASS_TAGS & descr.tags)[0],
             'localizedName': descr.shortUserString,
             'localizedShortName': descr.shortUserString,
             'localizedFullName': descr.userString,

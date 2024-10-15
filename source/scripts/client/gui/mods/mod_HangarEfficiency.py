@@ -20,12 +20,13 @@ class ConfigInterface(DriftkingsConfigInterface):
             'winRateIcon': '<img src=\'%s/wins.png\' %s>' % (self.place, self.icon_size),
             'stunIcon': '<img src=\'%s/stun.png\' %s>' % (self.place, self.icon_size),
             'spottedIcon': '<img src=\'%s/detection.png\' %s>' % (self.place, self.icon_size),
+            "battlesIcon": '<img src=\'%s/efficiency/battles.png\' %s>' % (self.place, self.icon_size),
         }
         super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -34,24 +35,27 @@ class ConfigInterface(DriftkingsConfigInterface):
             'avgDamage': False,
             'avgStun': False,
             'gunMarks': False,
-            'winRate': False
+            'winRate': False,
+            'battles': False
         }
 
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
             'UI_setting_avgAssist_text': 'Avg Assist',
-            'UI_setting_avgAssist_tooltip': '',
+            'UI_setting_avgAssist_tooltip': 'Display average damage done with your assistance',
             'UI_setting_avgBlocked_text': 'Avg Blocked',
-            'UI_setting_avgBlocked_tooltip': '',
+            'UI_setting_avgBlocked_tooltip': 'Display average armor blocked damage',
             'UI_setting_avgDamage_text': 'Avg Damage',
-            'UI_setting_avgDamage_tooltip': '',
+            'UI_setting_avgDamage_tooltip': 'Display average damage dealt',
             'UI_setting_avgStun_text': 'Avg Stun',
-            'UI_setting_avgStun_tooltip': '',
+            'UI_setting_avgStun_tooltip': 'Display average damage to targets whose crews you have stunned (SPG)',
             'UI_setting_gunMarks_text': 'Gun Marks',
-            'UI_setting_gunMarks_tooltip': '',
+            'UI_setting_gunMarks_tooltip': 'Display gun mark percentage',
             'UI_setting_winRate_text': 'Win Rate',
-            'UI_setting_winRate_tooltip': ''
+            'UI_setting_winRate_tooltip': 'Show win percentage',
+            'UI_setting_battles_text': 'Battles',
+            'UI_setting_battles_tooltip': 'Show battles count'
         }
         super(ConfigInterface, self).init()
 
@@ -67,7 +71,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'column2': [
                 self.tb.createControl('avgStun'),
                 self.tb.createControl('gunMarks'),
-                self.tb.createControl('winRate')
+                self.tb.createControl('winRate'),
+                self.tb.createControl('battles')
             ]
         }
 
@@ -87,6 +92,8 @@ def getAvgData():
         text.append('{blockedIcon}{blocked}')
     if config.data['avgStun'] and data.stun:
         text.append('{stunIcon}{stun}')
+    if config.data['battles']:
+        text.append("{battlesIcon}{battles}")
     if config.data['winRate']:
         text.append('{winRateIcon}{winRate}%')
     if config.data['gunMarks'] and data.marksAvailable:

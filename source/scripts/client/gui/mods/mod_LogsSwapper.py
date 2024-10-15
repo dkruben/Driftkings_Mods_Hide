@@ -4,14 +4,8 @@ from BattleReplay import g_replayCtrl
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import _LogViewComponent, DamageLogPanel
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE as _ETYPE
 from gui.battle_control.controllers import debug_ctrl
-# from constants import ATTACK_REASONS, SPECIAL_VEHICLE_HEALTH
-# from gui.Scaleform.daapi.view.battle.shared.markers2d.vehicle_plugins import VehicleMarkerPlugin
-# from gui.battle_control import avatar_getter
-# from helpers import dependency
-# from PlayerEvents import g_playerEvents
-# from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version  # , xvmInstalled
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -119,56 +113,3 @@ class WGLogs(object):
 g_logs = WGLogs()
 
 DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog = reversed(g_logs.BASE_WG_LOGS) if config.data['logSwapper'] else g_logs.BASE_WG_LOGS
-
-# class Squad(object):
-#    sessionProvider = dependency.descriptor(IBattleSessionProvider)
-#    __slots__ = ('__squad_mans',)
-
-#    def __init__(self):
-#        self.__squad_mans = set()
-
-#    def start(self):
-#        g_playerEvents.onAvatarReady += self.updateSquadMans
-#        dynSquads = self.sessionProvider.dynamic.dynSquads
-#        if dynSquads is not None:
-#            dynSquads.onDynSquadCreatedOrJoined += self.updateSquadMans
-
-#    def stop(self):
-#        g_playerEvents.onAvatarReady -= self.updateSquadMans
-#        dynSquads = self.sessionProvider.dynamic.dynSquads
-#        if dynSquads is not None:
-#            dynSquads.onDynSquadCreatedOrJoined -= self.updateSquadMans
-
-#    def updateSquadMans(self, *args):
-#        self.__squad_mans.clear()
-#        arenaDP = self.sessionProvider.getArenaDP()
-#        playerVehicleID = avatar_getter.getPlayerVehicleID()
-#        playerSquad = arenaDP.getVehicleInfo(playerVehicleID).squadIndex
-#        if not playerSquad:
-#            self.__squad_mans.add(playerVehicleID)
-#        else:
-#            for vInfo in arenaDP.getVehiclesInfoIterator():
-#                if not vInfo.isEnemy() and playerSquad == vInfo.squadIndex:
-#                    self.__squad_mans.add(vInfo.vehicleID)
-
-#    @property
-#    def members(self):
-#        return self.__squad_mans
-
-
-# squad_controller = Squad()
-
-
-# squad damage fix
-# @override(VehicleMarkerPlugin, "_updateVehicleHealth")
-# def new__updateVehicleHealth(func, self, vehicleID, handle, newHealth, aInfo, attackReasonID):
-#    if xvmInstalled:
-#        return func(self, vehicleID, handle, newHealth, aInfo, attackReasonID)
-#    if newHealth < 0 and not SPECIAL_VEHICLE_HEALTH.IS_AMMO_BAY_DESTROYED(newHealth):
-#        newHealth = 0
-#    if g_replayCtrl.isPlaying and g_replayCtrl.isTimeWarpInProgress:
-#        self._invokeMarker(handle, 'setHealth', newHealth)
-#    else:
-#        members = squad_controller.members
-#        yellow = False if aInfo is None or not members else aInfo.vehicleID in members
-#        self._invokeMarker(handle, 'updateHealth', newHealth, yellow, ATTACK_REASONS[attackReasonID])

@@ -147,8 +147,6 @@
 1710344394|flash/BattleClock/src/mods/common/AbstractViewInjector.as
 1710344394|flash/BattleClock/src/mods/common/BattleDisplayable.as
 1710344394|flash/BattleClock/src/mods/common/IAbstractInjector.as
-1663022842|flash/BigTextConsumablesPanel/BigTextConsumablesPanel.fla
-1661728061|flash/BigTextConsumablesPanel/src/driftkings/views/battle/BigTextConsumablesPanel.as
 1710377546|flash/DispersionTimer/DispersionTimer.as3proj
 1709773383|flash/DispersionTimer/DispersionTimer.fla
 1710377483|flash/DispersionTimer/src/driftkings/DispersionTimerInjector.as
@@ -254,7 +252,7 @@
 1293836400|flash/swc/gui_battle-1.0-SNAPSHOT.swc
 1293836400|flash/swc/gui_lobby-1.0-SNAPSHOT.swc
 1293836400|flash/swc/lobby.swc
-1617060343|meta/DriftkingsCore.xml
+1729029790|meta/DriftkingsCore.xml
 1607458606|meta/LICENSE
 1605979108|meta/voice.xml
 1712592795|res/gui/AccountsManager/AM_Icon_MouseOut.png
@@ -335,6 +333,7 @@
 1634120815|res/gui/HangarBoosterViewer/clan/booster_xp.png
 1607458608|res/maps/icons/Driftkings/small.png
 1698170777|res/maps/icons/HangarEfficiency/armor.png
+1729011003|res/maps/icons/HangarEfficiency/battles.png
 1698170777|res/maps/icons/HangarEfficiency/damage.png
 1698170777|res/maps/icons/HangarEfficiency/detection.png
 1698170777|res/maps/icons/HangarEfficiency/help.png

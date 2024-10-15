@@ -6,11 +6,10 @@ from Avatar import PlayerAvatar
 from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version, replaceMacros
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-    # Mensagens padrão
     WASTE_SHOT_BLOCKED_MSG = 'Waste shot blocked!'
     TEAM_SHOT_BLOCKED_MSG = 'Team shot blocked!'
     DEAD_SHOT_BLOCKED_MSG = 'Dead shot blocked!'
