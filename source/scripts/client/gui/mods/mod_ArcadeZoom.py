@@ -1,10 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
 from collections import namedtuple
 
-from AvatarInputHandler.control_modes import PostMortemControlMode
 from AvatarInputHandler.DynamicCameras.ArcadeCamera import ArcadeCamera
 from AvatarInputHandler.DynamicCameras.ArtyCamera import ArtyCamera
 from AvatarInputHandler.DynamicCameras.StrategicCamera import StrategicCamera
+from AvatarInputHandler.control_modes import PostMortemControlMode
 from debug_utils import LOG_CURRENT_EXCEPTION
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version

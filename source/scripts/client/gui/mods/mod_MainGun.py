@@ -2,7 +2,6 @@
 from collections import defaultdict
 
 from Event import SafeEvent
-from constants import ARENA_GUI_TYPE
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams

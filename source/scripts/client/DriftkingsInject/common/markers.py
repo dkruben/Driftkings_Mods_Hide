@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import Math
 import BigWorld
+import Math
 
 
 class _StaticWorldObjectMarker3D(object):

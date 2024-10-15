@@ -14,12 +14,12 @@ from Vehicle import Vehicle
 from account_helpers.settings_core import settings_constants
 from account_helpers.settings_core.options import InterfaceScaleSetting
 from aih_constants import CTRL_MODE_NAME
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_ALIGN, COMPONENT_TYPE
 from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
 from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, callback, cancelCallback, calculate_version
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_ALIGN, COMPONENT_TYPE
 
 ARCADE_MODE = 'arc'
 SNIPER_MODE = 'sn'

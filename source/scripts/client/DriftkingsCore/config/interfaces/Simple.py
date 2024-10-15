@@ -9,7 +9,6 @@ from ..json_reader import loadJson, loadJsonOrdered
 from ..template_builders import TemplateBuilder
 from ..utils import smart_update, processHotKeys
 
-# __all__ = ('ConfigNoInterface', 'ConfigInterface', 'SimpleConfigInterface', 'ConfBlockInterface', 'SimpleConfBlockInterface', 'SettingContainer',)
 __all__ = ('ConfigNoInterface', 'ConfigInterface', 'ConfBlockInterface',)
 
 

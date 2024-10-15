@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import BigWorld
-
 from functools import partial
+
+import BigWorld
 
 __all__ = ('sendChatMessage',)
 MAX_CHAT_MESSAGE_LENGTH = 220

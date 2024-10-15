@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-import os
 import importlib
 import math
+import os
 from colorsys import hsv_to_rgb
 from functools import partial
 
@@ -11,8 +11,8 @@ from BattleReplay import isPlaying, isLoading
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
-from logger import logError
 
+from logger import logError
 
 __all__ = ('calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle', 'getAccountDBID',
            'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'getColor', 'getPercent', 'getRegion',

@@ -5,7 +5,6 @@ from SoundGroups import g_instance
 
 from DriftkingsCore import cancelCallback, callback
 
-
 __all__ = ('Timer', 'SixthSenseTimer', 'CyclicTimerEvent',)
 
 

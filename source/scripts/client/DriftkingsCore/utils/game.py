@@ -1,8 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
+from functools import partial
+
 import BigWorld
 import Keys
-
-from functools import partial
 
 __all__ = ('BigWorld_callback', 'sendPanelMessage', 'checkKeys', 'refreshCurrentVehicle', 'Sound',)
 

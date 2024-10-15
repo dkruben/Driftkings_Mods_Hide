@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import GUI
-from gui import g_guiResetters
 from account_helpers.settings_core.settings_constants import GRAPHICS
+from gui import g_guiResetters
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from helpers import dependency
@@ -9,8 +9,8 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import logDebug, logInfo
-from common import g_events
 from DriftkingsInject import __CORE_NAME__
+from common import g_events
 
 
 class DriftkingsView(BaseDAAPIComponent):

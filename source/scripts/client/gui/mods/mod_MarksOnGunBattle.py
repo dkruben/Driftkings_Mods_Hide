@@ -13,6 +13,8 @@ from CurrentVehicle import g_currentVehicle
 from Vehicle import Vehicle
 from constants import ARENA_BONUS_TYPE
 from dossiers2.ui.achievements import ACHIEVEMENT_BLOCK
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 from gui import InputHandler, g_guiResetters
 from gui.Scaleform.daapi.view.lobby.profile.ProfileUtils import ProfileUtils
 from gui.battle_control.controllers import feedback_events
@@ -22,8 +24,6 @@ from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage, calculate_version
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 
 DAMAGE_EVENTS = frozenset([BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST, BATTLE_EVENT_TYPE.DAMAGE, BATTLE_EVENT_TYPE.TANKING, BATTLE_EVENT_TYPE.RECEIVED_DAMAGE])
 

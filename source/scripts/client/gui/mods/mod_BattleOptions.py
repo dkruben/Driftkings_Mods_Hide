@@ -7,7 +7,6 @@ from functools import partial
 from string import printable
 from time import strftime
 
-import BigWorld
 import CommandMapping
 import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar

@@ -4,7 +4,6 @@ from functools import partial
 
 from DriftkingsCore import loadJson, override, logError, smart_update
 
-
 __all__ = ('g_modsListApi', 'registerSettings',)
 
 

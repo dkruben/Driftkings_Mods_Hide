@@ -1,7 +1,7 @@
 # -*- coding: utf-8-*-
+from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 from helpers import dependency
 from skeletons.gui.shared import IItemsCache
-from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 from DriftkingsInject import cachedVehicleData

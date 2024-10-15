@@ -2,8 +2,7 @@
 .idea/
 
 # Test Mods
-MOD_TEST/*
 test.py
 teste_2.py
-Config_Generator/
 .later/
+.removed/

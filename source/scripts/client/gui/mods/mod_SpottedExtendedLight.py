@@ -6,7 +6,6 @@ from gui.battle_control.controllers.personal_efficiency_ctrl import _AGGREGATED_
 
 from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, sendPanelMessage, getPlayer, calculate_version
 
-
 SOUND_LIST = ['soundSpotted', 'soundAssist']
 TEXT_LIST = ['Spotted', 'AssistRadio', 'AssistTrack', 'AssistStun']
 
