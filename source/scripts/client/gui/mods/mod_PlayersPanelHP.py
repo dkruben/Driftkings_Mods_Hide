@@ -184,8 +184,8 @@ else:
 
 
     @override(Vehicle, 'onHealthChanged')
-    def new_vehicle_onHealthChanged(func, self, newHealth, *args, **kwargs):
-        result = func(self, newHealth, *args, **kwargs)
+    def new_vehicle_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
+        result = func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
         try:
             config.updateHealth(self.id, newHealth)
         except StandardError:

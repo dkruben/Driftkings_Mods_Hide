@@ -73,7 +73,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.0 (%(file_compile_date)s)'
+        self.version = '1.5.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         # self.modsGroup = 'Driftkings'
         # self.modSettingsID = 'Driftkings_GUI'
@@ -1269,9 +1269,9 @@ def new_onBattleEvents(func, *args):
 
 
 @override(Vehicle, 'onHealthChanged')
-def new_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, attackReasonExtID):
-    worker.shots(self, newHealth, attackerID)
-    func(self, newHealth, oldHealth, attackerID, attackReasonID, attackReasonExtID)
+def new_onHealthChanged(func, *args):
+    worker.shots(args[0], args[1], args[3])
+    func(*args)
 
 
 @override(Vehicle, 'startVisual')

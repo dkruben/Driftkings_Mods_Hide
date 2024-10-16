@@ -20,7 +20,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'winRateIcon': '<img src=\'%s/wins.png\' %s>' % (self.place, self.icon_size),
             'stunIcon': '<img src=\'%s/stun.png\' %s>' % (self.place, self.icon_size),
             'spottedIcon': '<img src=\'%s/detection.png\' %s>' % (self.place, self.icon_size),
-            "battlesIcon": '<img src=\'%s/efficiency/battles.png\' %s>' % (self.place, self.icon_size),
+            "battlesIcon": '<img src=\'%s/battles.png\' %s>' % (self.place, self.icon_size),
         }
         super(ConfigInterface, self).__init__()
 
@@ -93,7 +93,7 @@ def getAvgData():
     if config.data['avgStun'] and data.stun:
         text.append('{stunIcon}{stun}')
     if config.data['battles']:
-        text.append("{battlesIcon}{battles}")
+        text.append('{battlesIcon}{battles}')
     if config.data['winRate']:
         text.append('{winRateIcon}{winRate}%')
     if config.data['gunMarks'] and data.marksAvailable:
