@@ -4,6 +4,7 @@ from functools import partial
 from math import degrees
 
 import Keys
+import GUI
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
 from gui.shared.utils.TimeInterval import TimeInterval
@@ -34,22 +35,35 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.5 %(file_compile_date)s'
+        self.version = '1.5.0 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
-            'enabled': True,
-            'showFor': 0,
             'aliveOnly': False,
-            'textLock': False,
-            'delay': 5,
             'altKey': self.defaultKeys['altKey'],
-            'compareValues': {'moreThan': {'delim': '&gt;', 'color': '#FF0000'}, 'equal': {'delim': '=', 'color': '#FFFFFF'}, 'lessThan': {'delim': '&lt;', 'color': '#00FF00'}},
-            'format': '<font color=\'#F0F0F0\'><b>{{vehicle_name}}</b></font><br><textformat tabstops=\'[80]\'><font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font><tab><font color=\'#96CC29\'>{{vision_radius}} mt.</font></textformat>',
-            # flash
+            'compareValues': {
+                'equal': {'color': '#FFFFFF', 'delim': '='},
+                'lessThan': {'color': '#00FF00', 'delim': '&lt;'},
+                'moreThan': {'color': '#FF0000', 'delim': '&gt;'}
+            },
+            'delay': 5,
+            'enabled': True,
+            'font': '$TitleFont',
+            'format': '<font size=\'14\' face=\'$TitleFont\' color=\'#F0F0F0\'><b>{{vehicle_name}}</b></font><br><textformat tabstops=\'[80]\'><font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font><tab><font color=\'#96CC29\'>{{vision_radius}} mt.</font></textformat>',
+            'showFor': 0,
+            'textLock': False,
             'textPosition': {'x': 40.0, 'y': 5.0},
-            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 2},
-            'textStyle': {'size': 14, 'font': '$TitleFont', 'align': 'left'}
+            'textShadow': {
+                'alpha': 0.8,
+                'angle': 90,
+                'blurX': 2,
+                'blurY': 2,
+                'color': '#000000',
+                'distance': 0,
+                'enabled': True,
+                'quality': 2,
+                'strength': 2
+            }
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -136,9 +150,7 @@ class Flash(object):
         if self.isTextAdding:
             callback(0.1, partial(self.addText, text))
             return
-        style_conf = config.data['textStyle']
-        formatted_text = '<font size=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (style_conf['size'], style_conf['font'], style_conf['align'], text)
-
+        formatted_text = '<font face="%s" color="#FFFFFF" vspace="-3" align="baseline">%s</font>' % (config.data['font'], text)
         if self.texts:
             self.removeFirstText()
 
@@ -305,8 +317,7 @@ class DataConstants(object):
     def gun_dpm(self):
         if not self._typeDescriptor:
             return None
-        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * \
-               self._typeDescriptor.gun.clip[1]
+        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
         shell = self._typeDescriptor.gun.shots[0].shell
         damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
         return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
@@ -388,7 +399,6 @@ class DataConstants(object):
 
     def shell_power_3(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].piercingPower[0])
-
 
     def shell_type_1(self):
         if not self._gunShots or len(self._gunShots) < 1:
@@ -630,7 +640,6 @@ class InfoPanel(DataConstants):
     def set_texts_formatted(self):
         if not config.data['enabled']:
             return ''
-
         text_format = self.textFormats
         text_format = self.replace_macros(text_format, MACROS)
         text_format = self.replace_compare_macros(text_format, COMPARE_MACROS)

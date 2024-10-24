@@ -156,7 +156,7 @@ except StandardError:
     traceback.print_exc()
 else:
     @override(ArenaVehiclesPlugin, '_setInAoI')
-    def new_setInAoI(func, self, entry, isInAoI, *args, **kwargs):
+    def new__setInAoI(func, self, entry, isInAoI, *args, **kwargs):
         result = func(self, entry, isInAoI, *args, **kwargs)
         try:
             for vehicleID, entry2 in self._entries.iteritems():
@@ -169,9 +169,8 @@ else:
         finally:
             return result
 
-
     @override(PlayerAvatar, 'vehicle_onAppearanceReady')
-    def new_onEnterWorld(func, self, vehicle, *args, **kwargs):
+    def new__onEnterWorld(func, self, vehicle, *args, **kwargs):
         result = func(self, vehicle, *args, **kwargs)
         try:
             vehicleID = vehicle.id
@@ -182,10 +181,9 @@ else:
         finally:
             return result
 
-
     @override(Vehicle, 'onHealthChanged')
-    def new_vehicle_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
-        result = func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
+    def new_vehicle_onHealthChanged(func, self, newHealth, *args, **kwargs):
+        result = func(self, newHealth, *args, **kwargs)
         try:
             config.updateHealth(self.id, newHealth)
         except StandardError:
@@ -193,9 +191,8 @@ else:
         finally:
             return result
 
-
     @override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS')
-    def new_setPanelHPBarVisibilityStateS(func, self, value):
+    def new__setPanelHPBarVisibilityStateS(func, self, value):
         if config.data['enabled']:
             return
         func(self, value)

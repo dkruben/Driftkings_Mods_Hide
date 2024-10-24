@@ -2,7 +2,6 @@
 from math import degrees
 
 import Keys
-from constants import ARENA_GUI_TYPE
 from constants import VISIBILITY
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.minimap import plugins
@@ -16,40 +15,12 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, checkKeys, hexToDecimal, logError, calculate_version, xvmInstalled
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, checkKeys, hexToDecimal, logError, calculate_version, xvmInstalled, battle_range
 from DriftkingsInject import DriftkingsInjector, DriftkingsView, g_events
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
 AS_BATTLE = 'MinimapCentredView'
 AS_SWF = 'MinimapCentred.swf'
-
-def create_range(obj, names):
-    _range = set()
-    for name in names:
-        _name = getattr(obj, name)
-        if _name is not None:
-            _range.add(_name)
-        else:
-            logError('%(mod_ID)s', "create_range::{} attribute error:: {}", obj.__class__.__name__, name)
-    return _range
-
-__battle_types = (
-    "COMP7",
-    "EPIC_BATTLE",
-    "EPIC_RANDOM",
-    "EPIC_RANDOM_TRAINING",
-    "FORT_BATTLE_2",
-    "MAPBOX",
-    "RANDOM",
-    "RANKED",
-    "SORTIE_2",
-    "TOURNAMENT_COMP7",
-    "TRAINING",
-    "UNKNOWN",
-    "WINBACK",
-)
-
-BATTLES_RANGE = create_range(ARENA_GUI_TYPE, __battle_types)
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -62,7 +33,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.0 (%(file_compile_date)s)'
+        self.version = '1.2.5 (%(file_compile_date)s)'
         self.author = '_DKRuben__EU'
         self.defaultKeys = {'button': [Keys.KEY_LCONTROL]}
         self.data = {
@@ -278,7 +249,7 @@ class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
 def new_setupPlugins(func, self, arenaVisitor):
     res = func(self, arenaVisitor)
     try:
-        allowedMode = arenaVisitor.gui.guiType in BATTLES_RANGE
+        allowedMode = arenaVisitor.gui.guiType in battle_range
         if not xvmInstalled and allowedMode and config.data['enabled']:
             if config.data['permanentMinimapDeath']:
                 res['vehicles'] = ArenaVehiclesPlugin

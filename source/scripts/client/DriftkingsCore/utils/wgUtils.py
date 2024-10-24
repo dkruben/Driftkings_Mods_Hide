@@ -8,6 +8,7 @@ from functools import partial
 import BigWorld
 import ResMgr
 from BattleReplay import isPlaying, isLoading
+from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
@@ -16,7 +17,7 @@ from logger import logError
 
 __all__ = ('calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle', 'getAccountDBID',
            'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'getColor', 'getPercent', 'getRegion',
-           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros','xvmInstalled', 'square_position')
+           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros','xvmInstalled', 'square_position', 'battle_range',)
 
 
 def getCurrentModsPath():
@@ -27,6 +28,37 @@ def getCurrentModsPath():
 
 cwd = os.getcwdu() if os.path.supports_unicode_filenames else os.getcwd()
 modsPath, gameVersion = getCurrentModsPath()
+
+
+def create_range(obj, names):
+    _range = set()
+    for name in names:
+        _name = getattr(obj, name)
+        if _name is not None:
+            _range.add(_name)
+        else:
+            logError('DriftkingsCore', 'create_range::{} attribute error:: {}', obj.__class__.__name__, name)
+    return _range
+
+
+__battle_types = (
+    "COMP7",
+    "EPIC_BATTLE",
+    "EPIC_RANDOM",
+    "EPIC_RANDOM_TRAINING",
+    "FORT_BATTLE_2",
+    "MAPBOX",
+    "RANDOM",
+    "RANKED",
+    "SORTIE_2",
+    "TOURNAMENT_COMP7",
+    "TRAINING",
+    "UNKNOWN",
+    "WINBACK",
+)
+
+
+battle_range = create_range(ARENA_GUI_TYPE, __battle_types)
 
 
 def isXvmInstalled():

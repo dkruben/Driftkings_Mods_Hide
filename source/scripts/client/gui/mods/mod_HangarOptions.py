@@ -55,7 +55,8 @@ from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
+
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version # , logError
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
@@ -203,6 +204,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def onApplySettings(self, settings):
         super(ConfigInterface, self).onApplySettings(settings)
+        # if g_flash is not None:
+        #    g_flash.onApplySettings()
         if self.data['enabled']:
             ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
 
@@ -648,6 +651,7 @@ class DateTimesMeta(View):
 
 
 class DateTimesUI(DateTimesMeta):
+# class DateTime(object):
 
     def __init__(self):
         super(DateTimesUI, self).__init__()
@@ -677,6 +681,8 @@ class DateTimesUI(DateTimesMeta):
         return coding
 
     def updateTimeData(self):
+        if not config.data['enabled'] and not config.data['clock']:
+            return
         self.as_setDateTimeS(unicode(strftime(self.config['format']), self.getEncoding(), 'ignore'))
 
 
