@@ -1,10 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
 import traceback
-from functools import partial
 from math import degrees
 
 import Keys
-import GUI
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
 from gui.shared.utils.TimeInterval import TimeInterval
@@ -35,7 +33,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.0 %(file_compile_date)s'
+        self.version = '1.5.5 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -48,8 +46,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             },
             'delay': 5,
             'enabled': True,
-            'font': '$TitleFont',
-            'format': '<font size=\'14\' face=\'$TitleFont\' color=\'#F0F0F0\'><b>{{vehicle_name}}</b></font><br><textformat tabstops=\'[80]\'><font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font><tab><font color=\'#96CC29\'>{{vision_radius}} mt.</font></textformat>',
+            'alignX': 'center',
+            'alignY': 'center',
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 40.0, 'y': 5.0},
@@ -63,7 +62,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'enabled': True,
                 'quality': 2,
                 'strength': 2
-            }
+            },
+            'version': calculate_version(self.version)
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -113,7 +113,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 class Flash(object):
     def __init__(self, ID):
-        self.ID = ID
+        self.ID = str(ID)
         self.texts = []
         self.callbacks = []
         self.isTextAdding = False
@@ -135,11 +135,14 @@ class Flash(object):
         self.createBox(0)
 
     def createBox(self, idx):
-        component_id = self._getTextComponentID(idx)
-        g_guiFlash.createComponent(component_id, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': COMPONENT_ALIGN.CENTER, 'alignY': COMPONENT_ALIGN.TOP})
-        shadow = config.data['textShadow']
-        if shadow['enabled']:
-            g_guiFlash.updateComponent(component_id, {'shadow': shadow})
+        try:
+            component_id = self._getTextComponentID(idx)
+            g_guiFlash.createComponent(component_id, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': config.data['alignX'], 'alignY': config.data['alignY']})
+            shadow = config.data['textShadow']
+            if shadow['enabled']:
+                g_guiFlash.updateComponent(component_id, {'shadow': shadow})
+        except Exception as e:
+            traceback.print_exc()
 
     def removeBox(self, idx):
         g_guiFlash.deleteComponent(self._getTextComponentID(idx))
@@ -148,18 +151,15 @@ class Flash(object):
         if not config.data['enabled']:
             return
         if self.isTextAdding:
-            callback(0.1, partial(self.addText, text))
+            callback(0.1, lambda: self.addText(text))
             return
-        formatted_text = '<font face="%s" color="#FFFFFF" vspace="-3" align="baseline">%s</font>' % (config.data['font'], text)
+        formatted_text = str(text)
         if self.texts:
             self.removeFirstText()
-
         idx = len(self.texts)
         self.texts.append(formatted_text)
-
         if idx > 0:
             self.createBox(idx)
-
         g_guiFlash.updateComponent(self._getTextComponentID(idx), {'text': formatted_text})
         g_guiFlash.updateComponent(self._getTextComponentID(idx), {'alpha': 1.0}, {'duration': 0.5})
         self.isTextAdding = True
@@ -187,7 +187,7 @@ class Flash(object):
                 cancelCallback(self.callbacks[0])
             except ValueError:
                 pass
-            except StandardError:
+            except Exception:
                 traceback.print_exc()
             del self.callbacks[0]
         self.isTextRemoving = True
@@ -203,14 +203,15 @@ class Flash(object):
 g_flash = None
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
     g_flash = Flash(config.ID)
 except ImportError as err:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found. Text viewing disabled. {}', err)
-except StandardError:
+    logError(config.ID, 'gambiter.GUIFlash not found. Text disabled. {}', err)
+except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
@@ -245,7 +246,7 @@ def l10n(text):
         if len(parts) > 0:
             try:
                 macro = macro.format(*parts)
-            except Exception as ex:
+            except StandardError:
                 print 'macro:  {}'.format(macro)
                 print 'params: {}'.format(parts)
                 print traceback.format_exc()
