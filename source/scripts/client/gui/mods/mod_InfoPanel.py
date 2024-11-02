@@ -9,7 +9,7 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, callback, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, calculate_version
 
 MACROS = [
     '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',
@@ -33,8 +33,8 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.5 %(file_compile_date)s'
-        self.author = 'orig. Kotyarko_O'
+        self.version = '1.6.0 %(file_compile_date)s'
+        self.author = 'orig. Kotyarko_O, modified by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
             'aliveOnly': False,
@@ -48,7 +48,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'enabled': True,
             'alignX': 'center',
             'alignY': 'center',
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
+            'formatSelf': '<font face=\'$FieldFont\' size=\'15\' color=\'#FFFFFF\'><b>{{vehicle_name}}</b>\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\n\nDmg: {{vision_radius}}mt.\n{{vehicle_weight}}Ton.</font>',
+            'formatTarget': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 40.0, 'y': 5.0},
@@ -113,91 +114,42 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 class Flash(object):
     def __init__(self, ID):
-        self.ID = str(ID)
-        self.texts = []
-        self.callbacks = []
-        self.isTextAdding = False
-        self.isTextRemoving = False
+        self.ID = ID
+        self.initialized = False
         self.setup()
-        COMPONENT_EVENT.UPDATED += self.__updatePosition
+        if self.initialized:
+            COMPONENT_EVENT.UPDATED += self.__updatePosition
+
+    def setup(self):
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
+        self.createBox()
+
+    def onApplySettings(self):
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
+
+    def createBox(self):
+        shadow = config.data['textShadow']
+        if shadow['enabled']:
+            g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
+
+    def destroy(self):
+        COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        g_guiFlash.deleteComponent(self.ID)
+        self.initialized = False
 
     def __updatePosition(self, alias, data):
         if alias != self.ID:
             return
         config.onApplySettings({'textPosition': data})
 
-    def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
-
-    def setup(self):
-        self.texts = []
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.PANEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
-        self.createBox(0)
-
-    def createBox(self, idx):
-        try:
-            component_id = self._getTextComponentID(idx)
-            g_guiFlash.createComponent(component_id, COMPONENT_TYPE.LABEL, {'text': '', 'alpha': 0.0, 'x': 0, 'y': 0, 'alignX': config.data['alignX'], 'alignY': config.data['alignY']})
-            shadow = config.data['textShadow']
-            if shadow['enabled']:
-                g_guiFlash.updateComponent(component_id, {'shadow': shadow})
-        except Exception as e:
-            traceback.print_exc()
-
-    def removeBox(self, idx):
-        g_guiFlash.deleteComponent(self._getTextComponentID(idx))
-
     def addText(self, text):
-        if not config.data['enabled']:
-            return
-        if self.isTextAdding:
-            callback(0.1, lambda: self.addText(text))
-            return
-        formatted_text = str(text)
-        if self.texts:
-            self.removeFirstText()
-        idx = len(self.texts)
-        self.texts.append(formatted_text)
-        if idx > 0:
-            self.createBox(idx)
-        g_guiFlash.updateComponent(self._getTextComponentID(idx), {'text': formatted_text})
-        g_guiFlash.updateComponent(self._getTextComponentID(idx), {'alpha': 1.0}, {'duration': 0.5})
-        self.isTextAdding = True
-        callback(0.5, self.onTextAddingComplete)
-        self.callbacks.append(callback(config.data['delay'] + 0.5, self.removeFirstText))
+        format_text = str(text)
+        self.createBox()
+        g_guiFlash.updateComponent(self.ID, {'text': format_text})
 
-    def onTextAddingComplete(self):
-        self.isTextAdding = False
-
-    def onTextRemovalComplete(self):
-        self.isTextRemoving = False
-        for idx in range(len(self.texts)):
-            g_guiFlash.updateComponent(self._getTextComponentID(idx), {'text': self.texts[idx], 'alpha': 1.0, 'y': idx})
-        if len(self.texts) > 0:
-            self.removeBox(len(self.texts))
-
-    def removeFirstText(self):
-        if self.isTextRemoving:
-            callback(0.1, self.removeFirstText)
-            return
-        if self.texts:
-            del self.texts[0]
-        if self.callbacks:
-            try:
-                cancelCallback(self.callbacks[0])
-            except ValueError:
-                pass
-            except Exception:
-                traceback.print_exc()
-            del self.callbacks[0]
-        self.isTextRemoving = True
-        g_guiFlash.updateComponent(self._getTextComponentID(0), {'alpha': 0.0}, {'duration': 0.5})
-        for idx in range(1, len(self.texts) + 1):
-            g_guiFlash.updateComponent(self._getTextComponentID(idx), {'y': 0}, {'duration': 0.5})
-        callback(0.5, self.onTextRemovalComplete)
-
-    def _getTextComponentID(self, idx):
-        return '{}.text{}'.format(self.ID, idx)
+    def setVisible(self, status):
+        data = {'visible': status}
+        g_guiFlash.updateComponent(self.ID, data)
 
 
 g_flash = None
@@ -210,7 +162,7 @@ try:
     g_flash = Flash(config.ID)
 except ImportError as err:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found. Text disabled. {}', err)
+    logError(config.ID, 'gambiter.GUIFlash not found. Text disabled.', err)
 except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
@@ -600,13 +552,13 @@ class CompareMacros(object):
 
     @property
     def compareDelim(self):
-        return self._get_compare_attribute('delim')
+        return self._getCompareAttribute('delim')
 
     @property
     def compareColor(self):
-        return self._get_compare_attribute('color')
+        return self._getCompareAttribute('color')
 
-    def _get_compare_attribute(self, attribute):
+    def _getCompareAttribute(self, attribute):
         if self.value1 is None or self.value2 is None:
             raise ValueError('Values must be defined before comparison.')
         if self.value1 > self.value2:
@@ -619,7 +571,7 @@ class CompareMacros(object):
 
 class InfoPanel(DataConstants):
     def __init__(self):
-        self.textFormats = config.data['format'] if config.data['enabled'] else None
+        # self.textFormats = config.data['format'] if config.data['enabled'] else None
         self.hotKeyDown = False
         self.visible = False
         self.timer = None
@@ -638,13 +590,12 @@ class InfoPanel(DataConstants):
             return str(result) if result is not None else ''
         return None
 
-    def set_texts_formatted(self):
+    def set_texts_formatted(self, format_name):
         if not config.data['enabled']:
-            return ''
-        text_format = self.textFormats
+            return
+        text_format = config.data[format_name]
         text_format = self.replace_macros(text_format, MACROS)
         text_format = self.replace_compare_macros(text_format, COMPARE_MACROS)
-
         return text_format
 
     def replace_macros(self, text_format, macros):
@@ -675,7 +626,7 @@ class InfoPanel(DataConstants):
         if isDown:
             self.onUpdateVehicle(getPlayer().getVehicleAttached())
             self.hotKeyDown = True
-        else:
+        elif not isDown:
             self.hotKeyDown = False
             target = getTarget()
             if _isEntitySatisfiesConditions(target):
@@ -688,6 +639,7 @@ class InfoPanel(DataConstants):
             self.timer.stop()
             self.timer = None
         self.visible = False
+        g_flash.setVisible(False)
 
     def onUpdateBlur(self):
         if self.hotKeyDown or (getPlayer().getVehicleAttached() is None):
@@ -709,7 +661,11 @@ class InfoPanel(DataConstants):
                 self.init(vehicle, player_vehicle)
             elif hasattr(player_vehicle, 'typeDescriptor'):
                 self.init(None, player_vehicle)
-            g_flash.addText(self.set_texts_formatted())
+            if getTarget():
+                g_flash.addText(self.set_texts_formatted('formatTarget'))
+            else:
+                g_flash.addText(self.set_texts_formatted('formatSelf'))
+            g_flash.setVisible(True)
 
 
 g_macros = CompareMacros()
