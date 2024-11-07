@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import random
 from functools import partial
+from threading import Thread
 
 import BattleReplay
 import Keys
@@ -44,8 +45,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.0.0 (%(file_compile_date)s)'
-        self.author = ' (orig by spoter, refactored by DriftKing\'s)'
+        self.version = '2.1.0 (%(file_compile_date)s)'
+        self.author = ' (orig by spoter, refactored by DriftKings)'
         self.defaultKeys = {
             'buttonRepair': [Keys.KEY_SPACE],
             'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]
@@ -162,7 +163,6 @@ class Repair(object):
         g_eventBus.addListener(events.ComponentEvent.COMPONENT_UNREGISTERED, self.__onComponentUnregistered, EVENT_BUS_SCOPE.GLOBAL)
 
     def startBattle(self):
-        #
         self.ctrl = getPlayer().guiSessionProvider.shared
         #
         InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
@@ -173,7 +173,6 @@ class Repair(object):
         # update equipments
         if self.ctrl.equipments is not None:
             self.ctrl.equipments.onEquipmentUpdated += self.onEquipmentUpdated
-        #
         self.checkBattleStarted()
 
     def stopBattle(self):
@@ -364,7 +363,7 @@ class Repair(object):
                 self.repairAll()
 
     def autoUse(self, state, value):
-        if not config.data['autoRepair']:
+        if not config.data.get('autoRepair', False):
             return
         if self.ctrl is None:
             return
@@ -373,29 +372,25 @@ class Repair(object):
             return
         if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return
-        time = random.uniform(config.data['timerMin'], config.data['timerMax'])
-        if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
-            callback(time, partial(self.useItem, 'extinguisher'))
-            time += 0.1
-
+        action_time = random.uniform(config.data['timerMin'], config.data['timerMax'])
+        if config.data.get('extinguishFire', False) and state == VEHICLE_VIEW_STATE.FIRE:
+            callback(action_time, partial(self.useItem, 'extinguisher'))
+            action_time += 0.1
         if state == VEHICLE_VIEW_STATE.DEVICES:
-            deviceName, deviceState, actualState = value
-            if deviceState in DEVICE_STATE_AS_DAMAGE:
-                if deviceName in COMPLEX_ITEM:
-                    itemName = COMPLEX_ITEM[deviceName]
-                else:
-                    itemName = deviceName
-                equipment_tag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
-                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
-                if itemName in specific:
-                    if config.data['healCrew'] and equipment_tag == 'medkit':
-                        callback(time, partial(self.useItem, 'medkit', deviceName))
-                    if config.data['repairDevices'] and equipment_tag == 'repairkit':
-                        callback(time, partial(self.useItem, 'repairkit', deviceName))
-                        time += 0.1
+            device_name, device_state, actual_state = value
+            if device_state in DEVICE_STATE_AS_DAMAGE:
+                item_name = COMPLEX_ITEM.get(device_name, device_name)
+                equipment_tag = 'medkit' if device_name in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
+                repair_priority = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
+                if item_name in repair_priority:
+                    if config.data.get('healCrew', False) and equipment_tag == 'medkit':
+                        callback(action_time, partial(self.useItem, 'medkit', device_name))
+                    if config.data.get('repairDevices', False) and equipment_tag == 'repairkit':
+                        callback(action_time, partial(self.useItem, 'repairkit', device_name))
+                        action_time += 0.1
 
         if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN:
-            callback(time, partial(self.useItem, 'medkit'))
+            callback(action_time, partial(self.useItem, 'medkit'))
 
     def __onComponentRegistered(self, event):
         if event.alias == BATTLE_VIEW_ALIASES.CONSUMABLES_PANEL:
@@ -407,4 +402,6 @@ class Repair(object):
             self.stopBattle()
 
 
-Repair()
+g_repairExtended = Thread(target=Repair, name='mod_RepairExtended')
+g_repairExtended.daemon = True
+g_repairExtended.start()

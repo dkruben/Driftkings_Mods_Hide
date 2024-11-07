@@ -41,7 +41,6 @@ from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
-from gui.shared.formatters import text_styles
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
 from gui.shared.tooltips.shell import CommonStatsBlockConstructor
@@ -54,9 +53,10 @@ from notification.NotificationListView import NotificationListView
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
+from gui.shared.formatters import text_styles
 
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version # , logError
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
 from DriftkingsInject import CyclicTimerEvent, g_events
 
 firstTime = True
@@ -277,10 +277,10 @@ def new__handleLazyChannelCtlInited(func, self, event):
 
 # hide premium vehicle on the background in the hangar
 @override(HeroTank, 'recreateVehicle')
-def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, callback=None, outfit=None):
+def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, _callback=None, outfit=None):
     if config.data['enabled'] and config.data['showPromoPremVehicle']:
         return
-    func(self, typeDescriptor, state, callback, outfit)
+    func(self, typeDescriptor, state, _callback, outfit)
 
 
 # hide display pop-up messages in the hangar

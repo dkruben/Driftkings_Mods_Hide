@@ -97,7 +97,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def setHPField(self, vehicleID):
         player = getPlayer()
-        if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING, ARENA_GUI_TYPE.COMP7):
+        if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING):
             return
         team = player.arena.vehicles[vehicleID]['team']
         panelSide = 'left' if player.team == team else 'right'
@@ -120,7 +120,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
             self.__hpCache[targetID]['current'] = 0
             self.setHPField(targetID)
 
-    def updateHealth(self, vehicleID, newHealth=-1):
+    def updateHealth(self, vehicleID, newHealth=-1, *_, **__):
         if vehicleID not in self.__hpCache or newHealth == -1:
             vehicle = getPlayer().arena.vehicles.get(vehicleID)
             maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else -1
