@@ -68,7 +68,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
             'maxChatLines': 6,
             'muteTeamBaseSound': False,
-            'position': {'x': -870, 'y': 1},
+            'position': {'x': -1180, 'y': 1},
             'postmortemTips': True,
             'showAnonymous': False,
             'showBattleHint': False,
