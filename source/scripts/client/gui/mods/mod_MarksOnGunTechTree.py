@@ -20,8 +20,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
-        self.author = 'orig. by spoter'
+        self.version = '1.2.0 (%(file_compile_date)s)'
+        self.author = 'orig. by spoter, reworked by Driftkings'
         self.data = {
             'enabled': True,
             'colorRatting': 0,
@@ -179,8 +179,7 @@ def new_makeHeaderVO(func, *args):
             'currentMovingAvgDamage': current_moving_avg_damage,
             'currentDamage': current_damaged if current_damaged > moving_avg_damage else current_moving_avg_damage,
             'nextPercent': '<font color="%s">%s%%</font>' % (config.read_colors('good', pC), pC),
-            'needDamage': '<font color="%s">%s</font>' % (
-            colors[next((index for index, value in enumerate(levels) if value >= int(dC)), None)], int(dC)),
+            'needDamage': '<font color="%s">%s</font>' % (colors[next((index for index, value in enumerate(levels) if value >= int(dC)), None)], int(dC)),
             'c_damageToMark20': '<font color="%s"><b>20%%:%s</b></font>' % (colors[0], g_marks.normalizeDigits(p20)),
             'c_damageToMark40': '<font color="%s"><b>40%%:%s</b></font>' % (colors[1], g_marks.normalizeDigits(p40)),
             'c_damageToMark55': '<font color="%s"><b>55%%:%s</b></font>' % (colors[2], g_marks.normalizeDigits(p55)),

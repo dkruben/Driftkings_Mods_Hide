@@ -38,6 +38,7 @@ class ConfigsInterface(ConfigNoInterface, DriftkingsConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = '[by: S0me0ne, reworked by ShadowHunterRUS & spoter & Driftkings]'
+        self.data = {'version': calculate_version(self.version)}
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
@@ -67,7 +68,6 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 class AM_MODES:
     def __init__(self):
         pass
-
     ADD = 'add'
     EDIT = 'edit'
     DELETE = 'delete'

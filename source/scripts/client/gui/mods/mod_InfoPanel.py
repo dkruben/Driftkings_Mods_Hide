@@ -12,19 +12,19 @@ from nations import NAMES
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, calculate_version
 
 MACROS = [
-    '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',
-    '{{max_ammo}}', '{{gun_reload}}', '{{gun_dpm}}', '{{gun_reload_equip}}', '{{gun_dpm_equip}}', '{{gun_clip}}', '{{gun_clip_reload}}',
-    '{{gun_burst}}', '{{gun_burst_reload}}', '{{gun_aiming_time}}', '{{gun_accuracy}}',
-    '{{shell_name_1}}', '{{shell_name_2}}', '{{shell_name_3}}',
-    '{{shell_damage_1}}', '{{shell_damage_2}}', '{{shell_damage_3}}', '{{shell_power_1}}', '{{shell_power_2}}', '{{shell_power_3}}', '{{shell_type_1}}',
-    '{{shell_type_2}}', '{{shell_type_3}}', '{{shell_speed_1}}', '{{shell_speed_2}}', '{{shell_speed_3}}', '{{shell_distance_1}}', '{{shell_distance_2}}',
+    '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}',
+    '{{gun_name}}', '{{gun_caliber}}', '{{max_ammo}}', '{{gun_reload}}', '{{gun_dpm}}', '{{gun_reload_equip}}', '{{gun_dpm_equip}}',
+    '{{gun_clip}}', '{{gun_clip_reload}}', '{{gun_burst}}', '{{gun_burst_reload}}', '{{gun_aiming_time}}', '{{gun_accuracy}}',
+    '{{shell_name_1}}', '{{shell_name_2}}', '{{shell_name_3}}', '{{shell_damage_1}}', '{{shell_damage_2}}', '{{shell_damage_3}}',
+    '{{shell_power_1}}', '{{shell_power_2}}', '{{shell_power_3}}', '{{shell_type_1}}', '{{shell_type_2}}', '{{shell_type_3}}',
+    '{{shell_speed_1}}', '{{shell_speed_2}}', '{{shell_speed_3}}', '{{shell_distance_1}}', '{{shell_distance_2}}',
     '{{shell_distance_3}}', '{{angle_pitch_up}}', '{{angle_pitch_down}}', '{{angle_pitch_left}}', '{{angle_pitch_right}}', '{{vehicle_max_health}}',
     '{{armor_hull_front}}', '{{armor_hull_side}}', '{{armor_hull_back}}', '{{turret_name}}', '{{armor_turret_front}}', '{{armor_turret_side}}',
     '{{armor_turret_back}}', '{{vehicle_weight}}', '{{chassis_max_weight}}', '{{engine_name}}', '{{engine_power}}', '{{engine_power_density}}',
-    '{{speed_forward}}', '{{speed_backward}}', '{{hull_speed_turn}}', '{{turret_speed_turn}}', '{{invis_stand}}', '{{invis_stand_shot}}', '{{invis_move}}',
-    '{{invis_move_shot}}', '{{vision_radius}}', '{{radio_name}}', '{{radio_radius}}',
-    '{{nation}}', '{{level}}', '{{rlevel}}',
-    '{{pl_vehicle_weight}}', '{{pl_gun_reload}}', '{{pl_gun_reload_equip}}', '{{pl_gun_dpm}}', '{{pl_gun_dpm_equip}}', '{{pl_vision_radius}}', '{{pl_gun_aiming_time}}'
+    '{{speed_forward}}', '{{speed_backward}}', '{{hull_speed_turn}}', '{{turret_speed_turn}}', '{{invis_stand}}', '{{invis_stand_shot}}',
+    '{{invis_move}}', '{{invis_move_shot}}', '{{vision_radius}}', '{{radio_name}}', '{{radio_radius}}', '{{nation}}', '{{level}}', '{{rlevel}}',
+    '{{pl_vehicle_weight}}', '{{pl_gun_reload}}', '{{pl_gun_reload_equip}}', '{{pl_gun_dpm}}', '{{pl_gun_dpm_equip}}', '{{pl_vision_radius}}',
+    '{{pl_gun_aiming_time}}'
 ]
 
 COMPARE_MACROS = ['compareDelim', 'compareColor']
@@ -48,18 +48,17 @@ class ConfigInterface(DriftkingsConfigInterface):
             'enabled': True,
             'alignX': 'center',
             'alignY': 'center',
-            'formatSelf': '<font face=\'$FieldFont\' size=\'15\' color=\'#FFFFFF\'><b>{{vehicle_name}}</b>\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\n\nDmg: {{vision_radius}}mt.\n{{vehicle_weight}}Ton.</font>',
-            'formatTarget': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
             'showFor': 0,
             'textLock': False,
-            'textPosition': {'x': 40.0, 'y': 5.0},
+            'textPosition': {'x': 700.0, 'y': 300.0},
             'textShadow': {
                 'alpha': 0.8,
                 'angle': 90,
-                'blurX': 2,
-                'blurY': 2,
+                'blurX': 5,
+                'blurY': 5,
                 'color': '#000000',
-                'distance': 0,
+                'distance': 1,
                 'enabled': True,
                 'quality': 2,
                 'strength': 2
@@ -115,10 +114,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 class Flash(object):
     def __init__(self, ID):
         self.ID = ID
-        self.initialized = False
         self.setup()
-        if self.initialized:
-            COMPONENT_EVENT.UPDATED += self.__updatePosition
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def setup(self):
         g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
@@ -135,7 +132,6 @@ class Flash(object):
     def destroy(self):
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
         g_guiFlash.deleteComponent(self.ID)
-        self.initialized = False
 
     def __updatePosition(self, alias, data):
         if alias != self.ID:
@@ -571,7 +567,7 @@ class CompareMacros(object):
 
 class InfoPanel(DataConstants):
     def __init__(self):
-        # self.textFormats = config.data['format'] if config.data['enabled'] else None
+        self.textFormats = config.data['format'] if config.data['enabled'] else None
         self.hotKeyDown = False
         self.visible = False
         self.timer = None
@@ -590,10 +586,10 @@ class InfoPanel(DataConstants):
             return str(result) if result is not None else ''
         return None
 
-    def set_texts_formatted(self, format_name):
+    def set_texts_formatted(self):
         if not config.data['enabled']:
             return
-        text_format = config.data[format_name]
+        text_format = self.textFormats
         text_format = self.replace_macros(text_format, MACROS)
         text_format = self.replace_compare_macros(text_format, COMPARE_MACROS)
         return text_format
@@ -661,10 +657,7 @@ class InfoPanel(DataConstants):
                 self.init(vehicle, player_vehicle)
             elif hasattr(player_vehicle, 'typeDescriptor'):
                 self.init(None, player_vehicle)
-            if getTarget():
-                g_flash.addText(self.set_texts_formatted('formatTarget'))
-            else:
-                g_flash.addText(self.set_texts_formatted('formatSelf'))
+            g_flash.addText(self.set_texts_formatted())
             g_flash.setVisible(True)
 
 

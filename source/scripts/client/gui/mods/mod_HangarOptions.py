@@ -57,16 +57,14 @@ from gui.shared.formatters import text_styles
 
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
-from DriftkingsInject import CyclicTimerEvent, g_events
+from DriftkingsInject import g_events, CyclicTimerEvent
 
 firstTime = True
-
 AS_SWF = 'DateTimes.swf'
 AS_ALIASES = 'Driftkings_DateTimes_UI'
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-
     def __init__(self):
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         self.onModSettingsChanged = SafeEvent()
@@ -103,9 +101,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootboxesWidget': False,
             'clock': True,
-            'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'>\t%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
-            'x': 1900,
-            'y': 47
+            'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'><tab>%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'x': 2450,
+            'y': 48
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -204,8 +202,6 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def onApplySettings(self, settings):
         super(ConfigInterface, self).onApplySettings(settings)
-        # if g_flash is not None:
-        #    g_flash.onApplySettings()
         if self.data['enabled']:
             ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
 
@@ -224,13 +220,6 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.macros['hours'], delta = divmod(delta, ONE_HOUR)
         self.macros['min'], self.macros['sec'] = divmod(delta, ONE_MINUTE)
         return template % self.macros
-
-    @staticmethod
-    def getEncoding():
-        coding = locale.getpreferredencoding()
-        if coding in locale.locale_encoding_alias:
-            return locale.locale_encoding_alias[coding]
-        return coding
 
     def stopCallback(self):
         if self.callback is not None:
@@ -560,7 +549,7 @@ class VehicleData:
         vehicles = items_cache.items.getVehicles()
         self.my_vehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
 
-# Uso da classe
+# class VehicleData():
 vehicle_data = VehicleData()
 vehicle_data.update_shells()
 
@@ -651,8 +640,6 @@ class DateTimesMeta(View):
 
 
 class DateTimesUI(DateTimesMeta):
-# class DateTime(object):
-
     def __init__(self):
         super(DateTimesUI, self).__init__()
         self.config = {
