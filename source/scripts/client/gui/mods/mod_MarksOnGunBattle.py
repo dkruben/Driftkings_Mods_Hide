@@ -73,10 +73,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.5 (%(file_compile_date)s)'
+        self.version = '1.6.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
-        # self.modsGroup = 'Driftkings'
-        # self.modSettingsID = 'Driftkings_GUI'
         self.defaultKeys = {
             'buttonShow': [Keys.KEY_NUMPAD9, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonSizeUp': [Keys.KEY_PGUP, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -195,10 +193,12 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showInHangar_tooltip': '',
 
             'UI_setting_UI_text': 'UI in battle',
-            'UI_setting_UI_tooltip': '{HEADER}UI in battle{/HEADER}{BODY}Extended:<br/>'
-                                     '<img src=\"img://objects/ui_extended.png\"></img><br/>'
-                                     'Simple:<br/><img src=\"img://objects/ui_simple.png\"></img><br/>'
-                                     'Config:<br/>/mods/configs/marksOnGunExtended/marksOnGunExtended.json<br/> {/BODY}',
+            'UI_setting_UI_tooltip': 'UI in battle Extended:\n'
+                                     '<img src=\"img://objects/ui_extended.png\"></img>\n'
+                                     'Simple:\n'
+                                     '<img src=\"img://objects/ui_simple.png\"></img>\n'
+                                     'Config:\n'
+                                     '/mods/configs/marksOnGunExtended/marksOnGunExtended.json\n',
             'UI_menu_UIskill4ltu': '<font color=\"#60FF00\">@skill</font> choice [<font color=\"#60FF00\">twitch.tv/skill4ltu</font>]',
             'UI_menu_UIMyp': '<font color=\"#D042F3\">@Myp</font> choice [<font color=\"#D042F3\">twitch.tv/myp_</font>]',
             'UI_menu_UIspoter': '<font color=\"#6595EE\">@spoter</font> choice [<font color=\"#6595EE\">github.com/spoter</font>]',

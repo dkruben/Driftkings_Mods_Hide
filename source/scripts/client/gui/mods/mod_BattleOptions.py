@@ -249,9 +249,9 @@ def new_setQuestsInfoS(func, self, data, _):
 
 # disable battle artillery_stun_effect sound
 @override(TimersPanel, '__playStunSoundIfNeed')
-def new_playStunSoundIfNeed(base, *args, **kwargs):
+def new_playStunSoundIfNeed(func, *args, **kwargs):
     if not config.data['enabled'] and not config.data['stunSound']:
-        return base(*args, **kwargs)
+        return func(*args, **kwargs)
 
 
 @override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
@@ -320,7 +320,7 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 # Battle Messages
 def onReload(avatar):
     macro = defaultdict(lambda: 'Macros not found')
-    macro['load'] = math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft())
+    macro['load'] = str(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft()))
     macro['pos'] = square_position.getSquarePosition()
     message = config.data['loadTxt'] % macro
     if len(message) > 0:
@@ -333,8 +333,7 @@ def onReload(avatar):
 def new__handleKey(func, self, isDown, key, mods):
     if config.data['enabled'] and config.data['clipLoad']:
         try:
-            cmdMap = CommandMapping.g_instance
-            if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
+            if CommandMapping.g_instance.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
                 self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
                 callback(0.5, partial(onReload, self))
                 return True
@@ -397,7 +396,7 @@ def onVehicleChanged(vehicle):
         value = battleBooster.inventoryCount > 0
         if value != is_auto:
             changeValue(vehicle, value)
-            logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={value} vehicle={vehicle}, booster={battleBooster}', value=value, vehicle=vehicle.userName, battleBooster=battleBooster.userName)
+            logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}', value, vehicle.userName, battleBooster.userName)
 
 
 def onGuiCacheSyncCompleted(_):

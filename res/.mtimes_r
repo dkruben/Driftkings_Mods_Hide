@@ -178,12 +178,6 @@
 1727048053|flash/FlightTimer/src/mods/common/AbstractViewInjector.as
 1727048053|flash/FlightTimer/src/mods/common/BattleDisplayable.as
 1727048053|flash/FlightTimer/src/mods/common/IAbstractInjector.as
-1710037382|flash/HangarClock/DateTimes.as3proj
-1710037653|flash/HangarClock/DateTimes.fla
-1710296710|flash/HangarClock/src/driftkings/hangar/DateTimesUI.as
-1709948136|flash/HangarClock/src/driftkings/hangar/utils/Filters.as
-1710296693|flash/HangarClock/src/driftkings/hangar/utils/TextExt.as
-1709948154|flash/HangarClock/src/driftkings/hangar/utils/Utils.as
 1711479785|flash/MainGun/MainGun.as3proj
 1713919568|flash/MainGun/MainGun.fla
 1710969428|flash/MainGun/src/driftkings/MainGunInjector.as

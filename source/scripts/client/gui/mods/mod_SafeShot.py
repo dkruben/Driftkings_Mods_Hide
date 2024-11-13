@@ -47,7 +47,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             },
             'format': '[%(name)s - %(vehicle)s], get out of the way!',
             'disableKey': self.defaultKeys['disableKey'],
-            'onHold': True,
             'disableMessage': True
         }
 
@@ -94,7 +93,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
-        self.is_hot_key_event = self.data['onHold']
+        self.is_hot_key_event = True
 
     def stopBattle(self):
         InputHandler.g_instance.onKeyUp -= self.injectButton

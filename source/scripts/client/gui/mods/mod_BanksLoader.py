@@ -39,6 +39,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             'debug': False
         }
         self.i18n = {
+            'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
             'UI_restart_header': 'Banks Loader by Driftkings : restart',
             'UI_restart_reason_new': 'You have installed new audio mods, so the game config was changed.',

@@ -1,9 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
-import locale
 import traceback
 from math import sin, radians
 from time import strftime
 
+import GUI
 import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
@@ -15,7 +15,6 @@ from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
 from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
-from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
@@ -31,9 +30,6 @@ from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataPro
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
 from gui.Scaleform.daapi.view.meta.ModuleInfoMeta import ModuleInfoMeta
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
@@ -41,6 +37,7 @@ from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
+from gui.shared.formatters import text_styles
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
 from gui.shared.tooltips.shell import CommonStatsBlockConstructor
@@ -50,23 +47,19 @@ from helpers.i18n import makeString
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
-from skeletons.gui.app_loader import GuiGlobalSpaceID
+from shared_utils import safeCancelCallback
+from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
-from gui.shared.formatters import text_styles
 
-
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, logInfo
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 firstTime = True
-AS_SWF = 'DateTimes.swf'
-AS_ALIASES = 'Driftkings_DateTimes_UI'
 
 
 class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
-        ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         self.onModSettingsChanged = SafeEvent()
         self.callback = None
         self.macros = {}
@@ -101,9 +94,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootboxesWidget': False,
             'clock': True,
-            'format': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'><tab>%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
-            'x': 2450,
-            'y': 48
+            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'><tab>%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'x': 0,
+            'y': 47,
+            'width': 200,
+            'height': 50,
+            'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
+            'alignX': 'right',
+            'alignY': 'top',
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -204,11 +202,6 @@ class ConfigInterface(DriftkingsConfigInterface):
         super(ConfigInterface, self).onApplySettings(settings)
         if self.data['enabled']:
             ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
-
-    @staticmethod
-    def onGUISpaceEntered(spaceID):
-        if spaceID == GuiGlobalSpaceID.LOBBY:
-            ServicesLocator.appLoader.getApp().loadView(SFViewLoadParams(AS_ALIASES))
 
     def getPremiumLabelText(self, time_delta):
         delta = float(getTimeDeltaFromNow(makeLocalServerTime(time_delta)))
@@ -616,61 +609,138 @@ def new__removeListeners(func, self):
     return func(self)
 
 
-class DateTimesMeta(View):
+class DateTimesUI(object):
+    settingsCore = dependency.descriptor(ISettingsCore)
 
-    def __init__(self):
-        super(DateTimesMeta, self).__init__()
-
-    def _populate(self):
-        # noinspection PyProtectedMember
-        super(DateTimesMeta, self)._populate()
-
-    def _dispose(self):
-        # noinspection PyProtectedMember
-        super(DateTimesMeta, self)._dispose()
-
-    def as_startUpdateS(self, *args):
-        return self.flashObject.as_startUpdate(*args) if self._isDAAPIInited() else None
-
-    def as_setDateTimeS(self, text):
-        return self.flashObject.as_setDateTime(text) if self._isDAAPIInited() else None
-
-    def as_clearSceneS(self):
-        return self.flashObject.as_clearScene() if self._isDAAPIInited() else None
-
-
-class DateTimesUI(DateTimesMeta):
-    def __init__(self):
-        super(DateTimesUI, self).__init__()
+    def __init__(self, ID):
+        self.ID = ID
         self.config = {
-            'enabled': config.data['clock'],
+            'text': '',
             'x': config.data['x'],
             'y': config.data['y'],
-            'format': config.data['format']
+            'width': config.data['width'],
+            'height': config.data['height'],
+            'alignX': config.data['alignX'],
+            'alignY': config.data['alignY'],
+            'shadow': config.data['shadow'],
+            'drag': True
         }
+        self.__isLobby = True
+        self.updateCallback = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
-
-    def _populate(self):
-        super(DateTimesUI, self)._populate()
-        self.as_startUpdateS(self.config)
-        if config.data['enabled'] and self.config['enabled']:
+        if config.data['enabled'] and config.data['clock']:
             self.timerEvent.start()
+        self.setup()
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
 
-    def _dispose(self):
-        self.timerEvent.stop()
-        super(DateTimesUI, self)._dispose()
+    def setup(self):
+        try:
+            g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, self.config, battle=False, lobby=True)
+        except Exception as err:
+            logError(config.ID,'Failed to create component', err)
+
+    def onApplySettings(self):
+        g_guiFlash.updateComponent(self.ID, self.config)
+
+    def __updatePosition(self, alias, data):
+        if alias != self.ID:
+            return
+        x = data.get('x', config.data['x'])
+        y = data.get('y', config.data['y'])
+        config.onApplySettings({'x': x, 'y': y})
+        logInfo(self.ID, '{} Flash coordinates updated : y={}, x={}, data: {}', alias, config.data['y'], config.data['x'], data)
 
     @staticmethod
-    def getEncoding():
-        coding = locale.getpreferredencoding()
-        if coding in locale.locale_encoding_alias:
-            return locale.locale_encoding_alias[coding]
-        return coding
+    def screenFix(screen, value, mod, align=1):
+        if align == 1:
+            if value + mod > screen:
+                return float(max(0, screen - mod))
+            if value < 0:
+                return 0.0
+        if align == -1:
+            if value - mod < -screen:
+                return min(0, -screen + mod)
+            if value > 0:
+                return 0.0
+        if align == 0:
+            scr = screen / 2.0
+            if value < scr:
+                return float(scr - mod)
+            if value > -scr:
+                return float(-scr)
+        return value
+
+    def screenResize(self):
+        curScr = GUI.screenResolution()
+        scale = float(self.settingsCore.interfaceScale.get())
+        xMo, yMo = curScr[0] / scale, curScr[1] / scale
+        x = config.data.get('x', None)
+        if config.data['alignX'] == COMPONENT_ALIGN.LEFT:
+            x = self.screenFix(xMo, config.data['x'], config.data['width'], 1)
+        if config.data['alignX'] == COMPONENT_ALIGN.RIGHT:
+            x = self.screenFix(xMo, config.data['x'], config.data['width'], -1)
+        if config.data['alignX'] == COMPONENT_ALIGN.CENTER:
+            x = self.screenFix(xMo, config.data['x'], config.data['width'], 0)
+        if x is not None:
+            if x != config.data['x']:
+                config.data['x'] = x
+        y = config.data.get('y', None)
+        if config.data['alignY'] == COMPONENT_ALIGN.TOP:
+            y = self.screenFix(yMo, config.data['y'], config.data['height'], 1)
+        if config.data['alignY'] == COMPONENT_ALIGN.BOTTOM:
+            y = self.screenFix(yMo, config.data['y'], config.data['height'], -1)
+        if config.data['alignY'] == COMPONENT_ALIGN.CENTER:
+            y = self.screenFix(yMo, config.data['y'], config.data['height'], 0)
+        if y is not None:
+            if y != config.data['y']:
+                config.data['y'] = y
+        g_guiFlash.updateComponent(self.ID, COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
+
+    def cleanup(self):
+        if self.updateCallback:
+            self.updateCallback = safeCancelCallback(self.updateCallback)
+        COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        g_guiFlash.destroyComponent(self.ID)
+
+    @property
+    def isLobby(self):
+        return self.__isLobby
+
+    @isLobby.setter
+    def isLobby(self, value):
+        self.__isLobby = value
+        if self.updateCallback:
+            self.updateCallback = safeCancelCallback(self.updateCallback)
+        if not value:
+            self.updateCallback = callback(1.0, self.updateTimeData)
+        else:
+            self.updateTimeData()  # Update once when entering lobby
 
     def updateTimeData(self):
-        if not config.data['enabled'] and not config.data['clock']:
+        if not config.data['enabled'] or not config.data['clock']:
             return
-        self.as_setDateTimeS(unicode(strftime(self.config['format']), self.getEncoding(), 'ignore'))
+        current_time = strftime(config.data['text'])
+        if not isinstance(current_time, str):
+            current_time = str(current_time)
+        g_guiFlash.updateComponent(self.ID, {'text': current_time})
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_ALIASES, DateTimesUI, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_flash = None
+try:
+    from gambiter import g_guiFlash
+    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
+    g_flash = DateTimesUI(config.ID)
+except ImportError:
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
+except StandardError:
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
+    traceback.print_exc()
+
+
+@override(Hangar, '_populate')
+def new_populate(func, *args, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    finally:
+        g_flash.isBattle = False

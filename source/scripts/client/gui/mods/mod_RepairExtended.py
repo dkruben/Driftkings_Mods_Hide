@@ -17,29 +17,6 @@ from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, getPlayer, callback, calculate_version
 
-COMPLEX_ITEM = {
-    'leftTrack0': 'chassis',
-    'rightTrack0': 'chassis',
-    'leftTrack1': 'chassis',
-    'rightTrack1': 'chassis',
-    'gunner1': 'gunner',
-    'gunner2': 'gunner',
-    'radioman1': 'radioman',
-    'radioman2': 'radioman',
-    'loader1': 'loader',
-    'loader2': 'loader',
-    'wheel0': 'wheel',
-    'wheel1': 'wheel',
-    'wheel2': 'wheel',
-    'wheel3': 'wheel',
-    'wheel4': 'wheel',
-    'wheel5': 'wheel',
-    'wheel6': 'wheel',
-    'wheel7': 'wheel'
-}
-
-CHASSIS = ['chassis', 'leftTrack', 'rightTrack', 'leftTrack0', 'rightTrack0', 'leftTrack1', 'rightTrack1', 'wheel', 'wheel0', 'wheel1', 'wheel2', 'wheel3', 'wheel4', 'wheel5', 'wheel6', 'wheel7']
-
 
 class ConfigInterface(DriftkingsConfigInterface):
 
@@ -152,13 +129,33 @@ class Repair(object):
 
     def __init__(self):
         self.ctrl = None
-        # self.vehicleCtrl = None
         self.consumablesPanel = None
         self.items = {
             'extinguisher': [251, 251, None, None],
             'medkit': [763, 1019, None, None],
             'repairkit': [1275, 1531, None, None]
         }
+        self.complex_item = {
+            'leftTrack0': 'chassis',
+            'rightTrack0': 'chassis',
+            'leftTrack1': 'chassis',
+            'rightTrack1': 'chassis',
+            'gunner1': 'gunner',
+            'gunner2': 'gunner',
+            'radioman1': 'radioman',
+            'radioman2': 'radioman',
+            'loader1': 'loader',
+            'loader2': 'loader',
+            'wheel0': 'wheel',
+            'wheel1': 'wheel',
+            'wheel2': 'wheel',
+            'wheel3': 'wheel',
+            'wheel4': 'wheel',
+            'wheel5': 'wheel',
+            'wheel6': 'wheel',
+            'wheel7': 'wheel'
+        }
+        self.chassis = ['chassis', 'leftTrack', 'rightTrack', 'leftTrack0', 'rightTrack0', 'leftTrack1', 'rightTrack1', 'wheel', 'wheel0', 'wheel1', 'wheel2', 'wheel3', 'wheel4', 'wheel5', 'wheel6', 'wheel7']
         g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, self.__onComponentRegistered, EVENT_BUS_SCOPE.GLOBAL)
         g_eventBus.addListener(events.ComponentEvent.COMPONENT_UNREGISTERED, self.__onComponentUnregistered, EVENT_BUS_SCOPE.GLOBAL)
 
@@ -289,8 +286,8 @@ class Repair(object):
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state != DEVICE_STATE_NORMAL]
                 result = []
                 for device in devices:
-                    if device in COMPLEX_ITEM:
-                        itemName = COMPLEX_ITEM[device]
+                    if device in self.complex_item:
+                        itemName = self.complex_item[device]
                     else:
                         itemName = device
                     if itemName in specific:
@@ -305,8 +302,8 @@ class Repair(object):
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state != DEVICE_STATE_NORMAL]
                 result = []
                 for device in devices:
-                    if device in COMPLEX_ITEM:
-                        itemName = COMPLEX_ITEM[device]
+                    if device in self.complex_item:
+                        itemName = self.complex_item[device]
                     else:
                         itemName = device
                     if itemName in specific:
@@ -351,7 +348,7 @@ class Repair(object):
             if equipment.isReady and equipment.isAvailableToUse:
                 devices = [name for name, state in equipment.getEntitiesIterator() if state and state in DEVICE_STATE_DESTROYED]
                 for name in devices:
-                    if name in CHASSIS:
+                    if name in self.chassis:
                         self.useItem(equipment_tag, name)
                         return
 
@@ -363,34 +360,34 @@ class Repair(object):
                 self.repairAll()
 
     def autoUse(self, state, value):
-        if not config.data.get('autoRepair', False):
+        if not config.data['autoRepair']:
             return
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
-        if self_vehicle is None:
-            return
-        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
-            return
-        action_time = random.uniform(config.data['timerMin'], config.data['timerMax'])
-        if config.data.get('extinguishFire', False) and state == VEHICLE_VIEW_STATE.FIRE:
-            callback(action_time, partial(self.useItem, 'extinguisher'))
-            action_time += 0.1
+        time = random.uniform(config.data['timerMin'], config.data['timerMax'])
+        if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
+            callback(time, partial(self.useItem, 'extinguisher'))
+            time += 0.1
+
         if state == VEHICLE_VIEW_STATE.DEVICES:
-            device_name, device_state, actual_state = value
-            if device_state in DEVICE_STATE_AS_DAMAGE:
-                item_name = COMPLEX_ITEM.get(device_name, device_name)
-                equipment_tag = 'medkit' if device_name in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
-                repair_priority = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
-                if item_name in repair_priority:
-                    if config.data.get('healCrew', False) and equipment_tag == 'medkit':
-                        callback(action_time, partial(self.useItem, 'medkit', device_name))
-                    if config.data.get('repairDevices', False) and equipment_tag == 'repairkit':
-                        callback(action_time, partial(self.useItem, 'repairkit', device_name))
-                        action_time += 0.1
+            deviceName, deviceState, actualState = value
+            if deviceState in DEVICE_STATE_AS_DAMAGE:
+                if deviceName in self.complex_item:
+                    itemName = self.complex_item[deviceName]
+                else:
+                    itemName = deviceName
+                equipmentTag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
+                # noinspection PyTypeChecker
+                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
+                if itemName in specific:
+                    if config.data['healCrew'] and equipmentTag == 'medkit':
+                        callback(time, partial(self.useItem, 'medkit', deviceName))
+                    if config.data['repairDevices'] and equipmentTag == 'repairkit':
+                        callback(time, partial(self.useItem, 'repairkit', deviceName))
+                        time += 0.1
 
         if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN:
-            callback(action_time, partial(self.useItem, 'medkit'))
+            callback(time, partial(self.useItem, 'medkit'))
 
     def __onComponentRegistered(self, event):
         if event.alias == BATTLE_VIEW_ALIASES.CONSUMABLES_PANEL:

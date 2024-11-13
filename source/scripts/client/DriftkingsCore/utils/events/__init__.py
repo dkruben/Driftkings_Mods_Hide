@@ -19,9 +19,9 @@ class ModEvent(object):
         self.after = _EventWrapper()
         self._final = _EventWrapper()
 
-    def __call__(self, base, *args, **kwargs):
+    def __call__(self, func, *args, **kwargs):
         self.before.event(*args, **kwargs)
-        result = base(*args, **kwargs)
+        result = func(*args, **kwargs)
         self.after.event(*args, **kwargs)
         self._final.event(*args, **kwargs)
         return result
