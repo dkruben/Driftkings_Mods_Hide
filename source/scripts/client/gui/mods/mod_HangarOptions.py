@@ -8,7 +8,6 @@ import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
 import helpers
 import nations
-from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from Event import SafeEvent
 from HeroTank import HeroTank
@@ -52,7 +51,7 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, logInfo
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version, logError
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 firstTime = True
@@ -67,26 +66,26 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.0.0 (%(file_compile_date)s)'
+        self.version = '3.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
-            'autoLogin': False,
-            'showXpToUnlockVeh': True,
-            'showReferralButton': True,
+            'autoLogin': True,
+            'showXpToUnlockVeh': False,
+            'showReferralButton': False,
             'showGeneralChatButton': True,
-            'showPromoPremVehicle': True,
-            'showPopUpMessages': True,
+            'showPromoPremVehicle': False,
+            'showPopUpMessages': False,
             'showUnreadCounter': True,
-            'showRankedBattleResults': True,
-            'showButton': True,
+            'showRankedBattleResults': False,
+            'showButton': False,
             'showBattleCount': True,
-            'showDailyQuestWidget': True,
-            'showProgressiveDecalsWindow': True,
+            'showDailyQuestWidget': False,
+            'showProgressiveDecalsWindow': False,
             'showEventBanner': True,
-            'showHangarPrestigeWidget': True,
+            'showHangarPrestigeWidget': False,
             'showProfilePrestigeWidget': True,
-            'showWotPlusButton': True,
+            'showWotPlusButton': False,
             'showBuyPremiumButton': True,
             'showPremiumShopButton': True,
             'showButtonCounters': True,
@@ -571,20 +570,6 @@ def new__buildList(func, self):
     vehicle_data.update_my_vehicles()
 
 
-@override(PlayerAccount, 'onArenaCreated')
-def new__onArenaCreated(func, *args, **kwargs):
-    config.isBattle = True
-    return func(*args, **kwargs)
-
-
-@override(Hangar, '_populate')
-def new__populate(func, *args, **kwargs):
-    try:
-        return func(*args, **kwargs)
-    finally:
-        config.isBattle = False
-
-
 # hide lootboxes widget in tank carousel in hangar
 @overrideStaticMethod(EventLootBoxesEntryPointWidget, 'getIsActive')
 def LootBoxesEntryPointWidget_getIsActive(func, self):
@@ -623,9 +608,10 @@ class DateTimesUI(object):
             'alignX': config.data['alignX'],
             'alignY': config.data['alignY'],
             'shadow': config.data['shadow'],
-            'drag': True
+            'drag': False
         }
         self.__isLobby = True
+        self.isBattle = False
         self.updateCallback = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
         if config.data['enabled'] and config.data['clock']:
@@ -634,10 +620,7 @@ class DateTimesUI(object):
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def setup(self):
-        try:
-            g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, self.config, battle=False, lobby=True)
-        except Exception as err:
-            logError(config.ID,'Failed to create component', err)
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, self.config, battle=False, lobby=True)
 
     def onApplySettings(self):
         g_guiFlash.updateComponent(self.ID, self.config)
@@ -648,7 +631,6 @@ class DateTimesUI(object):
         x = data.get('x', config.data['x'])
         y = data.get('y', config.data['y'])
         config.onApplySettings({'x': x, 'y': y})
-        logInfo(self.ID, '{} Flash coordinates updated : y={}, x={}, data: {}', alias, config.data['y'], config.data['x'], data)
 
     @staticmethod
     def screenFix(screen, value, mod, align=1):
@@ -714,7 +696,7 @@ class DateTimesUI(object):
         if not value:
             self.updateCallback = callback(1.0, self.updateTimeData)
         else:
-            self.updateTimeData()  # Update once when entering lobby
+            self.updateTimeData()
 
     def updateTimeData(self):
         if not config.data['enabled'] or not config.data['clock']:
@@ -734,13 +716,14 @@ except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
 except StandardError:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
 
 @override(Hangar, '_populate')
-def new_populate(func, *args, **kwargs):
+def new__populate(func, *args, **kwargs):
     try:
         return func(*args, **kwargs)
     finally:
         g_flash.isBattle = False
+
