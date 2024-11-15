@@ -608,7 +608,7 @@ class DateTimesUI(object):
             'alignX': config.data['alignX'],
             'alignY': config.data['alignY'],
             'shadow': config.data['shadow'],
-            'drag': False
+            'drag': True
         }
         self.__isLobby = True
         self.isBattle = False

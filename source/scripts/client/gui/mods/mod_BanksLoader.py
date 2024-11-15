@@ -53,8 +53,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             'UI_restart_button_restart': 'Restart',
             'UI_restart_button_shutdown': 'Shutdown',
             'UI_restart_button_close': 'Continue',
-            'UI_restart_reason': ' Exact changes:\n'
-                                 '{}.',
+            'UI_restart_reason': ' Exact changes:\n{}.',
             'UI_restart_create': ' • sections <b>created</b> for banks: ',
             'UI_restart_delete': ' • sections <b>deleted</b> for banks: ',
             'UI_restart_move': ' • sections <b>moved</b> for banks: ',
@@ -75,7 +74,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             return
         if not any(self.editedBanks.itervalues()):
             return
-        print self.LOG, 'requesting client restart...'
+        print self.LOG, 'Requesting client restart...'
         reasons = []
         if self.data['debug']:
             reasons = [

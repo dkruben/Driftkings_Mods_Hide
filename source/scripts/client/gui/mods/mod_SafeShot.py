@@ -7,7 +7,7 @@ from BigWorld import serverTime
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, logException, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, calculate_version
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -17,21 +17,20 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def __init__(self):
         self.macro = defaultdict(lambda: 'Macros not found!')
-        self._disable_key = False
-        self.is_hot_key_event = False
         self.deadDict = {}
         self.isEventBattle = False
+        # self._isKeyPressed = False
         super(ConfigInterface, self).__init__()
         #
-        override(FragsCollectableStats, 'addVehicleStatusUpdate', self.__addVehicleStatusUpdate)
-        override(PlayerAvatar, 'shoot', self.__shoot)
-        override(PlayerAvatar, 'onBecomePlayer', self.__onBecomePlayer)
-        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGUI)
-        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
+        override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
+        override(PlayerAvatar, 'shoot', self.new__shoot)
+        override(PlayerAvatar, 'onBecomePlayer', self.new__onBecomePlayer)
+        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__startGUI)
+        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__destroyGUI)
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.5 (%(file_compile_date)s)'
+        self.version = '1.7.0 (%(file_compile_date)s)'
         self.defaultKeys = {'disableKey': [Keys.KEY_Q]}
         self.data = {
             'enabled': True,
@@ -92,65 +91,61 @@ class ConfigInterface(DriftkingsConfigInterface):
         }
 
     def startBattle(self):
-        InputHandler.g_instance.onKeyDown += self.injectButton
-        self.is_hot_key_event = True
+        InputHandler.g_instance.onKeyDown += self.keyPressed
 
     def stopBattle(self):
-        InputHandler.g_instance.onKeyUp -= self.injectButton
-        self.is_hot_key_event = False
+        InputHandler.g_instance.onKeyUp -= self.keyPressed
 
-    @logException
-    def injectButton(self, event):
-        if not self.data['disableMessage']:
+    def keyPressed(self, event):
+        if not config.data['enabled']:
             return
-
+        # self._isKeyPressed = True
         if checkKeys(self.data['disableKey']) and event.isKeyDown():
-            self._disable_key = True
-            self.is_hot_key_event = not self.is_hot_key_event
-            status_message = 'SafeShot: is Disabled' if self.is_hot_key_event else 'SafeShot: is Enabled'
-            color = 'Red' if self.is_hot_key_event else 'Green'
-            sendPanelMessage(status_message, color)
+            self.data['disableMessage'] = not self.data['disableMessage']
+            sendPanelMessage('SafeShot: is Enabled' if self.data['disableMessage'] else 'SafeShot: is Disabled', 'Green' if self.data['disableMessage'] else 'Red')
 
-    def __addVehicleStatusUpdate(self, func, b_self, vInfoVO):
+    def new__addVehicleStatusUpdate(self, func, b_self, vInfoVO):
         func(b_self, vInfoVO)
         if not vInfoVO.isAlive() and self.data['enabled'] and self.data['deadShotBlock']:
             self.deadDict[vInfoVO.vehicleID] = serverTime()
 
-    def __shoot(self, func, b_self, isRepeat=False):
-        if not (self.data['enabled'] and not self.is_hot_key_event and not self.isEventBattle):
+    def new__shoot(self, func, b_self, isRepeat=False):
+        if not self.data['enabled'] and not self.data['disableMessage'] and not self.isEventBattle:
             return func(b_self, isRepeat)
-
         target = getTarget()
         if target is None:
             if self.data['wasteShotBlock']:
-                sendPanelMessage(text=self.data['clientMessages']['wasteShotBlockedMessage'], colour='Yellow')
+                waste_message = self.data['clientMessages']['wasteShotBlockedMessage']
+                sendPanelMessage(text=waste_message, colour='Yellow')
                 return
         elif hasattr(target.publicInfo, 'team'):
             player = getPlayer()
             if self.data['teamShotBlock'] and player.team == target.publicInfo.team and target.isAlive():
-                if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
+                if not self.data['teamKillerShotUnblock'] and not player.guiSessionProvider.getArenaDP().isTeamKiller(target.id):
                     self.macro['name'] = target.publicInfo.name
                     self.macro['vehicle'] = target.typeDescriptor.type.shortUserString
                     text = self.data['format'] % self.macro
                     sendChatMessage(fullMsg=text, chanId=1, delay=2)
-                    sendPanelMessage(text=self.data['clientMessages']['teamShotBlockedMessage'], colour='Yellow')
+                    team_message = self.data['clientMessages']['teamShotBlockedMessage']
+                    sendPanelMessage(text=team_message, colour='Yellow')
                     return
             elif self.data['deadShotBlock'] and not target.isAlive():
                 if self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(target.id, 0) < self.data['deadShotBlockTimeOut']:
-                    sendPanelMessage(text=self.data['clientMessages']['deadShotBlockedMessage'], colour='Yellow')
+                    dead_message = self.data['clientMessages']['deadShotBlockedMessage']
+                    sendPanelMessage(text=dead_message, colour='Yellow')
                     return
 
         return func(b_self, isRepeat)
 
-    def __onBecomePlayer(self, func, b_self):
+    def new__onBecomePlayer(self, func, b_self):
         func(b_self)
         self.isEventBattle = getPlayer().guiSessionProvider.arenaVisitor.gui.isEventBattle()
 
-    def __startGUI(self, func, *args):
+    def new__startGUI(self, func, *args):
         func(*args)
         self.startBattle()
 
-    def __destroyGUI(self, func, *args):
+    def new__destroyGUI(self, func, *args):
         func(*args)
         self.stopBattle()
         self.deadDict = {}
