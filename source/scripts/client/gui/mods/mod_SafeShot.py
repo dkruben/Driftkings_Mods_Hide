@@ -19,7 +19,6 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.macro = defaultdict(lambda: 'Macros not found!')
         self.deadDict = {}
         self.isEventBattle = False
-        # self._isKeyPressed = False
         super(ConfigInterface, self).__init__()
         #
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
@@ -94,15 +93,16 @@ class ConfigInterface(DriftkingsConfigInterface):
         InputHandler.g_instance.onKeyDown += self.keyPressed
 
     def stopBattle(self):
-        InputHandler.g_instance.onKeyUp -= self.keyPressed
+        InputHandler.g_instance.onKeyDown -= self.keyPressed
 
     def keyPressed(self, event):
-        if not config.data['enabled']:
+        if not self.data['enabled']:
             return
-        # self._isKeyPressed = True
         if checkKeys(self.data['disableKey']) and event.isKeyDown():
             self.data['disableMessage'] = not self.data['disableMessage']
-            sendPanelMessage('SafeShot: is Enabled' if self.data['disableMessage'] else 'SafeShot: is Disabled', 'Green' if self.data['disableMessage'] else 'Red')
+            status_message = 'SafeShot: is Enabled' if self.data['disableMessage'] else 'SafeShot: is Disabled'
+            status_color = 'Green' if self.data['disableMessage'] else 'Red'
+            sendPanelMessage(status_message, colour=status_color)
 
     def new__addVehicleStatusUpdate(self, func, b_self, vInfoVO):
         func(b_self, vInfoVO)
