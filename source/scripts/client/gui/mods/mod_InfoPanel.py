@@ -33,7 +33,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.0 %(file_compile_date)s'
+        self.version = '1.6.5 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O, modified by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -110,6 +110,34 @@ class ConfigInterface(DriftkingsConfigInterface):
         if g_flash is not None:
             g_flash.onApplySettings()
 
+    def l10n(self, text):
+        if text is None:
+            return None
+        if text in self.i18n:
+            text = self.i18n[text]
+            if text is None:
+                return None
+        while True:
+            localizedMacroStart = text.find('{{l10n:')
+            if localizedMacroStart == -1:
+                break
+            localizedMacroEnd = text.find('}}', localizedMacroStart)
+            if localizedMacroEnd == -1:
+                break
+            macro = text[localizedMacroStart + 7:localizedMacroEnd]
+            parts = macro.split(':')
+            macro = self.i18n.get(parts[0], parts[0])
+            parts = parts[1:]
+            if len(parts) > 0:
+                try:
+                    macro = macro.format(*parts)
+                except StandardError:
+                    print 'macro:  {}'.format(macro)
+                    print 'params: {}'.format(parts)
+                    print traceback.format_exc()
+            text = text[:localizedMacroStart] + macro + text[localizedMacroEnd + 2:]
+        return self.i18n.get(text, text)
+
 
 class Flash(object):
     def __init__(self, ID):
@@ -151,7 +179,6 @@ class Flash(object):
 g_flash = None
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
@@ -162,44 +189,6 @@ except ImportError as err:
 except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
-
-
-def _isEntitySatisfiesConditions(entity):
-    if (entity is None) or not hasattr(entity, 'publicInfo'):
-        return False
-    enabled_for = config.data['showFor']
-    is_ally = 0 < getattr(entity.publicInfo, 'team', 0) == getPlayer().team
-    show_for = (enabled_for == 0) or ((enabled_for == 1) and is_ally) or ((enabled_for == 2) and not is_ally)
-    alive_only = (not config.data['aliveOnly']) or (config.data['aliveOnly'] and entity.isAlive())
-    return show_for and alive_only
-
-def l10n(text):
-    if text is None:
-        return None
-    if text in config.i18n:
-        text = config.i18n[text]
-        if text is None:
-            return None
-    while True:
-        localizedMacroStart = text.find('{{l10n:')
-        if localizedMacroStart == -1:
-            break
-        localizedMacroEnd = text.find('}}', localizedMacroStart)
-        if localizedMacroEnd == -1:
-            break
-        macro = text[localizedMacroStart + 7:localizedMacroEnd]
-        parts = macro.split(':')
-        macro = config.i18n.get(parts[0], parts[0])
-        parts = parts[1:]
-        if len(parts) > 0:
-            try:
-                macro = macro.format(*parts)
-            except StandardError:
-                print 'macro:  {}'.format(macro)
-                print 'params: {}'.format(parts)
-                print traceback.format_exc()
-        text = text[:localizedMacroStart] + macro + text[localizedMacroEnd + 2:]
-    return config.i18n.get(text, text)
 
 
 class DataConstants(object):
@@ -352,17 +341,17 @@ class DataConstants(object):
     def shell_type_1(self):
         if not self._gunShots or len(self._gunShots) < 1:
             return None
-        return l10n(self._gunShots[0].shell.kind.lower())
+        return config.l10n(self._gunShots[0].shell.kind.lower())
 
     def shell_type_2(self):
         if not self._gunShots or len(self._gunShots) < 2:
             return None
-        return l10n(self._gunShots[1].shell.kind.lower())
+        return config.l10n(self._gunShots[1].shell.kind.lower())
 
     def shell_type_3(self):
         if not self._gunShots or len(self._gunShots) < 3:
             return None
-        return l10n(self._gunShots[2].shell.kind.lower())
+        return config.l10n(self._gunShots[2].shell.kind.lower())
 
     def shell_speed_1(self):
         return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % round(self._gunShots[0].speed * 1.25)
@@ -577,6 +566,28 @@ class InfoPanel(DataConstants):
         self.__init__()
         g_macros.reset()
 
+    @staticmethod
+    def isConditions(entity):
+        if entity is None or not hasattr(entity, 'publicInfo'):
+            return False
+        enabled_for = config.data['showFor']
+        player_team = getPlayer().team
+        team = getattr(entity.publicInfo, 'team', 0)
+        is_ally = (team > 0) and (team == player_team)
+        if enabled_for == 0:
+            show_for = True
+        elif enabled_for == 1:
+            show_for = is_ally
+        elif enabled_for == 2:
+            show_for = not is_ally
+        else:
+            show_for = False
+        if config.data['aliveOnly']:
+            is_alive = entity.isAlive()
+        else:
+            is_alive = True
+        return show_for and is_alive
+
     def get_func_response(self, func_name):
         if not hasattr(self, func_name):
             return None
@@ -625,7 +636,7 @@ class InfoPanel(DataConstants):
         elif not isDown:
             self.hotKeyDown = False
             target = getTarget()
-            if _isEntitySatisfiesConditions(target):
+            if self.isConditions(target):
                 self.onUpdateVehicle(target)
             else:
                 self.hide()
@@ -667,7 +678,7 @@ g_mod = InfoPanel()
 
 @override(PlayerAvatar, 'targetBlur')
 def new__targetBlur(func, self, prevEntity):
-    if config.data['enabled'] and _isEntitySatisfiesConditions(prevEntity):
+    if config.data['enabled'] and g_mod.isConditions(prevEntity):
         g_mod.onUpdateBlur()
     func(self, prevEntity)
 
@@ -675,7 +686,7 @@ def new__targetBlur(func, self, prevEntity):
 @override(PlayerAvatar, 'targetFocus')
 def new_targetFocus(func, self, entity):
     func(self, entity)
-    if not (config.data['enabled'] and _isEntitySatisfiesConditions(entity)):
+    if not (config.data['enabled'] and g_mod.isConditions(entity)):
         return
     g_mod.onUpdateVehicle(entity)
 
@@ -683,7 +694,7 @@ def new_targetFocus(func, self, entity):
 @override(PlayerAvatar, 'handleKey')
 def new_handleKey(func, self, isDown, key, mods):
     func(self, isDown, key, mods)
-    if config.data['enabled'] or (key != checkKeys(config.data['altKey'])) or MessengerEntry.g_instance.gui.isFocused():
+    if not config.data['enabled'] or (key != checkKeys(config.data['altKey'])) or MessengerEntry.g_instance.gui.isFocused():
         return
     g_mod.handleKey(isDown)
 

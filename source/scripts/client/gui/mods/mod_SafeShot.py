@@ -4,7 +4,6 @@ from collections import defaultdict
 import Keys
 from Avatar import PlayerAvatar
 from BigWorld import serverTime
-from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, checkKeys, sendChatMessage, sendPanelMessage, calculate_version
@@ -19,17 +18,17 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.macro = defaultdict(lambda: 'Macros not found!')
         self.deadDict = {}
         self.isEventBattle = False
+        self._is_key_pressed = True
         super(ConfigInterface, self).__init__()
         #
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
         override(PlayerAvatar, 'shoot', self.new__shoot)
         override(PlayerAvatar, 'onBecomePlayer', self.new__onBecomePlayer)
-        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__startGUI)
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__destroyGUI)
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.0 (%(file_compile_date)s)'
+        self.version = '1.7.5 (%(file_compile_date)s)'
         self.defaultKeys = {'disableKey': [Keys.KEY_Q]}
         self.data = {
             'enabled': True,
@@ -89,29 +88,25 @@ class ConfigInterface(DriftkingsConfigInterface):
             ]
         }
 
-    def startBattle(self):
-        InputHandler.g_instance.onKeyDown += self.keyPressed
-
-    def stopBattle(self):
-        InputHandler.g_instance.onKeyDown -= self.keyPressed
-
-    def keyPressed(self, event):
-        if not self.data['enabled']:
+    def onHotkeyPressed(self, event):
+        if (not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not checkKeys(self.data['disableKey'], event.key) or not event.isKeyDown()):
             return
-        if checkKeys(self.data['disableKey']) and event.isKeyDown():
-            self.data['disableMessage'] = not self.data['disableMessage']
-            status_message = 'SafeShot: is Enabled' if self.data['disableMessage'] else 'SafeShot: is Disabled'
-            status_color = 'Green' if self.data['disableMessage'] else 'Red'
-            sendPanelMessage(status_message, colour=status_color)
+        self._is_key_pressed = not self._is_key_pressed
+        if self._is_key_pressed:
+            sendPanelMessage('SafeShot: is Enabled')
+            self.data['disableMessage'] = True
+        else:
+            sendPanelMessage('SafeShot: is Disabled', 'Red')
+            self.data['disableMessage'] = False
 
-    def new__addVehicleStatusUpdate(self, func, b_self, vInfoVO):
-        func(b_self, vInfoVO)
+    def new__addVehicleStatusUpdate(self, func, orig, vInfoVO):
+        func(orig, vInfoVO)
         if not vInfoVO.isAlive() and self.data['enabled'] and self.data['deadShotBlock']:
             self.deadDict[vInfoVO.vehicleID] = serverTime()
 
-    def new__shoot(self, func, b_self, isRepeat=False):
+    def new__shoot(self, func, orig, isRepeat=False):
         if not self.data['enabled'] and not self.data['disableMessage'] and not self.isEventBattle:
-            return func(b_self, isRepeat)
+            return func(orig, isRepeat)
         target = getTarget()
         if target is None:
             if self.data['wasteShotBlock']:
@@ -135,19 +130,14 @@ class ConfigInterface(DriftkingsConfigInterface):
                     sendPanelMessage(text=dead_message, colour='Yellow')
                     return
 
-        return func(b_self, isRepeat)
+        return func(orig, isRepeat)
 
-    def new__onBecomePlayer(self, func, b_self):
-        func(b_self)
+    def new__onBecomePlayer(self, func, orig):
+        func(orig)
         self.isEventBattle = getPlayer().guiSessionProvider.arenaVisitor.gui.isEventBattle()
-
-    def new__startGUI(self, func, *args):
-        func(*args)
-        self.startBattle()
 
     def new__destroyGUI(self, func, *args):
         func(*args)
-        self.stopBattle()
         self.deadDict = {}
 
 

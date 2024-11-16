@@ -94,9 +94,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'lootboxesWidget': False,
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'><tab>%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
-            'x': 0,
-            'y': 47,
-            'width': 200,
+            'x': 0.0,
+            'y': 47.0,
+            'width': 220,
             'height': 50,
             'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
             'alignX': 'right',
@@ -147,10 +147,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Display of missing experience to unlock vehicles.',
             'UI_setting_premiumTime_text': 'Premium Time',
             'UI_setting_premiumTime_tooltip': 'Display exact premium time.',
-
             'UI_setting_lootboxesWidget_text': 'Loot boxes Widget',
             'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
-
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
             'UI_setting_x_text': 'Position X',
