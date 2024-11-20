@@ -32,7 +32,9 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.data = {
             'enabled': True,
             'x': 0,
-            'y': 400,
+            'y': -55,
+            'alignX': 'center',
+            'alignY': 'bottom',
             'avgColor': {
                 'brightness': 0.9,
                 'saturation': 0.7

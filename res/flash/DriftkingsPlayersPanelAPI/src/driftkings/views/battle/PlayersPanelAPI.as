@@ -1,136 +1,177 @@
 ﻿package driftkings.views.battle
 {
-	import flash.filters.DropShadowFilter;
-	import flash.text.TextField;
-	import net.wg.data.constants.generated.LAYER_NAMES;
-	import net.wg.gui.battle.random.views.BattlePage;
-	import net.wg.gui.components.containers.MainViewContainer;
-	import net.wg.infrastructure.base.AbstractView;
-	import net.wg.infrastructure.managers.impl.ContainerManagerBase;
-	import scaleform.gfx.TextFieldEx;
-	
-	public class PlayersPanelAPI extends AbstractView
-	{
-		private static const NAME_MAIN:String = "main";
-		
-		public static var ui:PlayersPanelAPI;
-		
-		private var viewPage:BattlePage;
-		
-		private var configs:Object = {};
-		private var textFields:Object = {};
-		
-		public function PlayersPanelAPI() : void
+    import flash.filters.DropShadowFilter;
+    import flash.text.TextField;
+    import net.wg.data.constants.generated.LAYER_NAMES;
+    import net.wg.gui.battle.random.views.BattlePage;
+    import net.wg.gui.components.containers.MainViewContainer;
+    import net.wg.infrastructure.base.AbstractView;
+    import net.wg.infrastructure.managers.impl.ContainerManagerBase;
+    import scaleform.gfx.TextFieldEx;
+
+    public class PlayersPanelAPI extends AbstractView
+    {
+        private static const NAME_MAIN:String = "main";
+        
+        public static var ui:PlayersPanelAPI;
+
+        private var viewPage:BattlePage;
+        private var configs:Object = {};
+        private var textFields:Object = {};
+
+        public function PlayersPanelAPI()
+        {
+            super();
+            ui = this;
+        }
+
+        override protected function onPopulate():void
+        {
+            super.onPopulate();
+            initializeViewPage();
+        }
+
+        override protected function onDispose():void
+        {
+            cleanUpTextFields();
+            viewPage = null;
+            ui = null;
+            configs = null;
+            textFields = null;
+            super.onDispose();
+        }
+
+        public function as_create(linkage:String, config:Object):void
+        {
+            if (!linkage || !config) return;
+
+            if (viewPage)
+            {
+                configs[linkage] = config;
+                textFields[linkage] = {};
+            }
+        }
+
+        public function as_update(linkage:String, data:Object):void
+        {
+            if (viewPage && linkage in configs)
+            {
+                updateComponent(linkage, data);
+            }
+        }
+
+        public function as_delete(linkage:String):void
+        {
+            if (viewPage)
+            {
+                delete configs[linkage];
+                delete textFields[linkage];
+            }
+        }
+
+        private function initializeViewPage():void
 		{
-			super();
-			ui = this;
-		}
-		
-		override protected function onPopulate():void
-		{
-			super.onPopulate();
-			
 			try
 			{
 				parent.removeChild(this);
-				var viewContainer:MainViewContainer = (App.containerMgr as ContainerManagerBase).getContainer(LAYER_NAMES.LAYER_ORDER.indexOf(LAYER_NAMES.VIEWS)) as MainViewContainer;
+				const containerManager:ContainerManagerBase = App.containerMgr as ContainerManagerBase;
+				const viewContainer:MainViewContainer = containerManager.getContainer(LAYER_NAMES.LAYER_ORDER.indexOf(LAYER_NAMES.VIEWS)) as MainViewContainer;
+
+				if (!viewContainer) throw new Error("MainViewContainer is null.");
+
 				viewContainer.setFocusedView(viewContainer.getTopmostView());
 				viewPage = viewContainer.getChildByName(NAME_MAIN) as BattlePage;
+
+				if (!viewPage) throw new Error("BattlePage is not found.");
 			}
 			catch (error:Error)
 			{
-				DebugUtils.LOG_ERROR(error.getStackTrace());
+				DebugUtils.LOG_ERROR("initializeViewPage failed: " + error.message);
 			}
 		}
-		
-		override protected function onDispose():void
+
+        private function updateComponent(linkage:String, data:Object):void
+        {
+            try
+            {
+                if (!textFields[linkage].hasOwnProperty(data.vehicleID) && !createTextField(linkage, data.vehicleID))
+                {
+                    return;
+                }
+
+                const textField:TextField = textFields[linkage][data.vehicleID];
+                textField.htmlText = configs[linkage].isHtml ? data.text : data.text;
+            }
+            catch (error:Error)
+            {
+                DebugUtils.LOG_ERROR("updateComponent failed: " + error.message);
+            }
+        }
+
+        private function createTextField(linkage:String, vehicleID:Object):Boolean
 		{
-			super.onDispose();
-		}
-		
-		public function as_create(linkage:String, config:Object) : void
-		{
-			if (viewPage) createComponent(linkage, config);
-		}
-		
-		public function as_update(linkage:String, data:Object) : void 
-		{
-			if (viewPage) updateComponent(linkage, data);
-		}
-		
-		public function as_delete(linkage:String) : void
-		{
-			if (viewPage) deleteComponent(linkage);
-		}
-		
-		private function createComponent(linkage:String, config:Object) : void
-		{
-			configs[linkage] = config;
-			textFields[linkage] = {};
-		}
-		
-		private function updateComponent(linkage:String, data:Object) : void
-		{
-			try {
-				if (textFields[linkage].hasOwnProperty(data.vehicleID) || _createTextField(linkage, data.vehicleID))
-				{				
-					var textField:TextField = textFields[linkage][data.vehicleID];
-					if (configs[linkage]['isHtml'])
-						textField.htmlText = data.text;
-					else
-						textField.text = data.text;
-				}
-			} catch (e:Error)
-			{
-				DebugUtils.LOG_ERROR(e.getStackTrace());
-			}
-		}
-		
-		public function deleteComponent(linkage:String) : void
-		{
-			delete configs[linkage];
-			delete textFields[linkage];
-		}
-		
-		private function _createTextField(linkage:String, vehicleID:Object) : Boolean
-		{
-			var isRight:Boolean = false;
-			var textField:TextField = null;
-			var playersPanelHolder:* = null;
-			var movieIndex:Number = 0;
-			var config:Object = null;
-			var shadow:Object = null;
-			var playersPanel:* = viewPage.playersPanel;
-			if (playersPanel == null || playersPanel.listLeft == null || playersPanel.listRight == null) return false;
-			
-			playersPanelHolder = playersPanel.listLeft.getHolderByVehicleID(vehicleID);
-			if (!playersPanelHolder)
-			{
-				isRight = true;
-				playersPanelHolder = playersPanel.listRight.getHolderByVehicleID(vehicleID);
-			}
-			if (playersPanelHolder == null) return false;
-			
-			config = configs[linkage][isRight ? "right" : "left"];
-			shadow = configs[linkage]["shadow"];
-			
-			textField = new TextField();
-			textField.visible = true
-			textField.height = config.height;
-			textField.width = config.width;
-			textField.autoSize = config.align;
-			textField.selectable = false;
-			textField.filters = [new DropShadowFilter(shadow.distance, shadow.angle, parseInt("0x" + shadow.color.split("#").join(""), 16), shadow.alpha, shadow.blurX, shadow.blurY, shadow.strength, shadow.quality)]
-			TextFieldEx.setNoTranslate(textField,true);
-			
+			if (!viewPage) return false;
+
+			const playersPanel:* = viewPage.playersPanel;
+			if (!playersPanel || !playersPanel.listLeft || !playersPanel.listRight) return false;
+
+			const isRight:Boolean = !getPlayersPanelHolder(vehicleID, playersPanel.listLeft);
+			const playersPanelHolder:* = isRight ? playersPanel.listRight.getHolderByVehicleID(vehicleID) : playersPanel.listLeft.getHolderByVehicleID(vehicleID);
+
+			if (!playersPanelHolder) return false;
+
+			const config:Object = configs[linkage][isRight ? "right" : "left"];
+			const shadow:Object = configs[linkage].shadow;
+
+			const textField:TextField = new TextField();
+			configureTextField(textField, config, shadow);
+
 			textField.x = playersPanelHolder._listItem.vehicleIcon.x + config.x;
 			textField.y = playersPanelHolder._listItem.vehicleIcon.y + config.y;
-			
-			movieIndex = playersPanelHolder._listItem.getChildIndex(playersPanelHolder._listItem.vehicleTF) + 1;
+
+			const movieIndex:int = playersPanelHolder._listItem.getChildIndex(playersPanelHolder._listItem.vehicleTF) + 1;
 			playersPanelHolder._listItem.addChildAt(textField, movieIndex);
-			
+
+			if (!textFields[linkage])
+			{
+				textFields[linkage] = {};
+			}
+
 			textFields[linkage][vehicleID] = textField;
 			return true;
 		}
-	}
+
+        private function configureTextField(textField:TextField, config:Object, shadow:Object):void
+        {
+            textField.visible = true;
+            textField.height = config.height;
+            textField.width = config.width;
+            textField.autoSize = config.align;
+            textField.selectable = false;
+
+            const shadowFilter:DropShadowFilter = new DropShadowFilter(shadow.distance, shadow.angle, parseInt("0x" + shadow.color.replace("#", ""), 16), shadow.alpha, shadow.blurX, shadow.blurY, shadow.strength, shadow.quality);
+            textField.filters = [shadowFilter];
+            TextFieldEx.setNoTranslate(textField, true);
+        }
+
+        private function getPlayersPanelHolder(vehicleID:Object, list:*):*
+        {
+            return list.getHolderByVehicleID(vehicleID);
+        }
+
+        private function cleanUpTextFields():void
+        {
+            for (var linkage:String in textFields)
+            {
+                for (var vehicleID:String in textFields[linkage])
+                {
+                    var textField:TextField = textFields[linkage][vehicleID];
+                    if (textField && textField.parent)
+                    {
+                        textField.parent.removeChild(textField);
+                    }
+                }
+            }
+        }
+    }
 }

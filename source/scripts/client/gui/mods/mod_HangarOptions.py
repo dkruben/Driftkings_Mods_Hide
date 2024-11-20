@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+import logging
 import traceback
 from math import sin, radians
 from time import strftime
@@ -6,7 +7,6 @@ from time import strftime
 import GUI
 import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
-import helpers
 import nations
 from CurrentVehicle import g_currentVehicle
 from Event import SafeEvent
@@ -41,8 +41,7 @@ from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
 from gui.shared.tooltips.shell import CommonStatsBlockConstructor
 from gun_rotation_shared import calcPitchLimitsFromDesc
-from helpers import dependency
-from helpers.i18n import makeString
+from helpers import dependency, i18n
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
@@ -415,12 +414,12 @@ def new__construct(func, self):
                 isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
                 if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
                     if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
-                        icon = "<img src='{}' vspace='{}'".format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
-                        template = "<font face='$TitleFont' size='14'><font color='#ff2717'>{}</font> {}</font> {}"
-                        block[0]['data']['text'] = template.format(helpers.i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
+                        icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
+                        template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
+                        block[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
             return block
-        except StandardError:
-            traceback.format_exc()
+        except Exception:
+            logging.getLogger('Driftkings/HangarOptions').exception('new__construct')
             return block
     else:
         return block
@@ -521,7 +520,7 @@ class VehicleData:
             turrets0 = vehicle['turrets0']
             for turret in turrets0.values():
                 for gun in turret['guns'].keys():
-                    result.setdefault(gun, set()).add(makeString(i18n_veh))
+                    result.setdefault(gun, set()).add(i18n.makeString(i18n_veh))
         return result
 
     def update_shells(self):
@@ -549,7 +548,7 @@ def new__construct(fun, self):
     block = fun(self)
     if self.configuration.params:
         topPadding = formatters.packPadding(top=5)
-        block.append(formatters.packTitleDescBlock(title=text_styles.middleTitle(makeString('#tooltips:quests/vehicles/header')), padding=formatters.packPadding(top=8)))
+        block.append(formatters.packTitleDescBlock(title=text_styles.middleTitle(i18n.makeString('#tooltips:quests/vehicles/header')), padding=formatters.packPadding(top=8)))
         shell = vehicle_data.shells.get(self.shell.nationName, None)
         select_shell = shell.get(self.shell.name, set())
         if vehicle_data.my_vehicles:
