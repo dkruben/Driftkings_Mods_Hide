@@ -60,7 +60,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'color': 'FF002A',
             'directivesOnlyFromStorage': False,
             'disableSoundCommander': False,
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><p align=\'left\'>%H:%M:%S</p></font>',
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#F5CBA7\'><p align=\'left\'>%H:%M:%S</p></font>',
             'hideBadges': False,
             'hideBattlePrestige': False,
             'hideClanName': False,

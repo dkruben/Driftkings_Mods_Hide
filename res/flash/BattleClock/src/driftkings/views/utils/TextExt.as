@@ -16,7 +16,7 @@
 			}
 			this.x = x;
 			this.y = y;
-			this.width = 1;
+			this.width = 300;
 			this.defaultTextFormat = style;
 			this.antiAliasType = AntiAliasType.ADVANCED;
 			this.autoSize = align;
