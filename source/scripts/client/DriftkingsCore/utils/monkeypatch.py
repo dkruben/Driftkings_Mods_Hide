@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import inspect
 from functools import partial, update_wrapper
 
@@ -85,12 +85,12 @@ def _overrideMethod(cls, method, setter):
 
 def _OverrideStaticMethod(handler, cls, method):
     getter = getattr(cls, method)
-    setter = staticmethod(lambda *a, **k: handler(getter, *a, **k))
+    setter = staticmethod(lambda *args, **kwargs: handler(getter, *args, **kwargs))
     _overrideMethod(cls, method, setter)
 
 def _OverrideClassMethod(handler, cls, method):
     getter = getattr(cls, method)
-    setter = classmethod(lambda *a, **k: handler(getter, *a, **k))
+    setter = classmethod(lambda *args, **kwargs: handler(getter, *args, **kwargs))
     _overrideMethod(cls, method, setter)
 
 
