@@ -41,7 +41,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            'UI_restart_header': 'Banks Loader by Driftkings : restart',
+            'UI_restart_header': 'Banks Loader by Driftkings : Restart',
             'UI_restart_reason_new': 'You have installed new audio mods, so the game config was changed.',
             'UI_restart_reason_update': 'Game client update was detected, so game config changes were re-applied anew.',
             'UI_restart_text': (
@@ -77,9 +77,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         print self.LOG, 'Requesting client restart...'
         reasons = []
         if self.data['debug']:
-            reasons = [
-                self.i18n['UI_restart_' + key] + ', '.join('<b>%s</b>' % x for x in remDups(self.editedBanks[key]))
-                for key in self.editedBanks if self.editedBanks[key]]
+            reasons = [self.i18n['UI_restart_' + key] + ', '.join('<b>%s</b>' % x for x in remDups(self.editedBanks[key])) for key in self.editedBanks if self.editedBanks[key]]
         reasonStr = self.i18n['UI_restart_reason'].format(';\n'.join(reasons)) if reasons else ''
         dialogText = self.i18n['UI_restart_text'].format(reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
         builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(self.i18n['UI_restart_header'])
@@ -187,7 +185,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         while True:
             orig_engine = ResMgr.openSection('engine_config.xml')
             if orig_engine is None:
-                print self.LOG, 'ERROR: engine_config.xml not found'
+                print _config.LOG, 'ERROR: engine_config.xml not found'
                 return
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
@@ -208,33 +206,34 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         if not new_engine.has_key('BanksLoader_gameVersion'):
             new_engine.writeString('BanksLoader_gameVersion', getClientVersion())
         ResMgr.purge('engine_config.xml')
-        sound_mgr = new_engine['soundMgr']
-        media_path = sound_mgr['wwmediaPath'].asString
-        self.check_wotmods(media_path)
+        soundMgr = new_engine['soundMgr']
+        mediaPath = soundMgr['wwmediaPath'].asString
+        self.check_wotmods(mediaPath)
         if self.editedBanks['wotmod']:
             return
-        bank_files = self.collectBankFiles(media_path)
-        audio_mods_new = self.merge_audio_mods(media_path, bank_files)
-        self.manageMemorySettings(sound_mgr)
+        bankFiles = self.collectBankFiles(mediaPath)
+        audio_mods_new = self.merge_audio_mods(mediaPath, bankFiles)
+        self.manageMemorySettings(soundMgr)
         for profile_name in ('WWISE_active_profile', 'WWISE_emergency_profile'):
             profile_type = profile_name.split('_')[1]
-            profile = sound_mgr[sound_mgr[profile_name].asString]
+            profile = soundMgr[soundMgr[profile_name].asString]
             self.manageProfileMemorySettings(profile_type, profile)
-            self.manageProfileBanks(profile_type, profile, bank_files)
-        self.saveNewFile(audio_mods_new, media_path + '/', 'audio_mods_edited.xml', media_path + '/audio_mods.xml',('delete', 'move', 'remap'))
+            self.manageProfileBanks(profile_type, profile, bankFiles)
+        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',('delete', 'move', 'remap'))
         self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',('delete', 'move', 'create', 'memory'))
 
-    def collectBankFiles(self, media_path):
-        bank_files = {'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',), 'res': {os.path.basename(path) for path in glob.iglob('./res/' + media_path + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
+    def collectBankFiles(self, mediaPath):
+        bankFiles = {'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',), 'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
         for pkgPath in glob.iglob('./res/packages/audioww*.pkg'):
             with zipfile.ZipFile(pkgPath) as pkg:
-                bank_files['pkg'].update({os.path.basename(name) for name in pkg.namelist()})
-        bank_files['orig'] = bank_files['res'] | bank_files['pkg']
-        bank_files['mods'] = set(
-            x for x in ResMgr.openSection(media_path).keys()
-            if os.path.splitext(x)[1] in ('.bnk', '.pck') and not any(y in bank_files['orig'] for y in (x, x.lower())))
-        bank_files['all'] = bank_files['orig'] | bank_files['mods']
-        return bank_files
+                bankFiles['pkg'].update({os.path.basename(name) for name in pkg.namelist()})
+        bankFiles['orig'] = bankFiles['res'] | bankFiles['pkg']
+        bankFiles['mods'] = set(
+            x for x in ResMgr.openSection(mediaPath).keys()
+            if
+            os.path.splitext(x)[1] in ('.bnk', '.pck') and not any(y in bankFiles['orig'] for y in (x, x.lower())))
+        bankFiles['all'] = bankFiles['orig'] | bankFiles['mods']
+        return bankFiles
 
     def check_and_collect_data(self, key, section, struct, is_orig):
         result = []
@@ -261,12 +260,12 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 sub_name = struct['data']['name']
                 self.create_sect_from_data(new_sect.createSection(sub_name), data[sub_name], struct['data'])
 
-    def merge_audio_mods(self, media_path, bank_files):
-        audio_mods = ResMgr.openSection(media_path + '/audio_mods.xml')
-        audio_mods_new = ResMgr.openSection(media_path + '/audio_mods_edited.xml', True)
+    def merge_audio_mods(self, mediaPath, bankFiles):
+        audio_mods = ResMgr.openSection(mediaPath + '/audio_mods.xml')
+        audio_mods_new = ResMgr.openSection(mediaPath + '/audio_mods_edited.xml', True)
         audio_mods_banks = []
         if audio_mods is None:
-            print self.LOG, 'audio_mods.xml not found, will be created if needed'
+            print _config.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
             {'name': 'events', 'key': 'event', 'keys': ('name', 'mod'), 'data': ()},
             {'name': 'switches', 'key': 'switch', 'keys': ('name', 'mod'),
@@ -278,31 +277,31 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         for struct in data_structure:
             key = struct['name']
             data_old[key] = self.check_and_collect_data(key, audio_mods[key], struct, True)
-        banks_data = {}
-        for path in ResMgr.openSection(media_path).keys():
-            if not path.endswith('.xml') or path.replace('.xml', '.bnk') not in bank_files['all']:
+        banksData = {}
+        for path in ResMgr.openSection(mediaPath).keys():
+            if not path.endswith('.xml') or path.replace('.xml', '.bnk') not in bankFiles['all']:
                 continue
-            sect = ResMgr.openSection(media_path + '/' + path)
-            bank_name = path.replace('.xml', '.bnk')
+            sect = ResMgr.openSection(mediaPath + '/' + path)
+            bankName = path.replace('.xml', '.bnk')
             if sect is None:
-                bank_files['ignore'].add(bank_name)
+                bankFiles['ignore'].add(bankName)
                 print self.LOG, 'error while reading', path
                 continue
-            bank_data = banks_data[bank_name] = {}
+            bankData = banksData[bankName] = {}
             for struct in data_structure:
                 key = struct['name']
                 if sect.has_key(key):
-                    bank_data[key] = self.check_and_collect_data(key, sect[key], struct, False)
-                data_new.setdefault(key, []).extend(bank_data.get(key, []))
+                    bankData[key] = self.check_and_collect_data(key, sect[key], struct, False)
+                data_new.setdefault(key, []).extend(bankData.get(key, []))
             if sect.has_key('engine_config_section'):
-                bank_files['section'][bank_name] = sect['engine_config_section'].asString
+                bankFiles['section'][bankName] = sect['engine_config_section'].asString
         for bankSect in audio_mods['loadBanks'].values():
-            bank_name = bankSect.asString or getattr(bankSect['name'], 'asString', None)
-            if bank_name not in bank_files['audio_mods_allowed']:
-                print self.LOG, 'clearing audio_mods section for bank', bank_name
-                self.editedBanks['delete'].append(bank_name)
-            elif bank_name not in audio_mods_banks:
-                audio_mods_banks.append(bank_name)
+            bankName = bankSect.asString or getattr(bankSect['name'], 'asString', None)
+            if bankName not in bankFiles['audio_mods_allowed']:
+                print self.LOG, 'clearing audio_mods section for bank', bankName
+                self.editedBanks['delete'].append(bankName)
+            elif bankName not in audio_mods_banks:
+                audio_mods_banks.append(bankName)
         self.editedBanks['delete'] = remDups(self.editedBanks['delete'])
         for key in ['loadBanks'] + [struct['name'] for struct in data_structure]:
             audio_mods_new.createSection(key)
@@ -317,19 +316,17 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             self.create_sect_from_data(audio_mods_new[key], data_new[key], struct)
         return audio_mods_new
 
-    def manageMemorySettings(self, sound_mgr):
-        for mgrKey in ('memoryLimit',):  # in case they add something later
-            value = sound_mgr[mgrKey]
+    def manageMemorySettings(self, soundMgr):
+        for mgrKey in ('memoryLimit',):
+            value = soundMgr[mgrKey]
             if value is not None and value.asInt != int(self.data[mgrKey]):
                 self.editedBanks['memory'].append(mgrKey)
-                sound_mgr.writeInt(mgrKey, self.data[mgrKey])
+                soundMgr.writeInt(mgrKey, self.data[mgrKey])
                 print self.LOG, 'changing value for memory setting:', mgrKey
 
     def manageProfileMemorySettings(self, profile_type, profile):
-        pool_keys = {'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
-                    'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
-                    'soundRender': ('max_voices',)}
-        for poolKey, poolValuesList in pool_keys.iteritems():
+        poolKeys = {'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'soundRender': ('max_voices',)}
+        for poolKey, poolValuesList in poolKeys.iteritems():
             for poolValue in poolValuesList:
                 value = profile[poolKey][poolValue]
                 if value is not None and value.asInt != int(self.data[poolValue]):
@@ -337,40 +334,41 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                     profile[poolKey].writeInt(poolValue, self.data[poolValue])
                     print self.LOG, 'changing value for', profile_type, 'memory setting:', poolValue
 
-    def manageProfileBanks(self, profile_type, profile, bank_files):
+    def manageProfileBanks(self, profile_type, profile, bankFiles):
         exist = set()
         for name, section in profile.items():
             if 'soundbanks' not in name:
                 continue
-            for sect_name, bank in section.items():
-                if sect_name != 'bank':
+            for sectName, bank in section.items():
+                if sectName != 'bank':
                     continue
-                bank_name = bank['name'].asString
-                if bank_name not in bank_files['all'] or bank_name in bank_files['audio_mods_allowed']:
-                    print self.LOG, 'clearing', profile_type, 'section for missing bank', bank_name
-                    self.editedBanks['delete'].append(bank_name)
+                bankName = bank['name'].asString
+                if bankName not in bankFiles['all'] or bankName in bankFiles['audio_mods_allowed']:
+                    print self.LOG, 'clearing', profile_type, 'section for missing bank', bankName
+                    self.editedBanks['delete'].append(bankName)
                     section.deleteSection(bank)
-                elif bank_files['section'].get(bank_name, name) != name:
-                    print self.LOG, 'deleting', profile_type, 'section from', name, 'for bank', bank_name
-                    self.editedBanks['section'].append(bank_name)
+                elif bankFiles['section'].get(bankName, name) != name:
+                    print self.LOG, 'deleting', profile_type, 'section from', name, 'for bank', bankName
+                    self.editedBanks['section'].append(bankName)
                     section.deleteSection(bank)
-                elif bank_name in bank_files['mods'] and bank_name in exist:
-                    print self.LOG, 'clearing', profile_type, 'section duplicate for bank', bank_name
-                    self.editedBanks['delete'].append(bank_name)
+                elif bankName in bankFiles['mods'] and bankName in exist:
+                    print self.LOG, 'clearing', profile_type, 'section duplicate for bank', bankName
+                    self.editedBanks['delete'].append(bankName)
                     section.deleteSection(bank)
                 else:
-                    exist.add(bank_name)
-        bank_files['orig'] = [x.lower() for x in bank_files['orig']]
-        for bankName in sorted(bank_files['mods']):
-            if not any(bankName in bank_files[x] for x in ('orig', 'ignore', 'audio_mods_allowed')) and bankName not in exist:
-                sect_name = bank_files['section'].get(bankName, 'SFX_soundbanks_loadonce')
-                print self.LOG, 'creating', profile_type, 'section in', sect_name, 'for bank', bankName
+                    exist.add(bankName)
+        bankFiles['orig'] = [x.lower() for x in bankFiles['orig']]
+        for bankName in sorted(bankFiles['mods']):
+            if not any(bankName in bankFiles[x] for x in
+                       ('orig', 'ignore', 'audio_mods_allowed')) and bankName not in exist:
+                sectName = bankFiles['section'].get(bankName, 'SFX_soundbanks_loadonce')
+                print self.LOG, 'creating', profile_type, 'section in', sectName, 'for bank', bankName
                 if bankName in self.editedBanks['delete']:
                     self.editedBanks['delete'].remove(bankName)
                     self.editedBanks['move'].append(bankName)
                 elif bankName not in self.editedBanks['section']:
                     self.editedBanks['create'].append(bankName)
-                profile.createSection(sect_name + '/bank').writeString('name', bankName)
+                profile.createSection(sectName + '/bank').writeString('name', bankName)
 
     def saveNewFile(self, new_file, new_dir, new_name, orig_path, keys):
         if not any(self.editedBanks[key] for key in keys):
@@ -393,5 +391,5 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 break
 
 
-config = ConfigInterface()
-statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+_config = ConfigInterface()
+statistic_mod = Analytics(_config.ID, _config.version, 'UA-121940539-1')
