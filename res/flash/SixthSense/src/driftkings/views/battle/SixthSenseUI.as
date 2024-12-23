@@ -5,13 +5,13 @@ package driftkings.views.battle
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	import flash.text.TextFieldAutoSize;
-	//
 	import driftkings.views.utils.Constants;
 	import driftkings.views.utils.TextExt;
 	import driftkings.views.utils.tween.Tween;
-	//
 	import mods.common.BattleDisplayable;
-	
+	import net.wg.data.constants.generated.BATTLE_VIEW_ALIASES;
+	import net.wg.gui.battle.views.BaseBattlePage;
+
 	public class SixthSenseUI extends BattleDisplayable
 	{
 		private var loader:Loader;
@@ -21,28 +21,19 @@ package driftkings.views.battle
 		private var hideAnimation:Tween;
 		private var showAnimation:Tween;
 		private var hideAnimation2:Tween;
-		private var posY:Number = (App.appHeight >> 3) + 10;
+		private var POSITION_Y:Number = (App.appHeight >> 3) + 10;
+		private var _image:Bitmap;
 		public var getSettings:Function;
 		
 		[Embed(source = "error.png")]
 		private var DefaultIcon:Class;
-
+		
 		public function SixthSenseUI()
 		{
 			super();
 			this.loader = new Loader();
 			this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.imageLoaded);
-			this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.onLoadError);;
-		}
-		
-		override protected function configUI():void
-		{
-			super.configUI();
-			this.tabEnabled = false;
-			this.tabChildren = false;
-			this.mouseEnabled = false;
-			this.mouseChildren = false;
-			this.buttonMode = false;
+			this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.onLoadError);
 		}
 		
 		override protected function onPopulate():void
@@ -51,11 +42,10 @@ package driftkings.views.battle
 			this.params = this.getSettings();
 			this.x = App.appWidth >> 1;
 			this._container = new Sprite()
-			this.addChild(_container);
+			this.addChild(this._container);
 			if (this.params.defaultIcon)
 			{
-				this.loader.load(new URLRequest('../../gui/maps/icons/SixthSense/' + this.params.defaultIconName + '.png'
-				));
+				this.loader.load(new URLRequest('../../gui/maps/icons/SixthSense/' + this.params.defaultIconName + '.png'));
 			}
 			else
 			{
@@ -80,20 +70,37 @@ package driftkings.views.battle
 			this._container = null;
 			App.utils.data.cleanupDynamicObject(this.params);
 		}
-
-		private function addLoadedImageAndTimer(image:Bitmap):void
+		
+		private function addTimerAndAnimations():void
 		{
-			image.width = 150;
-			image.height = 150;
-			image.smoothing = true;
-			this._container.addChild(image);
-			this.timer = new TextExt(image.width >> 1, image.height - 8, Constants.tite16, TextFieldAutoSize.CENTER, this._container);
-			this.hideAnimation = new Tween(this._container, "y", this.posY, -image.height, 0.5);
+			this.timer = new TextExt(0, this._image.height - 4, Constants.tite16, TextFieldAutoSize.CENTER, this._container);
+			this.hideAnimation = new Tween(this._container, "y", this.POSITION_Y, -this._image.height, 0.5);
 			this.hideAnimation2 = new Tween(this._container, "alpha", 1.0, 0, 0.5);
 			this.showAnimation = new Tween(this._container, "alpha", 0, 1.0, 0.1);
 			this._container.alpha = 0;
-			this._container.x = -image.width >> 1;
-			this._container.y = this.posY;
+			this._container.y = this.POSITION_Y;
+		}
+		
+		private function updateImageScale():void
+		{
+			var afterScaleWH:Number = Math.min(180.0, Math.ceil(100 * (App.appHeight / 1080.0)));
+			if (afterScaleWH % 2 != 0)
+			{
+				afterScaleWH += 1;
+			}
+			this._image.width = afterScaleWH;
+			this._image.height = afterScaleWH;
+			this._image.smoothing = true;
+			this._image.x = -afterScaleWH >> 1;
+			this._container.addChild(this._image);
+			if (this.timer)
+			{
+				this.timer.y = afterScaleWH - 4;
+			}
+			if (this.hideAnimation)
+			{
+				this.hideAnimation.finish = -afterScaleWH;
+			}
 		}
 		
 		public function as_show():void
@@ -105,7 +112,7 @@ package driftkings.views.battle
 				this.hideAnimation2.stop();
 				this.hideAnimation2.rewind();
 			}
-			this._container.y = this.posY;
+			this._container.y = this.POSITION_Y;
 			this.showAnimation.start();
 		}
 		
@@ -123,19 +130,27 @@ package driftkings.views.battle
 		private function onLoadError(e:IOErrorEvent):void
 		{
 			this.loader.close();
-			this.addLoadedImageAndTimer(new DefaultIcon() as Bitmap);
+			this._image = new DefaultIcon() as Bitmap;
+			this.updateImageScale();
+			this.addTimerAndAnimations();
 		}
 		
 		private function imageLoaded(e:Event):void
 		{
-			this.addLoadedImageAndTimer(this.loader.content as Bitmap);
+			this._image = this.loader.content as Bitmap;
+			this.updateImageScale();
+			this.addTimerAndAnimations();
 			this.loader.unload();
 		}
 		
-		private function onResizeHandle(event:Event):void
+		public function onResizeHandle(event:Event):void
 		{
 			this.x = App.appWidth >> 1;
-			this.posY = (App.appHeight >> 3) + 10;
+			this.POSITION_Y = (App.appHeight >> 3) + 10;
+			if (this._image)
+			{
+				this.updateImageScale();
+			}
 		}
 	}
 }

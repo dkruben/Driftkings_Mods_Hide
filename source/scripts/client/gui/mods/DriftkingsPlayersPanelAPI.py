@@ -57,9 +57,9 @@ class Events(object):
         self.delete = SafeEvent()
         self.onUIReady = SafeEvent()
         self.onBattleLoaded = SafeEvent()
-        ServicesLocator.appLoader.onGUISpaceEntered += self.__onGUISpaceEntered
+        ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
 
-    def __onGUISpaceEntered(self, spaceID):
+    def onGUISpaceEntered(self, spaceID):
         if spaceID != GuiGlobalSpaceID.BATTLE:
             return
         app = ServicesLocator.appLoader.getDefBattleApp()

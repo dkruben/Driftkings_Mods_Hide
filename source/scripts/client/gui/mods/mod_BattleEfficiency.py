@@ -146,7 +146,7 @@ try:
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
-except StandardError:
+except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
@@ -403,7 +403,7 @@ def new_setDataS(func, self, data):
         msg = replaceMacros(msg, macro_data)
 
         data['common']['arenaStr'] = msg
-    except StandardError:
+    except Exception:
         traceback.print_exc()
         data['common']['arenaStr'] += '  <font color="#FE0E00">Efficiency Error!</font>'
 

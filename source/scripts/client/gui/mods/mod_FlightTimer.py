@@ -32,7 +32,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'spgOnly': False,
             'template': "<font color='#f5ff8f'>%(flightTime).1fs. - %(distance)dm.</font>",
             'x': 100,
-            'y': 100
+            'y': 100,
+            'alignX': 'center',
+            'alignY': 'center'
         }
         self.i18n = {
             'UI_description': self.ID,
