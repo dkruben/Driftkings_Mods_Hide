@@ -20,7 +20,6 @@ def start():
         GameCenter = DisplayIcon.split('\\wgc.exe')[0].encode('utf-8')
     except:
         pass
-
     if GameCenter:
         lst.append('/'.join([GameCenter, name]))
     lst.append('/'.join(['./win32', name]))
@@ -60,12 +59,10 @@ def start():
                     subprocess.check_output('powershell -command %s' % command.format(hostPath, host), shell=True)
                 except Exception:
                     subprocess.check_output('powershell -command "Start-Process powershell -ArgumentList \\"-Command "%s"\\" -Verb runAs"' % command.format(hostPath, host), shell=True)
-
     try:
         checkHost()
     except Exception:
         pass
-
     return
 
 

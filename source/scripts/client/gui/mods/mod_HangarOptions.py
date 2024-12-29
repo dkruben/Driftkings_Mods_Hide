@@ -65,7 +65,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.0.5 (%(file_compile_date)s)'
+        self.version = '3.1.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -92,14 +92,17 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootboxesWidget': False,
             'clock': True,
-            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'30\'><tab>%H:%M:%S</font><br/></textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A<br/><font size=\'15\'>%d %b %Y</font></textformat></font>',
-            'x': 0.0,
-            'y': 47.0,
-            'width': 220,
-            'height': 50,
-            'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
-            'alignX': 'right',
-            'alignY': 'top',
+            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'28\'>\t%H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'panel': {
+                'x': 0.0,
+                'y': 47.0,
+                'width': 220,
+                'height': 50,
+                'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
+                'alignX': 'right',
+                'alignY': 'top',
+                'drag': True
+            }
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -150,10 +153,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
-            'UI_setting_x_text': 'Position X',
-            'UI_setting_x_tooltip': 'Horizontal position',
-            'UI_setting_y_text': 'Position Y',
-            'UI_setting_y_tooltip': 'Vertical position',
+            # 'UI_setting_x_text': 'Position X',
+            # 'UI_setting_x_tooltip': 'Horizontal position',
+            # 'UI_setting_y_text': 'Position Y',
+            # 'UI_setting_y_tooltip': 'Vertical position',
             'UI_techTree_shootingRadius': 'Shooting Radius',
             'UI_techTree_m': 'Mt'
         }
@@ -189,8 +192,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('lootboxesWidget'),
                 self.tb.createControl('clock'),
-                self.tb.createSlider('x', -4000, 4000, 1, '{{value}}%s' % ' X'),
-                self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y')
+                # self.tb.createSlider('x', -4000, 4000, 1, '{{value}}%s' % ' X'),
+                # self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y')
             ]
         }
 
@@ -596,16 +599,18 @@ class DateTimesUI(object):
 
     def __init__(self, ID):
         self.ID = ID
+        self.panel = config.data['panel']
         self.config = {
             'text': '',
-            'x': config.data['x'],
-            'y': config.data['y'],
-            'width': config.data['width'],
-            'height': config.data['height'],
-            'alignX': config.data['alignX'],
-            'alignY': config.data['alignY'],
-            'shadow': config.data['shadow'],
-            'drag': True
+            'x': self.panel['x'],
+            'y': self.panel['y'],
+            'width': self.panel['width'],
+            'height': self.panel['height'],
+            'alignX': self.panel['alignX'],
+            'alignY': self.panel['alignY'],
+            'shadow': self.panel['shadow'],
+            'drag': True,
+            'border': False
         }
         self.__isLobby = True
         self.isBattle = False
@@ -625,8 +630,8 @@ class DateTimesUI(object):
     def __updatePosition(self, alias, data):
         if alias != self.ID:
             return
-        x = data.get('x', config.data['x'])
-        y = data.get('y', config.data['y'])
+        x = data.get('x', self.panel['x'])
+        y = data.get('y', self.panel['y'])
         config.onApplySettings({'x': x, 'y': y})
 
     @staticmethod
@@ -653,26 +658,26 @@ class DateTimesUI(object):
         curScr = GUI.screenResolution()
         scale = float(self.settingsCore.interfaceScale.get())
         xMo, yMo = curScr[0] / scale, curScr[1] / scale
-        x = config.data.get('x', None)
-        if config.data['alignX'] == COMPONENT_ALIGN.LEFT:
-            x = self.screenFix(xMo, config.data['x'], config.data['width'], 1)
-        if config.data['alignX'] == COMPONENT_ALIGN.RIGHT:
-            x = self.screenFix(xMo, config.data['x'], config.data['width'], -1)
-        if config.data['alignX'] == COMPONENT_ALIGN.CENTER:
-            x = self.screenFix(xMo, config.data['x'], config.data['width'], 0)
+        x = self.panel.get('x', None)
+        if self.panel['alignX'] == COMPONENT_ALIGN.LEFT:
+            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], 1)
+        if self.panel['alignX'] == COMPONENT_ALIGN.RIGHT:
+            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], -1)
+        if self.panel['alignX'] == COMPONENT_ALIGN.CENTER:
+            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], 0)
         if x is not None:
-            if x != config.data['x']:
-                config.data['x'] = x
-        y = config.data.get('y', None)
-        if config.data['alignY'] == COMPONENT_ALIGN.TOP:
-            y = self.screenFix(yMo, config.data['y'], config.data['height'], 1)
-        if config.data['alignY'] == COMPONENT_ALIGN.BOTTOM:
-            y = self.screenFix(yMo, config.data['y'], config.data['height'], -1)
-        if config.data['alignY'] == COMPONENT_ALIGN.CENTER:
-            y = self.screenFix(yMo, config.data['y'], config.data['height'], 0)
+            if x != self.panel['x']:
+                self.panel['x'] = x
+        y = self.panel.get('y', None)
+        if self.panel['alignY'] == COMPONENT_ALIGN.TOP:
+            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], 1)
+        if self.panel['alignY'] == COMPONENT_ALIGN.BOTTOM:
+            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], -1)
+        if self.panel['alignY'] == COMPONENT_ALIGN.CENTER:
+            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], 0)
         if y is not None:
-            if y != config.data['y']:
-                config.data['y'] = y
+            if y != self.panel['y']:
+                self.panel['y'] = y
         g_guiFlash.updateComponent(self.ID, COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
 
     def cleanup(self):

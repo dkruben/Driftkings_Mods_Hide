@@ -33,7 +33,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.5 %(file_compile_date)s'
+        self.version = '1.7.0 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O, modified by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -82,11 +82,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Hide panel delay (in seconds)',
             'UI_delay_format': ' sec.',
-            "armor_piercing": "AP",
-            "high_explosive": "HE",
-            "armor_piercing_cr": "APCR",
-            "armor_piercing_he": "HESH",
-            "hollow_charge": "HEAT"
+            "armor_piercing": 'AP',
+            "high_explosive": 'HE',
+            "armor_piercing_cr": 'APCR',
+            "armor_piercing_he": 'HESH',
+            "hollow_charge": 'HEAT'
         }
         super(ConfigInterface, self).init()
 

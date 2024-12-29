@@ -107,7 +107,6 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('template', self.tb.types.TextInput, 400),
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
                 self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
-
             ]
         }
 

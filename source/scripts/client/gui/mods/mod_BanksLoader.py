@@ -267,12 +267,41 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         if audio_mods is None:
             print _config.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
-            {'name': 'events', 'key': 'event', 'keys': ('name', 'mod'), 'data': ()},
-            {'name': 'switches', 'key': 'switch', 'keys': ('name', 'mod'),
-             'data': {'name': 'states', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}},
-            {'name': 'RTPCs', 'key': 'RTPC', 'keys': ('name', 'mod'), 'data': ()},
-            {'name': 'states', 'key': 'stateGroup', 'keys': ('name', 'mod'),
-             'data': {'name': 'stateNames', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}}]
+            {
+                'name': 'events',
+                'key': 'event',
+                'keys': ('name', 'mod'),
+                'data': ()
+            },
+            {
+                'name': 'switches',
+                'key': 'switch',
+                'keys': ('name', 'mod'),
+                'data': {
+                    'name': 'states',
+                    'key': 'state',
+                    'keys': ('name', 'mod'),
+                    'data': ()
+                }
+            },
+            {
+                'name': 'RTPCs',
+                'key': 'RTPC',
+                'keys': ('name', 'mod'),
+                'data': ()
+            },
+            {
+                'name': 'states',
+                'key': 'stateGroup',
+                'keys': ('name', 'mod'),
+                'data': {
+                    'name': 'stateNames',
+                    'key': 'state',
+                    'keys': ('name', 'mod'),
+                    'data': ()
+                }
+            }
+        ]
         data_old, data_new = {}, {}
         for struct in data_structure:
             key = struct['name']
@@ -383,7 +412,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         if os.path.isfile(orig_path):
             try:
                 os.remove(orig_path)
-            except StandardError:
+            except Exception:
                 traceback.print_exc()
         for new_path in (new_dir + new_name, './res/' + new_path, './' + new_path):
             if os.path.isfile(new_path):
