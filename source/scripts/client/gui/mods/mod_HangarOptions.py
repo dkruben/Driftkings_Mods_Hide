@@ -14,6 +14,7 @@ from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
 from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
+from gui import g_guiResetters
 from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
@@ -92,16 +93,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootboxesWidget': False,
             'clock': True,
-            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'28\'>\t%H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'28\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
-                'x': 0.0,
-                'y': 47.0,
-                'width': 220,
+                'position':{'x': 0.0, 'y': 47.0},
+                'width': 200,
                 'height': 50,
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
                 'alignX': 'right',
-                'alignY': 'top',
-                'drag': True
+                'alignY': 'top'
             }
         }
         self.i18n = {
@@ -126,7 +125,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showBattleCount_text': 'Battle Count',
             'UI_setting_showBattleCount_tooltip': 'Disable display the counter of spent battles on the button.',
             'UI_setting_showDailyQuestWidget_text': 'Daily Quest Widget',
-            'UI_setting_showDailyQuestWidget_tooltip': 'Disable widget "Daily Quests" in the hangar.',
+            'UI_setting_showDailyQuestWidget_tooltip': 'Disable widget \'Daily Quests\' in the hangar.',
             'UI_setting_showProgressiveDecalsWindow_text': 'Progressive Decals Window',
             'UI_setting_showProgressiveDecalsWindow_tooltip': 'Disable info windows when receiving progressive decals.',
             'UI_setting_showEventBanner_text': 'Event Banner',
@@ -153,10 +152,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
-            # 'UI_setting_x_text': 'Position X',
-            # 'UI_setting_x_tooltip': 'Horizontal position',
-            # 'UI_setting_y_text': 'Position Y',
-            # 'UI_setting_y_tooltip': 'Vertical position',
             'UI_techTree_shootingRadius': 'Shooting Radius',
             'UI_techTree_m': 'Mt'
         }
@@ -191,9 +186,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('lootboxesWidget'),
-                self.tb.createControl('clock'),
-                # self.tb.createSlider('x', -4000, 4000, 1, '{{value}}%s' % ' X'),
-                # self.tb.createSlider('y', -4000, 4000, 1, '{{value}}%s' % ' Y')
+                self.tb.createControl('clock')
             ]
         }
 
@@ -594,91 +587,70 @@ def new__removeListeners(func, self):
     return func(self)
 
 
-class DateTimesUI(object):
+class Flash(object):
     settingsCore = dependency.descriptor(ISettingsCore)
 
     def __init__(self, ID):
         self.ID = ID
-        self.panel = config.data['panel']
-        self.config = {
-            'text': '',
-            'x': self.panel['x'],
-            'y': self.panel['y'],
-            'width': self.panel['width'],
-            'height': self.panel['height'],
-            'alignX': self.panel['alignX'],
-            'alignY': self.panel['alignY'],
-            'shadow': self.panel['shadow'],
-            'drag': True,
-            'border': False
-        }
         self.__isLobby = True
         self.isBattle = False
         self.updateCallback = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
-        if config.data['enabled'] and config.data['clock']:
+
+        if config.data.get('enabled', False) and config.data.get('clock', False):
             self.timerEvent.start()
+
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def setup(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, self.config, battle=False, lobby=True)
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['panel']['position'], drag=False, border=False, limit=False), battle=False, lobby=True)
+        self.setShadow()
+        g_guiResetters.add(self.screenResize)
 
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, self.config)
+        g_guiFlash.updateComponent(self.ID, dict(config.data['panel']['position'], drag=False, border=False))
+        g_guiResetters.add(self.screenResize)
+
+    def setShadow(self):
+        g_guiFlash.updateComponent(self.ID, {'shadow': config.data['panel'].get('shadow', False)})
 
     def __updatePosition(self, alias, data):
         if alias != self.ID:
             return
-        x = data.get('x', self.panel['x'])
-        y = data.get('y', self.panel['y'])
-        config.onApplySettings({'x': x, 'y': y})
+        config.onApplySettings({'panel': {'position': data}})
 
     @staticmethod
     def screenFix(screen, value, mod, align=1):
         if align == 1:
-            if value + mod > screen:
-                return float(max(0, screen - mod))
-            if value < 0:
-                return 0.0
-        if align == -1:
-            if value - mod < -screen:
-                return min(0, -screen + mod)
-            if value > 0:
-                return 0.0
-        if align == 0:
+            return float(max(0, min(value, screen - mod))) if value + mod > screen else max(0, value)
+        elif align == -1:
+            return float(min(0, max(value, -screen + mod))) if value - mod < -screen else min(0, value)
+        elif align == 0:
             scr = screen / 2.0
-            if value < scr:
-                return float(scr - mod)
-            if value > -scr:
-                return float(-scr)
+            return float(scr - mod) if value < scr else float(-scr) if value > -scr else value
         return value
 
     def screenResize(self):
         curScr = GUI.screenResolution()
         scale = float(self.settingsCore.interfaceScale.get())
         xMo, yMo = curScr[0] / scale, curScr[1] / scale
-        x = self.panel.get('x', None)
-        if self.panel['alignX'] == COMPONENT_ALIGN.LEFT:
-            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], 1)
-        if self.panel['alignX'] == COMPONENT_ALIGN.RIGHT:
-            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], -1)
-        if self.panel['alignX'] == COMPONENT_ALIGN.CENTER:
-            x = self.screenFix(xMo, self.panel['x'], self.panel['width'], 0)
-        if x is not None:
-            if x != self.panel['x']:
-                self.panel['x'] = x
-        y = self.panel.get('y', None)
-        if self.panel['alignY'] == COMPONENT_ALIGN.TOP:
-            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], 1)
-        if self.panel['alignY'] == COMPONENT_ALIGN.BOTTOM:
-            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], -1)
-        if self.panel['alignY'] == COMPONENT_ALIGN.CENTER:
-            y = self.screenFix(yMo, self.panel['y'], self.panel['height'], 0)
-        if y is not None:
-            if y != self.panel['y']:
-                self.panel['y'] = y
-        g_guiFlash.updateComponent(self.ID, COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
+
+        x = config.data['panel']['position'].get('x', None)
+        alignX = config.data['panel'].get('alignX', COMPONENT_ALIGN.LEFT)
+        x = self.screenFix(xMo, x, config.data['panel'].get('width', 0), alignX)
+
+        if x is not None and x != config.data['panel']['position'].get('x'):
+            config.data['panel']['position']['x'] = x
+
+        y = config.data['panel']['position'].get('y', None)
+        alignY = config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP)
+        y = self.screenFix(yMo, y, config.data['panel'].get('height', 0), alignY)
+
+        if y is not None and y != config.data['panel']['position'].get('y'):
+            config.data['panel']['position']['y'] = y
+
+        g_guiFlash.updateComponent(self.ID, COMPONENT_TYPE.LABEL, {'panel': {'position': {'x': x, 'y': y}}})
 
     def cleanup(self):
         if self.updateCallback:
@@ -695,17 +667,12 @@ class DateTimesUI(object):
         self.__isLobby = value
         if self.updateCallback:
             self.updateCallback = safeCancelCallback(self.updateCallback)
-        if not value:
-            self.updateCallback = callback(1.0, self.updateTimeData)
-        else:
-            self.updateTimeData()
+        self.updateCallback = callback(1.0, self.updateTimeData) if not value else self.updateTimeData()
 
     def updateTimeData(self):
-        if not config.data['enabled'] or not config.data['clock']:
+        if not config.data.get('enabled', False) or not config.data.get('clock', False):
             return
         current_time = strftime(config.data['text'])
-        if not isinstance(current_time, str):
-            current_time = str(current_time)
         g_guiFlash.updateComponent(self.ID, {'text': current_time})
 
 
@@ -713,11 +680,12 @@ g_flash = None
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
-    g_flash = DateTimesUI(config.ID)
+
+    g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
-except StandardError:
+except Exception:  # Use Exception instead of StandardError
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 

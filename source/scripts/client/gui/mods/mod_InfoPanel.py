@@ -154,7 +154,7 @@ class Flash(object):
 
     def createBox(self):
         shadow = config.data['textShadow']
-        if shadow['enabled']:
+        if shadow.get('enabled', False):
             g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
 
     def destroy(self):
@@ -179,13 +179,14 @@ class Flash(object):
 g_flash = None
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
     g_flash = Flash(config.ID)
 except ImportError as err:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found. Text disabled.', err)
+    logError(config.ID, 'gambiter.GUIFlash not found.', err)
 except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
