@@ -38,6 +38,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'separate': '  ',
             'align': 'center',
             'inCenter': True,
+            'alignX': 'center',
+            'alignY': 'top',
             'x': -570,
             'y': 850,
             'avgColor': {

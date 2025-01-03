@@ -21,8 +21,6 @@ def smart_update(old_conf, new_conf):
             if old_v != new_v:
                 old_conf[k] = new_v
                 changed = True
-
-    # Add new keys from new_conf that are not in old_conf
     for k, v in new_conf.items():
         if k not in old_conf:
             old_conf[k] = v.encode('utf-8') if isinstance(v, unicode) else v

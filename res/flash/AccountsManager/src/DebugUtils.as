@@ -18,18 +18,18 @@ package
 		public static function LOG_ERROR(... rest) : void
 		{
 			rest.unshift(SEVERITY_ERROR);
-			__doLog.apply(null,rest);
+			__doLog.apply(null, rest);
 		}
       
 		public static function LOG_WARNING(... rest) : void
 		{
 			rest.unshift(SEVERITY_WARNING);
-			__doLog.apply(null,rest);
+			__doLog.apply(null, rest);
 		}
       
 		private static function __doLog() : void
 		{
-			App.environment.call(CPP_DO_LOG_METHOD_NAME,arguments[0],String(arguments.slice(1)));
+			App.environment.call(CPP_DO_LOG_METHOD_NAME, arguments[0], String(arguments.slice(1)));
 		}
 	}
 }

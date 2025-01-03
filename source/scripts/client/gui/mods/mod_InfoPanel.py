@@ -708,3 +708,4 @@ def new_destroyGUI(func, *args):
     if not getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         return
     g_mod.reset()
+    g_flash.destroy()
