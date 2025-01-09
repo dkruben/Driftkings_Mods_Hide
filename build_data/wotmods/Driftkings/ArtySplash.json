@@ -12,5 +12,6 @@
         "res/objects/artySplash.model": "res/res/objects/artySplash.model",
         "res/objects/artySplash.primitives": "res/res/objects/artySplash.primitives",
         "res/objects/artySplash.visual": "res/res/objects/artySplash.visual"
+		
     }
 }

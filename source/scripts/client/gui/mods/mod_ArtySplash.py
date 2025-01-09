@@ -108,7 +108,8 @@ class ArtyBall(object):
             self.modelDot._StaticWorldObjectMarker3D__model.visible = False
             # noinspection PyUnresolvedReferences
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
-            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L)
+            # Precisa de um modelo para funcionar (modelo obsuleto)
+            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, self.player.spaceID)
             self.modelSplash._StaticWorldObjectMarker3D__model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 

@@ -27,7 +27,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.5 (%(file_compile_date)s)'
+        self.version = '1.6.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'defaultPool': 36,
@@ -72,33 +72,36 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
     def tryRestart(self, *_, **__):
         if self.was_declined:
             return
-        if not any(self.editedBanks.itervalues()):
+        elif not any(self.editedBanks.itervalues()):
             return
-        print self.LOG, 'Requesting client restart...'
-        reasons = []
-        if self.data['debug']:
-            reasons = [self.i18n['UI_restart_' + key] + ', '.join('<b>%s</b>' % x for x in remDups(self.editedBanks[key])) for key in self.editedBanks if self.editedBanks[key]]
-        reasonStr = self.i18n['UI_restart_reason'].format(';\n'.join(reasons)) if reasons else ''
-        dialogText = self.i18n['UI_restart_text'].format(reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
-        builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(self.i18n['UI_restart_header'])
-        for ID, key in (DButtons.PURCHASE, 'restart'), (DButtons.RESEARCH, 'shutdown'), (DButtons.SUBMIT, 'close'):
-            builder.addButton(ID, None, ID == DButtons.PURCHASE, rawLabel=self.i18n['UI_restart_button_%s' % key])
-        try:
-            parent = SL.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
-        except (AttributeError, TypeError):
-            parent = None
-        result = yield wg_await(dialogs.show(builder.build(parent)))
-        if result.result == DButtons.PURCHASE:
-            print self.LOG, 'client restart confirmed.'
-            BigWorld.savePreferences()
-            BigWorld.restartGame()
-        elif result.result == DButtons.RESEARCH:
-            print self.LOG, 'client shut down.'
-            BigWorld.savePreferences()
-            BigWorld.quit()
-        elif result.result == DButtons.SUBMIT:
-            print self.LOG, 'client restart declined.'
-            self.was_declined = True
+        else:
+            print self.LOG, 'requesting client restart...'
+            reasons = []
+            if self.data['debug']:
+                reasons = [self.i18n['UI_restart_' + key] + ', '.join(('<b>%s</b>' % x for x in remDups(self.editedBanks[key]))) for key in self.editedBanks if self.editedBanks[key]]
+            reasonStr = self.i18n['UI_restart_reason'].format(';\n'.join(reasons)) if reasons else ''
+            dialogText = self.i18n['UI_restart_text'].format(reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
+            builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(
+                self.i18n['UI_restart_header'])
+            for ID, key in ((DButtons.PURCHASE, 'restart'), (DButtons.RESEARCH, 'shutdown'), (DButtons.SUBMIT, 'close')):
+                builder.addButton(ID, None, ID == DButtons.PURCHASE, rawLabel=self.i18n['UI_restart_button_%s' % key])
+            try:
+                parent = SL.appLoader.getApp().containerManager.getContainer(WindowLayer.VIEW).getView()
+            except (AttributeError, TypeError):
+                parent = None
+            result = yield wg_await(dialogs.show(builder.build(parent)))
+            if result.result == DButtons.PURCHASE:
+                print self.LOG, 'client restart confirmed.'
+                BigWorld.savePreferences()
+                BigWorld.restartGame()
+            elif result.result == DButtons.RESEARCH:
+                print self.LOG, 'client shut down.'
+                BigWorld.savePreferences()
+                BigWorld.quit()
+            elif result.result == DButtons.SUBMIT:
+                print self.LOG, 'client restart declined.'
+                self.was_declined = True
+            return
 
     @staticmethod
     def suppress_old_mod():
@@ -131,10 +134,9 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             if not os.path.isfile(modsRoot + pkgPath):
                 collection.deleteSection(pkgSect)
                 order_changed = True
-            elif pkgPath == BLaM:
+            if pkgPath == BLaM:
                 was_BLaM = True
-            else:
-                order.append(pkgSect.asString)
+            order.append(pkgSect.asString)
         audio_mods_xml = 'res/%s/audio_mods.xml' % mediaPath
         for filePath in (os.path.join(x[0], y).replace(os.sep, '/') for x in os.walk(modsRoot) for y in x[2]):
             if not filePath.endswith('.wotmod') or os.path.basename(filePath) == BLaM or BLMarker in filePath:
@@ -162,6 +164,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                         fileInfo.filename = bankFiles[0].replace('.bnk', '.xml')
                         fileInfo.extra = ''
                         zip_new.writestr(fileInfo, zip_orig.read(fileName))
+
             print self.LOG, 'config renamed for package', os.path.basename(filePath)
             order_changed |= _filePath not in order and not order.append(_filePath)
             BL_present = True
@@ -190,8 +193,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
                 break
-            if (orig_engine.has_key('BanksLoader_gameVersion')
-                    and orig_engine['BanksLoader_gameVersion'].asString == getClientVersion()):
+            if orig_engine.has_key('BanksLoader_gameVersion') and orig_engine['BanksLoader_gameVersion'].asString == getClientVersion():
                 break
             print self.LOG, 'client version change detected'
             self.version_changed = True
@@ -211,34 +213,49 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         self.check_wotmods(mediaPath)
         if self.editedBanks['wotmod']:
             return
-        bankFiles = self.collectBankFiles(mediaPath)
-        audio_mods_new = self.merge_audio_mods(mediaPath, bankFiles)
-        self.manageMemorySettings(soundMgr)
-        for profile_name in ('WWISE_active_profile', 'WWISE_emergency_profile'):
-            profile_type = profile_name.split('_')[1]
-            profile = soundMgr[soundMgr[profile_name].asString]
-            self.manageProfileMemorySettings(profile_type, profile)
-            self.manageProfileBanks(profile_type, profile, bankFiles)
-        self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',('delete', 'move', 'remap'))
-        self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',('delete', 'move', 'create', 'memory'))
+        else:
+            bankFiles = self.collectBankFiles(mediaPath)
+            audio_mods_new = self.merge_audio_mods(mediaPath, bankFiles)
+            self.manageMemorySettings(soundMgr)
+            for profile_name in ('WWISE_active_profile', 'WWISE_emergency_profile'):
+                profile_type = profile_name.split('_')[1]
+                profile = soundMgr[soundMgr[profile_name].asString]
+                self.manageProfileMemorySettings(profile_type, profile)
+                self.manageProfileBanks(profile_type, profile, bankFiles)
+
+            self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',('delete', 'move', 'remap'))
+            self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml',('delete', 'move', 'create', 'memory'))
+            return
 
     def collectBankFiles(self, mediaPath):
-        bankFiles = {'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',), 'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
-        for pkgPath in glob.iglob('./res/packages/audioww*.pkg'):
+        bankFiles = {
+            'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',),
+            'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}
+        }
+        for pkgPath in glob.iglob('res/packages/audioww*.pkg'):
             with zipfile.ZipFile(pkgPath) as pkg:
                 bankFiles['pkg'].update({os.path.basename(name) for name in pkg.namelist()})
         bankFiles['orig'] = bankFiles['res'] | bankFiles['pkg']
-        bankFiles['mods'] = set(
-            x for x in ResMgr.openSection(mediaPath).keys()
-            if
-            os.path.splitext(x)[1] in ('.bnk', '.pck') and not any(y in bankFiles['orig'] for y in (x, x.lower())))
+        bankFiles['mods'] = set((x for x in ResMgr.openSection(mediaPath).keys() if os.path.splitext(x)[1] in ('.bnk', '.pck') and not any((y in bankFiles['orig'] for y in (x, x.lower())))))
         bankFiles['all'] = bankFiles['orig'] | bankFiles['mods']
         return bankFiles
+
+    def recollectExtensionBankFiles(self, extensionName, bankFiles):
+        extensionPath = 'res/packages/%s.pkg' % extensionName
+        if not os.path.exists(extensionPath):
+            print self.LOG, 'found extension field in bank define but it is missing'
+            return
+        with zipfile.ZipFile(extensionPath) as extension:
+            extensionBanks = {os.path.basename(name) for name in extension.namelist() if name.endswith(('.bnk', 'pck'))}
+            print self.LOG, 'found extension banks', list(extensionBanks), 'for extension', extensionName
+            bankFiles['pkg'].update(extensionBanks)
+            bankFiles['orig'] = bankFiles['res'] | bankFiles['pkg']
+            bankFiles['all'] = bankFiles['orig'] | bankFiles['mods']
 
     def check_and_collect_data(self, key, section, struct, is_orig):
         result = []
         for name, sect in section.items() if section is not None else ():
-            if name != struct['key'] or not all(sect.has_key(x) for x in struct['keys']):
+            if name != struct['key'] or not all((sect.has_key(x) for x in struct['keys'])):
                 if is_orig:
                     self.editedBanks['remap'].add(key)
                     print self.LOG, 'cleaned wrong section for setting', key
@@ -267,40 +284,10 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         if audio_mods is None:
             print _config.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
-            {
-                'name': 'events',
-                'key': 'event',
-                'keys': ('name', 'mod'),
-                'data': ()
-            },
-            {
-                'name': 'switches',
-                'key': 'switch',
-                'keys': ('name', 'mod'),
-                'data': {
-                    'name': 'states',
-                    'key': 'state',
-                    'keys': ('name', 'mod'),
-                    'data': ()
-                }
-            },
-            {
-                'name': 'RTPCs',
-                'key': 'RTPC',
-                'keys': ('name', 'mod'),
-                'data': ()
-            },
-            {
-                'name': 'states',
-                'key': 'stateGroup',
-                'keys': ('name', 'mod'),
-                'data': {
-                    'name': 'stateNames',
-                    'key': 'state',
-                    'keys': ('name', 'mod'),
-                    'data': ()
-                }
-            }
+            {'name': 'events', 'key': 'event', 'keys': ('name', 'mod'), 'data': ()},
+            {'name': 'switches', 'key': 'switch', 'keys': ('name', 'mod'), 'data': {'name': 'states', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}},
+            {'name': 'RTPCs', 'key': 'RTPC', 'keys': ('name', 'mod'), 'data': ()},
+            {'name': 'states', 'key': 'stateGroup', 'keys': ('name', 'mod'), 'data': {'name': 'stateNames', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}}
         ]
         data_old, data_new = {}, {}
         for struct in data_structure:
@@ -329,7 +316,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             if bankName not in bankFiles['audio_mods_allowed']:
                 print self.LOG, 'clearing audio_mods section for bank', bankName
                 self.editedBanks['delete'].append(bankName)
-            elif bankName not in audio_mods_banks:
+            if bankName not in audio_mods_banks:
                 audio_mods_banks.append(bankName)
         self.editedBanks['delete'] = remDups(self.editedBanks['delete'])
         for key in ['loadBanks'] + [struct['name'] for struct in data_structure]:
@@ -354,7 +341,11 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 print self.LOG, 'changing value for memory setting:', mgrKey
 
     def manageProfileMemorySettings(self, profile_type, profile):
-        poolKeys = {'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'soundRender': ('max_voices',)}
+        poolKeys = {
+            'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+            'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+            'soundRender': ('max_voices',)
+        }
         for poolKey, poolValuesList in poolKeys.iteritems():
             for poolValue in poolValuesList:
                 value = profile[poolKey][poolValue]
@@ -372,24 +363,26 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 if sectName != 'bank':
                     continue
                 bankName = bank['name'].asString
+                bankExtension = bank.readString('extension', '')
+                if bankExtension and bankName not in bankFiles['all']:
+                    print self.LOG, 'found section for missing bank', bankName, 'with existing extension', bankExtension
+                    self.recollectExtensionBankFiles(bankExtension, bankFiles)
                 if bankName not in bankFiles['all'] or bankName in bankFiles['audio_mods_allowed']:
                     print self.LOG, 'clearing', profile_type, 'section for missing bank', bankName
                     self.editedBanks['delete'].append(bankName)
                     section.deleteSection(bank)
-                elif bankFiles['section'].get(bankName, name) != name:
+                if bankFiles['section'].get(bankName, name) != name:
                     print self.LOG, 'deleting', profile_type, 'section from', name, 'for bank', bankName
                     self.editedBanks['section'].append(bankName)
                     section.deleteSection(bank)
-                elif bankName in bankFiles['mods'] and bankName in exist:
+                if bankName in bankFiles['mods'] and bankName in exist:
                     print self.LOG, 'clearing', profile_type, 'section duplicate for bank', bankName
                     self.editedBanks['delete'].append(bankName)
                     section.deleteSection(bank)
-                else:
-                    exist.add(bankName)
+                exist.add(bankName)
         bankFiles['orig'] = [x.lower() for x in bankFiles['orig']]
         for bankName in sorted(bankFiles['mods']):
-            if not any(bankName in bankFiles[x] for x in
-                       ('orig', 'ignore', 'audio_mods_allowed')) and bankName not in exist:
+            if not any((bankName in bankFiles[x] for x in ('orig', 'ignore', 'audio_mods_allowed'))) and bankName not in exist:
                 sectName = bankFiles['section'].get(bankName, 'SFX_soundbanks_loadonce')
                 print self.LOG, 'creating', profile_type, 'section in', sectName, 'for bank', bankName
                 if bankName in self.editedBanks['delete']:
@@ -400,7 +393,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 profile.createSection(sectName + '/bank').writeString('name', bankName)
 
     def saveNewFile(self, new_file, new_dir, new_name, orig_path, keys):
-        if not any(self.editedBanks[key] for key in keys):
+        if not any((self.editedBanks[key] for key in keys)):
             ResMgr.purge(new_dir + new_name)
             return
         orig_path = curCV + '/' + orig_path
@@ -412,7 +405,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         if os.path.isfile(orig_path):
             try:
                 os.remove(orig_path)
-            except Exception:
+            except StandardError:
                 traceback.print_exc()
         for new_path in (new_dir + new_name, './res/' + new_path, './' + new_path):
             if os.path.isfile(new_path):

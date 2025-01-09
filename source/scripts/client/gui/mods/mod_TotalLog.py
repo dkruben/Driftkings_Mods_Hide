@@ -38,10 +38,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'separate': '  ',
             'align': 'center',
             'inCenter': True,
-            'alignX': 'center',
+            'alignX': 'left',
             'alignY': 'top',
-            'x': -570,
-            'y': 850,
+            'x': 250,
+            'y': 50,
             'avgColor': {
                 'brightness': 1.0,
                 'saturation': 0.5
@@ -174,7 +174,6 @@ class TotalLog(TotalLogMeta):
         return extra.getDamage()
 
     def __onPlayerFeedbackReceived(self, events):
-        """Shared feedback player events"""
         if self.isPlayerVehicle:
             for event in events:
                 self.parseEvent(event)

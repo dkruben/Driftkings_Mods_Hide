@@ -13,12 +13,12 @@ from Event import SafeEvent
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
-from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
+# from event_lootboxes.gui.impl.lobby.event_lootboxes.entry_point_view import EventLootBoxesEntryPointWidget
 from gui import g_guiResetters
 from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
-from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
+# from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
 from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
 from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
 from gui.Scaleform.daapi.view.lobby.messengerBar.NotificationListButton import NotificationListButton
@@ -51,7 +51,7 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideStaticMethod, callback, isReplay, logDebug, cancelCallback, calculate_version, logError
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 firstTime = True
@@ -91,7 +91,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showButtonCounters': True,
             'allowExchangeXPInTechTree': True,
             'premiumTime': False,
-            'lootboxesWidget': False,
+            # 'lootboxesWidget': False,
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'28\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
@@ -148,8 +148,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Display of missing experience to unlock vehicles.',
             'UI_setting_premiumTime_text': 'Premium Time',
             'UI_setting_premiumTime_tooltip': 'Display exact premium time.',
-            'UI_setting_lootboxesWidget_text': 'Loot boxes Widget',
-            'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
+            # 'UI_setting_lootboxesWidget_text': 'Loot boxes Widget',
+            # 'UI_setting_lootboxesWidget_tooltip': 'show lootbox widget in hangar.',
             'UI_setting_clock_text': 'Enable clock',
             'UI_setting_clock_tooltip': 'Enable clock in Login and Hangar',
             'UI_techTree_shootingRadius': 'Shooting Radius',
@@ -185,7 +185,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showPremiumShopButton'),
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('showXpToUnlockVeh'),
-                self.tb.createControl('lootboxesWidget'),
+                # self.tb.createControl('lootboxesWidget'),
                 self.tb.createControl('clock')
             ]
         }
@@ -300,11 +300,11 @@ def new__updateBatteleCount(func, self):
 
 
 # hide display widget with daily quests
-@override(DailyQuestWidget, '_DailyQuestWidget__shouldHide')
-def new__shouldHide(func, self):
-    if config.data['enabled'] and config.data['showDailyQuestWidget']:
-        return True
-    return func(self)
+# @override(BaseQuestsWidgetComponent, '_BaseQuestsWidgetComponent__shouldHide')
+# def new__shouldHide(func, self):
+#    if config.data['enabled'] and config.data['showDailyQuestWidget']:
+#        return True
+#    return func(self)
 
 
 # hide display pop-up window when receiving progressive decals
@@ -564,11 +564,11 @@ def new__buildList(func, self):
 
 
 # hide lootboxes widget in tank carousel in hangar
-@overrideStaticMethod(EventLootBoxesEntryPointWidget, 'getIsActive')
-def LootBoxesEntryPointWidget_getIsActive(func, self):
-    if not config.data['enabled'] and not config.data['lootboxesWidget']:
-        return False
-    return func(self)
+# @overrideStaticMethod(EventLootBoxesEntryPointWidget, 'getIsActive')
+# def LootBoxesEntryPointWidget_getIsActive(func, self):
+#    if not config.data['enabled'] and not config.data['lootboxesWidget']:
+#        return False
+#    return func(self)
 
 
 # PremiumTime
