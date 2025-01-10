@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import json
 import os
-import urllib
+import urllib2
 
 import ResMgr
 import nations
@@ -10,7 +10,7 @@ from items import vehicles
 from DriftkingsCore import callback, logError, getRegion
 from DriftkingsStats import __CORE_NAME__
 
-# URL
+
 _FLAVOR = 'wg' if getRegion() != 'RU' else 'lesta'
 HOST = 'https://static.modxvm.com/'
 URL_WN8 = HOST + 'wn8-data-exp/json/%s/wn8exp.json' % _FLAVOR
@@ -18,7 +18,6 @@ URL_XTE = HOST + 'xte.json'
 URL_XTDB = HOST + 'xtdb.json'
 URL_XVM_SCALE = HOST + '/xvmscales-%s.json' % _FLAVOR
 VEHICLE_TYPE_XML_PATH = 'scripts/item_defs/vehicles/'
-
 UNKNOWN_VEHICLE_DATA = {
     'vehCD': 0,
     'key': 'unknown',
@@ -38,7 +37,6 @@ UNKNOWN_VEHICLE_DATA = {
 
 VEHICLE_CLASS_TAGS = frozenset(('lightTank', 'mediumTank', 'heavyTank', 'SPG', 'AT-SPG'))
 
-
 class ScaleValues(object):
     def __init__(self):
         self.ID = 'DriftkingsStats'
@@ -49,6 +47,8 @@ class ScaleValues(object):
         self.xvmScale_data = {}
         self.xtdb_data = {}
         self.config_path = os.path.join('.', 'mods', 'configs', self.modsGroup, self.ID, 'cache')
+        if not os.path.exists(self.config_path):
+            os.makedirs(self.config_path)
         self.settings = {'onlineUpdateData': True, 'showExpectedTankValuesMessage': True}
         self._initialize_callbacks()
         self.init()
@@ -64,13 +64,13 @@ class ScaleValues(object):
         for nation in nations.NAMES:
             nationID = nations.INDICES[nation]
             vehicle_list = vehicles.g_list.getList(nationID)
-            for (ids, descr) in vehicle_list.items():
+            for ids, descr in vehicle_list.items():
                 if descr.name.endswith('training'):
                     continue
                 data = self.createVehicleData(descr, nation)
                 res.append(data)
             ResMgr.purge(os.path.join(VEHICLE_TYPE_XML_PATH, nation, 'components', 'guns.xml'), True)
-        self.vehicleInfoData = {x['vehCD']: x for x in res}
+        self.vehicleInfoData = {x['vehCD']:x for x in res}
 
     @staticmethod
     def createVehicleData(descr, nation):
@@ -90,7 +90,7 @@ class ScaleValues(object):
 
     @staticmethod
     def XvmScaleToSup(x=None):
-        xvm2sup = [str(i) for i in range(1, 100)]
+        xvm2sup = [str(i) for i in xrange(1, 100)]
         if x is None:
             return None
         return xvm2sup[min(100, x) - 1] if x > 0 else 0.0
@@ -101,15 +101,20 @@ class ScaleValues(object):
             with open(local_path, 'w') as f:
                 json.dump({'key': 'value'}, f)
         try:
-            urllib.urlretrieve(url, local_path)
-        except Exception as e:
+            response = urllib2.urlopen(url)
+            with open(local_path, 'wb') as f:
+                f.write(response.read())
+        except (urllib2.URLError, urllib2.HTTPError) as e:
             logError(__CORE_NAME__, 'Error retrieving data: {}', e)
 
     def _loadXvmScaleData(self):
         xvmScales_path = os.path.join(self.config_path, 'xvmScales.json')
         self.loadJsonData(URL_XVM_SCALE, xvmScales_path)
-        with open(xvmScales_path) as xvm_scale:
-            self.xvmScale_data = json.load(xvm_scale)
+        try:
+            with open(xvmScales_path, 'r') as xvm_scale:
+                self.xvmScale_data = json.load(xvm_scale)
+        except (IOError, ValueError) as e:
+            logError(__CORE_NAME__, 'Error loading XVM scale data: {}', e)
 
     def _loadWn8Data(self):
         wn8_cache = os.path.join(self.config_path, 'wn8exp.json')
@@ -151,6 +156,8 @@ class ScaleValues(object):
             self.xtdb_data = json.load(xtdb_scale)
 
     def getVehicleInfoData(self, vehCD):
+        if not isinstance(vehCD, (int, long)):  # Python 2.7 type checking
+            return None
         return self.vehicleInfoData.get(vehCD, None) if self.vehicleInfoData is not None else None
 
     def getVehicleInfoDataArray(self):
@@ -163,6 +170,7 @@ class ScaleValues(object):
     def updateReserve(self, vehCD, isReserved):
         if self.vehicleInfoData is not None and vehCD in self.vehicleInfoData:
             self.vehicleInfoData[vehCD]['isReserved'] = isReserved
+        return
 
     def getXvmScaleData(self, rating):
         return self.xvmScale_data.get('x{}'.format(rating), None) if self.xvmScale_data is not None else None
@@ -175,39 +183,36 @@ class ScaleValues(object):
 
     def calculateXvmScale(self, rating, value):
         data = self.getXvmScaleData(rating)
-        if data is None:
-            return -1
-        return next((i for i, v in enumerate(data) if v > value), 100)
+        return -1 if data is None else next((i for i, v in enumerate(data) if v > value), 100)
 
     def calculateXTE(self, vehCD, dmg_per_battle, frg_per_battle):
         data = self.getXteData(vehCD)
         if data is None or data['td'] == data['ad'] or data['tf'] == data['af']:
             return -1
-        # Constants
-        CD = 3.0
-        CF = 1.0
-        avgD = float(data['ad'])
-        topD = float(data['td'])
-        avgF = float(data['af'])
-        topF = float(data['tf'])
-        dD = dmg_per_battle - avgD
-        dF = frg_per_battle - avgF
-        minD = avgD * 0.4
-        minF = avgF * 0.4
-        d = max(0, 1 + dD / (topD - avgD) if dmg_per_battle >= avgD else 1 + dD / (avgD - minD))
-        f = max(0, 1 + dF / (topF - avgF) if frg_per_battle >= avgF else 1 + dF / (avgF - minF))
-        t = (d * CD + f * CF) / (CD + CF) * 1000.0
-        return next((i for i, v in enumerate(data['x']) if v > t), 100)
+        else:
+            CD = 3.0
+            CF = 1.0
+            avgD = float(data['ad'])
+            topD = float(data['td'])
+            avgF = float(data['af'])
+            topF = float(data['tf'])
+            dD = dmg_per_battle - avgD
+            dF = frg_per_battle - avgF
+            minD = avgD * 0.4
+            minF = avgF * 0.4
+            d = max(0, 1 + dD / (topD - avgD) if dmg_per_battle >= avgD else 1 + dD / (avgD - minD))
+            f = max(0, 1 + dF / (topF - avgF) if frg_per_battle >= avgF else 1 + dF / (avgF - minF))
+            t = (d * CD + f * CF) / (CD + CF) * 1000.0
+            return next((i for i, v in enumerate(data['x']) if v > t), 100)
 
     def calculateXTDB(self, vehCD, dmg_per_battle):
         data = self.getXtdbData(vehCD)
-        if data is None:
-            return -1
-        return next((i for i, v in enumerate(data['x']) if v > dmg_per_battle), 100)
+        return -1 if data is None else next((i for i, v in enumerate(data['x']) if v > dmg_per_battle), 100)
 
     def getXtdbDataArray(self, vehCD):
         data = self.getXtdbData(vehCD)
         return data['x'] if data is not None else []
+
 
 try:
     scale_values_instance = ScaleValues()

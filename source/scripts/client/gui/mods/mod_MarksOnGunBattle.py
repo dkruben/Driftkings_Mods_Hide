@@ -1049,7 +1049,7 @@ class Flash(object):
         if BattleReplay.isPlaying() and not config.data['showInReplay']:
             return
         self.data = self.setup()
-        COMPONENT_EVENT.UPDATED += self.update
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
         self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
         self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['background']})
         g_guiResetters.add(self.screenResize)
@@ -1061,7 +1061,7 @@ class Flash(object):
         if BattleReplay.isPlaying() and not config.data['showInReplay']:
             return
         g_guiResetters.remove(self.screenResize)
-        COMPONENT_EVENT.UPDATED -= self.update
+        COMPONENT_EVENT.UPDATED -= self.__updatePosition
         self.deleteObject(COMPONENT_TYPE.LABEL)
 
     def deleteObject(self, name):
@@ -1077,7 +1077,7 @@ class Flash(object):
         g_guiFlash.animateComponent(self.name[name], time, data, True)
 
     # noinspection PyTypeChecker
-    def update(self, alias, props):
+    def __updatePosition(self, alias, props):
         if str(alias) == str(config.ID):
             x = props.get('x', config.data['panel']['x'])
             if x and x != config.data['panel']['x']:
@@ -1088,12 +1088,11 @@ class Flash(object):
                 config.data['panel']['y'] = y
                 self.data[COMPONENT_TYPE.LABEL]['y'] = y
             self.setupSize()
+            config.onApplySettings({'panel': {'x': x, 'y': y}})
             print '%s Flash coordinates updated : y = %i, x = %i, props: %s' % (alias, config.data['panel']['y'], config.data['panel']['x'], props)
 
     def setup(self):
-        self.name = {
-            COMPONENT_TYPE.LABEL: '%s' % config.ID
-        }
+        self.name = {COMPONENT_TYPE.LABEL: '%s' % config.ID}
         self.data = {
             COMPONENT_TYPE.LABEL: {
                 'index': 10000,
@@ -1109,7 +1108,6 @@ class Flash(object):
                 'text': '',
                 'shadow': {'distance': 0, 'angle': 0, 'color': 0x000000, "alpha": 90, 'blurX': 1, 'blurY': 1, 'strength': 3000, 'quality': 1}
             },
-
         }
         for key, value in config.data['panel'].items():
             if key in self.data[COMPONENT_TYPE.LABEL]:

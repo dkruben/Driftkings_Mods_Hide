@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-__MOD_CORE__ = '1.4.5'
+__MOD_CORE__ = '1.5.0'
 __CORE_NAME__ = 'DriftkingsStats'
 __MOD_DATE__ = '(%(file_compile_date)s)'
 
