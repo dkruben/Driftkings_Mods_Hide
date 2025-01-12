@@ -156,7 +156,7 @@ class ScaleValues(object):
             self.xtdb_data = json.load(xtdb_scale)
 
     def getVehicleInfoData(self, vehCD):
-        if not isinstance(vehCD, (int, long)):  # Python 2.7 type checking
+        if not isinstance(vehCD, (int, long)):
             return None
         return self.vehicleInfoData.get(vehCD, None) if self.vehicleInfoData is not None else None
 

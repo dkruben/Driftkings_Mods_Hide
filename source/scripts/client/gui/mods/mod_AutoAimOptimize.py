@@ -110,7 +110,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             if battle:
                 if CommandMapping.g_instance.isFired(CommandMapping.CMD_CM_LOCK_TARGET, key) and isDown:
                     return self.catch()
-        return
 
 
 config = ConfigInterface()

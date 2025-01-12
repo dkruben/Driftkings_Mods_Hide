@@ -9,7 +9,8 @@ from gui.shared.utils.TimeInterval import TimeInterval
 from messenger import MessengerEntry
 from nations import NAMES
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, logError, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, calculate_version, logError
+
 
 MACROS = [
     '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}',
@@ -33,7 +34,7 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.0 %(file_compile_date)s'
+        self.version = '1.7.5 %(file_compile_date)s'
         self.author = 'orig. Kotyarko_O, modified by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -46,12 +47,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             },
             'delay': 5,
             'enabled': True,
-            'alignX': 'center',
-            'alignY': 'center',
             'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
             'showFor': 0,
             'textLock': False,
-            'textPosition': {'x': 700.0, 'y': 300.0},
+            'textPosition': {'x': 700.0, 'y': 300.0, 'alignX': 'center', 'alignY': 'center'},
+            'panelSize': {'height': 70.0, 'width': 150.0},
             'textShadow': {
                 'alpha': 0.8,
                 'angle': 90,
@@ -96,7 +96,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('textLock'),
+                # self.tb.createControl('textLock'),
                 self.tb.createSlider('delay', 1.0, 10, 1.0, '{{value}}%s' % xFormat),
                 self.tb.createControl('aliveOnly'),
                 self.tb.createHotKey('altKey'),
@@ -104,11 +104,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             ],
             'column2': []
         }
-
-    def onApplySettings(self, settings):
-        super(ConfigInterface, self).onApplySettings(settings)
-        if g_flash is not None:
-            g_flash.onApplySettings()
 
     def l10n(self, text):
         if text is None:
@@ -146,11 +141,11 @@ class Flash(object):
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def setup(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], width=config.data['panelSize']['width'], height=config.data['panelSize']['height'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
         self.createBox()
 
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'],  width=config.data['panelSize']['width'], height=config.data['panelSize']['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
 
     def createBox(self):
         shadow = config.data['textShadow']
@@ -179,16 +174,15 @@ class Flash(object):
 g_flash = None
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
 try:
     from gambiter import g_guiFlash
-    from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
+    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT
     g_flash = Flash(config.ID)
 except ImportError as err:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
     logError(config.ID, 'gambiter.GUIFlash not found.', err)
 except Exception:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
     traceback.print_exc()
 
 

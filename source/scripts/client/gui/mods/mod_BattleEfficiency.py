@@ -336,6 +336,7 @@ def new_destroyGUI(func, *args):
         return
     g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
+    # g_flash.destroy()
 
 
 @override(BattleResultsWindow, 'as_setDataS')
