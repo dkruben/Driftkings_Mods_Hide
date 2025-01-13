@@ -8,6 +8,7 @@ import GUI
 import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
 import nations
+from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from Event import SafeEvent
 from HeroTank import HeroTank
@@ -51,7 +52,8 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, \
+    calculate_version, logError
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 firstTime = True
@@ -685,9 +687,15 @@ try:
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
-except Exception:  # Use Exception instead of StandardError
+except Exception:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
+
+
+@override(PlayerAccount, 'onArenaCreated')
+def new__onArenaCreated(func, *args, **kwargs):
+    g_flash.isBattle = True
+    return func(*args, **kwargs)
 
 
 @override(Hangar, '_populate')

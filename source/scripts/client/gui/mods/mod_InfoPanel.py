@@ -137,15 +137,16 @@ class ConfigInterface(DriftkingsConfigInterface):
 class Flash(object):
     def __init__(self, ID):
         self.ID = ID
+        self._panelSize = config.data['panelSize']
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
-    def setup(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], width=config.data['panelSize']['width'], height=config.data['panelSize']['height'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
-        self.createBox()
-
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'],  width=config.data['panelSize']['width'], height=config.data['panelSize']['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
+
+    def setup(self):
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
+        self.createBox()
 
     def createBox(self):
         shadow = config.data['textShadow']
@@ -176,13 +177,13 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 try:
     from gambiter import g_guiFlash
-    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT
+    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
     g_flash = Flash(config.ID)
 except ImportError as err:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'gambiter.GUIFlash not found.', err)
 except Exception:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_EVENT = None
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
 
