@@ -9,7 +9,6 @@ import gui.shared.tooltips.vehicle as tooltips
 import nations
 from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
-from Event import SafeEvent
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
 from constants import ITEM_DEFS_PATH
@@ -23,7 +22,6 @@ from gui.Scaleform.daapi.view.lobby.messengerBar.messenger_bar import MessengerB
 from gui.Scaleform.daapi.view.lobby.messengerBar.session_stats_button import SessionStatsButton
 from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechnique
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
-from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
 from gui.Scaleform.daapi.view.meta.ModuleInfoMeta import ModuleInfoMeta
@@ -57,7 +55,6 @@ firstTime = True
 
 class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
-        self.onModSettingsChanged = SafeEvent()
         self.callback = None
         self.macros = {}
         super(ConfigInterface, self).__init__()
@@ -307,7 +304,6 @@ def new__shouldHide(func, self):
     return func(self)
 
 
-
 # hide display pop-up window when receiving progressive decals
 @override(ProgressiveItemsRewardHandler, '_showAward')
 def new__showAward(func, self, ctx):
@@ -458,7 +454,6 @@ class RangeCalculator:
         return vision_radius, firing_radius, arty_radius
 
 
-
 # add shooting range in gun info window for SPG/machine guns
 @override(ModuleInfoMeta, 'as_setModuleInfoS')
 def new__setModuleInfoS(func, self, moduleInfo):
@@ -567,7 +562,7 @@ def new__buildList(func, self):
     vehicle_data.update_my_vehicles()
 
 
-# hide lootboxes widget in tank carousel in hangar
+# hide lootBoxes widget in tank carousel in hangar
 def new__getIsActive(func, state):
     if not config.data.get('enabled', True) and not config.data.get('showLootboxesWidget', True):
         return False
