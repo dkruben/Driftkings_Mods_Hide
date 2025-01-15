@@ -13,8 +13,8 @@ class _StaticWorldObjectMarker3D(object):
         self.__destroyed = False
         if self.__path is not None:
             modelPosition = Math.Vector3(position[:]) + offset
-            resourceRefs = BigWorld.loadResourceListFG([self.__path])
-            self.__onModelLoaded(resourceRefs, modelPosition)
+            refs = BigWorld.loadResourceListFG([self.__path])
+            self.__onModelLoaded(refs, modelPosition)
 
     def addMarkerModel(self):
         if self.__model is None or self.__modelOwner is not None:
@@ -37,11 +37,11 @@ class _StaticWorldObjectMarker3D(object):
                 self.__modelOwner.delModel(self.__model)
             self.__modelOwner = None
 
-    def __onModelLoaded(self, resourceRefs, position):
+    def __onModelLoaded(self, refs, position):
         if self.__destroyed:
             return
-        if self.__path not in resourceRefs.failedIDs:
-            self.__model = resourceRefs[self.__path]
+        if self.__path not in refs.failedIDs:
+            self.__model = refs[self.__path]
             self.__model.position = position
             self.__model.castsShadow = False
             if self.__isMarkerVisible:

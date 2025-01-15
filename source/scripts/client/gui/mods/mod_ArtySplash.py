@@ -14,6 +14,10 @@ from DriftkingsInject.common.markers import _StaticWorldObjectMarker3D
 
 
 class ConfigInterface(DriftkingsConfigInterface):
+    def __init__(self):
+        super(ConfigInterface, self).__init__()
+        if hasattr(BigWorld.Model, 'sacle') and not hasattr(BigWorld.Model, 'scale'):
+            BigWorld.Model.scale = BigWorld.Model.sacle
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -92,6 +96,7 @@ class ArtyBall(object):
         self.player = None
 
     # noinspection PyProtectedMember
+    # noinspection PyUnresolvedReferences
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
         if config.data['enabled']:
@@ -106,10 +111,8 @@ class ArtyBall(object):
                 self.modelDot._StaticWorldObjectMarker3D__model.scale = (0.5, 0.5, 0.5)
             self.modelSplash._StaticWorldObjectMarker3D__model.visible = False
             self.modelDot._StaticWorldObjectMarker3D__model.visible = False
-            # noinspection PyUnresolvedReferences
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
-            # Precisa de um modelo para funcionar (modelo obsuleto)
-            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, self.player.spaceID)
+            self.modelSplashCircle.setup('objects/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, self.player.spaceID)
             self.modelSplash._StaticWorldObjectMarker3D__model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 

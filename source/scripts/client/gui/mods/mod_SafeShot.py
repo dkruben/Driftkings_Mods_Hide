@@ -89,7 +89,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         }
 
     def onHotkeyPressed(self, event):
-        if (not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not checkKeys(self.data['disableKey'], event.key) or not event.isKeyDown()):
+        if not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not checkKeys(self.data['disableKey'], event.key) or not event.isKeyDown():
             return
         self._is_key_pressed = not self._is_key_pressed
         if self._is_key_pressed:
