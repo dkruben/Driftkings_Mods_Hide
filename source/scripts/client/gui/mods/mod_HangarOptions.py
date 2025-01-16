@@ -89,10 +89,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootboxesWidget': False,
             'clock': True,
-            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'28\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
-                'position':{'x': 0.0, 'y': 47.0},
-                'width': 200,
+                'position':{'x': -10.0, 'y': 49.0},
+                'width': 210,
                 'height': 50,
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
                 'alignX': 'right',
