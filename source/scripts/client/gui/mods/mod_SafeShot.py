@@ -19,6 +19,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.deadDict = {}
         self.isEventBattle = False
         self._is_key_pressed = True
+        self.target = getTarget()
         super(ConfigInterface, self).__init__()
         #
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
@@ -107,27 +108,26 @@ class ConfigInterface(DriftkingsConfigInterface):
     def new__shoot(self, func, orig, isRepeat=False):
         if not self.data['enabled'] and not self.data['disableMessage'] and not self.isEventBattle:
             return func(orig, isRepeat)
-        target = getTarget()
-        if target is None:
+        if self.target is None:
             if self.data['wasteShotBlock']:
                 waste_message = self.data['clientMessages']['wasteShotBlockedMessage']
-                sendPanelMessage(text=waste_message, colour='Yellow')
+                sendPanelMessage(waste_message, 'Yellow')
                 return
-        elif hasattr(target.publicInfo, 'team'):
+        elif hasattr(self.target.publicInfo, 'team'):
             player = getPlayer()
-            if self.data['teamShotBlock'] and player.team == target.publicInfo.team and target.isAlive():
-                if not self.data['teamKillerShotUnblock'] and not player.guiSessionProvider.getArenaDP().isTeamKiller(target.id):
-                    self.macro['name'] = target.publicInfo.name
-                    self.macro['vehicle'] = target.typeDescriptor.type.shortUserString
+            if self.data['teamShotBlock'] and player.team == self.target.publicInfo.team and self.target.isAlive():
+                if not self.data['teamKillerShotUnblock'] and not player.guiSessionProvider.getArenaDP().isTeamKiller(self.target.id):
+                    self.macro['name'] = self.target.publicInfo.name
+                    self.macro['vehicle'] = self.target.typeDescriptor.type.shortUserString
                     text = self.data['format'] % self.macro
                     sendChatMessage(fullMsg=text, chanId=1, delay=2)
                     team_message = self.data['clientMessages']['teamShotBlockedMessage']
-                    sendPanelMessage(text=team_message, colour='Yellow')
+                    sendPanelMessage(team_message, 'Yellow')
                     return
-            elif self.data['deadShotBlock'] and not target.isAlive():
-                if self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(target.id, 0) < self.data['deadShotBlockTimeOut']:
+            elif self.data['deadShotBlock'] and not self.target.isAlive():
+                if self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(self.target.id, 0) < self.data['deadShotBlockTimeOut']:
                     dead_message = self.data['clientMessages']['deadShotBlockedMessage']
-                    sendPanelMessage(text=dead_message, colour='Yellow')
+                    sendPanelMessage(dead_message, 'Yellow')
                     return
 
         return func(orig, isRepeat)

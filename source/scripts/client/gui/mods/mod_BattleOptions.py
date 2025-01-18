@@ -28,6 +28,7 @@ from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.arena_border_ctrl import ArenaBorderController
 from gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from gui.battle_control.controllers.team_bases_ctrl import BattleTeamsBasesController
+from gui.battle_results.components.common import ShowRateSatisfactionCmp
 from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
@@ -74,7 +75,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showBattleHint': False,
             'showFriends': False,
             'showPostmortemDogTag': True,
-            'stunSound': False
+            'stunSound': False,
+            'showPlayerSatisfactionWidget': False
         }
 
         self.i18n = {
@@ -114,7 +116,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
             'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
             'UI_setting_stunSound_text': 'Stun Sound',
-            'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.'
+            'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.',
+            'UI_setting_showPlayerSatisfactionWidget_text': 'Show Player Satisfaction Widget',
+            'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.'
         }
         super(ConfigInterface, self).init()
 
@@ -139,6 +143,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             ],
             'column2': [
                 colorLabel,
+                self.tb.createControl('showPlayerSatisfactionWidget'),
                 self.tb.createControl('inBattle'),
                 self.tb.createControl('disableSoundCommander'),
                 self.tb.createControl('directivesOnlyFromStorage'),
@@ -375,6 +380,15 @@ def new__makeSettingsVO(func, self):
     makeSettingsVO = func(self)
     makeSettingsVO['numberOfMessagesInHistory'] = config.data['maxChatLines']
     return makeSettingsVO
+
+
+# PlayerSatisfactionWidget/ShowRateSatisfactionCmp
+@override(ShowRateSatisfactionCmp, '_convert')
+def new_showRateSatisfactionCmp(func, self, value, reusable):
+    if not config.data.get('showPlayerSatisfactionWidget', True):
+        return False
+    return func(self, value, reusable)
+
 
 
 @adisp_process

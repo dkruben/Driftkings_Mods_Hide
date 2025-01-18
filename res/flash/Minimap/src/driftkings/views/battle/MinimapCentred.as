@@ -12,7 +12,7 @@ package driftkings.views.battle
 		private var oldscaleX:Number = 0;
 		private var oldscaleY:Number = 0;
 		private var oldSize:Number = 0;
-      
+		
 		public function MinimapCentred()
 		{
 			super();
