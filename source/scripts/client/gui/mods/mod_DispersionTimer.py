@@ -74,34 +74,44 @@ class ConfigInterface(DriftkingsConfigInterface):
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
-        colorLabelRed = self.tb.createControl('red', self.tb.types.ColorChoice)
-        colorLabelRed['text'] = self.tb.getLabel('colorRed')
-        colorLabelRed['tooltip'] %= {'red': self.data['red']}
-        colorLabelOrange = self.tb.createControl('orange', self.tb.types.ColorChoice)
-        colorLabelOrange['text'] = self.tb.getLabel('colorOrange')
-        colorLabelOrange['tooltip'] %= {'orange': self.data['orange']}
-        colorLabelYellow = self.tb.createControl('yellow', self.tb.types.ColorChoice)
-        colorLabelYellow['text'] = self.tb.getLabel('colorYellow')
-        colorLabelYellow['tooltip'] %= {'yellow': self.data['yellow']}
-        colorLabelGreen = self.tb.createControl('green', self.tb.types.ColorChoice)
-        colorLabelGreen['text'] = self.tb.getLabel('colorGreen')
-        colorLabelGreen['tooltip'] %= {'green': self.data['green']}
-        colorLabelBlue = self.tb.createControl('blue', self.tb.types.ColorChoice)
-        colorLabelBlue['text'] = self.tb.getLabel('colorBlue')
-        colorLabelBlue['tooltip'] %= {'blue': self.data['blue']}
-        colorLabelPurple = self.tb.createControl('purple', self.tb.types.ColorChoice)
-        colorLabelPurple['text'] = self.tb.getLabel('colorPurple')
-        colorLabelPurple['tooltip'] %= {'purple': self.data['purple']}
+        color_labels = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+        color_controls = []
+
+        for color in color_labels:
+            color_label = self.tb.createControl(color, self.tb.types.ColorChoice)
+            color_label['text'] = self.tb.getLabel('color' + color.capitalize())
+            color_label['tooltip'] %= {color: self.data[color]}
+            color_controls.append(color_label)
+
+        # colorLabelRed = self.tb.createControl('red', self.tb.types.ColorChoice)
+        # colorLabelRed['text'] = self.tb.getLabel('colorRed')
+        # colorLabelRed['tooltip'] %= {'red': self.data['red']}
+        # colorLabelOrange = self.tb.createControl('orange', self.tb.types.ColorChoice)
+        # colorLabelOrange['text'] = self.tb.getLabel('colorOrange')
+        # colorLabelOrange['tooltip'] %= {'orange': self.data['orange']}
+        # colorLabelYellow = self.tb.createControl('yellow', self.tb.types.ColorChoice)
+        # colorLabelYellow['text'] = self.tb.getLabel('colorYellow')
+        # colorLabelYellow['tooltip'] %= {'yellow': self.data['yellow']}
+        # colorLabelGreen = self.tb.createControl('green', self.tb.types.ColorChoice)
+        # colorLabelGreen['text'] = self.tb.getLabel('colorGreen')
+        # colorLabelGreen['tooltip'] %= {'green': self.data['green']}
+        # colorLabelBlue = self.tb.createControl('blue', self.tb.types.ColorChoice)
+        # colorLabelBlue['text'] = self.tb.getLabel('colorBlue')
+        # colorLabelBlue['tooltip'] %= {'blue': self.data['blue']}
+        # colorLabelPurple = self.tb.createControl('purple', self.tb.types.ColorChoice)
+        # colorLabelPurple['text'] = self.tb.getLabel('colorPurple')
+        # colorLabelPurple['tooltip'] %= {'purple': self.data['purple']}
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                colorLabelRed,
-                colorLabelOrange,
-                colorLabelYellow,
-                colorLabelGreen,
-                colorLabelBlue,
-                colorLabelPurple
+                color_controls
+                # colorLabelRed,
+                # colorLabelOrange,
+                # colorLabelYellow,
+                # colorLabelGreen,
+                # colorLabelBlue,
+                # colorLabelPurple
             ],
             'column2': [
                 self.tb.createControl('template', self.tb.types.TextInput, 400),
@@ -129,6 +139,8 @@ class DispersionTimer(DispersionTimerMeta):
     def __init__(self):
         super(DispersionTimer, self).__init__(config.ID)
         self.macro = defaultdict(lambda: 'macros not found', timer=0, percent=0)
+        self.min_angle = 1.0
+        self.isPostmortem = False
         self.min_angle = 1.0
         self.isPostmortem = False
 

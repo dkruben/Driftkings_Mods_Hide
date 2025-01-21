@@ -173,13 +173,12 @@ class ConfigInterface(DriftkingsConfigInterface):
                         'quest-min-level-roman': int2roman(level)
                     }
                     data.extend(self.pack('', self.i18n['UI_setting_questInfo_text'].format(**formatData)))
-                if self.data['showConditions']:
+                if self.data.get('showConditions', True):
                     for condType in ('main', 'add'):
                         conditions = PMTooltipConditionsFormatters().format(quest, condType == 'main')
                         conditionsText = self.formatConditions(conditions)
                         if conditionsText:
                             data.extend(self.getQuestCondition(condType, conditionsText))
-
         if not data:
             return []
         branch_name = PM_BRANCH.TYPE_TO_NAME[branch]
@@ -363,14 +362,12 @@ class ConfigInterface(DriftkingsConfigInterface):
                         if not isAvailable:
                             researchVehicles[compactDescr]['exp'] += fullCost
                             researchVehicles[compactDescr]['discount'] += discount
-
             isAvailable, cost, need, defCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD)
             if not isAvailable:
                 modulesNeedXP += cost
                 eliteNeedXP += cost
                 isEliteReady = True
                 isModulesReady = True
-
         return modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady
 
     @staticmethod

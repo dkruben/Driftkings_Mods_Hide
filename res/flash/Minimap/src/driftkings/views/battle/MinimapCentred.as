@@ -22,7 +22,7 @@ package driftkings.views.battle
 		{
 			var topPosition:uint = 0;
 			super.onPopulate();
-			minimap = !!battlePage.hasOwnProperty("minimap") ? this.battlePage.minimap : null;
+			minimap = !!battlePage.hasOwnProperty("minimap") ? battlePage.minimap : null;
 			if(minimap)
 			{
 				topPosition = battlePage.numChildren - 1;

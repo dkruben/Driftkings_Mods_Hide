@@ -19,8 +19,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.5 (%(file_compile_date)s)'
-        self.author = ' (orig by spoter)'
+        self.version = '1.7.0 (%(file_compile_date)s)'
+        self.author = ' (orig by spoter), mantained by Driftkings'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonMaxMode': [Keys.KEY_R, [Keys.KEY_LCONTROL, Keys.KEY_RCONTROL]]
@@ -91,13 +91,12 @@ class MovementControl(object):
         if CommandMapping.g_instance.isFiredList((CommandMapping.CMD_MOVE_FORWARD, CommandMapping.CMD_MOVE_FORWARD_SPEC, CommandMapping.CMD_MOVE_BACKWARD, CommandMapping.CMD_ROTATE_LEFT, CommandMapping.CMD_ROTATE_RIGHT), key):
             avatar.moveVehicle(0, is_down)
 
-    def startBattle(self):
+    def start_battle(self):
         InputHandler.g_instance.onKeyDown += self.keyPressed
         InputHandler.g_instance.onKeyUp += self.keyPressed
         self.timer = BigWorld.time()
         if self.callback is None:
             self.callback = callback(0.1, self.onCallback)
-        return
 
     def endBattle(self):
         if self.callback is not None:
@@ -105,7 +104,6 @@ class MovementControl(object):
             self.callback = None
         InputHandler.g_instance.onKeyDown -= self.keyPressed
         InputHandler.g_instance.onKeyUp -= self.keyPressed
-        return
 
     def onCallback(self):
         if config.data['enabled'] and config.data['autoActivateWheelMode']:
@@ -176,7 +174,8 @@ class MovementControl(object):
 
     @staticmethod
     def fixSiegeModeCruiseControl():
-        vehicle = getPlayer().getVehicleAttached()
+        player = BigWorld.player()
+        vehicle = player.getVehicleAttached()
         result = vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode
         if result:
             soundStateChange = vehicle.typeDescriptor.type.siegeModeParams['soundStateChange']
@@ -189,7 +188,7 @@ class Support(object):
     def message():
         sendPanelMessage(config.i18n['UI_battle_activateMessage'])
 
-    def startBattle(self):
+    def start_battle(self):
         if config.data['enabled'] and config.data['activateMessage']:
             callback(5.0, self.message)
 
@@ -201,7 +200,7 @@ analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
 @override(PlayerAvatar, 'handleKey')
-def new_playerAvatarHandleKey(func, *args):
+def new__playerAvatarHandleKey(func, *args):
     if config.data['enabled'] and config.data['fixAccuracyInMove']:
         self, is_down, key, mods = args
         movement_control.move_pressed(self, is_down, key)
@@ -209,29 +208,29 @@ def new_playerAvatarHandleKey(func, *args):
 
 
 @override(VehicleGunRotator.VehicleGunRotator, 'setShotPosition')
-def new_vehicleGunRotatorSetShotPosition(func, self, vehicleID, shotPos, shotVec, dispersionAngle, forceValueRefresh=False):
+def new__vehicleGunRotatorSetShotPosition(func, self, vehicleID, shotPos, shotVec, dispersionAngle, forceValueRefresh=False):
     if config.data['enabled']:
-        if self._avatar.vehicle:
+        if self._avatar.vehicle and config.data['serverTurret']:
             self._VehicleGunRotator__turretYaw, self._VehicleGunRotator__gunPitch = self._avatar.vehicle.getServerGunAngles()
-        forceValueRefresh = config.data['serverTurret']
+            forceValueRefresh = True
     return func(self, vehicleID, shotPos, shotVec, dispersionAngle, forceValueRefresh)
 
 
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
-def new_startGUI(func, *args):
+def new__startGUI(func, *args):
     func(*args)
-    support.startBattle()
-    movement_control.startBattle()
+    support.start_battle()
+    movement_control.start_battle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
-def new_destroyGUI(func, *args):
+def new__destroyGUI(func, *args):
     movement_control.endBattle()
     func(*args)
 
 
 @override(PlayerAvatar, 'updateSiegeStateStatus')
-def updateSiegeStateStatus(func, self, vehicleID, status, timeLeft):
+def new__updateSiegeStateStatus(func, self, vehicleID, status, timeLeft):
     if not movement_control.fixSiegeModeCruiseControl():
         return func(self, vehicleID, status, timeLeft)
     typeDescr = self._PlayerAvatar__updateVehicleStatus(vehicleID)
@@ -241,16 +240,16 @@ def updateSiegeStateStatus(func, self, vehicleID, status, timeLeft):
     self._PlayerAvatar__onSiegeStateUpdated(vehicleID, status, timeLeft)
 
 
-def decodeRestrictedValueFromUInt(code, bits, minBound, maxBound):
+def decodeRestrictedValueFromUint(code, bits, minBound, maxBound):
     code -= 0.5
     t = float(code) / ((1 << bits) - 1)
     return minBound + t * (maxBound - minBound)
 
 
-def decodeAngleFromUInt(code, bits):
+def decodeAngleFromUint(code, bits):
     code -= 0.5
     return math.pi * 2.0 * code / (1 << bits) - math.pi
 
 
-gun_rotation_shared.decodeRestrictedValueFromUint = decodeRestrictedValueFromUInt
-gun_rotation_shared.decodeAngleFromUint = decodeAngleFromUInt
+gun_rotation_shared.decodeRestrictedValueFromUint = decodeRestrictedValueFromUint
+gun_rotation_shared.decodeAngleFromUint = decodeAngleFromUint

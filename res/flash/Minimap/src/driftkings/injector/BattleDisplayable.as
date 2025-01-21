@@ -1,5 +1,6 @@
 package driftkings.injector
 {
+	import flash.events.Event;
 	import net.wg.gui.battle.components.BattleUIDisplayable;
 	import net.wg.gui.battle.views.BaseBattlePage;
    
@@ -17,11 +18,11 @@ package driftkings.injector
 		{
 			if(!this.battlePage.contains(this))
 			{
-				this.battlePage.addChildAt(this,1);
+				this.battlePage.addChild(this);
 			}
 			if(!this.battlePage.isFlashComponentRegisteredS(this.componentName))
 			{
-				this.battlePage.registerFlashComponent(this,this.componentName);
+				this.battlePage.registerFlashComponentS(this,this.componentName);
 			}
 		}
       
@@ -40,12 +41,22 @@ package driftkings.injector
 		override protected function onPopulate() : void
 		{
 			super.onPopulate();
+			this.battlePage.addEventListener(Event.RESIZE,this._handleResize);
 		}
       
 		override protected function onDispose() : void
 		{
+			this.battlePage.removeEventListener(Event.RESIZE,this._handleResize);
 			this.finiBattle();
 			super.onDispose();
 		}
+      
+		private function _handleResize(param1:Event) : void
+		{
+			this.onResized();
+		}
+      
+		protected function onResized() : void
+		{}
 	}
 }

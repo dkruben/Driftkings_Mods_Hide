@@ -1,26 +1,21 @@
 package 
 {
-   import driftkings.views.battle.MinimapCentred;
-   import driftkings.injector.AbstractViewInjector;
-   import driftkings.injector.IAbstractInjector;
-   import flash.display3D.VertexBuffer3D;
+	import driftkings.views.battle.MinimapCentred;
+	import driftkings.injector.AbstractViewInjector;
    
-   public class MinimapCentredUI extends AbstractViewInjector implements IAbstractInjector
-   {
-	
-	   public function MinimapCentredUI()
+	public class MinimapCentredUI extends AbstractViewInjector
+	{
+		public function MinimapCentredUI()
 		{
 			super();
 		}
-      
-		override public function get componentUI() : Class
+
+		override protected function onPopulate() : void
 		{
-			return MinimapCentred;
-		}
-      
-		override public function get componentName() : String
-		{
-			return "MinimapCentredView";
+			autoDestroy = false;
+			componentName = "MinimapCentredView";
+			componentUI = MinimapCentred;
+			super.onPopulate();
 		}
 	}
 }
