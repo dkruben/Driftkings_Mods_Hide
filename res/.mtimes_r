@@ -59,12 +59,9 @@
 1697714475|configs/Driftkings/MinimapPlugins/i18n/pt.json
 1711761493|configs/Driftkings/OwnHealth/OwnHealth.json
 1711318098|configs/Driftkings/OwnHealth/i18n/en.json
-1609164316|configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json
+1737504856|configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json
 1609163524|configs/Driftkings/PlayersPanelHP/i18n/en.json
 1697714475|configs/Driftkings/PlayersPanelHP/i18n/pt.json
-1656806539|configs/Driftkings/PlayersPanelHP/icons/hpBar_left.png
-1656806539|configs/Driftkings/PlayersPanelHP/icons/hpBar_right.png
-1607458606|configs/Driftkings/PlayersPanelHP/icons/hpBg.png
 1609163590|configs/Driftkings/RepairExtended/RepairExtended.json
 1609163590|configs/Driftkings/RepairExtended/i18n/en.json
 1617749099|configs/Driftkings/SafeShot/SafeShot.json
@@ -127,7 +124,6 @@
 1713319941|flash/AccountsManager/src/components/AMButton.as
 1713224004|flash/AccountsManager/src/components/AM_MODES.as
 1710347035|flash/ArmorCalculator/ArmorCalculator.as3proj
-1709773383|flash/ArmorCalculator/ArmorCalculator.fla
 1710344500|flash/ArmorCalculator/src/driftkings/ArmorCalculatorInjector.as
 1710788386|flash/ArmorCalculator/src/driftkings/views/battle/ArmorCalculatorUI.as
 1710042272|flash/ArmorCalculator/src/driftkings/views/utils/Constants.as
@@ -137,17 +133,15 @@
 1710344394|flash/ArmorCalculator/src/mods/common/BattleDisplayable.as
 1710344394|flash/ArmorCalculator/src/mods/common/IAbstractInjector.as
 1710884618|flash/BattleClock/BattleClock.as3proj
-1732740697|flash/BattleClock/BattleClock.fla
 1710885331|flash/BattleClock/src/driftkings/BattleClockInjector.as
 1727048053|flash/BattleClock/src/driftkings/views/battle/BattleClockUI.as
 1732740592|flash/BattleClock/src/driftkings/views/utils/Constants.as
 1732740422|flash/BattleClock/src/driftkings/views/utils/TextExt.as
-1710885001|flash/BattleClock/src/driftkings/views/utils/Utils.as
+1737501368|flash/BattleClock/src/driftkings/views/utils/Utils.as
 1710344394|flash/BattleClock/src/mods/common/AbstractViewInjector.as
 1710344394|flash/BattleClock/src/mods/common/BattleDisplayable.as
 1710344394|flash/BattleClock/src/mods/common/IAbstractInjector.as
 1710377546|flash/DispersionTimer/DispersionTimer.as3proj
-1709773383|flash/DispersionTimer/DispersionTimer.fla
 1710377483|flash/DispersionTimer/src/driftkings/DispersionTimerInjector.as
 1710466355|flash/DispersionTimer/src/driftkings/views/battle/DispersionTimerUI.as
 1710042272|flash/DispersionTimer/src/driftkings/views/utils/Constants.as
@@ -157,7 +151,6 @@
 1710344394|flash/DispersionTimer/src/mods/common/BattleDisplayable.as
 1710344394|flash/DispersionTimer/src/mods/common/IAbstractInjector.as
 1711248464|flash/DistanceToEnemy/DistanceToEnemy.as3proj
-1713919769|flash/DistanceToEnemy/DistanceToEnemy.fla
 1711248502|flash/DistanceToEnemy/src/driftkings/DistanceInjector.as
 1711249777|flash/DistanceToEnemy/src/driftkings/views/battle/DistanceUI.as
 1710042272|flash/DistanceToEnemy/src/driftkings/views/utils/Constants.as
@@ -178,7 +171,6 @@
 1727048053|flash/FlightTimer/src/mods/common/BattleDisplayable.as
 1727048053|flash/FlightTimer/src/mods/common/IAbstractInjector.as
 1711479785|flash/MainGun/MainGun.as3proj
-1713919568|flash/MainGun/MainGun.fla
 1710969428|flash/MainGun/src/driftkings/MainGunInjector.as
 1711483557|flash/MainGun/src/driftkings/views/battle/MainGunUI.as
 1711478850|flash/MainGun/src/driftkings/views/battle/img/done.png
@@ -195,7 +187,6 @@
 1710344394|flash/MainGun/src/mods/common/BattleDisplayable.as
 1710344394|flash/MainGun/src/mods/common/IAbstractInjector.as
 1708735493|flash/MarksOnGunTechTree/MarksOnGunTechTree.as3proj
-1663023031|flash/MarksOnGunTechTree/MarksOnGunTechTree.fla
 1708656579|flash/MarksOnGunTechTree/src/NationTreeNodeSkinned.as
 1734824066|flash/Minimap/MinimapCentred.as3proj
 1737500864|flash/Minimap/src/MinimapCentredUI.as
@@ -203,7 +194,6 @@
 1737500738|flash/Minimap/src/driftkings/injector/BattleDisplayable.as
 1737416287|flash/Minimap/src/driftkings/views/battle/MinimapCentred.as
 1711315119|flash/OwnHealth/OwnHealth.as3proj
-1713918994|flash/OwnHealth/OwnHealth.fla
 1711315611|flash/OwnHealth/src/driftkings/OwnHealthInjector.as
 1736206402|flash/OwnHealth/src/driftkings/views/battle/OwnHealthUI.as
 1734995341|flash/OwnHealth/src/driftkings/views/utils/Align.as
@@ -229,7 +219,6 @@
 1710344394|flash/SixthSense/src/mods/common/BattleDisplayable.as
 1710344394|flash/SixthSense/src/mods/common/IAbstractInjector.as
 1711757382|flash/TotalLog/TotalLog.as3proj
-1713918975|flash/TotalLog/TotalLog.fla
 1711757429|flash/TotalLog/src/driftkings/TotalLogInjector.as
 1735842086|flash/TotalLog/src/driftkings/views/battle/TotalLogUI.as
 1734995341|flash/TotalLog/src/driftkings/views/utils/Align.as
@@ -247,7 +236,7 @@
 1735226298|flash/swc/lobby.swc
 1729029790|meta/DriftkingsCore.xml
 1607458606|meta/LICENSE
-1605979108|meta/voice.xml
+1737501483|meta/voice.xml
 1712592795|res/gui/AccountsManager/AM_Icon_MouseOut.png
 1712592795|res/gui/AccountsManager/AM_Icon_MouseOver.png
 1712592795|res/gui/AccountsManager/delete.png
@@ -324,6 +313,9 @@
 1634120815|res/gui/HangarBoosterViewer/clan/booster_fl_xp.png
 1634120815|res/gui/HangarBoosterViewer/clan/booster_free_xp.png
 1634120815|res/gui/HangarBoosterViewer/clan/booster_xp.png
+1559058420|res/gui/PlayersPanelHP/hp_alive_l.png
+1559058484|res/gui/PlayersPanelHP/hp_alive_r.png
+1401634608|res/gui/PlayersPanelHP/hp_bg.png
 1607458608|res/maps/icons/Driftkings/small.png
 1698170777|res/maps/icons/HangarEfficiency/armor.png
 1729011003|res/maps/icons/HangarEfficiency/battles.png
@@ -378,17 +370,6 @@
 1498053318|res/maps/icons/library/Rank_add.png
 1498053292|res/maps/icons/library/Rank_del.png
 1497863636|res/maps/icons/library/VehicleSlot.png
-1607458606|res/mod/TankCarousel/crystals.png
-1605979108|res/mod/TankCarousel/elite.png
-1605979108|res/mod/TankCarousel/fullcrew.png
-1605979108|res/mod/TankCarousel/nomaster.png
-1605979108|res/mod/TankCarousel/nonelite.png
-1605979108|res/mod/TankCarousel/normal.png
-1605979108|res/mod/TankCarousel/premium.png
-1605979108|res/mod/TankCarousel/rented.png
-1605979108|res/mod/TankCarousel/reserve.png
-1607458606|res/mod/TankCarousel/special.png
-1605979108|res/mod/TankCarousel/trainingcrew.png
 1736976783|res/objects/artySplash/CheckPoint_yellow_black.model
 1736976848|res/objects/artySplash/CheckPoint_yellow_black.visual_processed
 1736976829|res/objects/artySplash/CheckPoint_yellow_black_Editor.model
@@ -460,6 +441,6 @@
 1727048053|sound_bank_wwise/SixthSense/Triggers/Default Work Unit.wwu
 1727048053|sound_bank_wwise/SixthSense/Virtual Acoustics/Default Work Unit.wwu
 1727048053|sound_bank_wwise/license_key.txt
-1715138779|wotmods/gambiter.guiflash_0.6.2.1b.wotmod
+1731013864|wotmods/gambiter.guiflash_0.6.3.wotmod
 1734377626|wotmods/izeberg.modssettingsapi_1.6.1.wotmod
-1734377690|wotmods/me.poliroid.modslistapi_1.5.01.wotmod
+1737322176|wotmods/me.poliroid.modslistapi_1.6.00.wotmod
