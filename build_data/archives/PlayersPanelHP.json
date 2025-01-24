@@ -1,10 +1,7 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".zip",
     "files": {
-        "mods/configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json":  "res/configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json",
-        "mods/configs/Driftkings/PlayersPanelHP/i18n/en.json": "res/configs/Driftkings/PlayersPanelHP/i18n/en.json",
-        "mods/configs/Driftkings/PlayersPanelHP/icons/**": "res/configs/Driftkings/PlayersPanelHP/icons/**",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",

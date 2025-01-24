@@ -1,10 +1,7 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".zip",
     "files": {
-	    "mods/configs/Driftkings/BanksLoader/BanksLoader.json": "res/configs/Driftkings/BanksLoader/BanksLoader.json",
-		"mods/configs/Driftkings/SixthSense/SixthSense.json": "res/configs/Driftkings/SixthSense/SixthSense.json",
-		"mods/configs/Driftkings/SixthSense/i18n/en.json": "res/configs/Driftkings/SixthSense/i18n/en.json",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/Driftkings/driftkings_sixthsense.wotmod": "res/audioww/driftkings_sixthsense.wotmod",

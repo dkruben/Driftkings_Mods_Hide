@@ -2,8 +2,6 @@
     "enabled": true,
     "ext": ".zip",
     "files": {
-        "mods/configs/Driftkings/RepairExtended/RepairExtended.json": "res/configs/Driftkings/RepairExtended/RepairExtended.json",
-        "mods/configs/Driftkings/RepairExtended/i18n/en.json": "res/configs/Driftkings/RepairExtended/i18n/en.json",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/Driftkings/RepairExtended.wotmod": "build/wotmods/Driftkings/RepairExtended.wotmod",

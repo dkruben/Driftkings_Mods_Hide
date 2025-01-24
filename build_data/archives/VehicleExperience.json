@@ -1,9 +1,7 @@
 ﻿{
-    "enabled": false,
+    "enabled": true,
     "ext": ".zip",
     "files": {
-        "mods/configs/Driftkings/VehicleExperience/VehicleExperience.json": "res/configs/Driftkings/VehicleExperience/VehicleExperience.json",
-        "mods/configs/Driftkings/VehicleExperience/i18n/en.json": "res/configs/Driftkings/VehicleExperience/i18n/en.json",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
