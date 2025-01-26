@@ -61,8 +61,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.1.5 (%(file_compile_date)s)'
-        self.author = 'Maintenance by: _DKRuben_EU'
+        self.version = '3.2.0 (%(file_compile_date)s)'
+        self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'autoLogin': True,
@@ -313,12 +313,11 @@ def new__showAward(func, self, ctx):
 
 
 # hide display banner of various events in the hangar
-@override(EventEntryPointsContainer, '_EventEntryPointsContainer__updateEntries')
-def new__updateEntries(func, self):
+@override(EventEntryPointsContainer, 'as_updateEntriesS')
+def new__updateEntries(func, self, data):
     if config.data['enabled'] and config.data['showEventBanner']:
-        self.as_updateEntriesS([])
-        return
-    func(self)
+        return func(self, [])
+    return func(self, data)
 
 
 # hide prestige (elite levels) system widget in the hangar

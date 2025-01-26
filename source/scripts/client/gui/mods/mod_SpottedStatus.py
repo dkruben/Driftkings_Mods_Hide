@@ -24,7 +24,7 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.0 (%(file_compile_date)s)'
+        self.version = '1.4.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -47,9 +47,9 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_dead_tooltip': '',
             'UI_setting_help_text': 'Help:',
             'UI_setting_help_tooltip': ' * You can change images to text or icons.\n'
-                                       ' * For icons go to ../Games/WorldOfTanks_xx/mods/configs/Driftkings/SpottedStatus/icons/*.png and replace names\n'
-                                       '\t'.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'>') + '<font color=\'#\'>'
-                                       'Please don\'t chang the text in text box if you don\'t know you doing</font>' + '\t'.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'22\' height=\'22\'>')
+                                       ' * For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n'
+                                       '\t'.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>')) + '<font color=\'#\'>'
+                                       'Please don\'t chang the text in text box if you don\'t know you doing.</font>' + '\t'.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>'))
         }
         super(ConfigInterface, self).init()
 
@@ -86,17 +86,19 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
 
     def getSpottedStatus(self):
         for vID in self._spotted_cache:
+            # neverSeen, spotted, lost, dead
             if self._spotted_cache[vID] == 'neverSeen':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['neverSeen']})
-
+            # dead
             elif self._spotted_cache[vID] == 'dead':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['dead']})
-
+            # lost
             elif self._spotted_cache[vID] == 'lost':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['lost']})
+            # spotted
             elif self._spotted_cache[vID] == 'spotted':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['spotted']})
@@ -165,8 +167,8 @@ except StandardError:
     traceback.print_exc()
 else:
     @override(ArenaVehiclesPlugin, '_setInAoI')
-    def new_setInAoI(func, self, entry, isInAoI):
-        result = func(self, entry, isInAoI)
+    def new_setInAoI(func, self, entry, isInAoI, *args, **kwargs):
+        result = func(self, entry, isInAoI, *args, **kwargs)
         try:
             for vehicleID, entry2 in self._entries.iteritems():
                 if entry == entry2 and config.data['enabled']:
