@@ -68,7 +68,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_disableMessage_text': 'Disable Message',
             'UI_setting_disableMessage_tooltip': '',
         }
-
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
