@@ -19,7 +19,7 @@ from items.components import component_constants
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logException, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logException, logInfo, calculate_version
 from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
@@ -366,6 +366,7 @@ def updateCrew(vehicle):
             randomization = randomization + (0.2 - randomization) * (level - randomization) / 100
             break
 
+    logInfo(config.ID, randomization)
     _ShotResult.RANDOMIZATION = randomization
 
 
