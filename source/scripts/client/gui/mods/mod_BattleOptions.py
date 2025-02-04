@@ -421,3 +421,6 @@ def onGuiCacheSyncCompleted(_):
 
 g_playerEvents.onGuiCacheSyncCompleted += onGuiCacheSyncCompleted
 g_events.onVehicleChangedDelayed += onVehicleChanged
+
+def fini():
+    g_events.onVehicleChangedDelayed -= onVehicleChanged

@@ -89,9 +89,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     @staticmethod
     def color_vector(value, default):
         try:
-            if value.startswith('#'):
-                value = value[1:]
-            value = '{}{}'.format(value[-6:], 'FF')
+            value = '#{}{}'.format(value[-6:], 'FF')
             return tuple(int(value[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
         except ValueError:
             return default
@@ -135,8 +133,11 @@ def new__changeColor(func, diff):
         enemy = config.color_vector(config.data['enemyAlive'], colors['enemy'])
 
     colorsSet = (colors['hangar'] if isHangar else colors['self'], enemy, friend, colors['flag'])
-    for idx, c in enumerate(colorsSet):
-        BigWorld.wgSetEdgeDetectEdgeColor(c)
+    i = 0
+    for c in colorsSet:
+        BigWorld.wgSetEdgeDetectEdgeColor(i, c)
+        i += 1
+
     for target, idx in _OVERLAY_TARGET_INDEXES.iteritems():
         BigWorld.wgSetEdgeDetectSolidColors(idx, *colors['overlaySolidColors'][target]['packed'])
         BigWorld.wgSetEdgeDetectPatternColors(idx, *colors['overlayPatternColors'][target]['packed'])
@@ -150,13 +151,13 @@ def new__onEnterWorld(func, self, prereqs):
 
 @override(PlayerAvatar, 'targetFocus')
 def new__targetFocus(func, self, entity):
-    global isSquad, isTeamKill
     func(self, entity)
+    global isSquad, isTeamKill
     if entity in self._PlayerAvatar__vehicles:
         prev_isSquad = isSquad
-        getArenaDP = g_instance.guiSessionProvider.getArenaDP()
+        getArenaDP = self.guiSessionProvider.getArenaDP()
         isSquad = getArenaDP.isSquadMan(vID=entity.id)
-        prev_is_team_kill = isTeamKill
+        prev_isTeamKill = isTeamKill
         isTeamKill = getArenaDP.isTeamKiller(vID=entity.id)
-        if (prev_isSquad != isSquad) or (prev_is_team_kill != isTeamKill):
+        if (prev_isSquad != isSquad) or (prev_isTeamKill != isTeamKill):
             g_instance.updateColors()

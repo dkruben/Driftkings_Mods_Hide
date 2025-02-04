@@ -19,7 +19,7 @@ from items.components import component_constants
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logException, logInfo, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, calculate_version
 from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
@@ -118,6 +118,11 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged += self.onCameraChanged
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
+        if self.gui.isComp7Battle():
+            preBattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if preBattleCtrl is not None:
+                preBattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
+            self.__updateCurrVehicleInfo()
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
@@ -128,20 +133,21 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged -= self.onCameraChanged
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
+        if self.gui.isComp7Battle():
+            preBattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if preBattleCtrl is not None:
+                preBattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
 
-    @logException
     def onMarkerColorChanged(self, color):
         self.calcMacro['color'] = config.i18n['UI_colors'].get(color, '#FFD700')
         self.calcMacro['message'] = config.data['messages'].get(color, '')
 
-    @logException
     def onCameraChanged(self, ctrlMode, *_, **__):
         _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
         if ctrlMode in _CTRL_MODE:
             self.as_armorCalculatorS('')
 
-    @logException
     def onArmorChanged(self, armor, piercingPower, caliber, ricochet, noDamage):
         if armor is None:
             return self.as_armorCalculatorS('')
@@ -152,6 +158,16 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['piercingReserve'] = piercingPower - armor
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
+
+    def __updateCurrVehicleInfo(self, vehicle=None):
+        ctrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+        if ctrl is None:
+            return
+        else:
+            if vehicle is None:
+                vehicle = ctrl.getCurrentGUIVehicle()
+            if vehicle is not None and not avatar_getter.isObserver():
+                updateCrew(vehicle)
 
 
 class ArmorCalculatorAllies(object):
@@ -351,6 +367,8 @@ def new__createPlugins(func, *args):
 
 
 def updateCrew(vehicle):
+    if not config.data['enabled']:
+        return
     if vehicle is None or vehicle.isLocked or vehicle.isCrewLocked:
         return
     randomization = component_constants.DEFAULT_PIERCING_POWER_RANDOMIZATION
@@ -373,3 +391,7 @@ def updateCrew(vehicle):
 g_events.onVehicleChangedDelayed += updateCrew
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+
+
+def fini():
+    g_events.onVehicleChangedDelayed -= updateCrew

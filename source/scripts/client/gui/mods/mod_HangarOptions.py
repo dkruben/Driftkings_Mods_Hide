@@ -733,6 +733,3 @@ def init():
         overrideStaticMethod(LootBoxesEntryPointWidget, 'getIsActive', new__getIsActive)
         override(TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
         __initialized = True
-
-
-init()
