@@ -35,7 +35,7 @@ gm_factory._GUN_MARKER_LINKAGES.update(LINKAGES)
 aih_constants.GUN_MARKER_MIN_SIZE = 14.0
 aih_constants.SPG_GUN_MARKER_MIN_SIZE = 24.0
 
-REPLACE = {CLIENT, SERVER, DUAL_ACC}
+REPLACE = {CLIENT, DUAL_ACC}
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -87,10 +87,11 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 
 def getSetting(gunMakerType):
-    if gunMakerType in REPLACE and config.data['replaceOriginalCircle']:
-        return True
-    elif gunMakerType == SERVER:
-        return config.data['useServerDispersion']
+    replace = config.data['replaceOriginalCircle']
+    if gunMakerType == SERVER:
+        return config.data['useServerDispersion'] or replace
+    elif gunMakerType in REPLACE:
+        return replace
     return False
 
 
