@@ -4,13 +4,17 @@ from AvatarInputHandler import gun_marker_ctrl
 from BattleReplay import g_replayCtrl
 from Event import SafeEvent
 from VehicleGunRotator import VehicleGunRotator
+from account_helpers.settings_core.settings_constants import GAME
 from constants import SERVER_TICK_LENGTH
 from gui.Scaleform.daapi.view.battle.shared.crosshair import gm_factory
 from gui.Scaleform.daapi.view.battle.shared.crosshair.container import CrosshairPanelContainer
 from gui.Scaleform.genConsts.GUN_MARKER_VIEW_CONSTANTS import GUN_MARKER_VIEW_CONSTANTS as _CONSTANTS
 from gui.battle_control.controllers.crosshair_proxy import CrosshairDataProxy
+from helpers import dependency
+from skeletons.account_helpers.settings_core import ISettingsCore
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, calculate_version, isReplay
+
 
 CLIENT = gun_marker_ctrl._MARKER_TYPE.CLIENT
 SERVER = gun_marker_ctrl._MARKER_TYPE.SERVER
@@ -37,6 +41,18 @@ aih_constants.SPG_GUN_MARKER_MIN_SIZE = 24.0
 
 REPLACE = {CLIENT, DUAL_ACC}
 
+base_before_override = {}
+
+
+def cancelOverride(orig, prop, replaced_name):
+    class_name = orig.__name__
+    if prop.startswith('__'):
+        prop = '_{0}{1}'.format(class_name, prop)
+    full_name_with_class = '{0}.{1}*{2}'.format(class_name, prop, replaced_name)
+    if full_name_with_class in base_before_override:
+        setattr(orig, prop, base_before_override.pop(full_name_with_class))
+        print 'cancelOverrode: override {} removed'.format(full_name_with_class)
+
 
 class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
@@ -45,7 +61,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.9.5 (%(file_compile_date)s)'
+        self.version = '2.0.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -81,8 +97,8 @@ class ConfigInterface(DriftkingsConfigInterface):
         }
 
     # noinspection PyProtectedMember
-    def onApplySettings(self, settings):
-        super(ConfigInterface, self).onApplySettings(settings)
+    # def onApplySettings(self, settings):
+    #    super(ConfigInterface, self).onApplySettings(settings)
 
 
 
@@ -130,18 +146,12 @@ class SPGController(gun_marker_ctrl._SPGGunMarkerController):
         self._dataProvider.setupConicDispersion(dispersionAngle)
 
 
-
-base_before_override = {}
-
-
-def cancelOverride(orig, prop):
-    class_name = orig.__name__
-    if prop.startswith('__'):
-        prop = '_{0}{1}'.format(class_name, prop)
-    full_name_with_class = class_name + '.' + prop
-    if full_name_with_class in base_before_override:
-        setattr(orig, prop, base_before_override.pop(full_name_with_class))
-        print 'cancelOverrode: override {} removed', full_name_with_class
+def disable_server_aim():
+    settingsCore = dependency.instance(ISettingsCore)
+    if settingsCore.getSetting(GAME.ENABLE_SERVER_AIM):
+        settingsCore.applySettings({GAME.ENABLE_SERVER_AIM: 0})
+        settingsCore.applyStorages(False)
+        settingsCore.clearStorages()
 
 
 class DispersionCircle(object):
@@ -162,20 +172,20 @@ class DispersionCircle(object):
 
     @staticmethod
     def cancelServerCrossOverride():
-        cancelOverride(gm_factory, 'createComponents')
-        cancelOverride(gm_factory, 'overrideComponents')
-        cancelOverride(gun_marker_ctrl, 'useDefaultGunMarkers')
-        cancelOverride(gun_marker_ctrl, 'useClientGunMarker')
-        cancelOverride(gun_marker_ctrl, 'useServerGunMarker')
-        cancelOverride(VehicleGunRotator, 'applySettings')
-        cancelOverride(VehicleGunRotator, 'setShotPosition')
-        cancelOverride(CrosshairDataProxy, '__onServerGunMarkerStateChanged')
-        cancelOverride(CrosshairPanelContainer, 'setGunMarkerColor')
+        cancelOverride(gm_factory, 'createComponents', 'createOverrideComponents')
+        cancelOverride(gm_factory, 'overrideComponents', 'createOverrideComponents')
+        cancelOverride(gun_marker_ctrl, 'useDefaultGunMarkers', 'useDefaultGunMarkers')
+        cancelOverride(gun_marker_ctrl, 'useClientGunMarker', 'useGunMarker')
+        cancelOverride(gun_marker_ctrl, 'useServerGunMarker', 'useGunMarker')
+        cancelOverride(VehicleGunRotator, 'applySettings', 'onPass')
+        cancelOverride(VehicleGunRotator, 'setShotPosition', 'setShotPosition')
+        cancelOverride(CrosshairDataProxy, '__onServerGunMarkerStateChanged', 'onPass')
+        cancelOverride(CrosshairPanelContainer, 'setGunMarkerColor', 'setGunMarkerColor')
 
     @staticmethod
     def createOverrideComponents(base, *args):
-        player = getPlayer()
-        player.enableServerAim(True)
+        disable_server_aim()
+        getPlayer().cell.setServerMarker(True)
         if len(args) == 2:
             return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).create(*args)
         return gm_factory._GunMarkersFactories(*DEV_FACTORIES_COLLECTION).override(*args)
@@ -193,17 +203,16 @@ class DispersionCircle(object):
         pass
 
     @staticmethod
-    def setShotPosition(base, rotator, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=False):
-        base(rotator, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=forceValueRefresh)
-        m_position = rotator._VehicleGunRotator__getGunMarkerPosition(sPos, sVec, rotator.getCurShotDispersionAngles())
+    def setShotPosition(func, self, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=False):
+        m_position = self._VehicleGunRotator__getGunMarkerPosition(sPos, sVec, self.getCurShotDispersionAngles())
         mPos, mDir, mSize, dualAccSize, mSizeOffset, collData = m_position
-        rotator._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, SERVER_TICK_LENGTH, collData)
+        self._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, SERVER_TICK_LENGTH, collData)
 
     @staticmethod
-    def setGunMarkerColor(base, cr_panel, markerType, color):
+    def setGunMarkerColor(func, self, markerType, color):
         if markerType == CLIENT:
-            base(cr_panel, SERVER, color)
-        return base(cr_panel, markerType, color)
+            func(self, SERVER, color)
+        return func(self, markerType, color)
 
     def onModSettingsChanged(self):
         if isReplay():
@@ -213,7 +222,7 @@ class DispersionCircle(object):
         if replace or server:
             override(gun_marker_ctrl, 'createGunMarker', self.createGunMarker)
         else:
-            cancelOverride(gun_marker_ctrl, 'createGunMarker')
+            cancelOverride(gun_marker_ctrl, 'createGunMarker', 'createGunMarker')
         if server:
             self.addServerCrossOverrides()
         else:
@@ -234,8 +243,8 @@ class DispersionCircle(object):
 
 
 config = ConfigInterface()
-dispersion_circle = DispersionCircle()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+dispersion_circle = DispersionCircle()
 dispersion_circle.onModSettingsChanged()
 
 

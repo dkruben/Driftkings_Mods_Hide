@@ -61,7 +61,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.2.0 (%(file_compile_date)s)'
+        self.version = '3.2.5 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -716,8 +716,8 @@ def init():
 
     if getRegion() != 'RU':
         from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
-        from gui.impl.lobby.lootbox_system.entry_point import LootBoxSystemEntryPoint
-        from gui.impl.lobby.comp7.tournaments_widget import TournamentsWidgetComponent
+        from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
+        from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
         from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 
         override(BaseQuestsWidgetComponent, '_shouldHide', new__shouldHide)
@@ -725,7 +725,7 @@ def init():
         override(TournamentsWidgetComponent, '_makeInjectView', new__makeInjectView)
         override(_TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
     else:
-        from gui_lootboxes.gui.impl.lobby.gui_lootboxes.entry_point_view import LootBoxesEntryPointWidget
+        from gui_lootboxes.gui.impl.lobby.gui_lootboxes.base.entry_point_view import LootBoxesEntryPointWidget
         from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
         from gui.techtree.techtree_dp import TechTreeDataProvider
 

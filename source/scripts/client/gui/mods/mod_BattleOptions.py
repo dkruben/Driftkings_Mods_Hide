@@ -13,6 +13,7 @@ from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
+from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
@@ -26,7 +27,6 @@ from gui.battle_control.arena_info.arena_vos import VehicleTypeInfoVO
 from gui.battle_control.arena_visitor import _ClientArenaVisitor
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.arena_border_ctrl import ArenaBorderController
-from gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from gui.battle_control.controllers.team_bases_ctrl import BattleTeamsBasesController
 from gui.battle_results.components.common import ShowRateSatisfactionCmp
 from gui.doc_loaders import GuiColorsLoader
@@ -53,7 +53,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.3.5 (%(file_compile_date)s)'
+        self.version = '2.4.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
