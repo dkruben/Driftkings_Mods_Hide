@@ -38,6 +38,12 @@ package driftkings.views.battle
 			}
 		}
 		
+		override protected function onBeforeDispose():void 
+		{
+			super.onBeforeDispose();
+			this.armorCalc = null;
+		}
+		
 		public function as_onCrosshairPositionChanged(x:Number, y:Number):void
 		{
 			this.x = x;
