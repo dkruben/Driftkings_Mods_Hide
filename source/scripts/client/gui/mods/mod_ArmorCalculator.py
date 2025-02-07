@@ -119,9 +119,9 @@ class ArmorCalculator(ArmorCalculatorMeta):
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
         if self.gui.isComp7Battle():
-            preBattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-            if preBattleCtrl is not None:
-                preBattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
+            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if prebattleCtrl is not None:
+                prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
             self.__updateCurrVehicleInfo()
 
     def _dispose(self):
@@ -134,9 +134,9 @@ class ArmorCalculator(ArmorCalculatorMeta):
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
         if self.gui.isComp7Battle():
-            preBattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-            if preBattleCtrl is not None:
-                preBattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
+            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if prebattleCtrl is not None:
+                prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
 
     def onMarkerColorChanged(self, color):
