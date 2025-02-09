@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from threading import Thread
-
 from adisp import adisp_process
 from gui import SystemMessages
 from gui.clans.clan_cache import g_clanCache
@@ -23,13 +21,27 @@ NEXT_DOUBLE = (3, 8, 13, 18)
 
 
 class ConfigInterface(DriftkingsConfigInterface):
+    __webController = dependency.descriptor(IWebController)
+    __itemsCache = dependency.descriptor(IItemsCache)
+    __hangarSpace = dependency.descriptor(IHangarSpace)
+    
+    def __init__(self):
+        self.__hangarSpace.onSpaceCreate += self.onCreate
+        self.__cachedProgressData = None
+        self.__cachedQuestsData = None
+        self.__cachedSettingsData = None
+        self.__claim_started = False
+        self.__maximum_level = '21'
+        self.__enabled = False
+        super(ConfigInterface, self).__init__()
+    
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU_'
         self.data = {
-            'enabled': True,
-            'claimRewards': False
+            'enabled': False,
+            'claimRewards': True
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -48,26 +60,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             ],
             'column2': []
         }
-
-
-config = ConfigInterface()
-analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
-
-class AutoClaimClanReward(object):
-    __webController = dependency.descriptor(IWebController)
-    __itemsCache = dependency.descriptor(IItemsCache)
-    __hangarSpace = dependency.descriptor(IHangarSpace)
-
-    def __init__(self):
-        self.__hangarSpace.onSpaceCreate += self.onCreate
-        self.__cachedProgressData = None
-        self.__cachedQuestsData = None
-        self.__cachedSettingsData = None
-        self.__claim_started = False
-        self.__enabled = config.data['enabled'] and config.data['claimRewards']
-        self.__maximum_level = '21'
-
+    
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        self.__enabled = self.data['enabled'] and self.data['claimRewards']
+    
     def onCreate(self):
         self.__hangarSpace.onSpaceCreate -= self.onCreate
         if not g_clanCache.isInClan:
@@ -154,6 +151,5 @@ class AutoClaimClanReward(object):
             self.__cachedSettingsData = data
 
 
-g_autoClaimClanReward = Thread(target=AutoClaimClanReward, name='mod_AutoClaimClanReward')
-g_autoClaimClanReward.daemon = True
-g_autoClaimClanReward.start()
+config = ConfigInterface()
+analytics = Analytics(config.ID, config.version, 'UA-121940539-1')

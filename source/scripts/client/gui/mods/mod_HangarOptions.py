@@ -78,6 +78,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'allowChannelButtonBlinking': True,
             'premiumTime': False,
             'lootBoxesWidget': False,
+            'hideBtnCounters': False,
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
@@ -138,6 +139,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
             'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
             'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
+            'UI_setting_hideBtnCounters_text': 'Disable tooltips on buttons in the hangar header',
+            'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#\'>'
+                                                  + 'To enable / disable you need to restart the game.</font>' +
+                                                  ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')),
+                                                   ),
             'UI_setting_clock_text': 'Clock Display',
             'UI_setting_clock_tooltip': 'Show clock in login screen and hangar'
         }
@@ -173,7 +179,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showPremiumShopButton'),
                 self.tb.createControl('showProfilePrestigeWidget'),
                 self.tb.createControl('showWotPlusButton'),
-                self.tb.createControl('showXpToUnlockVeh')
+                self.tb.createControl('showXpToUnlockVeh'),
+                self.tb.createControl('hideBtnCounters')
             ]
         }
 
@@ -219,6 +226,13 @@ def new__setInitDataS(func, self, data):
     if config.data['enabled'] and config.data['showReferralButton'] and ('isReferralEnabled' in data):
         data['isReferralEnabled'] = False
     return func(self, data)
+
+
+# hide button counters in lobby header
+@override(LobbyHeader, '__setCounter')
+def buttonCounterS(base, *args, **kwargs):
+    if not config.data['hideBtnCounters']:
+        return base(*args, **kwargs)
 
 
 # hide shared chat button
