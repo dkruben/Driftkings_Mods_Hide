@@ -637,6 +637,7 @@ class InfoPanel(DataConstants):
             else:
                 self.hide()
 
+
     def hide(self):
         if self.timer is not None and self.timer.isStarted():
             self.timer.stop()
@@ -652,6 +653,7 @@ class InfoPanel(DataConstants):
             self.timer = None
         self.timer = TimeInterval(config.data['delay'], self, 'hide')
         self.timer.start()
+        g_flash.setVisible(False)
 
     def onUpdateVehicle(self, vehicle):
         player = getPlayer()

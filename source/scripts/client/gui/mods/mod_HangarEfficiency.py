@@ -26,17 +26,17 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
-            'enabled': True,
-            'avgAssist': False,
-            'avgBlocked': False,
-            'avgDamage': False,
-            'avgStun': False,
-            'gunMarks': False,
-            'winRate': False,
-            'battles': False
+            'enabled': False,
+            'avgAssist': True,
+            'avgBlocked': True,
+            'avgDamage': True,
+            'avgStun': True,
+            'gunMarks': True,
+            'winRate': True,
+            'battles': True
         }
 
         self.i18n = {

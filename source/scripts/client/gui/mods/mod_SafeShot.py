@@ -84,7 +84,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('disableMessage'),
                 self.tb.createHotKey('disableKey'),
                 self.tb.createControl('format', self.tb.types.TextInput, 350),
-                self.tb.createSlider('deadShotBlockTimeOut', 2, 10, 1, '{{value}}%s' % ' .sec')
+                self.tb.createSlider('deadShotBlockTimeOut', 2, 10, 1, '{{value}}%s' % '.sec')
             ]
         }
 

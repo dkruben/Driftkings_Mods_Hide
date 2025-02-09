@@ -43,7 +43,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             'UI_version': calculate_version(self.version),
             'UI_restart_header': 'Banks Loader by Driftkings : Restart',
             'UI_restart_reason_new': 'You have installed new audio mods, so the game config was changed.',
-            'UI_restart_reason_update': 'Game client update was detected, so game config changes were re-applied anew.',
+            'UI_restart_reason_update': 'Game client update was detected, so game config changes were re-applied a new.',
             'UI_restart_text': (
                 '{reason}{reasons}\n'
                 'Game client restart is required to accept changes.\n'

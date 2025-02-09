@@ -65,10 +65,10 @@ class Events(object):
             app.loadView(SFViewLoadParams('Driftkings_PlayersPanelAPI_UI'))
 
 
-class PlayersPanelUI(View):
+class DriftkingsPlayersPanelUI(View):
     def _populate(self):
         # noinspection PyProtectedMember
-        super(PlayersPanelUI, self)._populate()
+        super(DriftkingsPlayersPanelUI, self)._populate()
         for linkage, data in g_cache.items.iteritems():
             self.as_createS(linkage, data['config'])
         g_events.create += self.as_createS
@@ -81,7 +81,7 @@ class PlayersPanelUI(View):
         g_events.update -= self.as_updateS
         g_events.delete -= self.as_deleteS
         # noinspection PyProtectedMember
-        super(PlayersPanelUI, self)._dispose()
+        super(DriftkingsPlayersPanelUI, self)._dispose()
 
     def as_createS(self, linkage, config):
         if self._isDAAPIInited():
@@ -97,7 +97,7 @@ class PlayersPanelUI(View):
 
 
 # noinspection PyArgumentList
-g_entitiesFactories.addSettings(ViewSettings('Driftkings_PlayersPanelAPI_UI', PlayersPanelUI, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+g_entitiesFactories.addSettings(ViewSettings('Driftkings_PlayersPanelAPI_UI', DriftkingsPlayersPanelUI, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 
 g_events = Events()
 g_cache = Cache()
@@ -131,7 +131,7 @@ LABEL_CONFIG = {
 }
 
 
-class PlayersPanelAPI(object):
+class DriftkingsPlayersPanelAPI(object):
     events = g_events
 
     def create(self, linkage, config):
@@ -146,4 +146,4 @@ class PlayersPanelAPI(object):
         g_events.delete(linkage)
 
 
-g_driftkingsPlayersPanels = PlayersPanelAPI()
+g_driftkingsPlayersPanels = DriftkingsPlayersPanelAPI()

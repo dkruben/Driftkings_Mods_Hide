@@ -2,25 +2,20 @@ package driftkings
 {
    import driftkings.views.battle.SixthSenseUI;
    import mods.common.AbstractViewInjector;
-   import mods.common.IAbstractInjector;
-   import flash.display3D.VertexBuffer3D;
    
-   public class SixthSenseInjector extends AbstractViewInjector implements IAbstractInjector
+   public class SixthSenseInjector extends AbstractViewInjector
    {
-	
-	   public function SixthSenseInjector()
+		public function SixthSenseInjector()
 		{
 			super();
 		}
-      
-		override public function get componentUI() : Class
+		
+		override protected function onPopulate() : void
 		{
-			return SixthSenseUI;
-		}
-      
-		override public function get componentName() : String
-		{
-			return "SixthSenseView";
+			autoDestroy = false;
+			componentName = "SixthSenseView";
+			componentUI = SixthSenseUI;
+			super.onPopulate();
 		}
 	}
 }

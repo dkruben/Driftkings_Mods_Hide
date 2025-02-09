@@ -1,9 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-import BigWorld
-from BattleReplay import g_replayCtrl
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import _LogViewComponent, DamageLogPanel
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE as _ETYPE
-from gui.battle_control.controllers import debug_ctrl
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
@@ -13,7 +10,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.4.0 (%(file_compile_date)s)'
+        self.version = '1.4.5 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'logSwapper': True,
@@ -50,41 +47,6 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
-
-
-debug_ctrl._UPDATE_INTERVAL = 0.4
-
-
-@override(debug_ctrl.DebugController, 'setViewComponents')
-def setViewComponents(func, self, *args):
-    self._debugPanelUI = args
-
-
-@override(debug_ctrl.DebugController, '_update')
-def updateDebug(func, self):
-    fps = BigWorld.getFPS()[1]
-    if g_replayCtrl.isPlaying:
-        fpsReplay = g_replayCtrl.fps
-        ping = g_replayCtrl.ping
-        isLaggingNow = g_replayCtrl.isLaggingNow
-    else:
-        fpsReplay = -1
-        isLaggingNow = BigWorld.statLagDetected()
-        ping = BigWorld.statPing()
-        self.statsCollector.update()
-        if g_replayCtrl.isRecording:
-            g_replayCtrl.setFpsPingLag(fps, ping, isLaggingNow)
-
-    try:
-        ping = int(ping)
-        fps = int(fps)
-        fpsReplay = int(fpsReplay)
-    except (ValueError, OverflowError):
-        fps = ping = fpsReplay = 0
-
-    if self._debugPanelUI is not None:
-        for control in self._debugPanelUI:
-            control.updateDebugInfo(ping, fps, isLaggingNow, fpsReplay=fpsReplay)
 
 
 class WGLogs(object):

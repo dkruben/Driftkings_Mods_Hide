@@ -19,7 +19,11 @@ package driftkings.views.battle
         override protected function configUI():void
         {
             super.configUI();
-            disableInteractivity();
+            this.tabEnabled = false;
+            this.tabChildren = false;
+            this.mouseEnabled = false;
+            this.mouseChildren = false;
+            this.buttonMode = false;
         }
 
         override protected function onPopulate():void
@@ -28,15 +32,6 @@ package driftkings.views.battle
             var settings:Object = this.getSettings();
             positionUI(settings);
             createDateTimeField(settings);
-        }
-
-        private function disableInteractivity():void
-        {
-            this.tabEnabled = false;
-            this.tabChildren = false;
-            this.mouseEnabled = false;
-            this.mouseChildren = false;
-            this.buttonMode = false;
         }
 
         private function positionUI(settings:Object):void

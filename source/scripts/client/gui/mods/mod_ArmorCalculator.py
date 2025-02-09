@@ -38,14 +38,14 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'displayOnAllies': False,
             'messages': {
                 'green': '<font size=\'20\' color=\'#66FF33\'>Breaking through.</font>',
-                'normal': 'Easy To Penetrate :P',
+                'normal': 'Easy To Penetrate :)',
                 'orange': '<font size=\'20\' color=\'#FF9900\'>Switch to Gold.</font>',
                 'purple': '<font size=\'20\' color=\'#6F6CD3\'>Your time has come.</font>',
                 'red': '<font size=\'20\' color=\'#FF0000\'>Try hard, your time has come.</font>',
@@ -118,11 +118,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged += self.onCameraChanged
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
-        if self.gui.isComp7Battle():
-            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-            if prebattleCtrl is not None:
-                prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
-            self.__updateCurrVehicleInfo()
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
@@ -133,10 +128,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged -= self.onCameraChanged
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
-        if self.gui.isComp7Battle():
-            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-            if prebattleCtrl is not None:
-                prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
 
     def onMarkerColorChanged(self, color):
@@ -158,16 +149,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['piercingReserve'] = piercingPower - armor
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
-
-    def __updateCurrVehicleInfo(self, vehicle=None):
-        ctrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-        if ctrl is None:
-            return
-        else:
-            if vehicle is None:
-                vehicle = ctrl.getCurrentGUIVehicle()
-            if vehicle is not None and not avatar_getter.isObserver():
-                updateCrew(vehicle)
 
 
 class ArmorCalculatorAllies(object):

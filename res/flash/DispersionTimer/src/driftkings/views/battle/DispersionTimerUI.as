@@ -2,10 +2,8 @@ package driftkings.views.battle
 {
 	import flash.events.Event;
 	import flash.text.TextFieldAutoSize;
-	//
 	import driftkings.views.utils.Constants;
 	import driftkings.views.utils.TextExt;
-	//
 	import mods.common.BattleDisplayable;
 	
 	public class DispersionTimerUI extends BattleDisplayable

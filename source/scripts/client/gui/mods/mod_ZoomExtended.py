@@ -70,7 +70,7 @@ class ConfigsInterface(DriftkingsConfigInterface):
             ],
             'column2': [
                 self.tb.createControl('disableCamAfterShot'),
-                self.tb.createSlider('disableCamAfterShotLatency', 1.0, 20.0, 1.0, '{{value}} %'),
+                self.tb.createSlider('disableCamAfterShotLatency', 1.0, 20.0, 1.0, '{{value}} x'),
                 self.tb.createControl('disableCamAfterShotSkipClip')
             ]
         }

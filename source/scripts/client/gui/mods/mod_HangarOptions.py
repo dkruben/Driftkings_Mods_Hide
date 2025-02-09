@@ -1,18 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
 import logging
 import traceback
-from math import sin, radians
 from time import strftime
 
-import ResMgr
 import gui.shared.tooltips.vehicle as tooltips
-import nations
 from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
-from constants import ITEM_DEFS_PATH
-from gui.Scaleform.daapi.view.common.vehicle_carousel.carousel_data_provider import CarouselDataProvider
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
 from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
@@ -24,7 +19,6 @@ from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechn
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
-from gui.Scaleform.daapi.view.meta.ModuleInfoMeta import ModuleInfoMeta
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
@@ -32,11 +26,8 @@ from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
-from gui.shared.formatters import text_styles
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
-from gui.shared.tooltips.shell import CommonStatsBlockConstructor
-from gun_rotation_shared import calcPitchLimitsFromDesc
 from helpers import dependency, i18n
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
@@ -44,7 +35,6 @@ from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
 from shared_utils import safeCancelCallback
 from skeletons.account_helpers.settings_core import ISettingsCore
-from skeletons.gui.shared import IItemsCache
 from vehicle_systems.tankStructure import ModelStates
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, getRegion, overrideStaticMethod
@@ -61,7 +51,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.2.5 (%(file_compile_date)s)'
+        self.version = '3.3.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -87,7 +77,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'allowExchangeXPInTechTree': True,
             'allowChannelButtonBlinking': True,
             'premiumTime': False,
-            'lootboxesWidget': False,
+            'lootBoxesWidget': False,
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
@@ -146,12 +136,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
             'UI_setting_premiumTime_text': 'Premium Time Display',
             'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
-            'UI_setting_lootboxesWidget_text': 'Lootbox Widget',
-            'UI_setting_lootboxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
+            'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
+            'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
             'UI_setting_clock_text': 'Clock Display',
-            'UI_setting_clock_tooltip': 'Show clock in login screen and hangar',
-            'UI_techTree_shootingRadius': 'Firing Range',
-            'UI_techTree_m': 'Mt'
+            'UI_setting_clock_tooltip': 'Show clock in login screen and hangar'
         }
         super(ConfigInterface, self).init()
 
@@ -164,7 +152,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('allowChannelButtonBlinking'),
                 self.tb.createControl('autoLogin'),
                 self.tb.createControl('clock'),
-                self.tb.createControl('lootboxesWidget'),
+                self.tb.createControl('lootBoxesWidget'),
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
                 self.tb.createControl('showDailyQuestWidget'),
@@ -291,7 +279,7 @@ def new__updateSessionStatsBtn(func, self):
 
 # hide display the counter of spent battles on the button
 @override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
-def new__updateBatteleCount(func, self):
+def new__updateBattleCount(func, self):
     if config.data['enabled'] and config.data['showBattleCount']:
         return
     func(self)
@@ -419,62 +407,6 @@ def new__construct(func, self):
         return block
 
 
-# TechTree
-class RangeCalculator:
-    def __init__(self, turret, gun, nation, v_class):
-        self.turret = turret
-        self.gun = gun
-        self.nation = nation
-        self.v_class = v_class
-
-    def get_ranges(self):
-        vision_radius = int(self.turret.circularVisionRadius)
-        firing_radius = 0
-        arty_radius = 0
-        # Gun-dependent
-        shots = self.gun.shots
-        for shot in shots:
-            radius = int(shot.maxDistance)
-            if firing_radius < radius:
-                firing_radius = radius
-            if self.v_class == 'SPG' and shot.shell.kind == 'HIGH_EXPLOSIVE':
-                try:
-                    pitch_limit_rad = min(radians(45), -calcPitchLimitsFromDesc(0, self.gun.pitchLimits)[0])
-                except StandardError:
-                    min_pitch = radians(-45)
-                    for gun in self.turret.guns:
-                        if gun.name == self.gun.name:
-                            min_pitch = gun.pitchLimits['minPitch'][0][1]
-                            break
-                    pitch_limit_rad = min(radians(45), -min_pitch)
-                radius = int(pow(shot.speed, 2) * sin(2 * pitch_limit_rad) / shot.gravity)
-                if arty_radius < radius:
-                    arty_radius = radius
-        return vision_radius, firing_radius, arty_radius
-
-
-# add shooting range in gun info window for SPG/machine guns
-@override(ModuleInfoMeta, 'as_setModuleInfoS')
-def new__setModuleInfoS(func, self, moduleInfo):
-    try:
-        if moduleInfo['type'] == 'vehicleGun':
-            veh_id = self._ModuleInfoWindow__vehicleDescr.type.compactDescr
-            itemsCache = dependency.instance(IItemsCache)
-            vehicle = itemsCache.items.getItemByCD(veh_id)
-            _gun = itemsCache.items.getItemByCD(self.moduleCompactDescr).descriptor
-            turret = self._ModuleInfoWindow__vehicleDescr.turret
-            range_calculator = RangeCalculator(turret, _gun, vehicle.nationName, vehicle.type)
-            viewRange, shellRadius, artiRadius = range_calculator.get_ranges()
-            if vehicle.type == 'SPG':
-                moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>','value': '<h>' + str(artiRadius) + '</h>'})
-            elif shellRadius < 707:
-                moduleInfo['parameters']['params'].append({'type': '<h>' + config.i18n['UI_techTree_shootingRadius'] + ' <p>' + config.i18n['UI_techTree_m'] + '</p></h>', 'value': '<h>' + str(shellRadius) + '</h>'})
-    except StandardError:
-        traceback.print_exc()
-
-    return func(self, moduleInfo)
-
-
 def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     try:
         if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
@@ -484,105 +416,28 @@ def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     return func(self, nodeCD, unlockStats)
 
 
-# ToolTips Shell
-class VehicleData:
-    def __init__(self):
-        self.item_defs_path = ITEM_DEFS_PATH
-        self.shells = {}
-        self.my_vehicles = set()
-
-    def get_shots(self, nation):
-        xml_path = '%svehicles/%s/components/guns.xml' % (self.item_defs_path, nation)
-        section = ResMgr.openSection(xml_path)
-        shared = section['shared']
-        result = {}
-        for gun, val in shared.items():
-            shots = val['shots']
-            result.update({shot: (result.get(shot, set()) | {gun}) for shot in shots.keys()})
-        return result
-
-    def get_guns(self, nation):
-        xml_path = '%svehicles/%s/list.xml' % (self.item_defs_path, nation)
-        vehicles = ResMgr.openSection(xml_path)
-        result = {}
-        for veh, v_v in vehicles.items():
-            if veh in ['Observer', 'xmlns:xmlref']:
-                continue
-            i18n_veh = v_v['userString'].asString
-            xml_path = '%svehicles/%s/%s.xml' % (self.item_defs_path, nation, veh)
-            vehicle = ResMgr.openSection(xml_path)
-            turrets0 = vehicle['turrets0']
-            for turret in turrets0.values():
-                for gun in turret['guns'].keys():
-                    result.setdefault(gun, set()).add(i18n.makeString(i18n_veh))
-        return result
-
-    def update_shells(self):
-        for nation in nations.NAMES:
-            shots = self.get_shots(nation)
-            guns = self.get_guns(nation)
-            self.shells[nation] = {}
-            for k_s, v_s in shots.iteritems():
-                for gun in v_s:
-                    self.shells[nation][k_s] = self.shells[nation].get(k_s, set()) | guns.get(gun, set())
-
-    def update_my_vehicles(self):
-        # global myVehicles
-        items_cache = dependency.instance(IItemsCache)
-        vehicles = items_cache.items.getVehicles()
-        self.my_vehicles = {v.userName for v in vehicles.itervalues() if v.invID >= 0}
-
-# class VehicleData():
-vehicle_data = VehicleData()
-vehicle_data.update_shells()
-
-
-@override(CommonStatsBlockConstructor, 'construct')
-def new__construct(fun, self):
-    block = fun(self)
-    if self.configuration.params:
-        topPadding = formatters.packPadding(top=5)
-        block.append(formatters.packTitleDescBlock(title=text_styles.middleTitle(i18n.makeString('#tooltips:quests/vehicles/header')), padding=formatters.packPadding(top=8)))
-        shell = vehicle_data.shells.get(self.shell.nationName, None)
-        select_shell = shell.get(self.shell.name, set())
-        if vehicle_data.my_vehicles:
-            vehicles = select_shell & vehicle_data.my_vehicles
-            block.append(formatters.packTitleDescBlock(title=text_styles.stats(', '.join(vehicles)), padding=topPadding))
-            vehicles = select_shell - vehicles
-            block.append(formatters.packTitleDescBlock(title=text_styles.standard(', '.join(vehicles)), padding=topPadding))
-        else:
-            block.append(formatters.packTitleDescBlock(title=text_styles.standard(', '.join(select_shell)), padding=topPadding))
-    return block
-
-
-@override(CarouselDataProvider, 'buildList')
-def new__buildList(func, self):
-    func(self)
-    vehicle_data.update_my_vehicles()
-
-
 # hide lootBoxes widget in tank carousel in hangar
 def new__getIsActive(func, state):
-    if not config.data.get('enabled', True) and not config.data.get('showLootboxesWidget', True):
+    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         return False
     return func(state)
 
 
 def new__updateCarouselEventEntryStateS(func, self, isVisible):
-    if not config.data.get('enabled', True) and not config.data.get('showLootboxesWidget', True):
+    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         isVisible = False
     return func(self, isVisible)
 
 
 def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
-    if not config.data.get('enabled', True) and not config.data.get('showLootboxesWidget', True):
+    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         visible = False
     return func(self, alias, visible)
 
 
 # Destroy widget if hidden
 def new__makeInjectView(func, self):
-    if not config.data.get('enabled', True) and not config.data.get('showLootboxesWidget', True):
+    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         self.destroy()
         return
     return func(self)
@@ -617,8 +472,7 @@ def new__setItemField(func, self, clientID, key, value):
         value = False
     return func(self, clientID, key, value)
 
-
-
+# Hangar Clock
 class Flash(object):
     settingsCore = dependency.descriptor(ISettingsCore)
 
@@ -628,13 +482,29 @@ class Flash(object):
         self.isBattle = False
         self.updateCallback = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
-        if config.data.get('enabled', False) and config.data.get('clock', False):
-            self.timerEvent.start()
+        self.startTimer()
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
+    def startTimer(self):
+        if config.data.get('enabled') and config.data.get('clock'):
+            self.timerEvent.start()
+
+    def stopTimer(self):
+        self.timerEvent.stop()
+
     def setup(self):
-        panel_config = dict(config.data['panel']['position'], width=config.data['panel']['width'], height=config.data['panel']['height'], alignX=config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT), alignY=config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP), drag=False, border=False, limit=False)
+        panel_config = {
+            'x': config.data['panel']['position']['x'],
+            'y': config.data['panel']['position']['y'],
+            'width': config.data['panel']['width'],
+            'height': config.data['panel']['height'],
+            'alignX': config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT),
+            'alignY': config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP),
+            'drag': False,
+            'border': False,
+            'limit': False
+        }
         g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, panel_config, battle=False, lobby=True)
         self.setShadow()
 
@@ -651,6 +521,7 @@ class Flash(object):
         config.onApplySettings({'panel': {'position': data}})
 
     def cleanup(self):
+        self.stopTimer()
         if self.updateCallback:
             self.updateCallback = safeCancelCallback(self.updateCallback)
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
@@ -679,10 +550,11 @@ try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
     g_flash = Flash(config.ID)
-except ImportError:
+except ImportError as e:
+    logError(config.ID, 'Missing required module: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
-except Exception:
+except Exception as e:
+    logError(config.ID, 'Error initializing Flash: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
 
@@ -699,6 +571,7 @@ def new__hangarPopulate(func, *args, **kwargs):
         g_flash.isBattle = False
 
 
+# init modules
 __initialized = False
 
 def init():

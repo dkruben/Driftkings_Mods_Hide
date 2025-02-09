@@ -9,17 +9,17 @@
     import net.wg.infrastructure.managers.impl.ContainerManagerBase;
     import scaleform.gfx.TextFieldEx;
 
-    public class PlayersPanelAPI extends AbstractView
+    public class DriftkingsPlayersPanelAPI extends AbstractView
     {
         private static const NAME_MAIN:String = "main";
         
-        public static var ui:PlayersPanelAPI;
+        public static var ui:DriftkingsPlayersPanelAPI;
 
         private var viewPage:BattlePage;
         private var configs:Object = {};
         private var textFields:Object = {};
 
-        public function PlayersPanelAPI()
+        public function DriftkingsPlayersPanelAPI()
         {
             super();
             ui = this;
@@ -74,7 +74,11 @@
 			try
 			{
 				parent.removeChild(this);
-				const containerManager:ContainerManagerBase = App.containerMgr as ContainerManagerBase;
+                if (!App.containerMgr) {
+                    DebugUtils.LOG_ERROR("App.containerMgr is null.");
+                    return;
+                }
+                const containerManager:ContainerManagerBase = App.containerMgr as ContainerManagerBase;
 				const viewContainer:MainViewContainer = containerManager.getContainer(LAYER_NAMES.LAYER_ORDER.indexOf(LAYER_NAMES.VIEWS)) as MainViewContainer;
 
 				if (!viewContainer) throw new Error("MainViewContainer is null.");
