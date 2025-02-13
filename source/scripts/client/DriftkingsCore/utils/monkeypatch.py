@@ -68,33 +68,34 @@ def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
         return partial(override, obj, prop)
 
 
-def hookDecorator(func):
-    def decorator1(*args, **kwargs):
-        def decorator2(handler):
-            func(handler, *args, **kwargs)
-        return decorator2
-    return decorator1
+def overrideMethod(cls, method):
+    def decorator(handler):
+        getter = getattr(cls, method)
+        setter = lambda *args, **kwargs: handler(getter, *args, **kwargs)
+        if type(getter) is not property:
+            setattr(cls, method, setter)
+        else:
+            setattr(cls, method, property(setter))
+    return decorator
+
+def overrideStaticMethod(cls, method):
+    def decorator(handler):
+        original_method = getattr(cls, method)
+        def new_method(*args, **kwargs):
+            return handler(original_method, *args, **kwargs)
+        if isinstance(original_method, staticmethod):
+            new_method = staticmethod(new_method)
+        setattr(cls, method, new_method)
+        return handler
+    return decorator
 
 
-def _overrideMethod(cls, method, setter):
-    getter = getattr(cls, method)
-    if type(getter) is not property:
-        setattr(cls, method, setter)
-    else:
-        setattr(cls, method, property(setter))
-
-def _OverrideStaticMethod(handler, cls, method):
-    getter = getattr(cls, method)
-    setter = staticmethod(lambda *args, **kwargs: handler(getter, *args, **kwargs))
-    _overrideMethod(cls, method, setter)
-
-def _OverrideClassMethod(handler, cls, method):
-    getter = getattr(cls, method)
-    setter = classmethod(lambda *args, **kwargs: handler(getter, *args, **kwargs))
-    _overrideMethod(cls, method, setter)
-
-
-# ---! HooksDecorators !---
-overrideMethod = hookDecorator(_overrideMethod)
-overrideStaticMethod = hookDecorator(_OverrideStaticMethod)
-overrideClassMethod = hookDecorator(_OverrideClassMethod)
+def overrideClassMethod(cls, method):
+    def decorator(handler):
+        getter = getattr(cls, method)
+        setter = classmethod(lambda *args, **kwargs: handler(getter, *args, **kwargs))
+        if type(getter) is not property:
+            setattr(cls, method, setter)
+        else:
+            setattr(cls, method, property(setter))
+    return decorator

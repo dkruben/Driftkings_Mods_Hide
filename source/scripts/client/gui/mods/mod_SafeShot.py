@@ -10,10 +10,6 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPl
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-    WASTE_SHOT_BLOCKED_MSG = 'Waste shot blocked!'
-    TEAM_SHOT_BLOCKED_MSG = 'Team shot blocked!'
-    DEAD_SHOT_BLOCKED_MSG = 'Dead shot blocked!'
-
     def __init__(self):
         self.macro = defaultdict(lambda: 'Macros not found!')
         self.deadDict = {}
@@ -39,9 +35,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'deadShotBlock': True,
             'deadShotBlockTimeOut': 3,
             'clientMessages': {
-                'wasteShotBlockedMessage': self.WASTE_SHOT_BLOCKED_MSG,
-                'teamShotBlockedMessage': self.TEAM_SHOT_BLOCKED_MSG,
-                'deadShotBlockedMessage': self.DEAD_SHOT_BLOCKED_MSG
+                'wasteShotBlockedMessage':'Waste shot blocked!',
+                'teamShotBlockedMessage': 'Team shot blocked!',
+                'deadShotBlockedMessage': 'Dead shot blocked!'
             },
             'format': '[%(name)s - %(vehicle)s], get out of the way!',
             'disableKey': self.defaultKeys['disableKey'],
@@ -52,21 +48,21 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
             'UI_setting_wasteShotBlock_text': 'Waste Shot Block',
-            'UI_setting_wasteShotBlock_tooltip': '',
+            'UI_setting_wasteShotBlock_tooltip': 'Prevents shooting when no target is selected',
             'UI_setting_teamShotBlock_text': 'Team Shot Block',
-            'UI_setting_teamShotBlock_tooltip': '',
+            'UI_setting_teamShotBlock_tooltip': 'Prevents shooting at teammates',
             'UI_setting_teamKillerShotUnblock_text': 'Team Killer Shot Unblock',
-            'UI_setting_teamKillerShotUnblock_tooltip': '',
+            'UI_setting_teamKillerShotUnblock_tooltip': 'Allows shooting at team killers',
             'UI_setting_deadShotBlock_text': 'Dead Shot Block',
-            'UI_setting_deadShotBlock_tooltip': '',
+            'UI_setting_deadShotBlock_tooltip': 'Prevents shooting at already destroyed vehicles',
             'UI_setting_deadShotBlockTimeOut_text': 'Dead Shot Block TimeOut',
-            'UI_setting_deadShotBlockTimeOut_tooltip': '',
+            'UI_setting_deadShotBlockTimeOut_tooltip': 'Time in seconds to block shots after vehicle destruction',
             'UI_setting_format_text': 'Format Message',
-            'UI_setting_format_tooltip': '',
+            'UI_setting_format_tooltip': 'Custom message format when blocking team shots. Use %(name)s and %(vehicle)s as placeholders',
             'UI_setting_disableKey_text': 'Disable Key',
-            'UI_setting_disableKey_tooltip': '',
+            'UI_setting_disableKey_tooltip': 'Hotkey to temporarily enable/disable the mod',
             'UI_setting_disableMessage_text': 'Disable Message',
-            'UI_setting_disableMessage_tooltip': '',
+            'UI_setting_disableMessage_tooltip': 'Show/hide notification messages when shots are blocked'
         }
         super(ConfigInterface, self).init()
 
@@ -109,26 +105,23 @@ class ConfigInterface(DriftkingsConfigInterface):
             return func(orig, isRepeat)
         if self.target is None:
             if self.data['wasteShotBlock']:
-                waste_message = self.data['clientMessages']['wasteShotBlockedMessage']
-                sendPanelMessage(waste_message, 'Yellow')
+                sendPanelMessage(self.data['clientMessages']['wasteShotBlockedMessage'], 'Yellow')
                 return
         elif hasattr(self.target.publicInfo, 'team'):
             player = getPlayer()
             if self.data['teamShotBlock'] and player.team == self.target.publicInfo.team and self.target.isAlive():
                 if not self.data['teamKillerShotUnblock'] and not player.guiSessionProvider.getArenaDP().isTeamKiller(self.target.id):
-                    self.macro['name'] = self.target.publicInfo.name
-                    self.macro['vehicle'] = self.target.typeDescriptor.type.shortUserString
-                    text = self.data['format'] % self.macro
-                    sendChatMessage(fullMsg=text, chanId=1, delay=2)
-                    team_message = self.data['clientMessages']['teamShotBlockedMessage']
-                    sendPanelMessage(team_message, 'Yellow')
+                    self.macro.update({
+                        'name': self.target.publicInfo.name if self.target else '',
+                        'vehicle': self.target.typeDescriptor.type.shortUserString if self.target else ''
+                    })
+                    sendChatMessage((self.data['format'] % self.macro), 1, 3)
+                    sendPanelMessage(self.data['clientMessages']['teamShotBlockedMessage'], 'Yellow')
                     return
             elif self.data['deadShotBlock'] and not self.target.isAlive():
                 if self.data['deadShotBlockTimeOut'] == 0 or serverTime() - self.deadDict.get(self.target.id, 0) < self.data['deadShotBlockTimeOut']:
-                    dead_message = self.data['clientMessages']['deadShotBlockedMessage']
-                    sendPanelMessage(dead_message, 'Yellow')
+                    sendPanelMessage(self.data['clientMessages']['deadShotBlockedMessage'], 'Yellow')
                     return
-
         return func(orig, isRepeat)
 
     def new__onBecomePlayer(self, func, orig):

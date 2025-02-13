@@ -19,7 +19,7 @@ from items.components import component_constants
 from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logDebug, calculate_version
 from DriftkingsInject import DriftkingsInjector, ArmorCalculatorMeta, g_events
 
 AS_INJECTOR = 'ArmorCalculatorInjector'
@@ -55,7 +55,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'x': 0,
                 'y': 40
             },
-            'template': '<p align=\'center\'>%(ricochet)s%(noDamage)s<br><font color=\'%(color)s\'>%(countedArmor)d | %(piercingPower)d</font></p>'
+            'template': '<p align=\'center\'>%(ricochet)s %(noDamage)s<br><font color=\'%(color)s\'>%(countedArmor)d | %(piercingPower)d</font></p>'
         }
 
         self.i18n = {
@@ -63,7 +63,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_version': calculate_version(self.version),
             'UI_setting_displayOnAllies_text': 'Display On Allies',
             'UI_setting_displayOnAllies_tooltip': '',
-            'UI_noDamage': 'Critical hit, no damage.',
+            'UI_noDamage': 'Critical Hit, No Damage.',
             'UI_ricochet': 'Ricochet',
             'UI_colors': {
                 'green': '#60CB00',
@@ -98,6 +98,27 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
+def _updateRandomization(vehicle):
+    if not config.data['enabled']:
+        return
+    if vehicle is None or vehicle.isLocked or vehicle.isCrewLocked:
+        return
+    randomization = component_constants.DEFAULT_PIERCING_POWER_RANDOMIZATION
+    for _, tankman in vehicle.crew:
+        if tankman and GUNNER_ARMORER in tankman.skillsMap and tankman.canUseSkillsInCurrentVehicle:
+            level = tankman.skillsMap[GUNNER_ARMORER].level
+            role_level = tankman.nativeTankRealRoleLevel / 100.0
+            if tankman.skillsEfficiency < 1.0:
+                level *= tankman.skillsEfficiency * role_level
+            else:
+                level *= role_level
+            randomization = randomization + (0.2 - randomization) * (level - randomization) / 100
+            logDebug(config.ID, True, 'level: {}, randomization: {}', level, randomization)
+            break
+
+    _ShotResult.RANDOMIZATION = randomization
+
+
 class ArmorCalculator(ArmorCalculatorMeta):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
@@ -118,6 +139,11 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged += self.onCameraChanged
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
+        if self.gui.isComp7Battle():
+            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if prebattleCtrl is not None:
+                prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
+            self.__updateCurrVehicleInfo()
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
@@ -128,7 +154,12 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged -= self.onCameraChanged
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
+        if self.gui.isComp7Battle():
+            prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+            if prebattleCtrl is not None:
+                prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
+
 
     def onMarkerColorChanged(self, color):
         self.calcMacro['color'] = config.i18n['UI_colors'].get(color, '#FFD700')
@@ -149,6 +180,16 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['piercingReserve'] = piercingPower - armor
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
+
+    def __updateCurrVehicleInfo(self, vehicle=None):
+        ctrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+        if ctrl is None:
+            return
+        else:
+            if vehicle is None:
+                vehicle = ctrl.getCurrentGUIVehicle()
+            if vehicle is not None and not avatar_getter.isObserver():
+                _updateRandomization(vehicle)
 
 
 class ArmorCalculatorAllies(object):
@@ -247,12 +288,10 @@ class _ShotResult(object):
 
     @classmethod
     def getShotResult(cls, hitPoint, collision, direction, piercingMultiplier, onAlly, player):
-        if collision is None:
+        if player is None or collision is None:
             return cls.UNDEFINED_RESULT
         entity = collision.entity
-        if not isinstance(entity, (Vehicle, DestructibleEntity)) or not entity.isAlive():
-            return cls.UNDEFINED_RESULT
-        if player is None or cls.isAlly(entity, player, onAlly):
+        if not isinstance(entity, (Vehicle, DestructibleEntity)) or not entity.isAlive() or cls.isAlly(entity, player, onAlly):
             return cls.UNDEFINED_RESULT
         # noinspection PyProtectedMember
         c_details = _CrosshairShotResults._getAllCollisionDetails(hitPoint, direction, entity)
@@ -261,32 +300,33 @@ class _ShotResult(object):
         shot = player.getVehicleDescriptor().shot
         shell = shot.shell
         distance = player.position.flatDistTo(hitPoint)
-        is_modern = cls.isModernMechanics(shell) or shot.shell.kind in cls.FULL_PP_RANGE
-        if is_modern:
+        is_modern = cls.isModernMechanics(shell)
+        if is_modern or shot.shell.kind in cls.FULL_PP_RANGE:
             piercing_power = shot.piercingPower[0] * piercingMultiplier
         else:
             # noinspection PyProtectedMember
             piercing_power = _CrosshairShotResults._computePiercingPowerAtDist(shot.piercingPower, distance, shot.maxDistance, piercingMultiplier)
-        armor, piercing_power, ricochet, no_damage = cls.computeArmor(c_details, shell, piercing_power, is_modern)
+        return cls.computeArmorHE(c_details, shell, piercing_power) if is_modern else cls.computeArmor(c_details, shell, piercing_power)
+
+    @classmethod
+    def _checkShotResult(cls, armor, piercing_power, ricochet, no_damage):
         if no_damage or ricochet:
-            shot_result = SHOT_RESULT.NOT_PIERCED
+            return SHOT_RESULT.NOT_PIERCED
         else:
             offset = piercing_power * cls.RANDOMIZATION
             if armor < piercing_power - offset:
-                shot_result = SHOT_RESULT.GREAT_PIERCED
+                return SHOT_RESULT.GREAT_PIERCED
             elif armor > piercing_power + offset:
-                shot_result = SHOT_RESULT.NOT_PIERCED
+                return SHOT_RESULT.NOT_PIERCED
             else:
-                shot_result = SHOT_RESULT.LITTLE_PIERCED
-        return shot_result, armor, piercing_power, shell.caliber, ricochet, no_damage
+                return SHOT_RESULT.LITTLE_PIERCED
 
     @staticmethod
     def isModernMechanics(shell):
-        return shell.kind == SHELL_TYPES.HIGH_EXPLOSIVE and shell.type.mechanics == SHELL_MECHANICS_TYPE.MODERN and \
-            shell.type.shieldPenetration
+        return shell.kind == SHELL_TYPES.HIGH_EXPLOSIVE and shell.type.mechanics == SHELL_MECHANICS_TYPE.MODERN
 
     @classmethod
-    def computeArmor(cls, c_details, shell, piercing_power, is_modern_he):
+    def computeArmor(cls, c_details, shell, piercing_power):
         computed_armor = 0
         ricochet = False
         no_damage = True
@@ -294,28 +334,54 @@ class _ShotResult(object):
         jet_start_dist = 0
         # noinspection PyProtectedMember
         jet_loss = _CrosshairShotResults._SHELL_EXTRA_DATA[shell.kind].jetLossPPByDist
+        ignoredMaterials = set()
         for detail in c_details:
             mat_info = detail.matInfo
-            if mat_info is None:
+            if mat_info is None or (detail.compName, mat_info.kind) in ignoredMaterials:
                 continue
+            hitAngleCos = detail.hitAngleCos if mat_info.useHitAngle else 1.0
             # noinspection PyProtectedMember
-            computed_armor += _CrosshairShotResults._computePenetrationArmor(shell, detail.hitAngleCos, mat_info)
+            computed_armor += _CrosshairShotResults._computePenetrationArmor(shell, hitAngleCos, mat_info)
             if is_jet:
                 jetDist = detail.dist - jet_start_dist
                 if jetDist > 0:
                     piercing_power *= 1.0 - jetDist * jet_loss
             else:
                 # noinspection PyProtectedMember
-                ricochet = _CrosshairShotResults._shouldRicochet(shell, detail.hitAngleCos, mat_info)
+                ricochet = _CrosshairShotResults._shouldRicochet(shell, hitAngleCos, mat_info)
             if mat_info.vehicleDamageFactor:
                 no_damage = False
                 break
-            elif is_modern_he:
-                piercing_power -= computed_armor * MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
-            elif jet_loss > 0:
+            if jet_loss > 0:
                 is_jet = True
                 jet_start_dist += detail.dist + mat_info.armor * cls._JET_FACTOR
-        return computed_armor, piercing_power, ricochet, no_damage
+            if mat_info.collideOnceOnly:
+                ignoredMaterials.add((detail.compName, mat_info.kind))
+
+        shot_result = cls._checkShotResult(computed_armor, piercing_power, ricochet, no_damage)
+        return shot_result, computed_armor, piercing_power, shell.caliber, ricochet, no_damage
+
+    @classmethod
+    def computeArmorHE(cls, c_details, shell, piercing_power):
+        computed_armor =0
+        ignoredMaterials = set()
+        no_damage = True
+        for detail in c_details:
+            mat_info = detail.matInfo
+            if mat_info is None or (detail.compName, mat_info.kind) in ignoredMaterials:
+                continue
+            hitAngleCos = detail.hitAngleCos if mat_info.useHitAngle else 1.0
+            # noinspection PyProtectedMember
+            computed_armor += _CrosshairShotResults._computePenetrationArmor(shell, hitAngleCos, mat_info)
+            if mat_info.vehicleDamageFactor:
+                no_damage = False
+                break
+            if shell.type.shieldPenetration:
+                piercing_power -= computed_armor * MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
+            if mat_info.collideOnceOnly:
+                ignoredMaterials.add((detail.compName, mat_info.kind))
+        shot_result = cls._checkShotResult(computed_armor, piercing_power, False, no_damage)
+        return shot_result, computed_armor, max(piercing_power, 0), shell.caliber, False, no_damage
 
 
 class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
@@ -340,39 +406,21 @@ class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
 
 
 @override(plugins, 'createPlugins')
-def new__createPlugins(func, *args):
+def createPlugins(func, *args):
     _plugins = func(*args)
     if config.data['enabled']:
         _plugins['shotResultIndicator'] = ShotResultIndicatorPlugin
     return _plugins
 
 
-def updateCrew(vehicle):
-    if not config.data['enabled']:
-        return
-    if vehicle is None or vehicle.isLocked or vehicle.isCrewLocked:
-        return
-    randomization = component_constants.DEFAULT_PIERCING_POWER_RANDOMIZATION
-    for _, tankman in vehicle.crew:
-        if tankman and 'gunner_armorer' in tankman.skillsMap and tankman.canUseSkillsInCurrentVehicle:
-            level = tankman.skillsMap['gunner_armorer'].level
-            role_level = tankman.nativeTankRealRoleLevel / 100.0
-            if tankman.skillsEfficiency < 1.0:
-                level *= tankman.skillsEfficiency
-                level *= tankman.skillsEfficiency * role_level
-            else:
-                level *= role_level
-            randomization = randomization + (0.2 - randomization) * (level - randomization) / 100
-            break
-
-    logInfo(config.ID, randomization)
-    _ShotResult.RANDOMIZATION = randomization
+GUNNER_ARMORER = 'gunner_armorer'
 
 
-g_events.onVehicleChangedDelayed += updateCrew
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+def init():
+    g_events.onVehicleChangedDelayed += _updateRandomization
+    g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+    g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
 def fini():
-    g_events.onVehicleChangedDelayed -= updateCrew
+    g_events.onVehicleChangedDelayed -= _updateRandomization
