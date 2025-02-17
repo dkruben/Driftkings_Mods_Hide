@@ -608,7 +608,7 @@ def init():
         from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 
         override(BaseQuestsWidgetComponent, '_shouldHide', new__shouldHide)
-        overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive', new__getIsActive)
+        overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')(new__getIsActive)
         override(TournamentsWidgetComponent, '_makeInjectView', new__makeInjectView)
         override(_TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
     else:
@@ -617,6 +617,6 @@ def init():
         from gui.techtree.techtree_dp import TechTreeDataProvider
 
         override(DailyQuestWidget, '_DailyQuestWidget__shouldHide', new__shouldHide)
-        overrideStaticMethod(LootBoxesEntryPointWidget, 'getIsActive', new__getIsActive)
+        overrideStaticMethod(LootBoxesEntryPointWidget, 'getIsActive')(new__getIsActive)
         override(TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
         __initialized = True
