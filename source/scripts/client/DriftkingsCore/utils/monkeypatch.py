@@ -78,14 +78,17 @@ def overrideMethod(cls, method):
             setattr(cls, method, property(setter))
     return decorator
 
+
 def overrideStaticMethod(cls, method):
     def decorator(handler):
-        original_method = getattr(cls, method)
-        def new_method(*args, **kwargs):
-            return handler(original_method, *args, **kwargs)
-        if isinstance(original_method, staticmethod):
-            new_method = staticmethod(new_method)
-        setattr(cls, method, new_method)
+        orig = getattr(cls, method)
+        if isinstance(orig, staticmethod):
+            orig = orig.__get__(None, cls)
+
+        def wrapper(*args, **kwargs):
+            return handler(orig, *args, **kwargs)
+        wrapper = staticmethod(wrapper)
+        setattr(cls, method, wrapper)
         return handler
     return decorator
 

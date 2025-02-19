@@ -28,7 +28,8 @@ package driftkings.views.battle
         override protected function onPopulate():void 
         {
             super.onPopulate();
-            if (this.getSettings != null) {
+            if (this.getSettings != null)
+            {
                 var settings:Object = this.getSettings();
                 if (settings != null)
 				{

@@ -203,7 +203,7 @@ class DispersionCircle(object):
         pass
 
     @staticmethod
-    def setShotPosition(func, self, vehicleID, sPos, sVec, dispersionAngle, forceValueRefresh=False):
+    def setShotPosition(func, self, vehicleID, sPos, sVec, dispersionAngle, _=False):
         m_position = self._VehicleGunRotator__getGunMarkerPosition(sPos, sVec, self.getCurShotDispersionAngles())
         mPos, mDir, mSize, dualAccSize, mSizeOffset, collData = m_position
         self._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, SERVER_TICK_LENGTH, collData)

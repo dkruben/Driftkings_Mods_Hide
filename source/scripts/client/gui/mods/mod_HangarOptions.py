@@ -1,10 +1,10 @@
 ﻿# -*- coding: utf-8 -*-
 import logging
 import traceback
-from time import strftime
+import datetime
+import locale
 
 import gui.shared.tooltips.vehicle as tooltips
-from Account import PlayerAccount
 from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
@@ -555,8 +555,20 @@ class Flash(object):
     def updateTimeData(self):
         if not config.data.get('enabled', False) or not config.data.get('clock', False):
             return
-        current_time = strftime(config.data['text'])
-        g_guiFlash.updateComponent(self.ID, {'text': current_time})
+        try:
+            encoding = 'utf-8' if locale.getpreferredencoding() in ('cp65001', 'UTF-8') else locale.getpreferredencoding()
+            # Get current time and format with weekday capitalized
+            current_time = datetime.datetime.now()
+            weekday_capitalized = current_time.strftime('%A').capitalize()
+            # Replace weekday in format string with capitalized version
+            format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
+            current_time_str = current_time.strftime(format_with_capital)
+            formatted_time = current_time_str.decode(encoding) if isinstance(current_time_str, str) else current_time_str
+            g_guiFlash.updateComponent(self.ID, {'text': formatted_time})
+        except (UnicodeError, AttributeError) as err:
+            logError(config.ID, 'Error formatting clock time: {}', err)
+        except Exception as err:
+            logError(config.ID, 'Unexpected error updating clock: {}', err)
 
 
 g_flash = None
@@ -573,18 +585,6 @@ except Exception as e:
     traceback.print_exc()
 
 
-def new__onArenaCreated(func, *args, **kwargs):
-    g_flash.isBattle = True
-    return func(*args, **kwargs)
-
-
-def new__hangarPopulate(func, *args, **kwargs):
-    try:
-        return func(*args, **kwargs)
-    finally:
-        g_flash.isBattle = False
-
-
 # init modules
 __initialized = False
 
@@ -594,29 +594,20 @@ def init():
     override(LoginView, '_populate', new__LoginViewPopulate)
     override(HeroTank, 'recreateVehicle', new__recreateVehicle)
     override(Hangar, 'as_setEventTournamentBannerVisibleS', new__setEventTournamentBannerVisibleS)
-    override(ChannelsCarouselHandler, '__setItemField', new__setItemField)
-    override(ChannelsCarouselHandler, 'addChannel', new__addChannel)
     override(Hangar, 'as_updateCarouselEventEntryStateS', new__updateCarouselEventEntryStateS)
     override(LobbyHeader, 'as_setHeaderButtonsS', new__setHeaderButtonsS)
-    override(PlayerAccount, 'onArenaCreated', new__onArenaCreated)
-    override(Hangar, '_populate', new__hangarPopulate)
+    try:
+        if getRegion() != 'RU':
+            from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
+            from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
+            from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
+            from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 
-    if getRegion() != 'RU':
-        from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
-        from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
-        from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
-        from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
-
-        override(BaseQuestsWidgetComponent, '_shouldHide', new__shouldHide)
-        overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')(new__getIsActive)
-        override(TournamentsWidgetComponent, '_makeInjectView', new__makeInjectView)
-        override(_TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
-    else:
-        from gui_lootboxes.gui.impl.lobby.gui_lootboxes.base.entry_point_view import LootBoxesEntryPointWidget
-        from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import DailyQuestWidget
-        from gui.techtree.techtree_dp import TechTreeDataProvider
-
-        override(DailyQuestWidget, '_DailyQuestWidget__shouldHide', new__shouldHide)
-        overrideStaticMethod(LootBoxesEntryPointWidget, 'getIsActive')(new__getIsActive)
-        override(TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
-        __initialized = True
+            override(BaseQuestsWidgetComponent, '_shouldHide', new__shouldHide)
+            overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')(new__getIsActive)
+            override(TournamentsWidgetComponent, '_makeInjectView', new__makeInjectView)
+            override(_TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
+    except Exception as err:
+        logError(config.ID, 'Error initializing modules: {}', err)
+        traceback.print_exc()
+    __initialized = True

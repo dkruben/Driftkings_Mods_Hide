@@ -34,8 +34,8 @@ COMPARE_MACROS = ['compareDelim', 'compareColor']
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.5 %(file_compile_date)s'
-        self.author = 'orig. Kotyarko_O, modified by: _DKRuben_EU'
+        self.version = '1.8.0 %(file_compile_date)s'
+        self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
             'aliveOnly': False,
@@ -96,7 +96,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
             'column1': [
-                # self.tb.createControl('textLock'),
+                self.tb.createControl('textLock'),
                 self.tb.createSlider('delay', 1.0, 10, 1.0, '{{value}}%s' % xFormat),
                 self.tb.createControl('aliveOnly'),
                 self.tb.createHotKey('altKey'),
@@ -181,9 +181,10 @@ try:
     g_flash = Flash(config.ID)
 except ImportError as err:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found.', err)
-except Exception:
+    logError(config.ID, 'gambiter.GUIFlash not found. {}', err)
+except Exception as err:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    logError(config.ID, 'Un-expected error. {}', err)
     traceback.print_exc()
 
 
@@ -556,18 +557,18 @@ class InfoPanel(DataConstants):
         self.hotKeyDown = False
         self.visible = False
         self.timer = None
+        self.player = getPlayer()
         super(InfoPanel, self).__init__()
 
     def reset(self):
         self.__init__()
         g_macros.reset()
 
-    @staticmethod
-    def isConditions(entity):
+    def isConditions(self, entity):
         if entity is None or not hasattr(entity, 'publicInfo'):
             return False
         enabled_for = config.data['showFor']
-        player_team = getPlayer().team
+        player_team = self.player.team
         team = getattr(entity.publicInfo, 'team', 0)
         is_ally = (team > 0) and (team == player_team)
         if enabled_for == 0:
@@ -578,10 +579,7 @@ class InfoPanel(DataConstants):
             show_for = not is_ally
         else:
             show_for = False
-        if config.data['aliveOnly']:
-            is_alive = entity.isAlive()
-        else:
-            is_alive = True
+        is_alive = entity.isAlive() if config.data['aliveOnly'] else True
         return show_for and is_alive
 
     def get_func_response(self, func_name):
@@ -642,7 +640,6 @@ class InfoPanel(DataConstants):
         if self.timer is not None and self.timer.isStarted():
             self.timer.stop()
             self.timer = None
-        self.visible = False
         g_flash.setVisible(False)
 
     def onUpdateBlur(self):
@@ -653,21 +650,18 @@ class InfoPanel(DataConstants):
             self.timer = None
         self.timer = TimeInterval(config.data['delay'], self, 'hide')
         self.timer.start()
-        g_flash.setVisible(False)
 
     def onUpdateVehicle(self, vehicle):
-        player = getPlayer()
         if self.hotKeyDown:
             return
-        player_vehicle = player.getVehicleAttached()
+        player_vehicle = self.player.getVehicleAttached()
         if player_vehicle is not None:
-            self.visible = True
+            g_flash.setVisible(True)
             if hasattr(vehicle, 'typeDescriptor'):
                 self.init(vehicle, player_vehicle)
             elif hasattr(player_vehicle, 'typeDescriptor'):
                 self.init(None, player_vehicle)
             g_flash.addText(self.set_texts_formatted())
-            g_flash.setVisible(True)
 
 
 g_macros = CompareMacros()
