@@ -756,7 +756,6 @@ class Worker(object):
                     config.data['UI'] = 1
                 status = [config.i18n['UI_menu_UIConfig'], config.i18n['UI_menu_UIskill4ltu'], config.i18n['UI_menu_UIMyp'], config.i18n['UI_menu_UIspoter'], config.i18n['UI_menu_UIcircon'], config.i18n['UI_menu_UIReplay'], config.i18n['UI_menu_UIReplayDamage'], config.i18n['UI_menu_UIReplayColor'], config.i18n['UI_menu_UIReplayColorDamage'], config.i18n['UI_menu_UIoldskool'], config.i18n['UI_menu_UIspoterNew'], config.i18n['UI_menu_UIkorbenDallasNoMercy']]
                 message = config.i18n['UI_message'] % status[config.data['UI']]
-                # if config.data['showInBattle']:
                 sendPanelMessage(message)
                 self.checkBattleMessage()
                 g_flash.setupSize()
@@ -966,7 +965,6 @@ class Worker(object):
     def calcStatisticsCoeff(self, p, d):
         pC = math.floor(p) + 1
         dC = self.calcPercent(d, p, pC, d, p)
-
         p20 = self.calcPercent(0, 0.0, 20.0, d, p)
         p40 = self.calcPercent(p20, 20.0, 40.0, d, p)
         p55 = self.calcPercent(p40, 40.0, 55.0, d, p)
@@ -974,18 +972,12 @@ class Worker(object):
         p85 = self.calcPercent(p65, 65.0, 85.0, d, p)
         p95 = self.calcPercent(p85, 85.0, 95.0, d, p)
         p100 = self.calcPercent(p95, 95.0, 100.0, d, p)
-
         data = [0, p20, p40, p55, p65, p85, p95, p100]
-
         idx = filter(lambda x: x >= p, config.levels)[0]
-
         limit1 = data[config.levels.index(idx) - 1]
         limit2 = data[config.levels.index(idx)]
-
         check = config.levels.index(idx)
-
         delta = limit2 - limit1
-
         for value in xrange(len(data)):
             if data[value] == limit1 or data[value] == limit2:
                 continue
@@ -993,17 +985,14 @@ class Worker(object):
                 data[value] -= delta
             if value > check:
                 data[value] += delta
-
         if pC == 101:
             pC = 100
             dC = data[7]
-
-        return pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7]
+        return (pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
 
     def calcStatistics(self, p, d):
         pC = math.floor(p) + 1
         dC = self.calcPercent(d, p, pC, d, p)
-
         p20 = self.calcPercent(0, 0.0, 20.0, d, p)
         p40 = self.calcPercent(0, 0.0, 40.0, d, p)
         p55 = self.calcPercent(0, 0.0, 55.0, d, p)
@@ -1011,29 +1000,21 @@ class Worker(object):
         p85 = self.calcPercent(0, 0.0, 85.0, d, p)
         p95 = self.calcPercent(0, 0.0, 95.0, d, p)
         p100 = self.calcPercent(0, 0.0, 100.0, d, p)
-
         data = [0, p20, p40, p55, p65, p85, p95, p100]
-
         idx = filter(lambda x: x >= p, config.levels)[0]
-
         limit1 = dC
         limit2 = data[config.levels.index(idx)]
-
         check = config.levels.index(idx)
-
         delta = limit2 - limit1
-
         for value in xrange(len(data)):
             if data[value] == limit1 or data[value] == limit2:
                 continue
             if value > check:
                 data[value] = self.getNormalizeDigitsCoeff(data[value] + delta)
-
         if pC == 101:
             pC = 100
             dC = data[7]
-
-        return pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7]
+        return (pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
 
 
 class Flash(object):
@@ -1267,9 +1248,9 @@ def new_onBattleEvents(func, *args):
 
 
 @override(Vehicle, 'onHealthChanged')
-def new_onHealthChanged(func, *args):
-    worker.shots(args[0], args[1], args[3])
-    func(*args)
+def new_onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
+    worker.shots(self, newHealth, attackerID)
+    func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
 
 
 @override(Vehicle, 'startVisual')
@@ -1304,9 +1285,7 @@ def new_getUserCondition(func, *args):
         if worker.dossier is not None:
             targetData = worker.dossier
             damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
-            # noinspection PyProtectedMember
             track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
-            # noinspection PyProtectedMember
             radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
             stun = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamageAssistedStun())
             currentDamage = int(damage + max(track, radio, stun))
@@ -1316,18 +1295,19 @@ def new_getUserCondition(func, *args):
                 pC, dC, p20, p40, p55, p65, p85, p95, p100 = worker.calcStatistics(damageRating, movingAvgDamage)
                 color = ['#F8F400', '#F8F400', '#60FF00', '#02C9B3', '#D042F3', '#D042F3']
                 levels = [p55, p65, p85, p95, p100, 10000000]
-                data = {'nextPercent': '%.0f' % pC,
-                        'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
-                        'currentMovingAvgDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage),
-                        'currentDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage),
-                        '_20': worker.getNormalizeDigits(p20),
-                        '_40': worker.getNormalizeDigits(p40),
-                        '_55': worker.getNormalizeDigits(p55),
-                        '_65': worker.getNormalizeDigits(p65),
-                        '_85': worker.getNormalizeDigits(p85),
-                        '_95': worker.getNormalizeDigits(p95),
-                        '_100': worker.getNormalizeDigits(p100)
-                        }
+                data = {
+                    'nextPercent': '%.0f' % pC,
+                    'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
+                    'currentMovingAvgDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage),
+                    'currentDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage),
+                    '_20': worker.getNormalizeDigits(p20),
+                    '_40': worker.getNormalizeDigits(p40),
+                    '_55': worker.getNormalizeDigits(p55),
+                    '_65': worker.getNormalizeDigits(p65),
+                    '_85': worker.getNormalizeDigits(p85),
+                    '_95': worker.getNormalizeDigits(p95),
+                    '_100': worker.getNormalizeDigits(p100)
+                }
                 temp = config.i18n['UI_tooltips'].format(**data)
                 return temp
     return func(*args)
