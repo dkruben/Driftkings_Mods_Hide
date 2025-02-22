@@ -20,7 +20,7 @@ package driftkings.views.battle
       
 		override protected function onPopulate() : void
 		{
-			var topPosition:uint = 0;
+			var topPosition:* = 0 //uint = 0;
 			super.onPopulate();
 			minimap = !!battlePage.hasOwnProperty("minimap") ? battlePage.minimap : null;
 			if(minimap)

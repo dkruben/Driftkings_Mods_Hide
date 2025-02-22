@@ -60,3 +60,14 @@ res/flash/HangarClock/obj/DateTimesConfig.old
 res/flash/HangarClock/obj/DateTimesConfig.xml
 res/flash/OwnHealth/obj/OwnHealthConfig.xml
 res/flash/SixthSense/obj/SixthSenseIconConfig.xml
+res/flash/AchievementNotification/AchievementNotificationFlash.as3proj
+res/flash/AchievementNotification/src/driftkings/achievementnotification/AchievementNotificationFlash.as
+res/flash/Minimap/obj/MinimapCentredConfig.xml
+res/flash/Minimap/obj/MinimapCentredConfig.old
+res/flash/AchievementNotification/src/driftkings/achievementnotification/achievements/AchievementNotification.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/achievements/Achievement.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/achievements/AchievementRegistry.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/queue/NotificationBar.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/utils/Disposable.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/queue/Transition.as
+res/flash/AchievementNotification/src/driftkings/achievementnotification/config/Config.as

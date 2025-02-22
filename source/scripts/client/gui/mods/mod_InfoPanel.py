@@ -557,18 +557,19 @@ class InfoPanel(DataConstants):
         self.hotKeyDown = False
         self.visible = False
         self.timer = None
-        self.player = getPlayer()
         super(InfoPanel, self).__init__()
 
     def reset(self):
         self.__init__()
         g_macros.reset()
 
-    def isConditions(self, entity):
+    @staticmethod
+    def isConditions(entity):
+        player = getPlayer()
         if entity is None or not hasattr(entity, 'publicInfo'):
             return False
         enabled_for = config.data['showFor']
-        player_team = self.player.team
+        player_team = player.team
         team = getattr(entity.publicInfo, 'team', 0)
         is_ally = (team > 0) and (team == player_team)
         if enabled_for == 0:
@@ -652,9 +653,10 @@ class InfoPanel(DataConstants):
         self.timer.start()
 
     def onUpdateVehicle(self, vehicle):
+        player = getPlayer()
         if self.hotKeyDown:
             return
-        player_vehicle = self.player.getVehicleAttached()
+        player_vehicle = player.getVehicleAttached()
         if player_vehicle is not None:
             g_flash.setVisible(True)
             if hasattr(vehicle, 'typeDescriptor'):
