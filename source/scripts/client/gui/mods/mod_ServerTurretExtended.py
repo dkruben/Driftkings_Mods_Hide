@@ -7,7 +7,7 @@ import Keys
 import VehicleGunRotator
 import gun_rotation_shared
 from Avatar import PlayerAvatar, MOVEMENT_FLAGS
-from AvatarInputHandler.siege_mode_player_notifications import SOUND_NOTIFICATIONS
+from AvatarInputHandler.siege_mode_player_notifications import SoundNotifications
 from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -161,7 +161,7 @@ class MovementControl(object):
                             return self.changeSiege(False)
 
     def changeSiege(self, status):
-        SOUND_NOTIFICATIONS.TRANSITION_TIMER = ''
+        SoundNotifications.TRANSITION_TIMER = ''
         getPlayer().cell.vehicle_changeSetting(VEHICLE_SETTING.SIEGE_MODE_ENABLED, status)
         self.timer = BigWorld.time()
 

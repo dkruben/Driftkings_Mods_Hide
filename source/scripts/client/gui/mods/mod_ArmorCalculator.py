@@ -152,7 +152,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
                 prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
 
-
     def onMarkerColorChanged(self, color):
         self.calcMacro['color'] = config.i18n['UI_colors'].get(color, '#FFD700')
         self.calcMacro['message'] = config.data['messages'].get(color, '')

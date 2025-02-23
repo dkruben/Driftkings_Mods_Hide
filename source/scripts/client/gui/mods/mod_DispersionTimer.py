@@ -41,7 +41,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'purple': 'D042F3',
             'template': '<font color=\'#%(color)s\'>%(timer).1fs. - %(percent)d%%</font>',
             'x': 60,
-            'y': 110
+            'y': 110,
+            'alignX': 'center',
+            'alignY': 'center'
         }
         self.i18n = {
             'UI_description': self.ID,

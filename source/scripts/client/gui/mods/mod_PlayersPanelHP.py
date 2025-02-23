@@ -12,15 +12,14 @@ from gui.battle_control.arena_info import vos_collections
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, override, logWarning, getEntity, getPlayer, calculate_version
-
+from DriftkingsCore import (DriftkingsConfigInterface, Analytics, checkKeys, override, logWarning, getEntity, getPlayer, calculate_version)
 
 class PlayersPanelController(DriftkingsConfigInterface):
     vCache = property(lambda self: self.__vCache)
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
-        self.__hpCache = dict()
+        self.__hpCache = {}
         self.__vCache = set()
         self.displayed = True
         super(PlayersPanelController, self).__init__()
@@ -48,7 +47,8 @@ class PlayersPanelController(DriftkingsConfigInterface):
             'UI_setting_mode_toggle': 'Toggle',
             'UI_setting_mode_holding': 'Holding',
             'UI_setting_toggle_key_text': 'Toggle hotkey',
-            'UI_setting_toggle_key_tooltip': 'Pressing this button in-battle toggles HP markers displaying.'}
+            'UI_setting_toggle_key_tooltip': 'Pressing this button in-battle toggles HP markers displaying.'
+        }
         g_driftkingsPlayersPanels.events.onUIReady += self.onStartBattle
         super(PlayersPanelController, self).init()
 
@@ -61,7 +61,8 @@ class PlayersPanelController(DriftkingsConfigInterface):
             ],
             'column2': [
                 self.tb.createHotKey('toggle_key')
-            ]}
+            ]
+        }
 
     def readData(self, quiet=True):
         for fieldName in self.data['textFields']:
@@ -69,7 +70,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         super(PlayersPanelController, self).readCurrentSettings(quiet)
         self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
         self.displayed = not self.data['mode']
-        for fieldName, fieldData in self.data['textFields'].iteritems():
+        for fieldName, fieldData in self.data['textFields'].items():
             g_driftkingsPlayersPanels.create(self.ID + fieldName, fieldData)
 
     def onApplySettings(self, settings):
@@ -79,13 +80,12 @@ class PlayersPanelController(DriftkingsConfigInterface):
     @staticmethod
     def getVehicleHealth(vehicleID):
         vehicle = getEntity(vehicleID)
-        if hasattr(getEntity(vehicleID), 'health'):
+        if hasattr(vehicle, 'health'):
             return vehicle.health if vehicle.isCrewActive and vehicle.health >= 0 else 0
-        else:
-            vehicle = getPlayer().arena.vehicles.get(vehicleID)
-            if vehicle is not None and vehicle['vehicleType'] is not None:
-                return vehicle['vehicleType'].maxHealth
-            return ''
+        vehicle = getPlayer().arena.vehicles.get(vehicleID)
+        if vehicle and vehicle['vehicleType']:
+            return vehicle['vehicleType'].maxHealth
+        return ''
 
     def onStartBattle(self):
         getPlayer().arena.onVehicleKilled += self.onVehicleKilled
@@ -103,7 +103,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         panelSide = 'left' if player.team == team else 'right'
         currentHP = self.__hpCache[vehicleID]['current']
         maxHP = self.__hpCache[vehicleID]['max']
-        for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
+        for fieldName, fieldData in sorted(self.data['textFields'].items()):
             barWidth = currentHP
             if 'width' in fieldData[panelSide]:
                 barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
@@ -126,13 +126,12 @@ class PlayersPanelController(DriftkingsConfigInterface):
             maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else -1
             self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': maxHealth}
         else:
-            health = newHealth if newHealth > 0 else 0
+            health = max(newHealth, 0)
             self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else self.__hpCache[vehicleID]['max']
         self.setHPField(vehicleID)
 
     def validateCache(self, vehicleID):
-        if vehicleID not in self.__vCache:
-            self.__vCache.add(vehicleID)
+        self.__vCache.add(vehicleID)
 
     def onHotkeyPressed(self, event):
         if not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not self.data['mode']:
@@ -144,7 +143,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
         for vehicleID in self.__hpCache:
             self.setHPField(vehicleID)
 
-
 config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
@@ -152,19 +150,19 @@ try:
     statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 except ImportError:
     logWarning(config.ID, 'Battle Flash API not found.')
-except StandardError:
+except Exception:
     traceback.print_exc()
 else:
     @override(ArenaVehiclesPlugin, '_setInAoI')
     def new__setInAoI(func, self, entry, isInAoI, *args, **kwargs):
         result = func(self, entry, isInAoI, *args, **kwargs)
         try:
-            for vehicleID, entry2 in self._entries.iteritems():
+            for vehicleID, entry2 in self._entries.items():
                 if entry == entry2 and isInAoI:
                     if vehicleID in config.vCache:
                         break
                     config.updateHealth(vehicleID)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
@@ -176,7 +174,7 @@ else:
             vehicleID = vehicle.id
             config.validateCache(vehicleID)
             config.updateHealth(vehicleID)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
@@ -186,7 +184,7 @@ else:
         result = func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
         try:
             config.updateHealth(self.id, newHealth)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
