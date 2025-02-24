@@ -95,8 +95,8 @@ class ArtyBall(object):
         self.scaleSplash = None
         self.player = None
 
-    # noinspection PyProtectedMember
-    # noinspection PyUnresolvedReferences
+    # -noinspection PyProtectedMember
+    # -noinspection PyUnresolvedReferences
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
         if config.data['enabled']:
@@ -106,15 +106,15 @@ class ArtyBall(object):
             self.scaleSplash = None
             self.modelSplash = _StaticWorldObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
             self.modelDot = _StaticWorldObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
-            self.modelDot._StaticWorldObjectMarker3D__model.scale = (0.1, 0.1, 0.1)
+            self.modelDot.model.scale = (0.1, 0.1, 0.1)
             if Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags) == VEHICLE_CLASS_NAME.SPG:
-                self.modelDot._StaticWorldObjectMarker3D__model.scale = (0.5, 0.5, 0.5)
-            self.modelSplash._StaticWorldObjectMarker3D__model.visible = False
-            self.modelDot._StaticWorldObjectMarker3D__model.visible = False
+                self.modelDot.model.scale = (0.5, 0.5, 0.5)
+            self.modelSplash.model.visible = False
+            self.modelDot.model.visible = False
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
             # self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, BigWorld.player().spaceID) # old
             self.modelSplashCircle.setup('objects/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, self.player.spaceID)
-            self.modelSplash._StaticWorldObjectMarker3D__model.root.attach(self.modelSplashCircle)
+            self.modelSplash.model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
     # noinspection PyProtectedMember
@@ -126,7 +126,7 @@ class ArtyBall(object):
         self.modelDotKeyPressed = False
         if self.modelSplash is not None:
             if self.modelSplashCircle.attached:
-                self.modelSplash._StaticWorldObjectMarker3D__model.root.detach(self.modelSplashCircle)
+                self.modelSplash.model.root.detach(self.modelSplashCircle)
             self.modelSplash.clear()
         if self.modelDot is not None:
             self.modelDot.clear()

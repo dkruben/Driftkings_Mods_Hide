@@ -10,6 +10,7 @@ from time import strftime
 import CommandMapping
 import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar
+# from AvatarInputHandler import gun_marker_ctrl
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
@@ -380,6 +381,16 @@ def new__makeSettingsVO(func, self):
     makeSettingsVO = func(self)
     makeSettingsVO['numberOfMessagesInHistory'] = config.data['maxChatLines']
     return makeSettingsVO
+
+# remove camara limits
+# @override(gun_marker_ctrl, '_setupGunMarkerSizeLimits')
+# def _setupGunMarkerSizeLimits(func, self, scale=None):
+#    args = func(self, scale)
+#    if not config.data['enabled'] and config.data['camLimits']:
+#        return
+#    newLimits = (1.0, args[1])
+#    self.sizeConstraint = newLimits
+#    return newLimits
 
 
 # PlayerSatisfactionWidget/ShowRateSatisfactionCmp
