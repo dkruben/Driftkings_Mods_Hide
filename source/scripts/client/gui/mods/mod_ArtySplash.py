@@ -10,7 +10,7 @@ from gui.shared.gui_items import Vehicle
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
 
 from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, checkKeys, getPlayer, sendPanelMessage, logException, calculate_version
-from DriftkingsInject.common.markers import _StaticWorldObjectMarker3D
+from DriftkingsInject.common.markers import StaticWorldObjectMarker3D
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -21,7 +21,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.5 (%(file_compile_date)s)'
+        self.version = '1.5.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.defaultKeys = {
             'buttonShowDot': [Keys.KEY_C, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -95,8 +95,6 @@ class ArtyBall(object):
         self.scaleSplash = None
         self.player = None
 
-    # -noinspection PyProtectedMember
-    # -noinspection PyUnresolvedReferences
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
         if config.data['enabled']:
@@ -104,8 +102,8 @@ class ArtyBall(object):
             self.modelSplashVisible = config.data['showSplashOnDefault']
             self.modelDotVisible = config.data['showDotOnDefault']
             self.scaleSplash = None
-            self.modelSplash = _StaticWorldObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
-            self.modelDot = _StaticWorldObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
+            self.modelSplash = StaticWorldObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
+            self.modelDot = StaticWorldObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
             self.modelDot.model.scale = (0.1, 0.1, 0.1)
             if Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags) == VEHICLE_CLASS_NAME.SPG:
                 self.modelDot.model.scale = (0.5, 0.5, 0.5)
@@ -117,7 +115,6 @@ class ArtyBall(object):
             self.modelSplash.model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
-    # noinspection PyProtectedMember
     def stopBattle(self):
         InputHandler.g_instance.onKeyDown -= self.injectButton
         self.modelSplashVisible = False
@@ -135,7 +132,6 @@ class ArtyBall(object):
         self.scaleSplash = None
         self.modelSplashCircle = None
 
-    # noinspection PyProtectedMember
     def working(self):
         if not config.data['enabled'] or self.player is None:
             self.hideVisible()
@@ -160,35 +156,34 @@ class ArtyBall(object):
             self.hideVisible()
             return
 
-        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model:
+        if self.modelSplash is not None and self.modelSplash.model:
             if not self.scaleSplash or self.scaleSplash != shell.type.explosionRadius:
                 self.scaleSplash = shell.type.explosionRadius
-                self.modelSplash._StaticWorldObjectMarker3D__model.scale = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
+                self.modelSplash.model.scale = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
             if not self.modelSplashKeyPressed:
                 self.modelSplashVisible = config.data['showSplashOnDefault']
-            self.modelSplash._StaticWorldObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
+            self.modelSplash.model.position = self.player.gunRotator.markerInfo[0]
             self.modelSplashCircle.updateHeights()
-        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model:
+        if self.modelDot is not None and self.modelDot.model:
             if not self.modelDotKeyPressed:
                 self.modelDotVisible = config.data['showDotOnDefault']
-            self.modelDot._StaticWorldObjectMarker3D__model.position = self.player.gunRotator.markerInfo[0]
+            self.modelDot.model.position = self.player.gunRotator.markerInfo[0]
         self.setVisible()
 
     # noinspection PyProtectedMember
     def setVisible(self):
-        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model:
-            if self.modelSplash._StaticWorldObjectMarker3D__model.visible != self.modelSplashVisible:
-                self.modelSplash._StaticWorldObjectMarker3D__model.visible = self.modelSplashVisible
-        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model:
-            if self.modelDot._StaticWorldObjectMarker3D__model.visible != self.modelDotVisible:
-                self.modelDot._StaticWorldObjectMarker3D__model.visible = self.modelDotVisible
+        if self.modelSplash is not None and self.modelSplash.model:
+            if self.modelSplash.model.visible != self.modelSplashVisible:
+                self.modelSplash.model.visible = self.modelSplashVisible
+        if self.modelDot is not None and self.modelDot.model:
+            if self.modelDot.model.visible != self.modelDotVisible:
+                self.modelDot.model.visible = self.modelDotVisible
 
-    # noinspection PyProtectedMember
     def hideVisible(self):
-        if self.modelSplash is not None and self.modelSplash._StaticWorldObjectMarker3D__model and self.modelSplash._StaticWorldObjectMarker3D__model.visible:
-            self.modelSplash._StaticWorldObjectMarker3D__model.visible = False
-        if self.modelDot is not None and self.modelDot._StaticWorldObjectMarker3D__model and self.modelDot._StaticWorldObjectMarker3D__model.visible:
-            self.modelDot._StaticWorldObjectMarker3D__model.visible = False
+        if self.modelSplash is not None and self.modelSplash.model and self.modelSplash.model.visible:
+            self.modelSplash.model.visible = False
+        if self.modelDot is not None and self.modelDot.model and self.modelDot.model.visible:
+            self.modelDot.model.visible = False
 
     @logException
     def injectButton(self, event):

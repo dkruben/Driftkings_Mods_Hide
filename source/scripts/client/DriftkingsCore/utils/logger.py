@@ -50,7 +50,7 @@ def logWarning(modID, message, *args, **kwargs):
 #            logTrace(err)
 #    return exception
 
-def _logException(func):
+def logException(func):
     def exception(*args, **kwargs):
         try:
             return func(*args, **kwargs)
@@ -73,6 +73,3 @@ def _logException(func):
                 BigWorld.log_mes = func
             return None
     return exception
-
-
-logException = staticmethod(_logException)

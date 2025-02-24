@@ -3,7 +3,7 @@ import BigWorld
 import Math
 
 
-class _StaticWorldObjectMarker3D(object):
+class StaticWorldObjectMarker3D(object):
     def __init__(self, data, position):
         self.__path = data.get('path')
         offset = data.get('offset', Math.Vector3(0, 0, 0))
