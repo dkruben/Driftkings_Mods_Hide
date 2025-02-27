@@ -199,12 +199,16 @@ class EfficiencyCalculator(object):
             return 0, 0, 0, 0, 0, 0, 0
 
     def calculate_ratios(self, damage, spotted, frags, defence, isWin):
-        rDAMAGE = float(damage) / float(self.expectedValues['wn8expDamage'])
-        rSPOT = float(spotted) / float(self.expectedValues['wn8expSpot'])
-        rFRAG = float(frags) / float(self.expectedValues['wn8expFrag'])
-        rDEF = float(defence) / float(self.expectedValues['wn8expDef'])
-        rWIN = (100.0 if isWin else 0) / float(self.expectedValues['wn8expWinRate'])
-        return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
+        try:
+            rDAMAGE = float(damage) / float(self.expectedValues['wn8expDamage'])
+            rSPOT = float(spotted) / float(self.expectedValues['wn8expSpot'])
+            rFRAG = float(frags) / float(self.expectedValues['wn8expFrag'])
+            rDEF = float(defence) / float(self.expectedValues['wn8expDef'])
+            rWIN = (100.0 if isWin else 0) / float(self.expectedValues['wn8expWinRate'])
+            return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
+        except Exception as err:
+            logError(config.ID, "Error calculating ratios:", err)
+            return 0, 0, 0, 0, 0
 
     @staticmethod
     def calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN):
@@ -336,7 +340,6 @@ def new_destroyGUI(func, *args):
         return
     g_battleEfficiency.stopBattle()
     g_calculator.stopBattle()
-    # g_flash.destroy()
 
 
 @override(BattleResultsWindow, 'as_setDataS')

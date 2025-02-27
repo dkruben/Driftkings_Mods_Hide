@@ -192,8 +192,8 @@
 1737500738|flash/Minimap/src/driftkings/injector/BattleDisplayable.as
 1740012414|flash/Minimap/src/driftkings/views/battle/MinimapCentred.as
 1711315119|flash/OwnHealth/OwnHealth.as3proj
-1711315611|flash/OwnHealth/src/driftkings/OwnHealthInjector.as
-1736206402|flash/OwnHealth/src/driftkings/views/battle/OwnHealthUI.as
+1740607130|flash/OwnHealth/src/driftkings/OwnHealthInjector.as
+1740607410|flash/OwnHealth/src/driftkings/views/battle/OwnHealthUI.as
 1734995341|flash/OwnHealth/src/driftkings/views/utils/Align.as
 1736206382|flash/OwnHealth/src/driftkings/views/utils/Constants.as
 1732059726|flash/OwnHealth/src/driftkings/views/utils/ProgressBar.as
@@ -201,9 +201,8 @@
 1710436570|flash/OwnHealth/src/driftkings/views/utils/Utils.as
 1711315517|flash/OwnHealth/src/driftkings/views/utils/tween/Tween.as
 1711315551|flash/OwnHealth/src/driftkings/views/utils/tween/TweenEvent.as
-1710344394|flash/OwnHealth/src/mods/common/AbstractViewInjector.as
-1710344394|flash/OwnHealth/src/mods/common/BattleDisplayable.as
-1710344394|flash/OwnHealth/src/mods/common/IAbstractInjector.as
+1738886554|flash/OwnHealth/src/mods/common/AbstractViewInjector.as
+1738886561|flash/OwnHealth/src/mods/common/BattleDisplayable.as
 1710977147|flash/SixthSense/SixthSenseIcon.as3proj
 1738960118|flash/SixthSense/src/driftkings/SixthSenseInjector.as
 1734825399|flash/SixthSense/src/driftkings/views/battle/SixthSenseUI.as

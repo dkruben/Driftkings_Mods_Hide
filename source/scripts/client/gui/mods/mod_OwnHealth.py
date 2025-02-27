@@ -145,6 +145,8 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         return percentToRgb(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):
+        if not isinstance(health, (int, float)) or health < 0:
+            return
         if health > self.maxHealth:
             self.maxHealth = health
         if self.maxHealth <= 0:

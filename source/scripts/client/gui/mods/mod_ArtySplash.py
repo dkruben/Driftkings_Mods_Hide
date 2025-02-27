@@ -110,8 +110,7 @@ class ArtyBall(object):
             self.modelSplash.model.visible = False
             self.modelDot.model.visible = False
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
-            # self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, BigWorld.player().spaceID) # old
-            self.modelSplashCircle.setup('objects/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, self.player.spaceID)
+            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, BigWorld.player().spaceID) # old
             self.modelSplash.model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
@@ -170,7 +169,6 @@ class ArtyBall(object):
             self.modelDot.model.position = self.player.gunRotator.markerInfo[0]
         self.setVisible()
 
-    # noinspection PyProtectedMember
     def setVisible(self):
         if self.modelSplash is not None and self.modelSplash.model:
             if self.modelSplash.model.visible != self.modelSplashVisible:

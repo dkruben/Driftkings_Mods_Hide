@@ -94,7 +94,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.__claim_started = True
         response = yield self.__webController.sendRequest(ctx=ClaimRewardsCtx())
         if not response.isSuccess():
-            SystemMessages.pushMessage('%s: Auto Claim Clan Reward - ' + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error) % config.ID
+            SystemMessages.pushMessage('{}: Auto Claim Clan Reward - ' + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error) % config.ID
             logWarning(config.ID, 'Failed to claim rewards. Code: {}', response.getCode())
         self.__claim_started = False
 
@@ -102,7 +102,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def __claimProgression(self, stageID, price):
         response = yield self.__webController.sendRequest(ctx=PurchaseProgressionStageCtx(stageID, price))
         if not response.isSuccess():
-            SystemMessages.pushMessage('%s: Auto Claim Clan Reward - Failed to claim Progression.', type=SystemMessages.SM_TYPE.Error) % config.ID
+            SystemMessages.pushMessage('{}: Auto Claim Clan Reward - Failed to claim Progression.', type=SystemMessages.SM_TYPE.Error) % config.ID
             logWarning(config.ID, 'Failed to claim Progression. Code: {}', response.getCode())
         elif stageID == 20:
             self.__claimProgression(21, 0)

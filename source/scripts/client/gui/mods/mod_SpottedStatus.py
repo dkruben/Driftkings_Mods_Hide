@@ -1,4 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
+import os
 import traceback
 
 from Avatar import PlayerAvatar
@@ -7,7 +8,7 @@ from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version, logError
 
 
 class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
@@ -17,7 +18,7 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
         self._spotted_cache = {}
         self.as_create = False
         CallbackDelayer.__init__(self)
-        self.place = '/'.format(['..', 'mods', 'configs', 'Driftkings', '%(mod_ID)s', 'icons', ''])
+        self.place = os.path.join('..', 'mods', 'configs', 'Driftkings', '%(mod_ID)s', 'icons')
         super(ConfigInterface, self).__init__()
         override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGui)
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
@@ -46,16 +47,21 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
             'UI_setting_help_text': 'Help:',
-            'UI_setting_help_tooltip': ' * You can change images to text or icons.\n'
-                                       ' * For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n'
-                                       '\t'.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>')) + '<font color=\'#\'>'
-                                       'Please don\'t chang the text in text box if you don\'t know you doing.</font>' + '\t'.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>'))
+            'UI_setting_help_tooltip': (
+                ' * You can change images to text or icons.\n'
+                ' * For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n'
+                '{}\n{}'.format(
+                    '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>',
+                    '<font color=\'#\'>Please don\'t change the text in text box if you don\'t know what you\'re doing.</font>'
+                )
+            )
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         help = self.tb.createLabel('help')
         help['tooltip'] += 'help'
+
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
@@ -130,13 +136,7 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
     def start(self):
         if g_driftkingsPlayersPanels.events.onUIReady and not self.as_create:
             self.as_create = True
-            g_driftkingsPlayersPanels.create(self.ID, {
-                'right': {
-                    'x': self.data['text']['x'],
-                    'y': self.data['text']['y']
-                }
-            })
-
+            g_driftkingsPlayersPanels.create(self.ID, {'right': {'x': self.data['text']['x'], 'y': self.data['text']['y']}})
         if hasattr(getPlayer(), 'arena'):
             arena = getPlayer().arena
             for vID in self._spotted_cache:
@@ -147,7 +147,6 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
                             self._spotted_cache[vID] = 'dead'
                     elif not self.sessionProvider.getArenaDP().getVehicleInfo(vID).isAlive():
                         self._spotted_cache[vID] = 'dead'
-
         self.getSpottedStatus()
         return 0.3
 
@@ -163,7 +162,8 @@ try:
     statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
 except ImportError:
     logWarning(config.ID, 'Battle Flash API not found.')
-except StandardError:
+except Exception as err:
+    logError(config.ID, 'Error initializing mod: {}', err)
     traceback.print_exc()
 else:
     @override(ArenaVehiclesPlugin, '_setInAoI')

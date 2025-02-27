@@ -9,15 +9,16 @@ import BigWorld
 import ResMgr
 from BattleReplay import isPlaying, isLoading
 from constants import ARENA_GUI_TYPE
+from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
 
 from logger import logError
 
-__all__ = ('calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle', 'getAccountDBID',
-           'getDistanceTo', 'getEntity', 'getPlayer', 'getTarget', 'getVehCD', 'getColor', 'getPercent', 'getRegion',
-           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros','xvmInstalled', 'square_position', 'battle_range',)
+__all__ = ('battle_pages', 'battle_range', 'calculate_version', 'callback', 'cancelCallback', 'checkNamesList', 'distanceToEntityVehicle',
+           'getAccountDBID', 'getColor', 'getDistanceTo', 'getEntity', 'getPercent', 'getPlayer', 'getRegion', 'getTarget', 'getVehCD',
+           'hexToDecimal', 'isReplay', 'percentToRgb', 'replaceMacros', 'serverTime', 'square_position', 'xvmInstalled')
 
 
 def getCurrentModsPath():
@@ -31,14 +32,7 @@ modsPath, gameVersion = getCurrentModsPath()
 
 
 def create_range(obj, names):
-    _range = set()
-    for name in names:
-        _name = getattr(obj, name)
-        if _name is not None:
-            _range.add(_name)
-        else:
-            logError('DriftkingsCore', 'create_range::{} attribute error:: {}', obj.__class__.__name__, name)
-    return _range
+    return tuple(getattr(obj, name) for name in names if hasattr(obj, name))
 
 
 __battle_types = (
@@ -57,8 +51,18 @@ __battle_types = (
     "WINBACK",
 )
 
+__pages_types = (
+    'CLASSIC_BATTLE_PAGE',
+    'EPIC_BATTLE_PAGE',
+    'EPIC_RANDOM_PAGE',
+    'RANKED_BATTLE_PAGE',
+    'STRONGHOLD_BATTLE_PAGE',
+    'COMP7_BATTLE_PAGE',
+)
+
 
 battle_range = create_range(ARENA_GUI_TYPE, __battle_types)
+battle_pages = create_range(VIEW_ALIAS, __pages_types)
 
 
 def isXvmInstalled():
@@ -116,6 +120,10 @@ def getRegion():
 
 def callback(delay, call_method, *args, **kwargs):
     return BigWorld.callback(delay, partial(call_method, *args, **kwargs) if args or kwargs else call_method)
+
+
+def serverTime():
+    return BigWorld.serverTime()
 
 
 def cancelCallback(callback_id):

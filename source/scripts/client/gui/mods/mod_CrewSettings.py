@@ -20,22 +20,14 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callb
 logger = logging.getLogger(__name__)
 
 
-def getPreferencesDir():
-    return os.path.normpath(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1]))
-
-
-preferencesDir = getPreferencesDir()
-
-
 def getCachePath():
-    path = os.path.join(preferencesDir, 'Driftkings')
+    path = os.path.join(os.path.normpath(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1])), 'Driftkings')
     if not os.path.exists(path):
         os.makedirs(path)
     return path
 
 
 def encodeData(data):
-    """encode dict keys/values to utf-8."""
     if isinstance(data, dict):
         return {encodeData(key): encodeData(value) for key, value in data.iteritems()}
     elif isinstance(data, list):
@@ -47,13 +39,14 @@ def encodeData(data):
 
 
 def openJsonFile(path):
-    """Gets a dict from JSON."""
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as dataFile:
             try:
                 return encodeData(json.load(dataFile, encoding='utf-8'))
             except ValueError:
                 return encodeData(json.loads(dataFile.read(), encoding='utf-8'))
+            except Exception:
+                return {}
 
 
 def writeJsonFile(path, data):
@@ -76,6 +69,7 @@ ignored_vehicles = openIgnoredVehicles()
 def updateIgnoredVehicles(vehicles):
     path = os.path.join(getCachePath(), 'auto_prev_crew.json')
     writeJsonFile(path, {'vehicles': sorted(vehicles)})
+    return True  # Add return value
 
 
 class ConfigInterface(DriftkingsConfigInterface):

@@ -131,7 +131,10 @@ class PlayersPanelController(DriftkingsConfigInterface):
         self.setHPField(vehicleID)
 
     def validateCache(self, vehicleID):
-        self.__vCache.add(vehicleID)
+        # Add check for valid vehicleID
+        if vehicleID is not None and isinstance(vehicleID, int):
+            self.__vCache.add(vehicleID)
+        # self.__vCache.add(vehicleID)
 
     def onHotkeyPressed(self, event):
         if not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not self.data['mode']:

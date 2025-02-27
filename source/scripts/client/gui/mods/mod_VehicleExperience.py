@@ -4,7 +4,7 @@ import re
 import textwrap
 
 from CurrentVehicle import g_currentVehicle
-from gui.Scaleform.daapi.view.lobby.hangar.VehicleParameters import VehicleParameters, _VehParamsDataProvider as VehParamsDataProvider
+from gui.Scaleform.daapi.view.lobby.hangar.VehicleParameters import VehicleParameters, _VehParamsDataProvider
 from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
 from gui.Scaleform.locale.QUESTS import QUESTS
 from gui.impl.backport.backport_system_locale import getIntegralFormat
@@ -387,7 +387,7 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
 
 
-@override(VehParamsDataProvider, 'buildList')
+@override(_VehParamsDataProvider, 'buildList')
 def new_buildList(func, self, cache):
     if not config.data['enabled']:
         return func(self, cache)

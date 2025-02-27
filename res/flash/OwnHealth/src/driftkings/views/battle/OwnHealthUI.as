@@ -36,7 +36,7 @@ package driftkings.views.battle
          super.onPopulate();
          this.onResizeHandle(null);
          var settings:Object = this.getSettings();
-         var colors:Object = this.getSettings().colors;
+         var colors:Object = settings.colors;
          
          this.alignX = settings.alignX || Align.CENTER;
          this.alignY = settings.alignY || Align.BOTTOM;
@@ -87,9 +87,12 @@ package driftkings.views.battle
       
       public function as_setOwnHealth(scale:Number, text:String, color:String) : void
       {
-         this.own_health.setNewScale(scale);
-         this.own_health.setText(text);
-         this.own_health.updateColor(color);
+         if (this.own_health)
+         {
+            this.own_health.setNewScale(scale);
+            this.own_health.setText(text);
+            this.own_health.updateColor(color);
+         }
       }
       
       public function as_BarVisible(isVisible:Boolean) : void

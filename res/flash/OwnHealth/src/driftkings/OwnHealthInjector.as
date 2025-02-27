@@ -2,25 +2,21 @@ package driftkings
 {
    import driftkings.views.battle.OwnHealthUI;
    import mods.common.AbstractViewInjector;
-   import mods.common.IAbstractInjector;
-   import flash.display3D.VertexBuffer3D;
    
-   public class OwnHealthInjector extends AbstractViewInjector implements IAbstractInjector
+   public class OwnHealthInjector extends AbstractViewInjector
    {
 	
 	   public function OwnHealthInjector()
 		{
 			super();
 		}
-      
-		override public function get componentUI() : Class
+		
+		override protected function onPopulate() : void
 		{
-			return OwnHealthUI;
-		}
-      
-		override public function get componentName() : String
-		{
-			return "OwnHealthView";
+			autoDestroy = false;
+			componentName = "OwnHealthView";
+			componentUI = OwnHealthUI;
+			super.onPopulate();
 		}
 	}
 }
