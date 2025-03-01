@@ -1,8 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
-import logging
-import traceback
 import datetime
 import locale
+import logging
+import traceback
 
 import gui.shared.tooltips.vehicle as tooltips
 from CurrentVehicle import g_currentVehicle
@@ -19,6 +19,7 @@ from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechn
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
+from gui.Scaleform.daapi.view.meta.TankCarouselMeta import TankCarouselMeta
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
@@ -51,7 +52,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.3.0 (%(file_compile_date)s)'
+        self.version = '3.3.5 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -88,13 +89,39 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
                 'alignX': 'right',
                 'alignY': 'top'
-            }
+            },
+            'carouselRows': True,
+            'rows': 2
         }
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
+            # Login/Authentication
             'UI_setting_autoLogin_text': 'Automatic Login',
             'UI_setting_autoLogin_tooltip': 'Automatically log into the game',
+            # UI Elements
+            'UI_setting_clock_text': 'Clock Display',
+            'UI_setting_clock_tooltip': 'Show clock in login screen and hangar',
+            # Buttons & Counters
+            'UI_setting_showButtonCounters_text': 'Button Counters',
+            'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
+            'UI_setting_hideBtnCounters_text': 'Disable tooltips on buttons in the hangar header',
+            'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#\'>To enable / disable you need to restart the game.</font>' + ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'))),
+            # Premium Features
+            'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
+            'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
+            'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
+            'UI_setting_showBuyPremiumButton_tooltip': 'Show/hide premium account purchase button',
+            'UI_setting_showPremiumShopButton_text': 'Premium Shop',
+            'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
+            'UI_setting_premiumTime_text': 'Premium Time Display',
+            'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
+            # Carousel Settings
+            'UI_setting_carouselRows_text': 'Tank Carousel Rows',
+            'UI_setting_carouselRows_tooltip': 'Enable/disable custom number of rows in tank carousel',
+            'UI_setting_rows_text': 'Number of Rows',
+            'UI_setting_rows_tooltip': 'Set the number of rows to display in tank carousel',
+            # Other UI Elements
             'UI_setting_showReferralButton_text': 'Referral Program Button',
             'UI_setting_showReferralButton_tooltip': 'Show/hide the Referral Program button',
             'UI_setting_showGeneralChatButton_text': 'General Chat',
@@ -121,31 +148,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showHangarPrestigeWidget_tooltip': 'Show/hide elite level widget in hangar',
             'UI_setting_showProfilePrestigeWidget_text': 'Profile Prestige Display',
             'UI_setting_showProfilePrestigeWidget_tooltip': 'Show/hide elite level widget in profile',
-            'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
-            'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
-            'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
-            'UI_setting_showBuyPremiumButton_tooltip': 'Show/hide premium account purchase button',
-            'UI_setting_showPremiumShopButton_text': 'Premium Shop',
-            'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
-            'UI_setting_showButtonCounters_text': 'Button Counters',
-            'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_allowExchangeXPInTechTree_text': 'XP Exchange in Tech Tree',
             'UI_setting_allowExchangeXPInTechTree_tooltip': 'Enable XP to gold exchange in tech tree',
             'UI_setting_allowChannelButtonBlinking_text': 'Allow Channel Button Blinking',
             'UI_setting_allowChannelButtonBlinking_tooltip': 'Allow messenger bar channel (clan or private chat) button blinking.',
             'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
             'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
-            'UI_setting_premiumTime_text': 'Premium Time Display',
-            'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
             'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
-            'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
-            'UI_setting_hideBtnCounters_text': 'Disable tooltips on buttons in the hangar header',
-            'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#\'>'
-                                                  + 'To enable / disable you need to restart the game.</font>' +
-                                                  ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')),
-                                                   ),
-            'UI_setting_clock_text': 'Clock Display',
-            'UI_setting_clock_tooltip': 'Show clock in login screen and hangar'
+            'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar'
         }
         super(ConfigInterface, self).init()
 
@@ -154,33 +164,44 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('allowExchangeXPInTechTree'),
-                self.tb.createControl('allowChannelButtonBlinking'),
+                # Core Settings
                 self.tb.createControl('autoLogin'),
                 self.tb.createControl('clock'),
-                self.tb.createControl('lootBoxesWidget'),
+                # Game Features
+                self.tb.createControl('allowExchangeXPInTechTree'),
+                self.tb.createControl('allowChannelButtonBlinking'),
+                self.tb.createControl('showXpToUnlockVeh'),
+                # UI Elements
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
-                self.tb.createControl('showDailyQuestWidget'),
-                self.tb.createControl('showEventBanner'),
                 self.tb.createControl('showGeneralChatButton'),
                 self.tb.createControl('showPopUpMessages'),
-                self.tb.createControl('showProgressiveDecalsWindow')
+                # Widgets
+                self.tb.createControl('lootBoxesWidget'),
+                self.tb.createControl('showDailyQuestWidget'),
+                self.tb.createControl('showEventBanner'),
+                self.tb.createControl('showProgressiveDecalsWindow'),
+                # Carousel Settings
+                self.tb.createControl('carouselRows'),
+                self.tb.createStepper('rows', 1, 5, 1)
             ],
             'column2': [
+                # Premium Features
                 self.tb.createControl('showPromoPremVehicle'),
-                self.tb.createControl('showRankedBattleResults'),
-                self.tb.createControl('showReferralButton'),
+                self.tb.createControl('showBuyPremiumButton'),
+                self.tb.createControl('showPremiumShopButton'),
+                self.tb.createControl('showWotPlusButton'),
+                # Notifications & Counters
                 self.tb.createControl('showUnreadCounter'),
                 self.tb.createControl('showButtonCounters'),
-                self.tb.createControl('showBuyPremiumButton'),
-                self.tb.createControl('showEventBanner'),
+                self.tb.createControl('hideBtnCounters'),
+                # Game Status Displays
+                self.tb.createControl('showRankedBattleResults'),
                 self.tb.createControl('showHangarPrestigeWidget'),
-                self.tb.createControl('showPremiumShopButton'),
                 self.tb.createControl('showProfilePrestigeWidget'),
-                self.tb.createControl('showWotPlusButton'),
-                self.tb.createControl('showXpToUnlockVeh'),
-                self.tb.createControl('hideBtnCounters')
+                # Additional Features
+                self.tb.createControl('showReferralButton'),
+                self.tb.createControl('showEventBanner')
             ]
         }
 
@@ -485,6 +506,16 @@ def new__setItemField(func, self, clientID, key, value):
     if not config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True) and key == 'isNotified':
         value = False
     return func(self, clientID, key, value)
+
+# carousel
+@override(TankCarouselMeta, 'as_rowCountS')
+def new__rowCountS(func, self, value):
+    func(self, value)
+    if not config.data['enabled'] and not config.data['carouselRows']:
+        return
+    if self._isDAAPIInited():
+        return self.flashObject.as_rowCount(config.data['rows'])
+
 
 # Hangar Clock
 class Flash(object):

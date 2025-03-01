@@ -264,39 +264,3 @@ def new_setupPlugins(func, self, arenaVisitor):
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, MinimapCentredView, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
-
-
-# class ReloadInfoMinimap:
-#    def __init__(self):
-#        self._arenaVehiclesPlugin = None
-#        self._config = {'onShotAnimation': 'reloading_gun'}
-
-#    def setArenaVehiclesPlugin(self, arenaVehiclesPlugin):
-#        self._arenaVehiclesPlugin = arenaVehiclesPlugin
-
-#    def _checkIfAlly(self, shooterId):
-#        if not self._arenaVehiclesPlugin:
-#            return False
-#        isAlly = self._arenaVehiclesPlugin.sessionProvider.getArenaDP().isAlly(shooterId)
-#        return isAlly
-
-#    def onShowTracer(self, shooterId):
-#        if not self._arenaVehiclesPlugin:
-#            return
-#        if not self._checkIfAlly(shooterId):
-#            return
-#        if shooterId in self._arenaVehiclesPlugin._entries:
-#            self._arenaVehiclesPlugin._invoke(self._arenaVehiclesPlugin._entries[shooterId].getID(), 'setAnimation', self._config['onShotAnimation'])
-
-
-
-# g_reloadInfoMod = ReloadInfoMinimap()
-
-# Game overwritten methods
-# @override(PlayerAvatar, 'showTracer')
-# def reloadInfoshowTracer(*args):
-#    g_reloadInfoMod.onShowTracer(args[1])
-
-# @override(ArenaVehiclesPlugin, 'start')
-# def vehPluginStart(*args):
-#    g_reloadInfoMod.setArenaVehiclesPlugin(args[0])
