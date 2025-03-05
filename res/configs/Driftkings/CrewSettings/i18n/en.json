@@ -1,18 +1,8 @@
 ﻿{
     "UI_description": "CrewSettings",
-    "UI_dialog_apply": "Apply",
-    "UI_dialog_cancel": "Cancel",
-    "UI_dialog_ignore": "Ignore",
-    "UI_setting_crewReturn_text": "Crew Auto-Return",
-    "UI_setting_crewReturn_tooltip": "Return crew tanks.",
-    "UI_setting_crewTraining_text": "Crew Training",
-    "UI_setting_crewTraining_tooltip": "Monitors whether 'Field Upgrade' is upgraded/available and enables or disables 'Expedited Crew Training' accordingly",
-    "crewDialogs": {
-        "disabled": "<br>Disable accelerated crew training?",
-        "enabled": "<br>Enable accelerated crew training?",
-        "isFullComplete": "You have pumped the field upgrade to the highest possible level.",
-        "isFullXp": "You have accumulated the necessary amount of experience to fully upgrade the field upgrade.",
-        "needTurnOff": "You do not have field upgrades, it is recommended to disable accelerated crew training.",
-        "notAvailable": "Field upgrades are not available for this vehicle."
-    }
+    "UI_setting_crewAutoReturn_text": "Crew Auto Return",
+    "UI_setting_crewAutoReturn_tooltip": "",
+    "UI_setting_crewReturnByDefault_text": "Crew Return By Default",
+    "UI_setting_crewReturnByDefault_tooltip": "",
+    "UI_version": 105
 }

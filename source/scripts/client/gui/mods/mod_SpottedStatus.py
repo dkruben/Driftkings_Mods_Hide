@@ -110,8 +110,7 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['spotted']})
 
     def updateSpottedStatus(self, vID, spotted):
-        player = getPlayer()
-        arena = player.arena if hasattr(player, 'arena') else None
+        arena = getPlayer().arena if hasattr(getPlayer(), 'arena') else None
         if arena is None:
             return
         else:

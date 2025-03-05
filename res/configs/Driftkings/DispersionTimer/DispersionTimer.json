@@ -1,5 +1,7 @@
 ﻿{
     "align": "left",
+    "alignX": "center",
+    "alignY": "center",
     "blue": "02C9B3",
     "enabled": true,
     "green": "A6FFA6",

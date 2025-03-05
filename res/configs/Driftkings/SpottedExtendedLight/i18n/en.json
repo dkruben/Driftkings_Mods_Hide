@@ -1,15 +1,15 @@
 ﻿{
     "UI_description": "SpottedExtendedLight",
-    "UI_setting_AssistRadio_default": "Default: {vehicles}{damage}",
+    "UI_setting_AssistRadio_default": "Default: {icons}{vehicles}{damage}",
     "UI_setting_AssistRadio_description": "Macros: Assist Radio",
     "UI_setting_AssistRadio_text": "Assist Radio:",
-    "UI_setting_AssistStun_default": "Default: {vehicles}{damage}",
+    "UI_setting_AssistStun_default": "Default: {icons}{vehicles}{damage}",
     "UI_setting_AssistStun_description": "Macros: Assist Stun",
     "UI_setting_AssistStun_text": "Assist Stun:",
-    "UI_setting_AssistTrack_default": "Default: {vehicles}{damage}",
+    "UI_setting_AssistTrack_default": "Default: {icons}{vehicles}{damage}",
     "UI_setting_AssistTrack_description": "Macros: Assist Track",
     "UI_setting_AssistTrack_text": "Assist Track:",
-    "UI_setting_Spotted_default": "Default: {vehicles}",
+    "UI_setting_Spotted_default": "Default: {icons}{vehicles}",
     "UI_setting_Spotted_description": "Macros: Spotted",
     "UI_setting_Spotted_text": "Spotted:",
     "UI_setting_iconSizeX_default": "Default: 47",
@@ -41,5 +41,6 @@
     "UI_setting_soundSpotted_tooltip": "",
     "UI_setting_sound_default": "Default: On",
     "UI_setting_sound_text": "Use sound in battle",
-    "UI_setting_sound_tooltip": ""
+    "UI_setting_sound_tooltip": "",
+    "UI_version": 175
 }

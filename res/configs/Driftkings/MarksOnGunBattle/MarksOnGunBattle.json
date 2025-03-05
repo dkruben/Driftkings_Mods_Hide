@@ -41,7 +41,7 @@
     "buttonShow": ["KEY_NUMPAD9", ["KEY_LALT", "KEY_RALT"]],
     "buttonSizeDown": ["KEY_PGDN", ["KEY_LALT", "KEY_RALT"]],
     "buttonSizeUp": ["KEY_PGUP", ["KEY_LALT", "KEY_RALT"]],
-    "downColor": 21,
+    "downColor": 20,
     "enabled": true,
     "font": "$FieldFont",
     "panel": {
@@ -78,10 +78,6 @@
     "showInHangar": true,
     "showInReplay": true,
     "showInStatistic": true,
-    "showInTechTree": true,
-    "showInTechTreeMarkOfGunPercent": true,
-    "showInTechTreeMarkOfGunPercentFirst": false,
-    "showInTechTreeMastery": true,
     "unknownColor": 16,
-    "upColor": 18
+    "upColor": 21
 }

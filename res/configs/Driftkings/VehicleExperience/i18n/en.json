@@ -39,5 +39,6 @@
     "UI_text_add_condition": "<font color='#aefe57'>{quest-add-condition}</font>",
     "UI_text_add_condition_extra": "Secondary condition",
     "UI_text_main_condition": "<b><font color='#aefe57'>{quest-main-condition}</font></b>",
-    "UI_text_main_condition_extra": "Main condition"
+    "UI_text_main_condition_extra": "Main condition",
+    "UI_version": 100
 }

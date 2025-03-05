@@ -1,0 +1,38 @@
+﻿{
+    "background": false,
+    "compareValuesColor": {
+        "bestValue": "#90EE90",
+        "worstValue": "#FFBCAD"
+    },
+    "enabled": true,
+    "format": "{{header}}:  {{allyChance}} {{compareSign}} {{enemyChance}}",
+    "textFormat": {
+        "bold": true,
+        "color": "#DBD7D2",
+        "font": "$FieldFont",
+        "italic": false,
+        "size": 18
+    },
+    "textPosition": {
+        "alignX": "right",
+        "alignY": "top",
+        "alpha": 1.0,
+        "border": false,
+        "drag": true,
+        "height": 50.0,
+        "shadow": {
+            "alpha": 1,
+            "angle": 90,
+            "blurX": 2,
+            "blurY": 2,
+            "color": "#000000",
+            "distance": 0,
+            "quality": 1,
+            "strength": 20
+        },
+        "visible": true,
+        "width": 190.0,
+        "x": -546.0,
+        "y": 24.0
+    }
+}

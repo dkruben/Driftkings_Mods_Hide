@@ -186,7 +186,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         while True:
             orig_engine = ResMgr.openSection('engine_config.xml')
             if orig_engine is None:
-                print _config.LOG, 'ERROR: engine_config.xml not found'
+                print self.LOG, 'ERROR: engine_config.xml not found'
                 return
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
@@ -222,7 +222,6 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 self.manageProfileBanks(profile_type, profile, bankFiles)
             self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml', ('delete', 'move', 'remap'))
             self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml', ('delete', 'move', 'create', 'memory'))
-            return
 
     def collectBankFiles(self, mediaPath):
         bankFiles = {'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',), 'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}

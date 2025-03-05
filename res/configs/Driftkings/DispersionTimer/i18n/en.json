@@ -23,5 +23,6 @@
     "UI_setting_y_text": "Position Y",
     "UI_setting_y_tooltip": "",
     "UI_setting_yellow_text": "<font color='#%(yellow)s'>Current color: #%(yellow)s</font>",
-    "UI_setting_yellow_tooltip": ""
+    "UI_setting_yellow_tooltip": "",
+    "UI_version": 105
 }

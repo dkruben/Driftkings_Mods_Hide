@@ -1,20 +1,26 @@
 ﻿{
-    "color": "dd00f0",
+    "clipLoad": true,
+    "color": "f930f8",
     "directivesOnlyFromStorage": false,
     "disableSoundCommander": false,
     "enabled": true,
-    "format": "<font face='$FieldFont' size='16' color='#FFFFFF'><p align='left'>%H:%M:%S</p></font>",
+    "format": "<font face='$FieldFont' size='16' color='#F5CBA7'><p align='left'>%H:%M:%S</p></font>",
+    "hideBadges": false,
     "hideBattlePrestige": false,
+    "hideClanName": true,
     "inBattle": true,
+    "loadTxt": "Reloading at %(pos)s, for %(load)s seconds.",
+    "maxChatLines": 6,
     "muteTeamBaseSound": false,
     "position": {
-        "x": -970,
+        "x": -1180,
         "y": 1
     },
     "postmortemTips": true,
     "showAnonymous": false,
     "showBattleHint": true,
     "showFriends": true,
+    "showPlayerSatisfactionWidget": false,
     "showPostmortemDogTag": true,
     "stunSound": false
 }

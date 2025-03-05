@@ -1,6 +1,6 @@
 ﻿{
     "disableCamAfterShot": false,
-    "disableCamAfterShotLatency": 4,
+    "disableCamAfterShotLatency": 1,
     "disableCamAfterShotSkipClip": true,
     "dynamicZoom": {
         "enabled": false,
@@ -8,11 +8,11 @@
     },
     "enabled": true,
     "noBinoculars": true,
-    "noFlashBang": false,
+    "noFlashBang": true,
     "noShockWave": true,
     "noSniperDynamic": false,
     "zoomSteps": {
         "enabled": true,
-        "steps": [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 16.0, 20.0, 25.0, 30.0]
+        "steps": [4.0, 8.0, 16.0, 25.0, 30.0]
     }
 }

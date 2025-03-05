@@ -3,6 +3,7 @@
     "avgBlocked": true,
     "avgDamage": true,
     "avgStun": true,
+    "battles": true,
     "enabled": true,
     "gunMarks": true,
     "winRate": true

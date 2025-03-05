@@ -1,0 +1,7 @@
+﻿{
+    "enabled": false,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_VictoryChances.pyc": "build/scripts/client/gui/mods/mod_VictoryChances.pyc"
+    }
+}

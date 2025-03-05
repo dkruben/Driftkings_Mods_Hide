@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_description": "MinimapPlugins",
     "UI_setting_button_text": "Zoom Button",
     "UI_setting_button_tooltip": "Hot key for zoom.",
@@ -23,5 +23,6 @@
     "UI_setting_viewRadius_text": "Real View",
     "UI_setting_viewRadius_tooltip": "Remove the limitation of the circle of vision 445m",
     "UI_setting_yaw_text": "Show Hover Angles",
-    "UI_setting_yaw_tooltip": "Show Hover Angles on all vehicles where they are"
+    "UI_setting_yaw_tooltip": "Show Hover Angles on all vehicles where they are",
+    "UI_version": 125
 }

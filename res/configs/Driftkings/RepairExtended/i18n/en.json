@@ -1,6 +1,5 @@
 ﻿{
     "UI_description": "RepairExtended",
-    "UI_message_enabled": "Enable|Disable Options.",
     "UI_setting_autoRepair_text": "Auto usage",
     "UI_setting_autoRepair_tooltip": "",
     "UI_setting_buttonChassis_text": "Button: Restore Chassis",
@@ -23,5 +22,5 @@
     "UI_setting_timerMin_text": "Min delay auto usage",
     "UI_setting_useGoldKits_text": "Use Gold Kits",
     "UI_setting_useGoldKits_tooltip": "",
-    "UI_version": "2.0.0 (28.03.2024)"
+    "UI_version": 210
 }

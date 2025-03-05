@@ -11,5 +11,6 @@
     "UI_setting_showInTechTreeMastery_text": "TechTree: show Mastery",
     "UI_setting_showInTechTreeMastery_tooltip": "",
     "UI_setting_showInTechTree_text": "TechTree: enabled",
-    "UI_setting_showInTechTree_tooltip": ""
+    "UI_setting_showInTechTree_tooltip": "",
+    "UI_version": 120
 }

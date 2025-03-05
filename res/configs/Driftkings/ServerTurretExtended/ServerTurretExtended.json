@@ -1,5 +1,5 @@
 ﻿{
-    "activateMessage": false,
+    "activateMessage": true,
     "autoActivateWheelMode": true,
     "buttonAutoMode": ["KEY_R", ["KEY_LALT", "KEY_RALT"]],
     "buttonMaxMode": ["KEY_R", ["KEY_LCONTROL", "KEY_RCONTROL"]],
@@ -7,5 +7,5 @@
     "fixAccuracyInMove": true,
     "fixWheelCruiseControl": true,
     "maxWheelMode": true,
-    "serverTurret": false
+    "serverTurret": true
 }

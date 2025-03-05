@@ -19,5 +19,5 @@
     "UI_setting_maxWheelMode_tooltip": "When reaching maximum speed, does not disable speed mode when maneuvering",
     "UI_setting_serverTurret_text": "Server Turret",
     "UI_setting_serverTurret_tooltip": "Move Turret to Server Aim coordinates (need enabled Server Sight in game settings)",
-    "UI_version": "1.6.5 (09.04.2024)"
+    "UI_version": 170
 }

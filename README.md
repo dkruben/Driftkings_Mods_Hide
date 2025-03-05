@@ -70,4 +70,11 @@ Python Part:
 
 [![PyCharm 2024.1](https://img.shields.io/badge/PyCharm-2024.1-green.svg)](https://www.jetbrains.com/pycharm/)
 
+Thanks to:
+--> Izebrg (Renat Iliev)
+--> Poliroid (Andrii Andrushchyshyn)
+--> PolyacovYury
+--> Spoter (Peter Rastorguev)
+--> CH4MPi
+
 --------------------------------------------

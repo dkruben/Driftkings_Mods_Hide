@@ -250,8 +250,11 @@ class BattleEfficiency(object):
         return self._colors
 
     def update_stat(self, key, value):
-        if key in self._stats:
-            self._stats[key] = value
+        if key in self._stats and value is not None:
+            try:
+                self._stats[key] = float(value)
+            except (ValueError, ZeroDivisionError):
+                self._stats[key] = 0
 
     @staticmethod
     def read_colors(rating_color, rating_value):

@@ -1,0 +1,19 @@
+﻿{
+    "UI_description": "AccountManager",
+    "UI_setting_acceptDeleteAccount": "Accept delete account",
+    "UI_setting_accountDelete": "Delete Account",
+    "UI_setting_accountManager": "Account manager",
+    "UI_setting_add": "Add",
+    "UI_setting_autoEnter": "Auto Enter",
+    "UI_setting_cancel": "Cancel",
+    "UI_setting_delete": "Delete",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Delete</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Edit</font>",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Enter</font>",
+    "UI_setting_manageYourAccount": "Manage Your account",
+    "UI_setting_nick": "Nick:",
+    "UI_setting_save": "Save",
+    "UI_setting_server": "Server:",
+    "UI_setting_showPassword": "Show password",
+    "UI_version": 105
+}

@@ -1,57 +1,54 @@
 ﻿{
     "enabled": true,
     "mode": 0,
+    "toggle_Key": [
+        ["KEY_LALT", "KEY_RALT"]
+    ],
     "textFields": {
         "1text": {
             "left": {
                 "align": "center",
                 "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
-                "x": 116,
-                "y": 1
+                "x": 111,
+                "y": 3
             },
             "right": {
                 "align": "center",
                 "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
-                "x": -116,
-                "y": 1
+                "x": -115,
+                "y": 3
             }
         },
         "2img": {
             "hideIfDead": true,
             "left": {
                 "align": "left",
-                "text": "<img src='img://gui/maps/PlayerPanelHP/hp_alive_l.png' width='%(barWidth)d' height='22'>",
+                "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_l.png' width='%(barWidth)d' height='14'>",
                 "width": 72,
-                "x": 80,
-                "y": -1
+                "x": 75,
+                "y": 3
             },
             "right": {
-                "align": "right",
-                "text": "<img src='img://gui/maps/PlayerPanelHP/hp_alive_r.png' width='%(barWidth)d' height='22'>",
+                "align": "left",
+                "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_r.png' width='%(barWidth)d' height='14'>",
                 "width": 72,
-                "x": -82,
-                "y": -1
+                "x": -151,
+                "y": 3
             }
         },
         "3bg": {
             "left": {
                 "align": "left",
-                "text": "<img src='img://gui/maps/PlayerPanelHP/hp_bg.png' width='70' height='24'>",
-                "x": 80,
-                "y": -2
+                "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
+                "x": 76,
+                "y": 4
             },
             "right": {
-                "align": "right",
-                "text": "<img src='img://gui/maps/PlayerPanelHP/hp_bg.png' width='70' height='24'>",
-                "x": -82,
-                "y": -2
+                "align": "left",
+                "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
+                "x": -150,
+                "y": 4
             }
         }
-    },
-    "toggle_key": [
-        [
-            "KEY_LALT",
-            "KEY_RALT"
-        ]
-    ]
+    }
 }

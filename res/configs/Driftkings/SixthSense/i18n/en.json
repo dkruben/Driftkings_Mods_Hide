@@ -18,5 +18,6 @@
     "UI_setting_spottedText_text": "Text Format",
     "UI_setting_spottedText_tooltip": "Use macros to edit the message\n(macro:'%(pos)s').",
     "UI_setting_userSound_text": "User Sound",
-    "UI_setting_userSound_tooltip": "Enable spotted text in battle."
+    "UI_setting_userSound_tooltip": "Enable spotted text in battle.",
+    "UI_version": 140
 }

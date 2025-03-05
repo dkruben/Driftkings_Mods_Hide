@@ -3,7 +3,6 @@ import random
 
 __all__ = ('pickRandomPart', 'remDups', 'objToDict',)
 
-
 def remDups(seq):
     seen = set()
     return [x for x in seq if x not in seen and not seen.add(x)]

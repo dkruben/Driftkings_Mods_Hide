@@ -7,5 +7,6 @@
     "UI_setting_wgLogHideBlock_text": "WG Log Hide Block",
     "UI_setting_wgLogHideBlock_tooltip": "",
     "UI_setting_wgLogHideCritics_text": "WG Log Hide Critics",
-    "UI_setting_wgLogHideCritics_tooltip": ""
+    "UI_setting_wgLogHideCritics_tooltip": "",
+    "UI_version": 140
 }

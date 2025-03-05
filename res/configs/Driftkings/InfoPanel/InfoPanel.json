@@ -1,6 +1,6 @@
 ﻿{
-    "aliveOnly": false,
-    "altKey": ["KEY_LALT"],
+    "aliveOnly": true,
+    "altKey": [["KEY_LALT", "KEY_RALT"]],
     "compareValues": {
         "equal": {
             "color": "#FFFFFF",
@@ -17,34 +17,29 @@
     },
     "delay": 5,
     "enabled": true,
-    "format": "<font color='#FFFFFF'><b>{{vehicle_name}}</b>\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\nView: {{vision_radius}}m.\n<font color='{{compareColor({{vehicle_weight}}, {{pl_vehicle_weight}})}}'>{{vehicle_weight}}t. {{compareDelim({{vehicle_weight}}, {{pl_vehicle_weight}})}} {{pl_vehicle_weight}}t.</font>|{{vehicle_weight}}t.</font>",
-    "showFor": 0,
-    "textBackground": {
-        "enabled": false,
-        "height": 32,
-        "image": "../../scripts/client/gui/mods/__bg__.png",
-        "width": 530
+    "format": "<font face='$FieldFont' size='16' color='#FFFFFF'><b>Tank: <font color='#C3C3C3'>{{vehicle_name}}</font></font>\nReload: <font color='#14AFF1'>{{gun_reload_equip}} sec.</font>\nView Range: <font color='#96CC29'>{{vision_radius}} mt.</font>",
+    "panelSize": {
+        "height": 70.0,
+        "width": 150.0
     },
-    "textLength": 5,
+    "showFor": 2,
     "textLock": false,
     "textPosition": {
-        "x": 596.0,
-        "y": 859.0
+        "alignX": "center",
+        "alignY": "center",
+        "x": -742.0,
+        "y": 277.0
     },
     "textShadow": {
         "alpha": 0.8,
         "angle": 90,
-        "blurX": 2,
-        "blurY": 2,
+        "blurX": 5,
+        "blurY": 5,
         "color": "#000000",
-        "distance": 0,
+        "distance": 1,
         "enabled": true,
         "quality": 2,
         "strength": 2
     },
-    "textStyle": {
-        "align": "left",
-        "font": "$TitleFont",
-        "size": 14
-    }
+    "version": 175
 }

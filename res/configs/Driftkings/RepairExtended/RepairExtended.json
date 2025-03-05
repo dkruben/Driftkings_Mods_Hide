@@ -1,6 +1,6 @@
 ﻿{
     "autoRepair": true,
-    "buttonChassis": ["KEY_SPACE"],
+    "buttonChassis": [["KEY_LALT", "KEY_RALT"]],
     "buttonRepair": ["KEY_SPACE"],
     "enabled": true,
     "extinguishFire": true,
@@ -44,7 +44,7 @@
         }
     },
     "restoreChassis": true,
-    "timerMax": 0.8,
-    "timerMin": 0.3,
+    "timerMax": 0.9,
+    "timerMin": 0.2,
     "useGoldKits": true
 }

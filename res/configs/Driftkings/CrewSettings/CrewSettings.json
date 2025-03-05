@@ -1,5 +1,5 @@
 ﻿{
-    "crewReturn": true,
-    "crewTraining": false,
+    "crewAutoReturn": true,
+    "crewReturnByDefault": true,
     "enabled": true
 }

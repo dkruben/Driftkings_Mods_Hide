@@ -32,44 +32,28 @@ def logWarning(modID, message, *args, **kwargs):
     BigWorld.logWarning(modID, _formatMessage(message, *args, **kwargs), None)
 
 
-# def logTrace(exc=None):
-#    print '=' * 45
-#    if exc is not None:
-#        logError('DriftkingsCore:', str(exc))
-#        traceback.print_exc()
-#    else:
-#        traceback.print_stack()
-#    print '=' * 45
-
-
-# def logException(func):
-#    def exception(*args, **kwargs):
-#        try:
-#            return func(*args, **kwargs)
-#        except Exception as err:
-#            logTrace(err)
-#    return exception
-
 def logException(func):
     def exception(*args, **kwargs):
         try:
             return func(*args, **kwargs)
         except Exception:
             if SHOW_DEBUG:
-                msg = 'DEBUG[DriftkingsCore]:\n%s.%s(' % (func.__module__, func.__name__)
-                length = len(args)
-                for text in args:
-                    length -= 1
-                    if hasattr(text, '__module__'):
-                        text = '%s' % text.__module__
-                    if length:
-                        msg += '%s, ' % text
+                msg = '[DEBUG][DriftkingsCore] %s.%s(' % (func.__module__, func.__name__)
+                formatted_args = []
+                for arg in args:
+                    if hasattr(arg, '__module__'):
+                        formatted_args.append(arg.__module__)
                     else:
-                        msg += '%s' % text
-                msg += ')\n[START:]----------------\n'
+                        formatted_args.append(str(arg))
+                msg += ', '.join(formatted_args)
+                if kwargs:
+                    if args:
+                        msg += ', '
+                    msg += ', '.join('%s=%s' % (k, v) for k, v in kwargs.items())
+                msg += ')\n[START]' + '=' * 22 + '\n'
                 msg += ''.join(traceback.format_exception(*sys.exc_info()))
-                msg += '[END:]------------------'
-                print msg
+                msg += '[END]' + '=' * 22
+                logError('DriftkingsCore', msg)
                 BigWorld.log_mes = func
             return None
     return exception

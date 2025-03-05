@@ -3,12 +3,12 @@
     "defaultIconName": 0,
     "delay": 4,
     "enabled": true,
-    "helpMessage": false,
+    "helpMessage": true,
     "lampShowTime": 10,
     "playTickSound": false,
     "sixthSenseSound": "SixthSense_06",
     "spottedMessage": true,
     "spottedText": "I'm Spotted at %(pos)s!",
-    "userIcon": "mods/configs/Driftkings/SixthSense/driftkings.png",
+    "userIcon": "mods/configs/Driftkings/SixthSense/SixthSenseIcon.png",
     "userSound": true
 }

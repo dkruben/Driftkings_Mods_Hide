@@ -1,4 +1,4 @@
-{
+﻿{
     "UI_artySplash_messageDotOff": "HE Splash: Hide Dot",
     "UI_artySplash_messageDotOn": "HE Splash: Show Dot",
     "UI_artySplash_messageSplashOff": "HE Splash: Hide Splash",
@@ -19,5 +19,5 @@
     "UI_setting_showModeSniper_tooltip": "",
     "UI_setting_showSplashOnDefault_text": "Show Splash on default",
     "UI_setting_showSplashOnDefault_tooltip": "",
-    "UI_version": "1.0.0"
+    "UI_version": 145
 }

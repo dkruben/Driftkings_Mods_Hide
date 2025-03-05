@@ -10,7 +10,6 @@
     {
         private var top_log_inCenter:Boolean = true;
         private var top_log:TextExt = null;
-
         private var alignX:String = Align.TOP;
         private var alignY:String = Align.LEFT;
         
@@ -30,10 +29,8 @@
         public function as_createTopLog(settings:Object):void
         {
             if (settings == null) return;
-
             this.alignX = settings.alignX || Align.TOP;
             this.alignY = settings.alignY || Align.LEFT;
-
             this.top_log_inCenter = settings.inCenter;
             this.top_log = new TextExt(settings.x, settings.y, Constants.largeText, settings.align, this);
 
@@ -52,7 +49,6 @@
         {
             var posX:Number = App.appWidth >> 1;
             var posY:Number = App.appHeight >> 1;
-         
             switch(this.alignX)
             {
                 case Align.LEFT:
@@ -62,7 +58,6 @@
                     posX = App.appWidth;
                     break;
             }
-         
             switch(this.alignY)
             {
                 case Align.TOP:
@@ -72,7 +67,6 @@
                     posY = App.appHeight;
                     break;
             }
-         
             this.x = posX;
             this.y = posY;
         }

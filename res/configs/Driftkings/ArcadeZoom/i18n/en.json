@@ -7,5 +7,6 @@
     "UI_setting_scrollSensitivity_text": "Scroll Sensitivity",
     "UI_setting_scrollSensitivity_tooltip": "",
     "UI_setting_startDeadDist_text": "Start Dead Distance",
-    "UI_setting_startDeadDist_tooltip": ""
+    "UI_setting_startDeadDist_tooltip": "",
+    "UI_version": 105
 }

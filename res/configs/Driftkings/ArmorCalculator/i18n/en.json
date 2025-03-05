@@ -10,5 +10,6 @@
     "UI_noDamage": "Critical hit, no damage.",
     "UI_ricochet": "Ricochet",
     "UI_setting_displayOnAllies_text": "Display On Allies",
-    "UI_setting_displayOnAllies_tooltip": ""
+    "UI_setting_displayOnAllies_tooltip": "",
+    "UI_version": 110
 }
