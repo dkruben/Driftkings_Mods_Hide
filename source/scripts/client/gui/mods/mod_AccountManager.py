@@ -4,21 +4,21 @@ import json
 import os
 import time
 
-import BigWorld
-from external_strings_utils import unicode_from_utf8
-from frameworks.wulf import WindowLayer
-from gui import DialogsInterface
-from gui.Scaleform.daapi.view.dialogs import SimpleDialogMeta, DIALOG_BUTTON_ID
-from gui.Scaleform.daapi.view.lobby.LobbyView import LobbyView
-from gui.Scaleform.daapi.view.login.LoginView import LoginView
-from gui.Scaleform.daapi.view.login.login_modes import createLoginMode
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.entities.abstract.AbstractWindowView import AbstractWindowView
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.shared.personality import ServicesLocator
-from predefined_hosts import g_preDefinedHosts
-from skeletons.gui.app_loader import GuiGlobalSpaceID
+import BigWorld # type: ignore
+from external_strings_utils import unicode_from_utf8 # type: ignore
+from frameworks.wulf import WindowLayer # type: ignore
+from gui import DialogsInterface # type: ignore
+from gui.Scaleform.daapi.view.dialogs import SimpleDialogMeta, DIALOG_BUTTON_ID # type: ignore
+from gui.Scaleform.daapi.view.lobby.LobbyView import LobbyView # type: ignore
+from gui.Scaleform.daapi.view.login.LoginView import LoginView # type: ignore
+from gui.Scaleform.daapi.view.login.login_modes import createLoginMode # type: ignore
+from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates # type: ignore
+from gui.Scaleform.framework.entities.View import View # type: ignore
+from gui.Scaleform.framework.entities.abstract.AbstractWindowView import AbstractWindowView # type: ignore
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams # type: ignore
+from gui.shared.personality import ServicesLocator # type: ignore
+from predefined_hosts import g_preDefinedHosts # type: ignore
+from skeletons.gui.app_loader import GuiGlobalSpaceID # type: ignore
 
 from DriftkingsCore import DriftkingsConfigInterface, ConfigNoInterface, Analytics, override, callback, calculate_version
 

@@ -1,12 +1,12 @@
 ﻿# -*- coding: utf-8 -*-
 import copy
 
-from Event import SafeEvent
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, WindowLayer, ScopeTemplates
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.shared.personality import ServicesLocator
-from skeletons.gui.app_loader import GuiGlobalSpaceID
+from Event import SafeEvent # type: ignore
+from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, WindowLayer, ScopeTemplates # type: ignore
+from gui.Scaleform.framework.entities.View import View # type: ignore
+from gui.Scaleform.framework.managers.loaders import SFViewLoadParams # type: ignore
+from gui.shared.personality import ServicesLocator # type: ignore
+from skeletons.gui.app_loader import GuiGlobalSpaceID # type: ignore
 
 
 def smart_update(old_conf, new_conf):
