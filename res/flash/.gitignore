@@ -1,0 +1,5 @@
+# temp files and folders
+
+*.swf
+.later
+swc/*.swc
