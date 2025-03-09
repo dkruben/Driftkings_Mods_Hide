@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import math
 
-import BigWorld
 import CommandMapping
 import Keys
 import VehicleGunRotator
@@ -12,15 +11,15 @@ from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 
-from DriftkingsCore import DriftkingsConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, override, checkKeys, Analytics, callback, cancelCallback, getPlayer, sendPanelMessage, calculate_version, serverTime
 
 
 class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.0 (%(file_compile_date)s)'
-        self.author = ' (orig by spoter), mantained by Driftkings'
+        self.version = '1.7.2 (%(file_compile_date)s)'
+        self.author = '(orig by spoter, reven86), re-coded by Driftkings'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],
             'buttonMaxMode': [Keys.KEY_R, [Keys.KEY_LCONTROL, Keys.KEY_RCONTROL]]
@@ -94,7 +93,8 @@ class MovementControl(object):
     def start_battle(self):
         InputHandler.g_instance.onKeyDown += self.keyPressed
         InputHandler.g_instance.onKeyUp += self.keyPressed
-        self.timer = BigWorld.time()
+        self.timer = serverTime()
+        SoundNotifications.TRANSITION_TIMER = 'siege_mode_transition_timer'
         if self.callback is None:
             self.callback = callback(0.1, self.onCallback)
 
@@ -121,7 +121,7 @@ class MovementControl(object):
                 message = '%s: %s' % (config.i18n['UI_setting_maxWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['maxWheelMode'] else config.i18n['UI_AutoMode_off'])
                 sendPanelMessage(message, 'Red')
         if checkKeys(config.data['buttonAutoMode']) and event.isKeyDown():
-            vehicle = BigWorld.player().getVehicleAttached()
+            vehicle = getPlayer().getVehicleAttached()
             if vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode:
                 config.data['autoActivateWheelMode'] = not config.data['autoActivateWheelMode']
                 message = '%s: %s' % (config.i18n['UI_setting_autoActivateWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['autoActivateWheelMode'] else config.i18n['UI_AutoMode_off'])
@@ -129,7 +129,7 @@ class MovementControl(object):
 
     # noinspection PyProtectedMember
     def changeMovement(self):
-        player = BigWorld.player()
+        player = getPlayer()
         vehicle = player.getVehicleAttached()
         if vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode:
             flags = player.makeVehicleMovementCommandByKeys()
@@ -163,7 +163,7 @@ class MovementControl(object):
     def changeSiege(self, status):
         SoundNotifications.TRANSITION_TIMER = ''
         getPlayer().cell.vehicle_changeSetting(VEHICLE_SETTING.SIEGE_MODE_ENABLED, status)
-        self.timer = BigWorld.time()
+        self.timer = serverTime()
 
     @staticmethod
     def checkSpeedLimits(vehicle, speed):
@@ -174,7 +174,7 @@ class MovementControl(object):
 
     @staticmethod
     def fixSiegeModeCruiseControl():
-        player = BigWorld.player()
+        player = getPlayer()
         vehicle = player.getVehicleAttached()
         result = vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode
         if result:
