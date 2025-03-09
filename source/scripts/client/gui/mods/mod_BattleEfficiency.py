@@ -138,7 +138,7 @@ class Flash(object):
 
 g_flash = None
 config = ConfigInterface()
-statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+statistic_mod = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT

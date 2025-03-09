@@ -158,7 +158,7 @@ config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
     config = ConfigInterface()
-    statistic_mod = Analytics(config.ID, config.version, 'UA-121940539-1')
+    statistic_mod = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
 except ImportError:
     logWarning(config.ID, 'Battle Flash API not found.')
 except Exception as err:

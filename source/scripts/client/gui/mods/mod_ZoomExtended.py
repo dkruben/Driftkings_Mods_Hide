@@ -77,7 +77,7 @@ class ConfigsInterface(DriftkingsConfigInterface):
 
 
 config = ConfigsInterface()
-analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+analytics = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
 
 
 @override(SniperCamera, '_readConfigs')

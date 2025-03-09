@@ -78,7 +78,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 
 config = ConfigInterface()
-analytics = Analytics(config.ID, config.version, 'UA-121940539-1')
+analytics = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
 
 
 def getAvgData():
