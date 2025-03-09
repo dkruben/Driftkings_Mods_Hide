@@ -91,40 +91,40 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
         self.clear()
 
     def getSpottedStatus(self):
-        for vID in self._spotted_cache:
+        for vehicleID in self._spotted_cache:
             # neverSeen, spotted, lost, dead
-            if self._spotted_cache[vID] == 'neverSeen':
+            if self._spotted_cache[vehicleID] == 'neverSeen':
                 if self.as_create:
-                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['neverSeen']})
+                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['neverSeen']})
             # dead
-            elif self._spotted_cache[vID] == 'dead':
+            elif self._spotted_cache[vehicleID] == 'dead':
                 if self.as_create:
-                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['dead']})
+                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['dead']})
             # lost
-            elif self._spotted_cache[vID] == 'lost':
+            elif self._spotted_cache[vehicleID] == 'lost':
                 if self.as_create:
-                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['lost']})
+                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['lost']})
             # spotted
-            elif self._spotted_cache[vID] == 'spotted':
+            elif self._spotted_cache[vehicleID] == 'spotted':
                 if self.as_create:
-                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vID, 'text': self.data['spotted']})
+                    g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['spotted']})
 
-    def updateSpottedStatus(self, vID, spotted):
+    def updateSpottedStatus(self, vehicleID, spotted):
         arena = getPlayer().arena if hasattr(getPlayer(), 'arena') else None
         if arena is None:
             return
         else:
-            arenaVehicle = arena.vehicles[vID] if vID in arena.vehicles else None
+            arenaVehicle = arena.vehicles[vehicleID] if vehicleID in arena.vehicles else None
             if arenaVehicle is None:
                 return
-            if vID in self._spotted_cache:
+            if vehicleID in self._spotted_cache:
                 if not arenaVehicle['isAlive']:
-                    self._spotted_cache[vID] = 'dead'
+                    self._spotted_cache[vehicleID] = 'dead'
                     return
                 if spotted:
-                    self._spotted_cache[vID] = 'spotted'
+                    self._spotted_cache[vehicleID] = 'spotted'
                     return
-                self._spotted_cache[vID] = 'lost'
+                self._spotted_cache[vehicleID] = 'lost'
             return
 
     def vehiclesInfo(self):

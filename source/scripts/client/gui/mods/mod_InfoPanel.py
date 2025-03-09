@@ -139,7 +139,8 @@ class Flash(object):
         self.ID = ID
         self._panelSize = config.data['panelSize']
         self.setup()
-        COMPONENT_EVENT.UPDATED += self.__updatePosition
+        if COMPONENT_EVENT and hasattr(COMPONENT_EVENT.UPDATED, 'add'):
+            COMPONENT_EVENT.UPDATED.add(self.__updatePosition)
 
     def onApplySettings(self):
         g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
@@ -154,7 +155,8 @@ class Flash(object):
             g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
 
     def destroy(self):
-        COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        if COMPONENT_EVENT and hasattr(COMPONENT_EVENT.UPDATED, 'remove'):
+            COMPONENT_EVENT.UPDATED.remove(self.__updatePosition)
         g_guiFlash.deleteComponent(self.ID)
 
     def __updatePosition(self, alias, data):
@@ -199,6 +201,9 @@ class DataConstants(object):
         self._gunShots = None
 
     def init(self, vehicle, playerVehicle=None):
+        if not vehicle and not playerVehicle:
+            logError(config.ID, 'Both vehicle and playerVehicle are None in init method.')
+            return
         self._playerVehicle = playerVehicle
         self._vehicle = vehicle
         self._typeDescriptor = vehicle.typeDescriptor if vehicle is not None else self._playerVehicle.typeDescriptor
@@ -560,8 +565,13 @@ class InfoPanel(DataConstants):
         super(InfoPanel, self).__init__()
 
     def reset(self):
-        self.__init__()
+        super(InfoPanel, self).reset()
+        self.textFormats = config.data['format'] if config.data['enabled'] else None
+        self.hotKeyDown = False
+        self.visible = False
+        self.timer = None
         g_macros.reset()
+
 
     @staticmethod
     def isConditions(entity):

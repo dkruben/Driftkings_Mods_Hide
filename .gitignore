@@ -71,3 +71,4 @@ res/flash/AchievementNotification/src/driftkings/achievementnotification/queue/N
 res/flash/AchievementNotification/src/driftkings/achievementnotification/utils/Disposable.as
 res/flash/AchievementNotification/src/driftkings/achievementnotification/queue/Transition.as
 res/flash/AchievementNotification/src/driftkings/achievementnotification/config/Config.as
+build_data/wotmods/Driftkings/ServerReticle.json
