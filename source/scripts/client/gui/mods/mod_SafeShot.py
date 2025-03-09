@@ -1,9 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
-import Keys # type: ignore
-from Avatar import PlayerAvatar # type: ignore
+import Keys
+from Avatar import PlayerAvatar
 from gui import InputHandler
-from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats # type: ignore
-from messenger import MessengerEntry # type: ignore
+from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
+from messenger import MessengerEntry
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, callback, serverTime, checkKeys, calculate_version, sendPanelMessage, sendChatMessage
 
