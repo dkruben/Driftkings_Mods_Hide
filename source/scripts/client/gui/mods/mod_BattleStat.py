@@ -232,7 +232,7 @@ class Flash(object):
 
 
 config = ConfigInterface()
-analytics = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
+analytics = Analytics(config.ID, config.version)
 g_flash = Flash()
 try:
     from gambiter import g_guiFlash

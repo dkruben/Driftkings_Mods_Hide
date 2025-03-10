@@ -405,4 +405,4 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
 
 
 _config = ConfigInterface()
-statistic_mod = Analytics(_config.ID, _config.version, 'G-B7Z425MJ3L')
+statistic_mod = Analytics(_config.ID, _config.version)

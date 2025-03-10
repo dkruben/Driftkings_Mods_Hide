@@ -120,7 +120,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 
 config = ConfigInterface()
-analytics = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
+analytics = Analytics(config.ID, config.version)
 
 
 class MessagesSpotted(object):

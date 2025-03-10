@@ -196,7 +196,7 @@ class Support(object):
 config = ConfigInterface()
 movement_control = MovementControl()
 support = Support()
-analytics = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
+analytics = Analytics(config.ID, config.version)
 
 
 @override(PlayerAvatar, 'handleKey')

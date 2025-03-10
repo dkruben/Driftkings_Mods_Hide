@@ -163,7 +163,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 
 config = ConfigInterface()
-statistic_mod = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
+statistic_mod = Analytics(config.ID, config.version)
 
 
 class DateTimes(DateTimesMeta):

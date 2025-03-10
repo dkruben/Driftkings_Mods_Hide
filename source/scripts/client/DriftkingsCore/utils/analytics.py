@@ -1,84 +1,39 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import threading
-import urllib
-import urllib2
 
 import BigWorld
 from PlayerEvents import g_playerEvents
-from constants import AUTH_REALM
 
 __all__ = ('Analytics',)
 
 
 class Analytics(object):
-    def __init__(self, description, version, ID, confList=None):
+    def __init__(self, ID, version, confList=None):
         from .events import game
-        self.mod_description = description
-        self.mod_id_analytics = ID
+        self.mod_id = ID
         self.mod_version = version
         self.confList = confList if confList else []
-        self.analytics_started = False
-        self._thread_analytics = None
-        self.user = None
-        self.playerName = ''
-        self.old_user = None
-        self.old_playerName = ''
-        self.lang = ''
-        self.lastTime = BigWorld.time()
+        self.modManager_started = False
+        self._thread_modManager = None
         g_playerEvents.onAccountShowGUI += self.start
         game.fini.before.event += self.end
 
-    def template(self, old=False):
-        return {
-            'v': 1,
-            'tid': '%s' % self.mod_id_analytics,
-            'cid': '%s' % self.old_user if old else self.user,
-            'an': '%s' % self.mod_description,
-            'av': '%s %s' % (self.mod_description, self.mod_version),
-            'cd': '%s (Cluster: [%s], lang: [%s])' % (self.old_playerName if old else self.playerName, AUTH_REALM, self.lang),
-            'ul': '%s' % self.lang,
-            't': 'event'
-        }
+    def modManager_start(self):
+        """Initialize the mod manager functionality"""
+        self.modManager_started = True
 
-    def analytics_start(self):
-        from helpers import getClientLanguage
-        self.lang = str(getClientLanguage()).upper()
-        template = self.template()
-        requestsPool = []
-        if not self.analytics_started:
-            requestsPool.append(dict(template, sc='start', t='screenview'))
-            requestsPool.extend(dict(template, ec='config', ea='collect', el=conf.split('.')[0]) for conf in self.confList)
-            self.analytics_started = True
-            self.old_user = BigWorld.player().databaseID
-            self.old_playerName = BigWorld.player().name
-        elif BigWorld.time() - self.lastTime >= 1200:
-            requestsPool.append(dict(template, ec='session', ea='keep'))
-        for params in requestsPool:
-            self.lastTime = BigWorld.time()
-            try:
-                urllib2.urlopen(url='https://www.google-analytics.com/collect?', data=urllib.urlencode(params)).read()
-            except IOError:
-                pass
-
-    # noinspection PyProtectedMember
     def start(self, *_, **__):
-        player = BigWorld.player()
-        if self.user is not None and self.user != player.databaseID:
-            self.old_user = player.databaseID
-            self.old_playerName = player.name
-            self._thread_analytics = threading.Thread(target=self.end, name=threading._newname('Analytics-%d'))
-            self._thread_analytics.start()
-        self.user = player.databaseID
-        self.playerName = player.name
-        self._thread_analytics = threading.Thread(target=self.analytics_start, name=threading._newname('Analytics-%d'))
-        self._thread_analytics.start()
+        """Start the mod manager in a separate thread when account GUI is shown"""
+        if self._thread_modManager and self._thread_modManager.is_alive():
+            return
+        self._thread_modManager = threading.Thread(target=self.modManager_start, name='mod_%s' % self.mod_id)
+        self._thread_modManager.daemon = True
+        self._thread_modManager.start()
 
     def end(self, *_, **__):
-        if self.analytics_started:
-            from helpers import getClientLanguage
-            self.lang = str(getClientLanguage()).upper()
-            try:
-                urllib2.urlopen(url='https://www.google-analytics.com/collect?', data=urllib.urlencode(dict(self.template(True), sc='end', ec='session', ea='end'))).read()
-            except IOError:
-                pass
-            self.analytics_started = False
+        """Clean up resources when game is finishing"""
+        if self.modManager_started:
+            self.modManager_started = False
+            if self._thread_modManager and self._thread_modManager.is_alive():
+                self._thread_modManager.join(timeout=1.0)
+                self._thread_modManager = None

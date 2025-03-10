@@ -53,7 +53,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 
 g_config = ConfigInterface()
-analytics = Analytics(g_config.ID, g_config.version, 'G-B7Z425MJ3L')
+analytics = Analytics(g_config.ID, g_config.version)
 
 
 # noinspection SpellCheckingInspection

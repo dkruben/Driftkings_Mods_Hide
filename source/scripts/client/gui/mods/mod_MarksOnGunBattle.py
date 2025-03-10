@@ -1231,7 +1231,7 @@ class Flash(object):
 g_flash = Flash()
 config = ConfigInterface()
 worker = Worker()
-statistic_mod = Analytics(config.ID, config.version, 'G-B7Z425MJ3L')
+statistic_mod = Analytics(config.ID, config.version)
 
 
 @override(CrewWidget, '_CrewWidget__updateWidgetModel')
