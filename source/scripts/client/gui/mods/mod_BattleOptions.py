@@ -15,16 +15,13 @@ from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
-from frameworks.wulf import WindowLayer
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
 from gui.Scaleform.daapi.view.battle.shared.timers_panel import TimersPanel
-from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.app_loader.settings import APP_NAME_SPACE
-from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO
-from gui.battle_control.arena_info.arena_vos import VehicleTypeInfoVO
+from gui.battle_control.arena_info.arena_vos import PlayerInfoVO, VehicleArenaInfoVO, VehicleTypeInfoVO
 from gui.battle_control.arena_visitor import _ClientArenaVisitor
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.battle_control.controllers.arena_border_ctrl import ArenaBorderController
@@ -33,28 +30,19 @@ from gui.battle_results.components.common import ShowRateSatisfactionCmp
 from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
-from gui.shared.personality import ServicesLocator
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logInfo, logDebug, square_position, isReplay, calculate_version, callback
-from DriftkingsInject import DriftkingsInjector, g_events, DateTimesMeta, CyclicTimerEvent
+from DriftkingsInject import g_events, CyclicTimerEvent
 
-AS_SWF = 'BattleClock.swf'
-AS_BATTLE = 'BattleClockView'
-AS_INJECTOR = 'BattleClockInjector'
 _cache = set()
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-
-    def __init__(self):
-        g_events.onBattleLoaded += self.onBattleLoaded
-        super(ConfigInterface, self).__init__()
-
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.4.5 (%(file_compile_date)s)'
+        self.version = '2.5.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -62,7 +50,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'color': 'FF002A',
             'directivesOnlyFromStorage': False,
             'disableSoundCommander': False,
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#F5CBA7\'><p align=\'left\'>%H:%M:%S</p></font>',
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'>%H:%M:%S</p></font>',
             'hideBadges': False,
             'hideBattlePrestige': False,
             'hideClanName': False,
@@ -70,10 +58,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
             'maxChatLines': 6,
             'muteTeamBaseSound': False,
-            'position': {'x': -1180, 'y': 1},
             'postmortemTips': True,
             'showAnonymous': False,
             'showBattleHint': False,
+            # 'camLimits' False,
             'showFriends': False,
             'showPostmortemDogTag': True,
             'stunSound': False,
@@ -114,6 +102,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
             'UI_setting_showFriends_text': 'Show Friends',
             'UI_setting_showFriends_tooltip': 'Show friends in players panel.',
+            # 'UI_setting_camLimits_text': 'Camera Limits',
+            # 'UI_setting_camLimits_tooltip': 'Enable camera limits.',
             'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
             'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
             'UI_setting_stunSound_text': 'Stun Sound',
@@ -138,7 +128,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('hideClanName'),
                 self.tb.createControl('hideBadges'),
                 self.tb.createControl('hideBattlePrestige'),
-                self.tb.createSlider('maxChatLines', 1, 15, 1, '{{value}}% Lines'),
+                self.tb.createSlider('maxChatLines', 1, 15, 1, '{{value}} Lines'),
                 self.tb.createControl('muteTeamBaseSound'),
                 self.tb.createControl('postmortemTips')
             ],
@@ -149,43 +139,32 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('disableSoundCommander'),
                 self.tb.createControl('directivesOnlyFromStorage'),
                 self.tb.createControl('showFriends'),
+                # self.tb.createControl('camLimits'),
                 self.tb.createControl('clipLoad'),
                 self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
             ]
         }
-
-    @staticmethod
-    def onBattleLoaded():
-        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_BATTLE)
-        if not app:
-            return
-        app.loadView(SFViewLoadParams(AS_INJECTOR))
 
 
 config = ConfigInterface()
 statistic_mod = Analytics(config.ID, config.version)
 
 
-class DateTimes(DateTimesMeta):
-
+# Battle Clock
+class BattleClock(object):
     def __init__(self):
-        super(DateTimes, self).__init__(config.ID)
         self.coding = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
+        g_guiFlash.createComponent(config.ID, COMPONENT_TYPE.LABEL, {'x': 200, 'y': 1, 'alignX': COMPONENT_ALIGN.LEFT, 'alignY': COMPONENT_ALIGN.TOP, 'text': '', 'border': False, 'limit': False})
 
-    def getSettings(self):
-        return config.data
-
-    def _populate(self):
-        super(DateTimes, self)._populate()
+    def start(self):
         g_playerEvents.onAvatarReady += self.updateDecoder
         if config.data['enabled'] and config.data['inBattle']:
             self.timerEvent.start()
 
-    def _dispose(self):
+    def stop(self):
         g_playerEvents.onAvatarReady -= self.updateDecoder
         self.timerEvent.stop()
-        super(DateTimes, self)._dispose()
 
     @staticmethod
     def checkDecoder(string):
@@ -198,15 +177,19 @@ class DateTimes(DateTimesMeta):
         self.coding = self.checkDecoder(strftime(config.data['format']))
 
     def updateTimeData(self):
-        _time = strftime(config.data['format'])
+        time = strftime(config.data['format'])
         if self.coding is not None:
-            _time = _time.decode(self.coding)
-        self.as_setDateTimeS(_time)
+            time = time.decode(self.coding)
+        g_guiFlash.updateComponent(config.ID, {'text': time})
 
 
-g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, DateTimes, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+battle_clock = BattleClock()
 
+
+@override(PlayerAvatar, '_PlayerAvatar__startGUI')
+def new_startGUI(func, *args):
+    func(*args)
+    battle_clock.start()
 
 # disable commander voices
 @override(SpecialSoundCtrl, '__setSpecialVoiceByTankmen')
@@ -277,6 +260,7 @@ def new_muteCaptureSound(func, *args):
 # border color
 @override(ArenaBorderController, '_ArenaBorderController__getCurrentColor')
 def new_getBorderColor(func, self, colorBlind):
+    result = func(self, colorBlind)
     if not config.data['enabled']:
         colors = GuiColorsLoader.load()
         scheme = colors.getSubScheme('areaBorder', 'color_blind' if colorBlind else 'default')
@@ -290,7 +274,7 @@ def new_getBorderColor(func, self, colorBlind):
         blue = (color & 0x0000ff) / 255.0
         alpha = (alpha / 100.0)
         return red, green, blue, alpha
-    func(self, colorBlind)
+    return result
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
@@ -307,7 +291,7 @@ def showFriends():
 
 
 @override(VehicleTypeInfoVO, '__init__')
-def new_VehicleArenaInfoVO(func, self, *args, **kwargs):
+def new_VehicleTypeInfoVO(func, self, *args, **kwargs):
     func(self, *args, **kwargs)
     if config.data['enabled'] and showFriends():
         self.isPremiumIGR |= kwargs.get('accountDBID') in _cache
@@ -399,7 +383,6 @@ def new_showRateSatisfactionCmp(func, self, value, reusable):
     if not config.data.get('showPlayerSatisfactionWidget', True):
         return False
     return func(self, value, reusable)
-
 
 
 @adisp_process

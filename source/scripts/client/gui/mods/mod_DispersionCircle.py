@@ -1,18 +1,14 @@
 ﻿# -*- coding: utf-8 -*-
 import AvatarInputHandler
 import BattleReplay
-import BigWorld
 import Math
 import VehicleGunRotator
 import aih_constants
 from account_helpers.settings_core.settings_constants import GRAPHICS, SPGAim
 from aih_constants import CTRL_MODE_NAME, GUN_MARKER_FLAG, GUN_MARKER_TYPE
-from aih_constants import GUN_MARKER_TYPE
 from constants import AIMING_MODE, ARENA_PERIOD, SERVER_TICK_LENGTH
 from gui.Scaleform.daapi.view.battle.shared import SharedPage
-from gui.Scaleform.daapi.view.battle.shared.crosshair import CrosshairPanelContainer, gm_factory
-from gui.Scaleform.daapi.view.battle.shared.crosshair import CrosshairPanelContainer, settings
-from gui.Scaleform.daapi.view.battle.shared.crosshair import gm_factory
+from gui.Scaleform.daapi.view.battle.shared.crosshair import CrosshairPanelContainer, gm_factory, settings
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_components import DefaultGunMarkerComponent, SPGGunMarkerComponent
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_components import GunMarkersComponents
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_factory import _GunMarkersFactory
@@ -24,12 +20,10 @@ from gui.Scaleform.locale.SETTINGS import SETTINGS
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
 from gui.shared.utils.plugins import PluginsCollection
 from helpers import dependency
-from helpers import dependency
 from helpers import i18n
 from skeletons.account_helpers.settings_core import ISettingsCache, ISettingsCore
-from skeletons.account_helpers.settings_core import ISettingsCore
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version, logWarning
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version, logWarning, getPlayer, serverTime
 
 DEFAULT_GUN_MARKER_LINKAGES = gm_factory._GUN_MARKER_LINKAGES
 
@@ -87,7 +81,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -317,7 +311,6 @@ def new_SharedPage_init(func, self, components=None, external=None):
         for item in self._external:
             if isinstance(item, CrosshairPanelContainer):
                 config.primaryReticle = item
-
         config.customServerReticle = GetCustomServerCrosshair(config.customServerReticleSettings, config.enableSpgStrategicReticle)
         self._external.append(config.customServerReticle)
 
@@ -395,7 +388,7 @@ def new_VehicleGunRotator_clientMode_setter(func, self, value):
         if not self._VehicleGunRotator__isStarted:
             return
         if self.clientMode:
-            self._VehicleGunRotator__time = BigWorld.time()
+            self._VehicleGunRotator__time = serverTime()
             self.stopTrackingOnServer()
     else:
         func.fset(self, value)
@@ -410,7 +403,7 @@ def new_VehicleGunRotator_setShotPosition(func, self, vehicleID, shotPos, shotVe
             dispersionAngles = self._VehicleGunRotator__dispersionAngles[:]
             dispersionAngles[0] = dispersionAngle
             if not self.clientMode and VehicleGunRotator.VehicleGunRotator.USE_LOCK_PREDICTION:
-                lockEnabled = BigWorld.player().inputHandler.getAimingMode(AIMING_MODE.TARGET_LOCK)
+                lockEnabled = getPlayer().inputHandler.getAimingMode(AIMING_MODE.TARGET_LOCK)
                 if lockEnabled:
                     predictedTargetPos = self.predictLockedTargetShotPoint()
                     if predictedTargetPos is None:
@@ -426,7 +419,6 @@ def new_VehicleGunRotator_setShotPosition(func, self, vehicleID, shotPos, shotVe
             if self.clientMode and self.showServerMarker:
                 self._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, SERVER_TICK_LENGTH, collData)
             return
-
     else:
         func(self, vehicleID, shotPos, shotVec, dispersionAngle, forceValueRefresh)
     return

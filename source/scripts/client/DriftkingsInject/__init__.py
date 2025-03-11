@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-__MOD_CORE__ = '1.1.0'
+__MOD_CORE__ = '1.1.5'
 __CORE_NAME__ = 'DriftkingsInject'
 __MOD_DATE__ = '(%(file_compile_date)s)'
 

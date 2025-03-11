@@ -16,7 +16,6 @@
 
         "res/scripts/client/DriftkingsInject/views/__init__.pyc"		    : "build/scripts/client/DriftkingsInject/views/__init__.pyc",
         "res/scripts/client/DriftkingsInject/views/armorCalc_view.pyc"      : "build/scripts/client/DriftkingsInject/views/armorCalc_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/battleTimer_view.pyc"    : "build/scripts/client/DriftkingsInject/views/battleTimer_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc": "build/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/distance_view.pyc"       : "build/scripts/client/DriftkingsInject/views/distance_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc"  : "build/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc",

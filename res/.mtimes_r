@@ -146,15 +146,6 @@
 1710042262|flash/ArmorCalculator/src/driftkings/views/utils/Utils.as
 1738886554|flash/ArmorCalculator/src/mods/common/AbstractViewInjector.as
 1738886561|flash/ArmorCalculator/src/mods/common/BattleDisplayable.as
-1738962958|flash/BattleClock.swf
-1710884618|flash/BattleClock/BattleClock.as3proj
-1738962947|flash/BattleClock/src/driftkings/BattleClockInjector.as
-1738962957|flash/BattleClock/src/driftkings/views/battle/BattleClockUI.as
-1732740592|flash/BattleClock/src/driftkings/views/utils/Constants.as
-1732740422|flash/BattleClock/src/driftkings/views/utils/TextExt.as
-1737501368|flash/BattleClock/src/driftkings/views/utils/Utils.as
-1738886554|flash/BattleClock/src/mods/common/AbstractViewInjector.as
-1738886561|flash/BattleClock/src/mods/common/BattleDisplayable.as
 1661728061|flash/BigTextConsumablesPanel/src/driftkings/views/battle/BigTextConsumablesPanel.as
 1712888519|flash/CreditCalculator.swf
 1740344568|flash/DispersionTimer.swf

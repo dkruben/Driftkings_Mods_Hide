@@ -29,7 +29,7 @@ from gui.impl.gen import R
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
-from helpers import dependency, i18n
+from helpers import dependency, i18n, getLanguageCode
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
