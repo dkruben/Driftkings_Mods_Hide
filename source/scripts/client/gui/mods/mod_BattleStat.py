@@ -1,37 +1,24 @@
 # -*- coding: utf-8 -*-
-# import BigWorld
 import GUI
 from Avatar import PlayerAvatar
-from Event import Event
 from Vehicle import Vehicle
-from helpers.CallbackDelayer import CallbackDelayer
-from constants import SHELL_TYPES
+from constants import ARENA_BONUS_TYPE, SHELL_TYPES
 from gui import InputHandler, g_guiResetters
 from helpers import dependency
+from helpers.CallbackDelayer import CallbackDelayer
 from items import vehicles
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.CompoundAppearance import CompoundAppearance
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, getPlayer, getEntity, replaceMacros
-
-
-class Events(object):
-    def __init__(self):
-        self.onBattleLoaded = Event()
-        self.onVehiclesChanged = Event()
-        self.onCountChanged = Event()
-        self.onChanceChanged = Event()
-        self.onHealthChanged = Event()
-
-
-events = Events()
+from DriftkingsInject import g_events
 
 
 class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'by: StranikS_Scan, re-coded by: Driftkings'
         self.data = {
             'enabled': True,
@@ -47,7 +34,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'visible': True,
                 'alpha': 1.0,
             },
-            'textShadow': {'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 1, 'blurX': 2, 'blurY': 2, 'strength': 200, 'quality': 1},
+            'textShadow': {'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 1, 'blurX': 2, 'blurY': 2, 'strength': 100, 'quality': 1},
             'textFormat': {
                 'font': '$FieldFont',
                 'size': 16,
@@ -152,7 +139,6 @@ class Flash(object):
                 }
             }
         }
-        # Copy textPosition settings to component data
         for key, value in config.data['textPosition'].items():
             if key in self.data[COMPONENT_TYPE.LABEL]:
                 self.data[COMPONENT_TYPE.LABEL][key] = value
@@ -356,11 +342,11 @@ class TanksStatistic(object):
             self.__allyChance = 100 * self.__allyTeamForces / allForces if allForces != 0 else 0
             self.__enemyChance = 100 * self.__enemyTeamForces / allForces if allForces != 0 else 0
             # Events -----------------------------------------------------------
-            events.onVehiclesChanged(self, reason, vehicleID)
+            g_events.onVehiclesChanged(self, reason, vehicleID)
             if reason <= 1:
-                events.onCountChanged(self.__allyTanksCount, self.__enemyTanksCount)
-            events.onHealthChanged(self.__allyTeamHP, self.__enemyTeamHP)
-            events.onChanceChanged(self.__allyChance, self.__enemyChance, self.__allyTeamForces, self.__enemyTeamForces)
+                g_events.onCountChanged(self.__allyTanksCount, self.__enemyTanksCount)
+            g_events.onHealthChanged(self.__allyTeamHP, self.__enemyTeamHP)
+            g_events.onChanceChanged(self.__allyChance, self.__enemyChance, self.__allyTeamForces, self.__enemyTeamForces)
 
 
 g_tanksStatistic  = TanksStatistic()
@@ -473,14 +459,16 @@ def new__onArenaVehicleKilled(func, self, targetID, *args, **kwargs):
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new__startGUI(func, self):
     func(self)
-    g_tanksStatistic.init()
-    for vehicleID in self.arena.vehicles:
-        g_tanksStatistic.addVehicleInfo(vehicleID, self.arena.vehicles.get(vehicleID))
-    g_flash.startBattle()
-    g_mod.flash_text()
+    if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
+        g_tanksStatistic.init()
+        for vehicleID in self.arena.vehicles:
+            g_tanksStatistic.addVehicleInfo(vehicleID, self.arena.vehicles.get(vehicleID))
+        g_flash.startBattle()
+        g_mod.flash_text()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
-def new__destroyGUI(func, self):
-    func(self)
-    g_flash.stopBattle()
+def new__destroyGUI(func, *args):
+    func(*args)
+    if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
+        g_flash.stopBattle()

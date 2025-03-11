@@ -18,6 +18,10 @@ class Events(object):
         self.onArmorChanged = SafeEvent()
         self.onUpdateVehicle = SafeEvent()
         self.onUpdateBlur = SafeEvent()
+        self.onVehiclesChanged = SafeEvent()
+        self.onCountChanged = SafeEvent()
+        self.onChanceChanged = SafeEvent()
+        self.onHealthChanged = SafeEvent()
 
         ServicesLocator.appLoader.onGUISpaceEntered += self.onGUISpaceEntered
         ServicesLocator.appLoader.onGUISpaceLeft += self.onGUISpaceLeft
