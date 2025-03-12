@@ -359,22 +359,13 @@ def new__VehicleArenaInfoVO(func, self, **kwargs):
             kwargs['clanAbbrev'] = ''
     return func(self, **kwargs)
 
+
 # limit of lines in battle
 @override(messenger_view, '_makeSettingsVO')
 def new__makeSettingsVO(func, self):
     makeSettingsVO = func(self)
     makeSettingsVO['numberOfMessagesInHistory'] = config.data['maxChatLines']
     return makeSettingsVO
-
-# remove camara limits
-# @override(gun_marker_ctrl, '_setupGunMarkerSizeLimits')
-# def _setupGunMarkerSizeLimits(func, self, scale=None):
-#    args = func(self, scale)
-#    if not config.data['enabled'] and config.data['camLimits']:
-#        return
-#    newLimits = (1.0, args[1])
-#    self.sizeConstraint = newLimits
-#    return newLimits
 
 
 # PlayerSatisfactionWidget/ShowRateSatisfactionCmp

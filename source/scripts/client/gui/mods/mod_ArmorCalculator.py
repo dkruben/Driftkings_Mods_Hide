@@ -127,29 +127,29 @@ class ArmorCalculator(ArmorCalculatorMeta):
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged += self.as_onCrosshairPositionChangedS
         handler = avatar_getter.getInputHandler()
-        if handler is not None and hasattr(handler, 'onCameraChanged'):
+        if handler is not None and hasattr(handler, "onCameraChanged"):
             handler.onCameraChanged += self.onCameraChanged
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
-        # if self.gui.isComp7Battle():
-        #    prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-        #    if prebattleCtrl is not None:
-        #        prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
-        #    self.__updateCurrVehicleInfo()
+        prebattleCtrl = self.sessionProvider.dynamic.prebattleSetup
+        if prebattleCtrl is not None:
+            prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
+            prebattleCtrl.onBattleStarted += self.__updateCurrVehicleInfo
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
         if ctrl is not None:
             ctrl.onCrosshairPositionChanged -= self.as_onCrosshairPositionChangedS
         handler = avatar_getter.getInputHandler()
-        if handler is not None and hasattr(handler, 'onCameraChanged'):
+        if handler is not None and hasattr(handler, "onCameraChanged"):
             handler.onCameraChanged -= self.onCameraChanged
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
-        # if self.gui.isComp7Battle():
-        #    prebattleCtrl = self.sessionProvider.dynamic.comp7PrebattleSetup
-        #    if prebattleCtrl is not None:
-        #        prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
+        prebattleCtrl = self.sessionProvider.dynamic.prebattleSetup
+        if prebattleCtrl is not None:
+            prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
+            prebattleCtrl.onBattleStarted -= self.__updateCurrVehicleInfo
+        super(ArmorCalculator, self)._dispose()
         super(ArmorCalculator, self)._dispose()
 
     def onMarkerColorChanged(self, color):
@@ -173,7 +173,7 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
 
     def __updateCurrVehicleInfo(self, vehicle=None):
-        ctrl = self.sessionProvider.dynamic.comp7PrebattleSetup
+        ctrl = self.sessionProvider.dynamic.prebattleSetup
         if ctrl is None:
             return
         else:
@@ -354,7 +354,7 @@ class _ShotResult(object):
 
     @classmethod
     def computeArmorHE(cls, c_details, shell, piercing_power):
-        computed_armor =0
+        computed_armor = 0
         ignoredMaterials = set()
         no_damage = True
         for detail in c_details:
@@ -363,15 +363,16 @@ class _ShotResult(object):
                 continue
             hitAngleCos = detail.hitAngleCos if mat_info.useHitAngle else 1.0
             # noinspection PyProtectedMember
-            computed_armor += _CrosshairShotResults._computePenetrationArmor(shell, hitAngleCos, mat_info)
+            armor = _CrosshairShotResults._computePenetrationArmor(shell, hitAngleCos, mat_info)
+            computed_armor += armor
             if mat_info.vehicleDamageFactor:
                 no_damage = False
                 break
             if shell.type.shieldPenetration:
-                piercing_power -= computed_armor * MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
+                piercing_power -= armor * MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
             if mat_info.collideOnceOnly:
                 ignoredMaterials.add((detail.compName, mat_info.kind))
-        shot_result = cls._checkShotResult(computed_armor, piercing_power, False, no_damage)
+        shot_result = cls._checkShotResult(computed_armor, max(piercing_power, 0), False, no_damage)
         return shot_result, computed_armor, max(piercing_power, 0), shell.caliber, False, no_damage
 
 

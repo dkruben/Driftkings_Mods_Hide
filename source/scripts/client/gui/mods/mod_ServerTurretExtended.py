@@ -18,7 +18,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.2 (%(file_compile_date)s)'
+        self.version = '1.7.3 (%(file_compile_date)s)'
         self.author = '(orig by spoter, reven86), re-coded by Driftkings'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -114,18 +114,17 @@ class MovementControl(object):
     def keyPressed(event):
         if not config.data['enabled']:
             return
+        vehicle = getPlayer().getVehicleAttached()
+        if not (vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode):
+            return
+        if checkKeys(config.data['buttonMaxMode']) and event.isKeyDown():
+            config.data['maxWheelMode'] = not config.data['maxWheelMode']
+            message = '%s: %s' % (config.i18n['UI_setting_maxWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['maxWheelMode'] else config.i18n['UI_AutoMode_off'])
+            sendPanelMessage(message, 'Green' if config.data['maxWheelMode'] else 'Red')
         if checkKeys(config.data['buttonAutoMode']) and event.isKeyDown():
-            vehicle = getPlayer().getVehicleAttached()
-            if vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode:
-                config.data['maxWheelMode'] = not config.data['maxWheelMode']
-                message = '%s: %s' % (config.i18n['UI_setting_maxWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['maxWheelMode'] else config.i18n['UI_AutoMode_off'])
-                sendPanelMessage(message, 'Red')
-        if checkKeys(config.data['buttonAutoMode']) and event.isKeyDown():
-            vehicle = getPlayer().getVehicleAttached()
-            if vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode:
-                config.data['autoActivateWheelMode'] = not config.data['autoActivateWheelMode']
-                message = '%s: %s' % (config.i18n['UI_setting_autoActivateWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['autoActivateWheelMode'] else config.i18n['UI_AutoMode_off'])
-                sendPanelMessage(message, 'Red')
+            config.data['autoActivateWheelMode'] = not config.data['autoActivateWheelMode']
+            message = '%s: %s' % (config.i18n['UI_setting_autoActivateWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['autoActivateWheelMode'] else config.i18n[ 'UI_AutoMode_off'])
+            sendPanelMessage(message, 'Green' if config.data['autoActivateWheelMode'] else 'Red')
 
     # noinspection PyProtectedMember
     def changeMovement(self):
