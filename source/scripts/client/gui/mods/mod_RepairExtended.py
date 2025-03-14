@@ -128,6 +128,7 @@ analytics = Analytics(config.ID, config.version)
 class Repair(object):
 
     def __init__(self):
+        self.player = None
         self.ctrl = None
         self.consumablesPanel = None
         self.items = {
@@ -160,7 +161,8 @@ class Repair(object):
         g_eventBus.addListener(events.ComponentEvent.COMPONENT_UNREGISTERED, self.__onComponentUnregistered, EVENT_BUS_SCOPE.GLOBAL)
 
     def startBattle(self):
-        self.ctrl = getPlayer().guiSessionProvider.shared
+        self.player = getPlayer()
+        self.ctrl = self.player.guiSessionProvider.shared
         #
         InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
         InputHandler.g_instance.onKeyUp += self.onHotkeyPressed
@@ -188,7 +190,7 @@ class Repair(object):
         self.items['repairkit'][1] = 1531
 
     def checkBattleStarted(self):
-        if hasattr(getPlayer(), 'arena') and getPlayer().arena.period is 3:
+        if hasattr(self.player, 'arena') and self.player.arena.period is 3:
             for equipment_tag in self.items:
                 self.items[equipment_tag][2] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
                 self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
@@ -206,7 +208,7 @@ class Repair(object):
             return
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
+        self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return
         sound = False
@@ -233,7 +235,7 @@ class Repair(object):
             return
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
+        self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return
         if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
@@ -252,7 +254,7 @@ class Repair(object):
             return
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
+        self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return
         if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
@@ -279,7 +281,7 @@ class Repair(object):
                 self.useItemGold(equipment_tag)
 
     def repair(self, equipment_tag):
-        specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipment_tag]
+        specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)][equipment_tag]
         if config.data['useGoldKits'] and self.items[equipment_tag][3]:
             equipment = self.items[equipment_tag][3]
             if equipment is not None:
@@ -316,7 +318,7 @@ class Repair(object):
     def repairAll(self):
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
+        self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return
         if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
@@ -338,7 +340,7 @@ class Repair(object):
     def repairChassis(self):
         if self.ctrl is None:
             return
-        self_vehicle = getPlayer().getVehicleAttached()
+        self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return
         if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
@@ -378,7 +380,7 @@ class Repair(object):
                     itemName = deviceName
                 equipmentTag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
                 # noinspection PyTypeChecker
-                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(getPlayer().vehicleTypeDescriptor.type.tags)][equipmentTag]
+                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)][equipmentTag]
                 if itemName in specific:
                     if config.data['healCrew'] and equipmentTag == 'medkit':
                         callback(time, partial(self.useItem, 'medkit', deviceName))
