@@ -130,34 +130,33 @@ class MovementControl(object):
     def changeMovement(self):
         player = getPlayer()
         vehicle = player.getVehicleAttached()
-        if vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode:
-            flags = player.makeVehicleMovementCommandByKeys()
-            if vehicle.siegeState == VEHICLE_SIEGE_STATE.DISABLED:
-                if player._PlayerAvatar__cruiseControlMode:
-                    return self.changeSiege(True)
-                if flags & MOVEMENT_FLAGS.ROTATE_RIGHT or flags & MOVEMENT_FLAGS.ROTATE_LEFT or flags & MOVEMENT_FLAGS.BLOCK_TRACKS:
-                    return
-                if flags & MOVEMENT_FLAGS.FORWARD:
-                    return self.changeSiege(True)
-                if flags & MOVEMENT_FLAGS.BACKWARD:
-                    return self.changeSiege(True)
-            if vehicle.siegeState == VEHICLE_SIEGE_STATE.ENABLED:
-                if not player._PlayerAvatar__cruiseControlMode:
-                    realSpeed = int(vehicle.speedInfo.value[0] * 3.6)
-                    checkSpeedLimits = self.checkSpeedLimits(vehicle, realSpeed)
-                    if flags & MOVEMENT_FLAGS.ROTATE_RIGHT and checkSpeedLimits:
+        if not (vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode):
+            return
+        flags = player.makeVehicleMovementCommandByKeys()
+        if vehicle.siegeState == VEHICLE_SIEGE_STATE.DISABLED:
+            # noinspection PyProtectedMember
+            if player._PlayerAvatar__cruiseControlMode:
+                return self.changeSiege(True)
+            if flags & MOVEMENT_FLAGS.ROTATE_RIGHT or flags & MOVEMENT_FLAGS.ROTATE_LEFT or flags & MOVEMENT_FLAGS.BLOCK_TRACKS:
+                return
+            if flags & MOVEMENT_FLAGS.FORWARD or flags & MOVEMENT_FLAGS.BACKWARD:
+                return self.changeSiege(True)
+        elif vehicle.siegeState == VEHICLE_SIEGE_STATE.ENABLED:
+            # noinspection PyProtectedMember
+            if not player._PlayerAvatar__cruiseControlMode:
+                real_speed = int(vehicle.speedInfo.value[0] * 3.6)
+                if (flags & MOVEMENT_FLAGS.ROTATE_RIGHT or flags & MOVEMENT_FLAGS.ROTATE_LEFT) and self.checkSpeedLimits(vehicle, real_speed):
+                    return self.changeSiege(False)
+                if flags & MOVEMENT_FLAGS.BLOCK_TRACKS:
+                    return self.changeSiege(False)
+                if 20 > real_speed > -20:
+                    cmd_list = (CommandMapping.CMD_MOVE_FORWARD, CommandMapping.CMD_MOVE_FORWARD_SPEC, CommandMapping.CMD_MOVE_BACKWARD)
+                    if not CommandMapping.g_instance.isActiveList(cmd_list):
                         return self.changeSiege(False)
-                    if flags & MOVEMENT_FLAGS.ROTATE_LEFT and checkSpeedLimits:
+                    if real_speed < 0 and flags & MOVEMENT_FLAGS.FORWARD:
                         return self.changeSiege(False)
-                    if flags & MOVEMENT_FLAGS.BLOCK_TRACKS:
+                    if real_speed > 0 and flags & MOVEMENT_FLAGS.BACKWARD:
                         return self.changeSiege(False)
-                    if 20 > realSpeed > -20:
-                        if not CommandMapping.g_instance.isActiveList((CommandMapping.CMD_MOVE_FORWARD, CommandMapping.CMD_MOVE_FORWARD_SPEC, CommandMapping.CMD_MOVE_BACKWARD)):
-                            return self.changeSiege(False)
-                        if realSpeed < 0 and flags & MOVEMENT_FLAGS.FORWARD:
-                            return self.changeSiege(False)
-                        if realSpeed > 0 and flags & MOVEMENT_FLAGS.BACKWARD:
-                            return self.changeSiege(False)
 
     def changeSiege(self, status):
         SoundNotifications.TRANSITION_TIMER = ''
@@ -168,8 +167,10 @@ class MovementControl(object):
     def checkSpeedLimits(vehicle, speed):
         if not config.data['maxWheelMode']:
             return True
-        speedLimits = vehicle.typeDescriptor.defaultVehicleDescr.physics['speedLimits']
-        return int(speedLimits[0] * 3.6) > speed > -int(speedLimits[1] * 3.6)
+        speed_limits = vehicle.typeDescriptor.defaultVehicleDescr.physics['speedLimits']
+        forward_limit = int(speed_limits[0] * 3.6)
+        backward_limit = -int(speed_limits[1] * 3.6)
+        return forward_limit > speed > backward_limit
 
     @staticmethod
     def fixSiegeModeCruiseControl():
@@ -177,8 +178,8 @@ class MovementControl(object):
         vehicle = player.getVehicleAttached()
         result = vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode
         if result:
-            soundStateChange = vehicle.typeDescriptor.type.siegeModeParams['soundStateChange']
-            vehicle.appearance.engineAudition.setSiegeSoundEvents(soundStateChange.isEngine, soundStateChange.npcOn, soundStateChange.npcOff)
+            sound_state_change = vehicle.typeDescriptor.type.siegeModeParams['soundStateChange']
+            vehicle.appearance.engineAudition.setSiegeSoundEvents(sound_state_change.isEngine, sound_state_change.npcOn, sound_state_change.npcOff)
         return result
 
 
