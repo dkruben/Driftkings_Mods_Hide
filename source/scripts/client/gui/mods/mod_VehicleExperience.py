@@ -31,7 +31,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'orig. Spoter, Updated by: DriftKing\'s'
         self.data = {
             'enabled': True,
@@ -85,8 +85,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
             'UI_setting_questSettingsLabel_text': 'Personal Mission status:',
             'UI_setting_questsHeader': 'Personal Assignments',
-            'UI_setting_questsHeader_pm2': 'Personal Assignments Campagin 2',
-            'UI_setting_questsHeader_regular': 'Personal Assignments Campagin 1',
+            'UI_setting_questsHeader_pm2': 'Personal Assignments Campaign 2',
+            'UI_setting_questsHeader_regular': 'Personal Assignments Campaign 1',
 
             'UI_text_add_condition': '<font color=\'#aefe57\'>{quest-add-condition}</font>',
             'UI_text_add_condition_extra': 'Secondary condition',
@@ -199,20 +199,22 @@ class ConfigInterface(DriftkingsConfigInterface):
             return []
         else:
             header = self.getHeader(self.i18n['UI_setting_experience_header'])
-            value = min((exp + freeXP if self.data['useFreeExp'] else exp) + eliteDiscountXP, eliteNeedXP)
-            header.append({
-                'indicatorVO': {
-                    'useAnim': True,
-                    'markerValue': value,
-                    'maxValue': eliteNeedXP,
-                    'value': value,
-                    'minValue': 0
-                },
-                'state': 'simpleBottom',
-                'paramID': self.i18n['UI_setting_experience_header'],
-                'isEnabled': True,
-                'tooltip': None
-            })
+            # Fix: Handle case where eliteNeedXP is zero
+            if eliteNeedXP > 0:
+                value = min((exp + freeXP if self.data['useFreeExp'] else exp) + eliteDiscountXP, eliteNeedXP)
+                header.append({
+                    'indicatorVO': {
+                        'useAnim': True,
+                        'markerValue': value,
+                        'maxValue': eliteNeedXP,
+                        'value': value,
+                        'minValue': 0
+                    },
+                    'state': 'simpleBottom',
+                    'paramID': self.i18n['UI_setting_experience_header'],
+                    'isEnabled': True,
+                    'tooltip': None
+                })
             if not self.isExpanded(self.i18n['UI_setting_experience_header']):
                 return header
             data = header + data
@@ -228,11 +230,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             if self.data['useFreeExp']:
                 modulesNeedXP -= freeXP
             if modulesNeedXP > 0:
-                modules_battles = modulesNeedXP / avgXP if avgXP > 0 else 1
-                modules_battles = self.getNumber(modules_battles)
+                if avgXP > 0:
+                    modules_battles = modulesNeedXP / avgXP
+                    modules_battles = self.getNumber(modules_battles)
+                    formatData['battles-left'] = modules_battles
+                else:
+                    formatData['battles-left'] = 'X'
                 formatData['need-exp'] = self.getNumber(modules_exp)
                 formatData['chk-exp'] = self.getNumber(modulesNeedXP)
-                formatData['battles-left'] = modules_battles if avgXP > 0 else 'X'
                 data.extend(self.pack(self.i18n['UI_setting_moduleStatusTitle_text'].format(**formatData), self.i18n['UI_setting_moduleStatus_text'].format(**formatData)))
             elif isModulesReady:
                 data.extend(self.pack(self.i18n['UI_setting_moduleStatusReadyTitle_text'].format(**formatData), self.i18n['UI_setting_moduleStatusReady_text'].format(**formatData)))
@@ -272,14 +277,20 @@ class ConfigInterface(DriftkingsConfigInterface):
                 if self.data['useFreeExp']:
                     researchVehicles[vehicle_id]['exp'] -= freeXP
                 if researchVehicles[vehicle_id]['exp'] > 0:
-                    researchVehicles[vehicle_id]['battles'] = researchVehicles[vehicle_id]['exp'] / avgXP if avgXP > 0 else 1
+                    researchVehicles[vehicle_id]['battles'] = researchVehicles[vehicle_id][
+                                                                  'exp'] / avgXP if avgXP > 0 else 1
                     researchVehicles[vehicle_id]['battles'] = self.getNumber(researchVehicles[vehicle_id]['battles'])
                     formatData['need-exp'] = self.getNumber(researchVehicles[vehicle_id]['exp_need'])
                     formatData['chk-exp'] = self.getNumber(researchVehicles[vehicle_id]['exp'])
                     formatData['battles-left'] = researchVehicles[vehicle_id]['battles'] if avgXP > 0 else 'X'
                     formatData['discount'] = self.getNumber(researchVehicles[vehicle_id]['discount'])
-                    data.extend(self.pack(self.i18n['UI_setting_nextTanksTitle_text'].format(**formatData), self.i18n['UI_setting_nextTanks_text'].format(**formatData), self.i18n['UI_setting_nextTanks_tooltip'].format(**formatData) if researchVehicles[vehicle_id]['discount'] else None))
-                data.extend(self.pack(self.i18n['UI_setting_nextTanksReadyTitle_text'].format(**formatData), self.i18n['UI_setting_nextTanksReady_text'].format(**formatData)))
+                    data.extend(self.pack(self.i18n['UI_setting_nextTanksTitle_text'].format(**formatData),
+                                          self.i18n['UI_setting_nextTanks_text'].format(**formatData),
+                                          self.i18n['UI_setting_nextTanks_tooltip'].format(**formatData) if
+                                          researchVehicles[vehicle_id]['discount'] else None))
+                else:
+                    data.extend(self.pack(self.i18n['UI_setting_nextTanksReadyTitle_text'].format(**formatData),
+                                          self.i18n['UI_setting_nextTanksReady_text'].format(**formatData)))
 
         return data
 
@@ -348,27 +359,28 @@ class ConfigInterface(DriftkingsConfigInterface):
         isEliteReady = False
         isModulesReady = False
         for unlocks in g_currentVehicle.item.descriptor.type.unlocksDescrs:
-            compactDescr = unlocks[1]
-            if compactDescr in vehicles:
-                vehicle = vehicles[compactDescr]
-                if vehicle and not vehicle.isUnlocked:
-                    isAvailable, cost, need, fullCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD, vehicle.level)
-                    researchVehicles[compactDescr] = {'exp': fullCost, 'battles': 1, 'vehicle': vehicle, 'discount': fullCost - cost}
-                    eliteNeedXP += fullCost
-                    eliteDiscountXP += fullCost - cost
-                    isEliteReady = True
-                    for research in unlocks[1:]:
-                        isAvailable, cost, need, fullCost, discount = getUnlockPrice(research, g_currentVehicle.item.intCD, vehicle.level)
-                        if not isAvailable:
-                            researchVehicles[compactDescr]['exp'] += fullCost
-                            researchVehicles[compactDescr]['discount'] += discount
-            isAvailable, cost, need, defCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD)
-            if not isAvailable:
-                modulesNeedXP += cost
-                eliteNeedXP += cost
-                isEliteReady = True
-                isModulesReady = True
-        return modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady
+            if len(unlocks) > 1:  # Make sure unlocks has at least 2 elements
+                compactDescr = unlocks[1]
+                if compactDescr in vehicles:
+                    vehicle = vehicles[compactDescr]
+                    if vehicle and not vehicle.isUnlocked:
+                        isAvailable, cost, need, fullCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD, vehicle.level)
+                        researchVehicles[compactDescr] = {'exp': fullCost, 'battles': 1, 'vehicle': vehicle, 'discount': fullCost - cost}
+                        eliteNeedXP += fullCost
+                        eliteDiscountXP += fullCost - cost
+                        isEliteReady = True
+                        for research in unlocks[2:]:  # Start from index 2 since we already processed index 1
+                            isAvailable, cost, need, fullCost, discount = getUnlockPrice(research, g_currentVehicle.item.intCD, vehicle.level)
+                            if not isAvailable:
+                                researchVehicles[compactDescr]['exp'] += fullCost
+                                researchVehicles[compactDescr]['discount'] += discount
+                    isAvailable, cost, need, defCost, discount = getUnlockPrice(compactDescr,  g_currentVehicle.item.intCD)
+                    if not isAvailable:
+                        modulesNeedXP += cost
+                        eliteNeedXP += cost
+                        isEliteReady = True
+                        isModulesReady = True
+                    return modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady
 
     @staticmethod
     def truncate(value):
