@@ -28,38 +28,18 @@ class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.values = {}
         self.colors = OrderedDict([
-            ('UI_color_red', '#FF0000'),
-            ('UI_color_nice_red', '#FA8072'),
-            ('UI_color_chocolate', '#D3691E'),
-            ('UI_color_orange', '#FFA500'),
-            ('UI_color_gold', '#FFD700'),
-            ('UI_color_cream', '#FCF5C8'),
-            ('UI_color_yellow', '#FFFF00'),
-            ('UI_color_green_yellow', '#ADFF2E'),
-            ('UI_color_lime', '#00FF00'),
-            ('UI_color_green', '#008000'),
-            ('UI_color_aquamarine', '#2AB157'),
-            ('UI_color_emerald', '#28F09C'),
-            ('UI_color_cyan', '#00FFFF'),
-            ('UI_color_cornflower_blue', '#6595EE'),
-            ('UI_color_blue', '#0000FF'),
-            ('UI_color_purple', '#800080'),
-            ('UI_color_hot_pink', '#FF69B5'),
-            ('UI_color_pink', '#FFC0CB'),
-            ('UI_color_brown', '#A52A2B'),
-            ('UI_color_wg_colorBlind', '#8378FC'),
-            ('UI_color_wg_enemy', '#DB0400'),
-            ('UI_color_wg_ally', '#80D639'),
-            ('UI_color_wg_squadMan', '#FFB964'),
-            ('UI_color_wg_player', '#FFE041')
+            ('UI_color_red', '#FF0000'), ('UI_color_nice_red', '#FA8072'), ('UI_color_chocolate', '#D3691E'),
+            ('UI_color_orange', '#FFA500'), ('UI_color_gold', '#FFD700'), ('UI_color_cream', '#FCF5C8'),
+            ('UI_color_yellow', '#FFFF00'), ('UI_color_green_yellow', '#ADFF2E'), ('UI_color_lime', '#00FF00'),
+            ('UI_color_green', '#008000'), ('UI_color_aquamarine', '#2AB157'), ('UI_color_emerald', '#28F09C'),
+            ('UI_color_cyan', '#00FFFF'), ('UI_color_cornflower_blue', '#6595EE'), ('UI_color_blue', '#0000FF'),
+            ('UI_color_purple', '#800080'), ('UI_color_hot_pink', '#FF69B5'), ('UI_color_pink', '#FFC0CB'),
+            ('UI_color_brown', '#A52A2B'), ('UI_color_wg_colorBlind', '#8378FC'), ('UI_color_wg_enemy', '#DB0400'),
+            ('UI_color_wg_ally', '#80D639'), ('UI_color_wg_squadMan', '#FFB964'), ('UI_color_wg_player', '#FFE041')
         ])
         self.ratings = OrderedDict([
-            ('neutral', '#FFFFFF'),
-            ('very_bad', '#FF6347'),
-            ('bad', '#FE7903'),
-            ('normal', '#F8F400'),
-            ('good', '#60FF00'),
-            ('very_good', '#02C9B3'),
+            ('neutral', '#FFFFFF'), ('very_bad', '#FF6347'), ('bad', '#FE7903'),
+            ('normal', '#F8F400'), ('good', '#60FF00'), ('very_good', '#02C9B3'),
             ('unique', '#D042F3')
         ])
         self.battleDamageRating0 = self.ratings['very_bad']
@@ -700,17 +680,13 @@ class Worker(object):
             self.initiated = False
         self.battleDamageRatingIndex = [0, p20, p40, p55, p65, p85, p95, p100]
         self.formatStrings['damageToMark65'] = config.data['battleMessage{damageToMark65}'] % p65
-        self.formatStrings['c_damageToMark65'] = '<font color="%s">%s</font>' % (
-        config.ratings['good'], self.formatStrings['damageToMark65'])
+        self.formatStrings['c_damageToMark65'] = '<font color="%s">%s</font>' % (config.ratings['good'], self.formatStrings['damageToMark65'])
         self.formatStrings['damageToMark85'] = config.data['battleMessage{damageToMark85}'] % p85
-        self.formatStrings['c_damageToMark85'] = '<font color="%s">%s</font>' % (
-        config.ratings['very_good'], self.formatStrings['damageToMark85'])
+        self.formatStrings['c_damageToMark85'] = '<font color="%s">%s</font>' % (config.ratings['very_good'], self.formatStrings['damageToMark85'])
         self.formatStrings['damageToMark95'] = config.data['battleMessage{damageToMark95}'] % p95
-        self.formatStrings['c_damageToMark95'] = '<font color="%s">%s</font>' % (
-        config.ratings['unique'], self.formatStrings['damageToMark95'])
+        self.formatStrings['c_damageToMark95'] = '<font color="%s">%s</font>' % (config.ratings['unique'], self.formatStrings['damageToMark95'])
         self.formatStrings['damageToMark100'] = config.data['battleMessage{damageToMark100}'] % p100
-        self.formatStrings['c_damageToMark100'] = '<font color="%s">%s</font>' % (
-        config.ratings['unique'], self.formatStrings['damageToMark100'])
+        self.formatStrings['c_damageToMark100'] = '<font color="%s">%s</font>' % (config.ratings['unique'], self.formatStrings['damageToMark100'])
         self.formatStrings['damageToMarkInfo'] = config.data['battleMessage{damageToMarkInfo}'] % self.formatStrings['damageToMark100']
         self.formatStrings['c_damageToMarkInfo'] = config.data['battleMessage{c_damageToMarkInfo}'] % self.formatStrings['damageToMarkInfo']
         self.formatStrings['damageToMarkInfoLevel'] = config.data['battleMessage{damageToMarkInfoLevel}'] % 100

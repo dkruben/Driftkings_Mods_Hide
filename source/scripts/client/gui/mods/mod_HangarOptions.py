@@ -8,8 +8,10 @@ import gui.shared.tooltips.vehicle as tooltips
 from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
+from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
+from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
 from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
 from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
 from gui.Scaleform.daapi.view.lobby.messengerBar.NotificationListButton import NotificationListButton
@@ -17,6 +19,7 @@ from gui.Scaleform.daapi.view.lobby.messengerBar.messenger_bar import MessengerB
 from gui.Scaleform.daapi.view.lobby.messengerBar.session_stats_button import SessionStatsButton
 from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechnique
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
+from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
 from gui.Scaleform.daapi.view.meta.TankCarouselMeta import TankCarouselMeta
@@ -26,6 +29,7 @@ from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.impl import backport
 from gui.impl.gen import R
+from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.personality import ServicesLocator
 from gui.shared.tooltips import formatters, getUnlockPrice
@@ -38,10 +42,8 @@ from shared_utils import safeCancelCallback
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.tankStructure import ModelStates
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, getRegion, overrideStaticMethod
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod
 from DriftkingsInject import g_events, CyclicTimerEvent
-
-firstTime = True
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -52,7 +54,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.3.5 (%(file_compile_date)s)'
+        self.version = '3.4.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -89,25 +91,19 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
                 'alignX': 'right',
                 'alignY': 'top'
-            },
-            'carouselRows': True,
-            'rows': 2
+            }
         }
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            # Login/Authentication
             'UI_setting_autoLogin_text': 'Automatic Login',
             'UI_setting_autoLogin_tooltip': 'Automatically log into the game',
-            # UI Elements
             'UI_setting_clock_text': 'Clock Display',
             'UI_setting_clock_tooltip': 'Show clock in login screen and hangar',
-            # Buttons & Counters
             'UI_setting_showButtonCounters_text': 'Button Counters',
             'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_hideBtnCounters_text': 'Disable tooltips on buttons in the hangar header',
             'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#\'>To enable / disable you need to restart the game.</font>' + ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'))),
-            # Premium Features
             'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
             'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
             'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
@@ -116,12 +112,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
             'UI_setting_premiumTime_text': 'Premium Time Display',
             'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
-            # Carousel Settings
-            'UI_setting_carouselRows_text': 'Tank Carousel Rows',
-            'UI_setting_carouselRows_tooltip': 'Enable/disable custom number of rows in tank carousel',
-            'UI_setting_rows_text': 'Number of Rows',
-            'UI_setting_rows_tooltip': 'Set the number of rows to display in tank carousel',
-            # Other UI Elements
             'UI_setting_showReferralButton_text': 'Referral Program Button',
             'UI_setting_showReferralButton_tooltip': 'Show/hide the Referral Program button',
             'UI_setting_showGeneralChatButton_text': 'General Chat',
@@ -164,42 +154,31 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                # Core Settings
                 self.tb.createControl('autoLogin'),
                 self.tb.createControl('clock'),
-                # Game Features
                 self.tb.createControl('allowExchangeXPInTechTree'),
                 self.tb.createControl('allowChannelButtonBlinking'),
                 self.tb.createControl('showXpToUnlockVeh'),
-                # UI Elements
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
                 self.tb.createControl('showGeneralChatButton'),
                 self.tb.createControl('showPopUpMessages'),
-                # Widgets
                 self.tb.createControl('lootBoxesWidget'),
                 self.tb.createControl('showDailyQuestWidget'),
                 self.tb.createControl('showEventBanner'),
-                self.tb.createControl('showProgressiveDecalsWindow'),
-                # Carousel Settings
-                self.tb.createControl('carouselRows'),
-                self.tb.createStepper('rows', 1, 5, 1)
+                self.tb.createControl('showProgressiveDecalsWindow')
             ],
             'column2': [
-                # Premium Features
                 self.tb.createControl('showPromoPremVehicle'),
                 self.tb.createControl('showBuyPremiumButton'),
                 self.tb.createControl('showPremiumShopButton'),
                 self.tb.createControl('showWotPlusButton'),
-                # Notifications & Counters
                 self.tb.createControl('showUnreadCounter'),
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('hideBtnCounters'),
-                # Game Status Displays
                 self.tb.createControl('showRankedBattleResults'),
                 self.tb.createControl('showHangarPrestigeWidget'),
                 self.tb.createControl('showProfilePrestigeWidget'),
-                # Additional Features
                 self.tb.createControl('showReferralButton'),
                 self.tb.createControl('showEventBanner')
             ]
@@ -272,6 +251,7 @@ def new__handleLazyChannelCtlInited(func, self, event):
 
 
 # hide premium vehicle on the background in the hangar
+@override(HeroTank, 'recreateVehicle')
 def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, _callback=None, outfit=None):
     if config.data.get('enabled', True) and config.data.get('showPromoPremVehicle', True):
         return
@@ -321,6 +301,7 @@ def new__updateBattleCount(func, self):
 
 
 # hide display widget with daily quests
+@override(BaseQuestsWidgetComponent, '_shouldHide')
 def new__shouldHide(func, self):
     if not config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
         return True
@@ -366,7 +347,7 @@ LOBBY_HEADER_BUTTON_TO_CONFIG = {
     LobbyHeader.BUTTONS.PREMSHOP: 'showPremiumShopButton'
 }
 
-
+@override(LobbyHeader, 'as_setHeaderButtonsS')
 def new__setHeaderButtonsS(func, self, buttons):
     for button, key in LOBBY_HEADER_BUTTON_TO_CONFIG.iteritems():
         if not config.data.get('%s' % key, True) and button in buttons:
@@ -407,14 +388,25 @@ def new__updateCounters(func, self):
 
 
 # Auto-Login
+class AutoLoginHandler:
+    def __init__(self):
+        self.first_time = False
+
+    def auto_login(self, login):
+        if not self.first_time:
+            self.first_time = True
+            if config.data.get('enabled', False) and config.data.get('autoLogin', False):
+                callback(0, login.as_doAutoLoginS)
+
+
+autoLogin = AutoLoginHandler()
+
+
+@override(LoginView, '_populate')
 def new__LoginViewPopulate(func, self):
     func(self)
     if not isReplay() and not self.loginManager.wgcAvailable:
-        global firstTime
-        if firstTime:
-            firstTime = False
-            if config.data['enabled'] and config.data['autoLogin']:
-                callback(0, self.as_doAutoLoginS)
+        autoLogin.auto_login(self)
 
 
 # Show Xp To Unlock Veh.
@@ -442,6 +434,7 @@ def new__construct(func, self):
         return block
 
 
+@override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
 def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     try:
         if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
@@ -452,18 +445,21 @@ def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
 
 
 # hide lootBoxes widget in tank carousel in hangar
+@overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')
 def new__getIsActive(func, state):
     if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         return False
     return func(state)
 
 
+@override(Hangar, 'as_updateCarouselEventEntryStateS')
 def new__updateCarouselEventEntryStateS(func, self, isVisible):
     if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         isVisible = False
     return func(self, isVisible)
 
 
+@override(Hangar, 'as_setEventTournamentBannerVisibleS')
 def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
     if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         visible = False
@@ -471,6 +467,7 @@ def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
 
 
 # Destroy widget if hidden
+@override(TournamentsWidgetComponent, '_makeInjectView')
 def new__makeInjectView(func, self):
     if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
         self.destroy()
@@ -479,6 +476,7 @@ def new__makeInjectView(func, self):
 
 
 # PremiumTime
+@override(LobbyHeader, 'as_setPremiumParamsS')
 def new__startCallback(func, self, data):
     config.stopCallback()
     if config.data['enabled'] and config.data['premiumTime'] and self.itemsCache.items.stats.isPremium:
@@ -506,15 +504,6 @@ def new__setItemField(func, self, clientID, key, value):
     if not config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True) and key == 'isNotified':
         value = False
     return func(self, clientID, key, value)
-
-# carousel
-@override(TankCarouselMeta, 'as_rowCountS')
-def new__rowCountS(func, self, value):
-    func(self, value)
-    if not config.data['enabled'] and not config.data['carouselRows']:
-        return
-    if self._isDAAPIInited():
-        return self.flashObject.as_rowCount(config.data['rows'])
 
 
 # Hangar Clock
@@ -588,10 +577,8 @@ class Flash(object):
             return
         try:
             encoding = 'utf-8' if locale.getpreferredencoding() in ('cp65001', 'UTF-8') else locale.getpreferredencoding()
-            # Get current time and format with weekday capitalized
             current_time = datetime.datetime.now()
             weekday_capitalized = current_time.strftime('%A').capitalize()
-            # Replace weekday in format string with capitalized version
             format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
             current_time_str = current_time.strftime(format_with_capital)
             formatted_time = current_time_str.decode(encoding) if isinstance(current_time_str, str) else current_time_str
@@ -614,31 +601,3 @@ except Exception as e:
     logError(config.ID, 'Error initializing Flash: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     traceback.print_exc()
-
-
-# init modules
-__initialized = False
-
-def init():
-    global __initialized
-    override(LobbyHeader, 'as_setPremiumParamsS', new__startCallback)
-    override(LoginView, '_populate', new__LoginViewPopulate)
-    override(HeroTank, 'recreateVehicle', new__recreateVehicle)
-    override(Hangar, 'as_setEventTournamentBannerVisibleS', new__setEventTournamentBannerVisibleS)
-    override(Hangar, 'as_updateCarouselEventEntryStateS', new__updateCarouselEventEntryStateS)
-    override(LobbyHeader, 'as_setHeaderButtonsS', new__setHeaderButtonsS)
-    try:
-        if getRegion() != 'RU':
-            from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
-            from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
-            from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
-            from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
-
-            override(BaseQuestsWidgetComponent, '_shouldHide', new__shouldHide)
-            overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')(new__getIsActive)
-            override(TournamentsWidgetComponent, '_makeInjectView', new__makeInjectView)
-            override(_TechTreeDataProvider, 'getAllVehiclePossibleXP', new__getAllVehiclePossibleXP)
-    except Exception as err:
-        logError(config.ID, 'Error initializing modules: {}', err)
-        traceback.print_exc()
-    __initialized = True

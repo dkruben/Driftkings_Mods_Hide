@@ -37,7 +37,6 @@ class ConfigsInterface(DriftkingsConfigInterface):
                 'steps': [4.0, 6.0, 8.0, 12.0, 16.0, 25.0, 30.0]
             }
         }
-
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),

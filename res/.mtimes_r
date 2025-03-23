@@ -147,6 +147,8 @@
 1738886554|flash/ArmorCalculator/src/mods/common/AbstractViewInjector.as
 1738886561|flash/ArmorCalculator/src/mods/common/BattleDisplayable.as
 1661728061|flash/BigTextConsumablesPanel/src/driftkings/views/battle/BigTextConsumablesPanel.as
+1742761292|flash/CreditCalc/CreditCalc.as3proj
+1742603608|flash/CreditCalc/src/views/hangar/CreditCalc.as
 1712888519|flash/CreditCalculator.swf
 1740344568|flash/DispersionTimer.swf
 1710377546|flash/DispersionTimer/DispersionTimer.as3proj
@@ -387,20 +389,14 @@
 1498053318|res/maps/icons/library/Rank_add.png
 1498053292|res/maps/icons/library/Rank_del.png
 1497863636|res/maps/icons/library/VehicleSlot.png
-1736976783|res/objects/artySplash/CheckPoint_yellow_black.model
-1736976848|res/objects/artySplash/CheckPoint_yellow_black.visual_processed
-1736976829|res/objects/artySplash/CheckPoint_yellow_black_Editor.model
-1736976816|res/objects/artySplash/CheckPoint_yellow_black_Editor.visual_processed
-1619252761|res/objects/artySplash/art.dds
-1605979108|res/objects/artySplash/artyDot.dds
-1605979108|res/objects/artySplash/artyDot.model
-1605979108|res/objects/artySplash/artyDot.primitives
-1605979108|res/objects/artySplash/artyDot.visual
-1605979108|res/objects/artySplash/artySplash.dds
-1605979108|res/objects/artySplash/artySplash.model
-1605979108|res/objects/artySplash/artySplash.primitives
-1605979108|res/objects/artySplash/artySplash.visual
-1736976601|res/objects/artySplash/circle_yellow_black.dds
+1570836438|res/objects/artySplash/artyDot.dds
+1570836438|res/objects/artySplash/artyDot.model
+1570836438|res/objects/artySplash/artyDot.primitives
+1570836438|res/objects/artySplash/artyDot.visual
+1570836438|res/objects/artySplash/artySplash.dds
+1570836438|res/objects/artySplash/artySplash.model
+1570836438|res/objects/artySplash/artySplash.primitives
+1570836438|res/objects/artySplash/artySplash.visual
 1619252761|res/objects/cylinder_red_big.model
 1619252761|res/objects/cylinder_red_big.primitives_processed
 1619252761|res/objects/cylinder_red_big.visual_processed
@@ -458,6 +454,6 @@
 1727048053|sound_bank_wwise/SixthSense/Triggers/Default Work Unit.wwu
 1727048053|sound_bank_wwise/SixthSense/Virtual Acoustics/Default Work Unit.wwu
 1727048053|sound_bank_wwise/license_key.txt
-1731013864|wotmods/gambiter.guiflash_0.6.3.wotmod
+1739402744|wotmods/gambiter.guiflash_0.6.4.wotmod
 1734377626|wotmods/izeberg.modssettingsapi_1.6.1.wotmod
 1737322176|wotmods/me.poliroid.modslistapi_1.6.00.wotmod
