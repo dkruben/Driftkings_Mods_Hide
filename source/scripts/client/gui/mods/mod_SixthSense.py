@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from collections import defaultdict
 from functools import partial
 from random import choice
@@ -26,10 +26,13 @@ _STATES_TO_HIDE = {
     VEHICLE_VIEW_STATE.SWITCHING, VEHICLE_VIEW_STATE.RESPAWNING,
     VEHICLE_VIEW_STATE.DESTROYED, VEHICLE_VIEW_STATE.CREW_DEACTIVATED
 }
+
 MESSAGES = (
     'Detected: <font color=\'#daff8f\'>{}</font> sec.',
     'Hide: <font color=\'#daff8f\'>{}</font> sec.',
-    'Run: <font color=\'#daff8f\'>{}</font> sec.'
+    'Run: <font color=\'#daff8f\'>{}</font> sec.',
+    'Alert: <font color=\'#ff7f7f\'>{}</font> sec.',
+    'Danger: <font color=\'#ff5555\'>{}</font> sec.'
 )
 
 
@@ -41,7 +44,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.4.0 (%(file_compile_date)s)'
+        self.version = '1.5.0 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'defaultIcon': True,
@@ -55,6 +58,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'spottedText': 'I\'m Spotted at %(pos)s!',
             'delay': 4,
             'sixthSenseSound': 'SixthSense_06',
+            'customColors': False,
+            'detectedColor': 'daff8f'
         }
 
         self.i18n = {
@@ -69,7 +74,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_defaultIconName_text': 'Default Icon Name',
             'UI_setting_defaultIconName_tooltip': 'Select an embedded image.',
             'UI_setting_userSound_text': 'User Sound',
-            'UI_setting_userSound_tooltip': 'Enable spotted text in battle.',
+            'UI_setting_userSound_tooltip': 'Enable custom sound when spotted.',
             'UI_setting_infoSpottedMessage_text': 'Spotted Messages:',
             'UI_setting_spottedMessage_text': 'Spotted',
             'UI_setting_spottedMessage_tooltip': 'Enable spotted text in battle.',
@@ -79,12 +84,16 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_helpMessage_tooltip': 'Send for chat (Help me) message automatically.',
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Text message remains on screen for this amount of seconds before fading out.',
+            'UI_setting_customColors_text': 'Custom Colors',
+            'UI_setting_customColors_tooltip': 'Enable custom colors for detection messages.',
+            'UI_setting_detectedColor_text': 'Detection Color',
+            'UI_setting_detectedColor_tooltip': 'Color for detection timer text (HEX format).'
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         infoSLabel = self.tb.createLabel('infoSpottedMessage')
-        infoSLabel['text'] += ''
+
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
@@ -92,15 +101,18 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('defaultIcon'),
                 self.tb.createImageOptions('defaultIconName', self.sixthSenseIconsNamesList()),
                 self.tb.createControl('playTickSound'),
-                self.tb.createSlider('lampShowTime', 2.0, 15.0, 1.0, '{{value}} ' + ' .sec'),
-
+                self.tb.createSlider('lampShowTime', 2.0, 15.0, 1.0, '{{value}} sec'),
+                self.tb.createControl('customColors'),
+                self.tb.createControl('detectedColor', self.tb.types.ColorChoice),
             ],
             'column2': [
                 infoSLabel,
                 self.tb.createControl('spottedMessage'),
                 self.tb.createControl('helpMessage'),
                 self.tb.createControl('spottedText', self.tb.types.TextInput, 300),
-                self.tb.createSlider('delay', 1.0, 10.0, 1.0, '{{value}} ' + ' sec.')
+                self.tb.createSlider('delay', 1.0, 10.0, 1.0, '{{value}} sec'),
+                self.tb.createControl('userSound'),
+                self.tb.createControl('sixthSenseSound', self.tb.types.TextInput, 150),
             ]
         }
 
@@ -108,7 +120,9 @@ class ConfigInterface(DriftkingsConfigInterface):
     def sixthSenseIconsNamesList():
         directory = 'gui/maps/icons/SixthSense/'
         folder = ResMgr.openSection(directory)
-        return sorted(folder.keys())
+        if folder is not None:
+            return sorted(folder.keys())
+        return []
 
     def onBattleLoaded(self):
         if not self.data['enabled']:
@@ -127,17 +141,19 @@ class MessagesSpotted(object):
     def __init__(self):
         self.macro = defaultdict(lambda: 'macros not found')
         self.__time = 0.5
+        self.last_position = None
 
     def sendMessage(self):
         self.macro['pos'] = square_position.getSquarePosition()
-        message = config.data['spottedText'] % self.macro
-        if message:
-            sendChatMessage(message, 1, config.data['delay'])
+        if self.macro['pos'] != self.last_position:
+            message = config.data['spottedText'] % self.macro
+            if message:
+                sendChatMessage(message, 1, config.data['delay'])
+                self.last_position = self.macro['pos']
 
     def helpMessage(self):
         def message(avatar):
             avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.SOS)
-
         if config.data['helpMessage']:
             callback(self.__time, partial(message, getPlayer()))
 
@@ -146,12 +162,18 @@ g_messages = MessagesSpotted()
 
 
 class SixthSense(SixthSenseMeta, SixthSenseTimer):
-
     def __init__(self):
         super(SixthSense, self).__init__(config.ID)
         self.radio_installed = False
         self.__visible = False
         self.__message = None
+        self.__radar = None
+        self.__last_detection_type = None
+        try:
+            from constants import DIRECT_DETECTION_TYPE
+            self.__radar = DIRECT_DETECTION_TYPE.STEALTH_RADAR
+        except:
+            pass
 
     def getSettings(self):
         return config.data
@@ -160,6 +182,7 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
         super(SixthSense, self)._populate()
         if config.data['playTickSound']:
             self.setSound(self._arenaVisitor.type.getCountdownTimerSound())
+        # Register event handlers
         g_playerEvents.onRoundFinished += self._onRoundFinished
         ctrl = self.sessionProvider.shared.vehicleState
         if ctrl is not None:
@@ -169,6 +192,8 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
             optional_devices.onDescriptorDevicesChanged += self.onDevicesChanged
 
     def _dispose(self):
+        if self.sessionProvider.isReplayPlaying and self._getPyReloading():
+            self.hide()
         self.destroyTimer()
         g_playerEvents.onRoundFinished -= self._onRoundFinished
         ctrl = self.sessionProvider.shared.vehicleState
@@ -189,15 +214,29 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
         return message
 
     def _onVehicleStateUpdated(self, state, value):
-        if state == VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY and value:
-            time = config.data['lampShowTime']
-            soundID = config.data['sixthSenseSound']
-            if config.data['userSound'] and not config.data['playTickSound']:
-                SoundGroups.g_instance.playSound2D(soundID)
-            if self.radio_installed:
-                time -= 2
-            self.__message = self.getNewRandomMessage()
-            self.show(time)
+        if state == VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY:
+            if value.get('isObserved', False):
+                detection_type = value.get("detectionType", 0)
+                self.__last_detection_type = detection_type
+                if hasattr(self, 'isComp7Battle') and self.isComp7Battle:
+                    if detection_type == self.__radar:
+                        time = 2
+                        if config.data['userSound']:
+                            SoundGroups.g_instance.playSound2D('enemy_sighted_for_team')
+                    else:
+                        time = 4
+                        if config.data['userSound'] and not config.data['playTickSound']:
+                            SoundGroups.g_instance.playSound2D(config.data['sixthSenseSound'])
+                else:
+                    time = config.data['lampShowTime']
+                    if config.data['userSound'] and not config.data['playTickSound']:
+                        SoundGroups.g_instance.playSound2D(config.data['sixthSenseSound'])
+                    if self.radio_installed:
+                        time -= 2
+                self.__message = self.getNewRandomMessage()
+                self.show(time)
+            else:
+                self.hide()
         elif state in _STATES_TO_HIDE:
             self.hide()
 
@@ -205,7 +244,12 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
         self.hide()
 
     def handleTimer(self, timeLeft):
-        self.as_updateTimerS(self.__message.format(timeLeft))
+        if config.data['customColors']:
+            formatted_message = self.__message.replace('#daff8f', '#' + config.data['detectedColor'])
+            self.as_updateTimerS(formatted_message.format(timeLeft))
+        else:
+            self.as_updateTimerS(self.__message.format(timeLeft))
+
         if timeLeft == 0:
             self.hide()
 
@@ -229,15 +273,17 @@ g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, SixthSense, None, Window
 @override(SixthSenseIndicator, '_show')
 def new__show(func, self):
     func(self)
-    if getPlayer().isVehicleAlive:
-        if config.data['enabled'] and config.data['spottedMessage']:
-            g_messages.sendMessage()
-        if config.data['enabled'] and config.data['helpMessage']:
-            g_messages.helpMessage()
+    player = getPlayer()
+    if player and player.isVehicleAlive:
+        if config.data['enabled']:
+            if config.data['spottedMessage']:
+                g_messages.sendMessage()
+            if config.data['helpMessage']:
+                g_messages.helpMessage()
 
 
 @override(SixthSenseIndicator, '_populate')
 def new_populate(func, self):
     func(self)
-    if config.data['enabled'] and config.data['userIcon'] or config.data['defaultIcon'] is not None:
+    if config.data['enabled'] and (config.data['userIcon'] or config.data['defaultIcon'] is not None):
         self.flashObject.visible = False

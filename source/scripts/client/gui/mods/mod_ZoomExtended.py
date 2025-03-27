@@ -181,11 +181,10 @@ ChangeCameraModeAfterShoot()
 
 # EFFECTS
 @override(SniperControlMode, '__setupBinoculars')
-def new__setupBinoculars(func, self, isCoatedOptics):
-    func(self, isCoatedOptics)
+def new__setupBinoculars(func, self, optDevices):
+    func(self, optDevices)
     if config.data['noBinoculars']:
-        self._binoculars.setEnabled(False)
-        self._binoculars.resetTextures()
+        return func(self, False)
 
 
 @override(ModelBoundEffects, 'addNewToNode')
