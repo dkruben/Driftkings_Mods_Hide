@@ -161,7 +161,6 @@ def getColor(data, ratting_color, value=None, kwargs=None):
             for item in category_values:
                 if item['value'] > value:
                     return formatColor(item['color'])
-
         if kwargs is not None:
             colors_x = data.get('x', [])
             for item in colors_x:
@@ -187,34 +186,76 @@ def getPercent(param_a, param_b):
 
 
 class SquarePosition(object):
+    SQUARES_NAME = 'KJHGFEDCBA'
+    LINES_NAME = '1234567890'
+    MIN_CLAMP_VALUE = 0.1
+    GRID_SIZE = 10
+
     def __init__(self):
         self.player = None
+        self.last_position = None
+        self.last_square = None
+
+    @staticmethod
+    def clamp(val, v_max):
+        return max(SquarePosition.MIN_CLAMP_VALUE, min(val, v_max))
+
+    @classmethod
+    def pos2name(cls, pos):
+        try:
+            x, y = int(pos[0]), int(pos[1])
+            return "%s%s" % (cls.SQUARES_NAME[y - 1], cls.LINES_NAME[x - 1])
+        except (IndexError, TypeError):
+            logError('DriftkingsCore', "Invalid position coordinates: {}", pos)
+            return "A1"
 
     def getSquarePosition(self):
+        try:
+            self.player = getPlayer()
+            if self.player is None:
+                logError('DriftkingsCore', "Player not available")
+                return self.last_square or "A1"
+            arena = getattr(self.player, 'arena', None)
+            if arena is None:
+                logError('DriftkingsCore', "Invalid Arena")
+                return self.last_square or "A1"
+            player_vehicle_id = getattr(self.player, 'playerVehicleID', None)
+            if player_vehicle_id is None or player_vehicle_id not in BigWorld.entities:
+                logError('DriftkingsCore', "Player vehicle not found")
+                return self.last_square or "A1"
+            position = BigWorld.entities[player_vehicle_id].position
+            if self.last_position and position == self.last_position:
+                return self.last_square
+            self.last_position = position
+            position_rect = (position[0], position[2])
+            bounding_box = arena.arenaType.boundingBox
+            bottom_left, upper_right = bounding_box
+            space_size = (upper_right[0] - bottom_left[0], upper_right[1] - bottom_left[1])
+            rel_pos = (position_rect[0] - bottom_left[0], position_rect[1] - bottom_left[1])
+            rel_pos = (self.clamp(rel_pos[0], space_size[0]), self.clamp(rel_pos[1], space_size[1]))
+            grid_pos = (int(rel_pos[0] / space_size[0] * self.GRID_SIZE + 0.5), int(rel_pos[1] / space_size[1] * self.GRID_SIZE + 0.5))
+            self.last_square = self.pos2name(grid_pos)
+            return self.last_square
+        except Exception as e:
+            logError('DriftkingsCore', "Error calculating square position: {}", e)
+            return self.last_square or "A1"
 
-        def clamp(val, vMax):
-            vMin = 0.1
-            return max(vMin, min(val, vMax))
-
-        def pos2name(pos):
-            sqrsName = 'KJHGFEDCBA'
-            linesName = '1234567890'
-            return '%s%s' % (sqrsName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
-
-        self.player = getPlayer()
-        arena = getattr(self.player, 'arena', None)
-        if arena is None:
-            logError('DriftkingsCore', "Invalid Arena {}", self.player.arena)
-
-        boundingBox = arena.arenaType.boundingBox
-        position = BigWorld.entities[self.player.playerVehicleID].position
-        positionRect = (position[0], position[2])
-        bottomLeft, upperRight = boundingBox
-        spaceSize = (upperRight[0] - bottomLeft[0], upperRight[1] - bottomLeft[1])
-        relPos = (positionRect[0] - bottomLeft[0], positionRect[1] - bottomLeft[1])
-        relPos = (clamp(relPos[0], spaceSize[0]), clamp(relPos[1], spaceSize[1]))
-
-        return pos2name((int(relPos[0] / spaceSize[0] * 10 + 0.5), int(relPos[1] / spaceSize[1] * 10 + 0.5)))
+    def getSquareForPosition(self, position):
+        try:
+            self.player = getPlayer()
+            arena = getattr(self.player, 'arena', None)
+            if arena is None:
+                return "A1"
+            position_rect = (position[0], position[2])
+            bounding_box = arena.arenaType.boundingBox
+            bottom_left, upper_right = bounding_box
+            space_size = (upper_right[0] - bottom_left[0], upper_right[1] - bottom_left[1])
+            rel_pos = (position_rect[0] - bottom_left[0], position_rect[1] - bottom_left[1])
+            grid_pos = (int(rel_pos[0] / space_size[0] * self.GRID_SIZE + 0.5), int(rel_pos[1] / space_size[1] * self.GRID_SIZE + 0.5))
+            return self.pos2name(grid_pos)
+        except Exception as e:
+            logError('DriftkingsCore', "Error calculating square for position: {}", e)
+            return "A1"
 
 
 square_position = SquarePosition()

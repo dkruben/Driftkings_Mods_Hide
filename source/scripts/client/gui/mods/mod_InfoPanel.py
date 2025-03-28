@@ -139,8 +139,7 @@ class Flash(object):
         self.ID = ID
         self._panelSize = config.data['panelSize']
         self.setup()
-        if COMPONENT_EVENT and hasattr(COMPONENT_EVENT.UPDATED, 'add'):
-            COMPONENT_EVENT.UPDATED.add(self.__updatePosition)
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
 
     def onApplySettings(self):
         g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
@@ -155,8 +154,7 @@ class Flash(object):
             g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
 
     def destroy(self):
-        if COMPONENT_EVENT and hasattr(COMPONENT_EVENT.UPDATED, 'remove'):
-            COMPONENT_EVENT.UPDATED.remove(self.__updatePosition)
+        COMPONENT_EVENT.UPDATED -= self.__updatePosition
         g_guiFlash.deleteComponent(self.ID)
 
     def __updatePosition(self, alias, data):
@@ -191,7 +189,6 @@ except Exception as err:
 
 
 class DataConstants(object):
-
     __slots__ = ('_playerVehicle', '_vehicle', '_typeDescriptor', '_gunShots',)
 
     def __init__(self):

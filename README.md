@@ -1,6 +1,6 @@
 ﻿# Driftkings's Mod List for World of Tanks
 
-![WOT Version](https://img.shields.io/badge/WOT-1.28.0.0-red.svg)
+![WOT Version](https://img.shields.io/badge/WOT-1.28.1.0-red.svg)
 [![Python 2.7.18](https://img.shields.io/badge/python-2.7.18-blue.svg)](https://www.python.org/downloads/release/python-2718/)
 [![PyCharm 2024.3](https://img.shields.io/badge/PyCharm-2024.3-green.svg)](https://www.jetbrains.com/pycharm/)
 
@@ -15,7 +15,7 @@
 - **Period:** 2020 - 2025
 - **Support:** driftkingsmods@gmail.com
 - **Patreon:** [https://www.patreon.com/driftkings_mods/](https://www.patreon.com/driftkings_mods/)
-- **WOT Version:** 1.28.0.0
+- **WOT Version:** 1.28.1.0
 
 ## Installation
 1. Access the link above for the mod folder, then go to the **"zip\"** folder
@@ -49,6 +49,7 @@
 * Python 2.7.18
 * PyCharm Community Edition 2024.1.3
 * AI Assistant (JetBrains)
+* MonicaIA (JetBrains)
 
 ## Acknowledgments
 * **Izebrg** (Renat Iliev)

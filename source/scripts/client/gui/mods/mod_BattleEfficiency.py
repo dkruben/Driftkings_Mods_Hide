@@ -3,6 +3,7 @@ import math
 import re
 import traceback
 from collections import namedtuple
+from functools import wraps
 
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
@@ -12,22 +13,43 @@ from gui.Scaleform.daapi.view.battle.shared.ribbons_panel import BattleRibbonsPa
 from gui.Scaleform.daapi.view.battle_results_window import BattleResultsWindow
 from gui.Scaleform.genConsts.BATTLE_EFFICIENCY_TYPES import BATTLE_EFFICIENCY_TYPES
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
-from realm import CURRENT_REALM
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, getPlayer, getColor, color_tables, replaceMacros, calculate_version
 from DriftkingsStats import getVehicleInfoData, calculateXvmScale, calculateXTE
 
 DEF_RESULTS_LEN = 16
 RANKED_OFFSET = 4
+SUPPORTED_BONUS_TYPES = {ARENA_BONUS_TYPE.REGULAR}
+EXCLUDED_BONUS_TYPES = {
+    ARENA_BONUS_TYPE.EVENT_BATTLES,
+    ARENA_BONUS_TYPE.EPIC_RANDOM,
+    ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING,
+    ARENA_BONUS_TYPE.EPIC_BATTLE
+}
 DataIDs = namedtuple('DataIDs', ('damageDealt', 'spotted', 'kills', 'defAndCap_vehWOStun', 'defAndCap_vehWStun'))
 data_ids = DataIDs(3, 11, 12, 14, 17)
 
 
-class ConfigInterface(DriftkingsConfigInterface):
+def safe_execution(default_return=None, log_exception=True):
+    """Decorator for safe method execution with exception handling"""
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                if log_exception:
+                    logError(config.ID, "Error in {}: {}", func.__name__, e)
+                    traceback.print_exc()
+                return default_return
+        return wrapper
+    return decorator
 
+
+class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.6.5 %(file_compile_date)s'
+        self.version = '2.7.0 %(file_compile_date)s'  # Updated version
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -35,10 +57,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'format': 'WN8: <font color=\'{c:wn8}\'>{wn8}</font> EFF: <font color=\'{c:eff}\'>{eff}</font> DIFF: <font color=\'{c:diff}\'>{diff}</font>',
             'textStyle': {'font': '$TitleFont', 'color': '#FFFFFF', 'size': 16, 'align': 'center'},
             'textLock': False,
-            # flash
             'position': {'x': 125, 'y': 36},
             'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
-            # Battle result
             'battleResultsWindow': True,
             'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
         }
@@ -53,10 +73,10 @@ class ConfigInterface(DriftkingsConfigInterface):
                 '\n WN8:\'{wn8}\', Color:\'{c:wn8}\''
                 '\nXWN8:\'{xwn8}\', Color:\'{c:x}\''
                 '\nEFF:\'{eff}\', Color:\'{c:eff}\''
-                '\nXEFF:\'{xeff}}\', Color:\'{c:x}\''
-                '\nDIFF:\'{diff}}\', Color:\'{c:dif}\''
-                '\nDMG:\'{dmg}}\', Color:\'{c:dmg}\''
-                '\nXTE:\'{xte}\',   Color:\'{c:x}\''
+                '\nXEFF:\'{xeff}\', Color:\'{c:x}\''
+                '\nDIFF:\'{diff}\', Color:\'{c:diff}\''
+                '\nDMG:\'{dmg}\', Color:\'{c:dmg}\''
+                '\nXTE:\'{xte}\', Color:\'{c:x}\''
             ),
             'UI_setting_battleResultsWindow_text': 'Battle Results Window',
             'UI_setting_battleResultsWindow_tooltip': 'Enable battle Results Window.',
@@ -67,12 +87,14 @@ class ConfigInterface(DriftkingsConfigInterface):
                 '\nXWN8:\'{xwn8}\', Color: \'{c:x}\''
                 '\nEFF:\'{eff}\', Color: \'{c:eff}\''
                 '\nXEFF:\'{xeff}\', Color: \'{c:x}\''
-                '\nDIFF:\'{diff}\', Color: \'{c:dif}\''
+                '\nDIFF:\'{diff}\', Color: \'{c:diff}\''
                 '\nDMG:\'{dmg}\', Color: \'{c:dmg}\''
                 '\nXTE:\'{xte}\', Color: \'{c:x}\''
+                '\n{mapName} - Map name'
+                '\n{battleType} - Battle type'
             ),
-            'UI_setting_colorRatting_text': 'Choose Color Ratting',
-            'UI_setting_colorRatting_tooltip': '',
+            'UI_setting_colorRatting_text': 'Choose Color Rating',
+            'UI_setting_colorRatting_tooltip': 'Select the color scheme for ratings',
             'UI_setting_colorRatting_NoobMeter': 'NoobMeter',
             'UI_setting_colorRatting_XVM': 'XVM',
             'UI_setting_colorRatting_WotLabs': 'WotLabs'
@@ -129,11 +151,13 @@ class Flash(object):
             return
         config.onApplySettings({'textPosition': data})
 
+    @safe_execution()
     def addText(self, text):
         text_style = config.data['textStyle']
-        text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
+        formatted_text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (
+        text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
         self.createBox()
-        g_guiFlash.updateComponent(self.ID, {'text': text})
+        g_guiFlash.updateComponent(self.ID, {'text': formatted_text})
 
 
 g_flash = None
@@ -142,6 +166,7 @@ statistic_mod = Analytics(config.ID, config.version)
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
+
     g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
@@ -173,69 +198,80 @@ class EfficiencyCalculator(object):
         self.vInfoOK = False
 
     def stopBattle(self):
+        """Reset calculator state after battle"""
         self.__init__()
 
+    @safe_execution()
     def registerVInfoData(self, veh_cd):
+        """Register vehicle data for calculations"""
+        if not veh_cd:
+            return
         self.vehCD = veh_cd
         v_info_data = getVehicleInfoData(veh_cd)
         for item in ('wn8expDamage', 'wn8expSpot', 'wn8expFrag', 'wn8expDef', 'wn8expWinRate'):
             self.expectedValues[item] = v_info_data.get(item, None)
         self.vInfoOK = None not in self.expectedValues.values()
 
+    @safe_execution(default_return=(0, 0, 0, 0, 0, 0, 0))
     def calc(self, damage, spotted, frags, defence, capture, isWin=False):
+        """Calculate all efficiency metrics"""
         if not self.vInfoOK:
             return 0, 0, 0, 0, 0, 0, 0
-        try:
-            rDAMAGE, rSPOT, rFRAG, rDEF, rWIN = self.calculate_ratios(damage, spotted, frags, defence, isWin)
-            WN8, XWN8 = self.calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN)
-            DIFF = int(damage - self.expectedValues['wn8expDamage'])
-            DMG = int(damage)
-            EFF, XEFF = self.calculate_efficiency(damage, frags, spotted, capture, defence)
-            XTE = self.calculate_XTE(damage, frags)
+        damage = int(damage or 0)
+        spotted = int(spotted or 0)
+        frags = int(frags or 0)
+        defence = int(defence or 0)
+        capture = int(capture or 0)
+        rDAMAGE, rSPOT, rFRAG, rDEF, rWIN = self.calculate_ratios(damage, spotted, frags, defence, isWin)
+        WN8, XWN8 = self.calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN)
+        DIFF = int(damage - self.expectedValues['wn8expDamage'])
+        DMG = damage
+        EFF, XEFF = self.calculate_efficiency(damage, frags, spotted, capture, defence)
+        XTE = self.calculate_XTE(damage, frags)
+        return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
 
-            return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
-        except (ZeroDivisionError, ValueError) as err:
-            logError(config.ID, "Error calculating metrics:", err)
-            return 0, 0, 0, 0, 0, 0, 0
-
+    @safe_execution(default_return=(0, 0, 0, 0, 0))
     def calculate_ratios(self, damage, spotted, frags, defence, isWin):
-        try:
-            rDAMAGE = float(damage) / float(self.expectedValues['wn8expDamage'])
-            rSPOT = float(spotted) / float(self.expectedValues['wn8expSpot'])
-            rFRAG = float(frags) / float(self.expectedValues['wn8expFrag'])
-            rDEF = float(defence) / float(self.expectedValues['wn8expDef'])
-            rWIN = (100.0 if isWin else 0) / float(self.expectedValues['wn8expWinRate'])
-            return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
-        except Exception as err:
-            logError(config.ID, "Error calculating ratios:", err)
-            return 0, 0, 0, 0, 0
+        rDAMAGE = float(damage) / max(1.0, float(self.expectedValues['wn8expDamage']))
+        rSPOT = float(spotted) / max(1.0, float(self.expectedValues['wn8expSpot']))
+        rFRAG = float(frags) / max(1.0, float(self.expectedValues['wn8expFrag']))
+        rDEF = float(defence) / max(1.0, float(self.expectedValues['wn8expDef']))
+        rWIN = (100.0 if isWin else 0) / max(1.0, float(self.expectedValues['wn8expWinRate']))
+        return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
 
     @staticmethod
+    @safe_execution(default_return=(0, 0))
     def calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN):
         rWINc = max(0.0, (rWIN - 0.71) / (1 - 0.71))
         rDAMAGEc = max(0.0, (rDAMAGE - 0.22) / (1 - 0.22))
         rSPOTc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rSPOT - 0.38) / (1 - 0.38))))
         rFRAGc = max(0.0, min(rDAMAGEc + 0.2, max(0.0, (rFRAG - 0.12) / (1 - 0.12))))
         rDEFc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rDEF - 0.10) / (1 - 0.10))))
+        # WN8 formula
         WN8 = int(980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * min(1.8, rWINc))
         XWN8 = calculateXvmScale('xwn8', WN8)
         return WN8, XWN8
 
+    @safe_execution(default_return=(0, 0))
     def calculate_efficiency(self, damage, frags, spotted, capture, defence):
+        damage = int(damage or 0)
+        frags = int(frags or 0)
+        spotted = int(spotted or 0)
+        capture = int(capture or 0)
+        defence = int(defence or 0)
         EFF = int(max(0, int(damage * (10.0 / (self.avgTier + 2)) * (0.23 + 2 * self.avgTier / 100.0) + frags * 250 + spotted * 150 + math.log(capture + 1, 1.732) * 150 + defence * 150)))
         XEFF = calculateXvmScale('xeff', EFF)
         return EFF, XEFF
 
+    @safe_execution(default_return=0)
     def calculate_XTE(self, damage, frags):
+        """Calculate XTE (Tank Efficiency) rating"""
         return calculateXTE(self.vehCD, damage, frags) if self.vehCD is not None else 0
 
 
 class BattleEfficiency(object):
     def __init__(self):
-        self._stats = {
-            'frags': 0, 'damage': 0, 'spotted': 0, 'defence': 0, 'capture': 0,
-            'wn8': 0, 'xwn8': 0, 'eff': 0, 'xeff': 0, 'xte': 0, 'diff': 0, 'dmg': 0
-        }
+        self._stats = {'frags': 0, 'damage': 0, 'spotted': 0, 'defence': 0, 'capture': 0, 'wn8': 0, 'xwn8': 0, 'eff': 0, 'xeff': 0, 'xte': 0, 'diff': 0, 'dmg': 0}
         self._colors = {key: '#FFFFFF' for key in ['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'diff', 'dmg']}
 
     def stopBattle(self):
@@ -249,42 +285,43 @@ class BattleEfficiency(object):
     def colors(self):
         return self._colors
 
+    @safe_execution()
     def update_stat(self, key, value):
         if key in self._stats and value is not None:
             try:
                 self._stats[key] = float(value)
-            except (ValueError, ZeroDivisionError):
+            except (ValueError, TypeError):
                 self._stats[key] = 0
 
     @staticmethod
+    @safe_execution(default_return='#FFFFFF')
     def read_colors(rating_color, rating_value):
         colors = color_tables[config.data['colorRatting']].get('colors')
         return getColor(colors, rating_color, rating_value)
 
+    @safe_execution()
     def startBattle(self):
-        if not config.data['enabled']:
+        if not config.data['enabled'] or g_flash is None:
             return
-        try:
-            result = g_calculator.calc(self._stats['damage'], self._stats['spotted'], self._stats['frags'], self._stats['defence'], self._stats['capture'])
-            self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
-            self.update_format_string()
-        except Exception as err:
-            logError(config.ID, "Error in startBattle: {}", err)
+        result = g_calculator.calc(self._stats['damage'], self._stats['spotted'], self._stats['frags'], self._stats['defence'], self._stats['capture'])
+        self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
+        self.update_format_string()
 
+    @safe_execution()
     def update_format_string(self):
+        player = getPlayer()
+        if not player or not player.arena or player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+            return
         macro_data = {}
         for key, value in self._stats.iteritems():
-            macro_data['{%s}' % key] = str(value)
+            macro_data['{%s}' % key] = str(int(value) if isinstance(value, float) else value)
             if key in self._colors:
                 color_key = 'x' + key if key.startswith('x') else key
                 color_value = self.read_colors(color_key, value)
                 macro_data['{c:%s}' % key] = str(color_value) if color_value is not None else ''
-        if not getPlayer().arena:
-            return
-        if getPlayer().arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
-            return
         format_text = replaceMacros(config.data['format'], macro_data)
-        g_flash.addText(set_text(format_text))
+        if g_flash:
+            g_flash.addText(format_text)
 
 
 g_battleEfficiency = BattleEfficiency()
@@ -309,6 +346,8 @@ def new_suspend(func, self):
     self.resume()
 
 
+@override(BattleRibbonsPanel, '_BattleRibbonsPanel__addRibbon')
+@safe_execution()
 def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs):
     func(self, ribbonID, ribbonType, leftFieldStr, **kwargs)
     if not config.data['enabled']:
@@ -346,8 +385,9 @@ def new_destroyGUI(func, *args):
 
 
 @override(BattleResultsWindow, 'as_setDataS')
+@safe_execution()
 def new_setDataS(func, self, data):
-    if config.data['enabled'] and not config.data['battleResultsWindow']:
+    if not config.data['enabled'] or not config.data['battleResultsWindow']:
         return func(self, data)
 
     def _normalizeString(s):
@@ -360,10 +400,10 @@ def new_setDataS(func, self, data):
 
     try:
         common = data['common']
-        if common['bonusType'] in (ARENA_BONUS_TYPE.EVENT_BATTLES, ARENA_BONUS_TYPE.EPIC_RANDOM, ARENA_BONUS_TYPE.EPIC_RANDOM_TRAINING, ARENA_BONUS_TYPE.EPIC_BATTLE):
+        # Skip unsupported battle types
+        if common['bonusType'] in EXCLUDED_BONUS_TYPES:
             return func(self, data)
-        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
-
+        offset = RANKED_OFFSET if common['bonusType'] == ARENA_BONUS_TYPE.RANKED else 0
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
         stunStatus = 'vehWStun' if (len(statValues) > (DEF_RESULTS_LEN + offset)) else 'vehWOStun'
@@ -371,12 +411,10 @@ def new_setDataS(func, self, data):
         arenaStr = _splitArenaStr(common['arenaStr'])
         mapName = arenaStr[0].strip()
         battleType = arenaStr[1].strip()
-
         for playerDict in teamDict:
             if playerDict['isSelf']:
                 g_calculator.registerVInfoData(playerDict['vehicleCD'])
                 break
-
         dataIDs = get_data_ids(offset)
         damageDealt = _normalizeString(statValues[dataIDs.damageDealt]['value'])
         spotted = _normalizeString(statValues[dataIDs.spotted]['value'])
@@ -386,9 +424,8 @@ def new_setDataS(func, self, data):
         defAndCap = _normalizeString(statValues[getattr(dataIDs, defAndCap_key)]['value']).split('/')
         capture = defAndCap[0]
         defence = defAndCap[1]
-
         result = g_calculator.calc(int(damageDealt), int(spotted), int(kills), int(defence), int(capture), isWin)
-        wn8, xwn8, eff, xeff, xte, dmg, _ = result
+        wn8, xwn8, eff, xeff, xte, dmg, diff = result
         macro_data = {
             '{mapName}': mapName,
             '{battleType}': battleType,
@@ -398,27 +435,20 @@ def new_setDataS(func, self, data):
             '{xeff}': str(xeff),
             '{xte}': str(xte),
             '{dmg}': str(dmg),
+            '{diff}': str(diff),
             '{c:wn8}': g_battleEfficiency.read_colors('wn8', wn8),
             '{c:xwn8}': g_battleEfficiency.read_colors('x', xwn8),
             '{c:eff}': g_battleEfficiency.read_colors('eff', eff),
             '{c:xeff}': g_battleEfficiency.read_colors('x', xeff),
             '{c:xte}': g_battleEfficiency.read_colors('x', xte),
-            '{c:dmg}': g_battleEfficiency.read_colors('tdb', dmg)
+            '{c:dmg}': g_battleEfficiency.read_colors('tdb', dmg),
+            '{c:diff}': g_battleEfficiency.read_colors('diff', diff)
         }
-
-        msg = config.data['battleResultsFormat']
-        msg = replaceMacros(msg, macro_data)
-
+        msg = replaceMacros(config.data['battleResultsFormat'], macro_data)
         data['common']['arenaStr'] = msg
-    except Exception:
+    except Exception as e:
+        logError(config.ID, "Error in battle results: {}", e)
         traceback.print_exc()
         data['common']['arenaStr'] += '  <font color="#FE0E00">Efficiency Error!</font>'
-
     g_calculator.stopBattle()
     return func(self, data)
-
-
-if CURRENT_REALM == 'RU':
-    override(BattleRibbonsPanel, '_addRibbon', new_addRibbon)
-else:
-    override(BattleRibbonsPanel, '_BattleRibbonsPanel__addRibbon', new_addRibbon)

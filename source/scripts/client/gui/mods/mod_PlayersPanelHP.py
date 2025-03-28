@@ -128,19 +128,16 @@ class PlayersPanelController(DriftkingsConfigInterface):
             panelSide = 'left' if player.team == team else 'right'
             if vehicleID not in self.__hpCache:
                 return
-            currentHP = self.__hpCache[vehicleID]['current']
-            maxHP = self.__hpCache[vehicleID]['max']
+            currentHP = max(0, self.__hpCache[vehicleID]['current'])
+            maxHP = max(1, self.__hpCache[vehicleID]['max'])
             for fieldName, fieldData in sorted(self.data['textFields'].items()):
                 if panelSide not in fieldData:
                     continue
-                barWidth = currentHP
+                barWidth = 0
                 if 'width' in fieldData[panelSide]:
-                    if maxHP > 0:
-                        barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
-                    else:
-                        barWidth = 0
+                    barWidth = int(math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP)))
                 text = ''
-                if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth):
+                if self.displayed and (not fieldData.get('hideIfDead', False) or currentHP > 0):
                     try:
                         text = fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}
                     except (KeyError, TypeError):

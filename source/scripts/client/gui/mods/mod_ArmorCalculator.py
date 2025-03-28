@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from collections import defaultdict, namedtuple
 
 from AvatarInputHandler.gun_marker_ctrl import _CrosshairShotResults
@@ -33,7 +33,7 @@ AS_SWF = 'ArmorCalculator.swf'
 MinMax = namedtuple("MinMax", ("min", "max"))
 DEFAULT_RANDOMIZATION = MinMax(1.0 - DEFAULT_PIERCING_POWER_RANDOMIZATION, 1.0 + DEFAULT_PIERCING_POWER_RANDOMIZATION)
 UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None, None, None, False, False)
-FULL_PP_RANGE = (SHELL_MECHANICS_TYPE.HIGH_EXPLOSIVE, SHELL_MECHANICS_TYPE.HOLLOW_CHARGE)
+FULL_PP_RANGE = (SHELL_TYPES.HIGH_EXPLOSIVE, SHELL_TYPES.HOLLOW_CHARGE)
 GUNNER_ARMORER = 'gunner_armorer'
 LOADER_AMMUNITION_IMPROVE = 'loader_ammunitionImprove'
 
@@ -276,7 +276,7 @@ class _ShotResult(object):
     RANDOMIZATION = component_constants.DEFAULT_PIERCING_POWER_RANDOMIZATION
     UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None, None, None, False, False)
     _JET_FACTOR = 0.001
-    FULL_PP_RANGE = (SHELL_MECHANICS_TYPE.HIGH_EXPLOSIVE, SHELL_MECHANICS_TYPE.HOLLOW_CHARGE)
+    FULL_PP_RANGE = (SHELL_TYPES.HIGH_EXPLOSIVE, SHELL_TYPES.HOLLOW_CHARGE)
 
     @staticmethod
     def isAlly(entity, player, onAlly):

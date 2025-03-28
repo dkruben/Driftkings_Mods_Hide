@@ -22,7 +22,6 @@ from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import 
 from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
-from gui.Scaleform.daapi.view.meta.TankCarouselMeta import TankCarouselMeta
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
@@ -32,8 +31,8 @@ from gui.impl.gen import R
 from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.personality import ServicesLocator
-from gui.shared.tooltips import formatters, getUnlockPrice
-from helpers import dependency, i18n, getLanguageCode
+from gui.shared.tooltips import getUnlockPrice
+from helpers import dependency, i18n
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
@@ -238,7 +237,7 @@ def buttonCounterS(base, *args, **kwargs):
 # hide shared chat button
 @override(LobbyEntry, '_LobbyEntry__handleLazyChannelCtlInited')
 def new__handleLazyChannelCtlInited(func, self, event):
-    if config.data['enabled'] and config.data['showGeneralChatButton']:
+    if config.data['enabled'] and not config.data['showGeneralChatButton']:
         ctx = event.ctx
         controller = ctx.get('controller')
         if controller is None:
@@ -253,7 +252,7 @@ def new__handleLazyChannelCtlInited(func, self, event):
 # hide premium vehicle on the background in the hangar
 @override(HeroTank, 'recreateVehicle')
 def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDAMAGED, _callback=None, outfit=None):
-    if config.data.get('enabled', True) and config.data.get('showPromoPremVehicle', True):
+    if config.data.get('enabled', True) and not config.data.get('showPromoPremVehicle', True):
         return
     func(self, typeDescriptor, state, _callback, outfit)
 
@@ -303,7 +302,7 @@ def new__updateBattleCount(func, self):
 # hide display widget with daily quests
 @override(BaseQuestsWidgetComponent, '_shouldHide')
 def new__shouldHide(func, self):
-    if not config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
         return True
     return func(self)
 
@@ -447,7 +446,7 @@ def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
 # hide lootBoxes widget in tank carousel in hangar
 @overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')
 def new__getIsActive(func, state):
-    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
         return False
     return func(state)
 

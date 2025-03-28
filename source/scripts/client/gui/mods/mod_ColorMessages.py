@@ -19,36 +19,50 @@ class ConfigInterface(DriftkingsConfigInterface):
             'color_header': '98FB98',
             'color_xp': '98FB98',
             'color_credits': '98FB98',
+            'color_damage': 'FF5C5C',
+            'color_free_xp': 'FFD700',
+            'color_medals': 'D4AF37'
+
         }
         self.i18n = {
             'UI_description': self.ID,
             'UI_setting_color_header_tooltip_header_text': 'Header color:',
             'UI_setting_color_xp_tooltip_header_text': 'XP color:',
             'UI_setting_color_credits_tooltip_header_text': 'Credits color:',
+            'UI_setting_color_damage_tooltip_header_text': 'Damage color:',
+            'UI_setting_color_free_xp_tooltip_header_text': 'Free XP color:',
+            'UI_setting_color_medals_tooltip_header_text': 'Medals color:',
             'UI_setting_color_header_text': 'Current <font color=\'#%(color)s\'>header</font> color: #%(color)s',
             'UI_setting_color_xp_text': 'Current <font color=\'#%(color)s\'>xp</font> color: #%(color)s',
             'UI_setting_color_credits_text': 'Current <font color=\'#%(color)s\'>credits</font> color: #%(color)s',
+            'UI_setting_color_damage_text': 'Current <font color=\'#%(color)s\'>damage</font> color: #%(color)s',
+            'UI_setting_color_free_xp_text': 'Current <font color=\'#%(color)s\'>free xp</font> color: #%(color)s',
+            'UI_setting_color_medals_text': 'Current <font color=\'#%(color)s\'>medals</font> color: #%(color)s',
             'UI_setting_color_header_tooltip': 'This color will be applied to all battle result headers.\n\n%(example)s',
             'UI_setting_color_xp_tooltip': 'This color will be applied to all battle result xp values.\n\n%(example)s',
             'UI_setting_color_credits_tooltip': 'This color will be applied to all battle result credits values.\n\n%(example)s',
+            'UI_setting_color_damage_tooltip': 'This color will be applied to all battle result damage values.\n\n%(example)s',
+            'UI_setting_color_free_xp_tooltip': 'This color will be applied to all battle result free xp values.\n\n%(example)s',
+            'UI_setting_color_medals_tooltip': 'This color will be applied to all battle result medals.\n\n%(example)s',
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         controls = []
-        for ix in ('header', 'xp', 'credits'):
+        for ix in ('header', 'xp', 'credits', 'damage', 'free_xp', 'medals'):
             color_control = self.tb.createControl('color_%s' % ix, self.tb.types.ColorChoice)
             color_control['text'] = self.tb.getLabel('color_%s_tooltip_header' % ix)
-            # noinspection SpellCheckingInspection
             ctx = defaultdict(str)
             ctx.update({'color_messages_only': (ix,), 'arenaName': i18n.makeString('#arenas:02_malinovka/name'), 'vehicleNames': i18n.makeString('#germany_vehicles:Maus_short'), 'xp': backport.getIntegralFormat(1234), 'credits': 56789})
             color_control['tooltip'] %= {'color': self.data['color_%s' % ix], 'example': g_settings.msgTemplates.format('battleVictoryResult', ctx)['message']}
             controls.append(color_control)
+        column1 = controls[:3]
+        column2 = controls[3:]
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
-            'column1': controls,
-            'column2': []
+            'column1': column1,
+            'column2': column2
         }
 
 
@@ -56,13 +70,12 @@ g_config = ConfigInterface()
 analytics = Analytics(g_config.ID, g_config.version)
 
 
-# noinspection SpellCheckingInspection
 @override(_MessageTemplate, 'format')
-def new_format(func, self, ctx, *a, **k):
+def new__format(func, self, ctx, *a, **k):
     orig_message = self.source['message']
     try:
         only = (ctx or {}).pop('color_messages_only', ())
-        for color_type, mask in (('header', 'E9E2BF'), ('xp', 'C8C8B5'), ('credits', 'C5CFCF')):
+        for color_type, mask in (('header', 'E9E2BF'), ('xp', 'C8C8B5'), ('credits', 'C5CFCF'), ('damage', 'FF8080'), ('free_xp', 'FFC363'), ('medals', 'FFD700'),):
             if only and color_type not in only:
                 continue
             self.source['message'] = self.source['message'].replace(mask, g_config.data['color_%s' % color_type])

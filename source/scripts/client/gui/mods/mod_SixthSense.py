@@ -111,8 +111,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('helpMessage'),
                 self.tb.createControl('spottedText', self.tb.types.TextInput, 300),
                 self.tb.createSlider('delay', 1.0, 10.0, 1.0, '{{value}} sec'),
-                self.tb.createControl('userSound'),
-                self.tb.createControl('sixthSenseSound', self.tb.types.TextInput, 150),
+                self.tb.createControl('userSound')
             ]
         }
 
