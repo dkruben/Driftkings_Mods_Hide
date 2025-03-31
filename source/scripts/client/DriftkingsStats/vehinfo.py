@@ -7,11 +7,11 @@ import ResMgr
 import nations
 from items import vehicles
 
-from DriftkingsCore import callback, logError, getRegion
+from DriftkingsCore import callback, logError
 from DriftkingsStats import __CORE_NAME__
 
 
-_FLAVOR = 'wg' if getRegion() != 'RU' else 'lesta'
+_FLAVOR = 'wg'
 HOST = 'https://static.modxvm.com/'
 URL_WN8 = HOST + 'wn8-data-exp/json/%s/wn8exp.json' % _FLAVOR
 URL_XTE = HOST + 'xte.json'
