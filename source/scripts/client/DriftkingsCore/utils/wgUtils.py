@@ -6,6 +6,7 @@ from functools import partial
 
 import BigWorld
 import ResMgr
+import Math
 from BattleReplay import isPlaying, isLoading
 from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
@@ -295,90 +296,52 @@ def getPercent(param_a, param_b):
 
 class SquarePosition(object):
     """
-    Class for calculating grid positions on the battle map.
-    The map is divided into a 10x10 grid with letters for rows (K-A)
-    and numbers for columns (1-0).
+    Class to determine the grid square position of the player on the map.
     """
-    SQUARES_NAME = 'KJHGFEDCBA'
-    LINES_NAME = '1234567890'
-
-    def __init__(self):
-        """Initialize the SquarePosition object."""
-        self.player = None
-        self.lastPosition = None
-        self.lastSquare = None
+    def __call__(self):
+        """
+        Calculate the current square position of the player.
+        str: The grid square position in format 'A1', 'B2', etc.
+        """
+        return self.getSquarePosition()
 
     @staticmethod
     def clamp(val, v_max):
         """
-        Clamp a value between MIN_CLAMP_VALUE and v_max.
-        val (float): Value to clamp.
-        v_max (float): Maximum allowed value.
-        float: Clamped value.
+        Clamp a value between a minimum and maximum.
+        val: The value to clamp
+        v_max: The maximum allowed value
+        float: The clamped value
         """
-        return max(0.1, min(val, v_max))
+        v_min = 0.1
+        return v_min if (val < v_min) else v_max if (val > v_max) else val
 
-    @classmethod
-    def pos2name(cls, pos):
+    @staticmethod
+    def pos2name(pos):
         """
-        Convert grid position to square name.
-        pos (tuple): Grid position as (x, y) coordinates.
-        str: Square name (e.g., 'A1', 'B2').
+        Convert a position tuple to a grid square name.
+        pos: Tuple containing (x, y) position
+        str: Grid square name (e.g. 'A1', 'B2')
         """
-        x, y = int(pos[0]), int(pos[1])
-        x_idx = max(0, min(x - 1, len(cls.LINES_NAME) - 1))
-        y_idx = max(0, min(y - 1, len(cls.SQUARES_NAME) - 1))
-        return "%s%s" % (cls.SQUARES_NAME[y_idx], cls.LINES_NAME[x_idx])
+        squareName = 'KJHGFEDCBA'
+        linesName = '1234567890'
+        return '{}{}'.format(squareName[int(pos[1]) - 1], linesName[int(pos[0]) - 1])
 
     def getSquarePosition(self):
         """
-        Get the current player's square position on the map.
-        str: Square position (e.g., 'A1', 'B2') or last known position if player not found.
+        Get the current square position of the player.
+        str: The grid square position
         """
-        self.player = getPlayer()
-        arena = getattr(self.player, 'arena', None)
-        playerVehicleID = getattr(self.player, 'playerVehicleID', None)
-        if playerVehicleID is None or playerVehicleID not in BigWorld.entities:
-            logError('DriftkingsCore', "Player vehicle not found")
-            return self.lastSquare
-        position = BigWorld.entities[playerVehicleID].position
-        if self.lastSquare and position == self.lastPosition:
-            return self.lastSquare
-        self.lastPosition = position
-        position_rect = (position[0], position[2])
-        bounding_box = arena.arenaType.boundingBox
-        bottom_left, upper_right = bounding_box
-        space_size = (upper_right[0] - bottom_left[0], upper_right[1] - bottom_left[1])
-        rel_pos = (position_rect[0] - bottom_left[0], position_rect[1] - bottom_left[1])
-        rel_pos = (self.clamp(rel_pos[0], space_size[0]), self.clamp(rel_pos[1], space_size[1]))
-        grid_pos = (int(rel_pos[0] / space_size[0] * 10 + 0.5), int(rel_pos[1] / space_size[1] * 10 + 0.5))
-        try:
-            self.lastSquare = self.pos2name(grid_pos)
-        except Exception as e:
-            logError('DriftkingsCore', "Error in pos2name: %s, grid_pos=%s", str(e), str(grid_pos))
-            self.lastSquare = self.lastSquare or "A1"
-        return self.lastSquare
-
-    def getSquareForPosition(self, position):
-        """
-        Get the square name for a specific position on the map.
-        position (tuple): 3D position coordinates.
-        str: Square position (e.g., 'A1', 'B2').
-        """
-        self.player = getPlayer()
-        arena = getattr(self.player, 'arena', None)
-        position_rect = (position[0], position[2])
-        bounding_box = arena.arenaType.boundingBox
-        bottom_left, upper_right = bounding_box
-        space_size = (upper_right[0] - bottom_left[0], upper_right[1] - bottom_left[1])
-        rel_pos = (position_rect[0] - bottom_left[0], position_rect[1] - bottom_left[1])
-        rel_pos = (self.clamp(rel_pos[0], space_size[0]), self.clamp(rel_pos[1], space_size[1]))
-        grid_pos = (int(rel_pos[0] / space_size[0] * 10 + 0.5), int(rel_pos[1] / space_size[1] * 10 + 0.5))
-        try:
-            return self.pos2name(grid_pos)
-        except Exception as e:
-            logError('DriftkingsCore', "Error in getSquareForPosition: %s, grid_pos=%s", str(e), str(grid_pos))
-            return "A1"
+        player = getPlayer()
+        boundingBox = player.arena.arenaType.boundingBox
+        position = BigWorld.entities[player.playerVehicleID].position
+        positionRect = Math.Vector2(position[0], position[2])
+        bottomLeft, upperRight = boundingBox
+        spaceSize = upperRight - bottomLeft
+        relPos = positionRect - bottomLeft
+        relPos[0] = self.clamp(relPos[0], spaceSize[0])
+        relPos[1] = self.clamp(relPos[1], spaceSize[1])
+        return self.pos2name((math.ceil(relPos[0] / spaceSize[0] * 10), math.ceil(relPos[1] / spaceSize[1] * 10)))
 
 
 square_position = SquarePosition()
