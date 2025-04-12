@@ -13,31 +13,42 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getT
 
 
 MACROS = [
-    '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}', '{{vehicle_system_name}}', '{{icon_system_name}}',
-    '{{gun_name}}', '{{gun_caliber}}', '{{max_ammo}}', '{{gun_reload}}', '{{gun_dpm}}', '{{gun_reload_equip}}', '{{gun_dpm_equip}}',
-    '{{gun_clip}}', '{{gun_clip_reload}}', '{{gun_burst}}', '{{gun_burst_reload}}', '{{gun_aiming_time}}', '{{gun_accuracy}}',
-    '{{shell_name_1}}', '{{shell_name_2}}', '{{shell_name_3}}', '{{shell_damage_1}}', '{{shell_damage_2}}', '{{shell_damage_3}}',
-    '{{shell_power_1}}', '{{shell_power_2}}', '{{shell_power_3}}', '{{shell_type_1}}', '{{shell_type_2}}', '{{shell_type_3}}',
-    '{{shell_speed_1}}', '{{shell_speed_2}}', '{{shell_speed_3}}', '{{shell_distance_1}}', '{{shell_distance_2}}',
-    '{{shell_distance_3}}', '{{angle_pitch_up}}', '{{angle_pitch_down}}', '{{angle_pitch_left}}', '{{angle_pitch_right}}', '{{vehicle_max_health}}',
-    '{{armor_hull_front}}', '{{armor_hull_side}}', '{{armor_hull_back}}', '{{turret_name}}', '{{armor_turret_front}}', '{{armor_turret_side}}',
-    '{{armor_turret_back}}', '{{vehicle_weight}}', '{{chassis_max_weight}}', '{{engine_name}}', '{{engine_power}}', '{{engine_power_density}}',
-    '{{speed_forward}}', '{{speed_backward}}', '{{hull_speed_turn}}', '{{turret_speed_turn}}', '{{invis_stand}}', '{{invis_stand_shot}}',
-    '{{invis_move}}', '{{invis_move_shot}}', '{{vision_radius}}', '{{radio_name}}', '{{radio_radius}}', '{{nation}}', '{{level}}', '{{rlevel}}',
-    '{{pl_vehicle_weight}}', '{{pl_gun_reload}}', '{{pl_gun_reload_equip}}', '{{pl_gun_dpm}}', '{{pl_gun_dpm_equip}}', '{{pl_vision_radius}}',
+    '{{nick_name}}', '{{marks_on_gun}}', '{{vehicle_type}}', '{{vehicle_name}}',
+    '{{vehicle_system_name}}', '{{icon_system_name}}', '{{gun_name}}', '{{gun_caliber}}',
+    '{{max_ammo}}', '{{gun_reload}}', '{{gun_dpm}}', '{{gun_reload_equip}}',
+    '{{gun_dpm_equip}}', '{{gun_clip}}', '{{gun_clip_reload}}', '{{gun_burst}}',
+    '{{gun_burst_reload}}', '{{gun_aiming_time}}', '{{gun_accuracy}}',
+    '{{shell_name_1}}', '{{shell_name_2}}', '{{shell_name_3}}',
+    '{{shell_damage_1}}', '{{shell_damage_2}}', '{{shell_damage_3}}',
+    '{{shell_power_1}}', '{{shell_power_2}}', '{{shell_power_3}}',
+    '{{shell_type_1}}', '{{shell_type_2}}', '{{shell_type_3}}',
+    '{{shell_speed_1}}', '{{shell_speed_2}}', '{{shell_speed_3}}',
+    '{{shell_distance_1}}', '{{shell_distance_2}}', '{{shell_distance_3}}',
+    '{{angle_pitch_up}}', '{{angle_pitch_down}}', '{{angle_pitch_left}}',
+    '{{angle_pitch_right}}', '{{vehicle_max_health}}', '{{armor_hull_front}}',
+    '{{armor_hull_side}}', '{{armor_hull_back}}', '{{turret_name}}',
+    '{{armor_turret_front}}', '{{armor_turret_side}}', '{{armor_turret_back}}',
+    '{{vehicle_weight}}', '{{chassis_max_weight}}', '{{engine_name}}',
+    '{{engine_power}}', '{{engine_power_density}}', '{{speed_forward}}',
+    '{{speed_backward}}', '{{hull_speed_turn}}', '{{turret_speed_turn}}',
+    '{{invis_stand}}', '{{invis_stand_shot}}', '{{invis_move}}',
+    '{{invis_move_shot}}', '{{vision_radius}}', '{{radio_name}}',
+    '{{radio_radius}}', '{{nation}}', '{{level}}', '{{rlevel}}',
+    '{{pl_vehicle_weight}}', '{{pl_gun_reload}}', '{{pl_gun_reload_equip}}',
+    '{{pl_gun_dpm}}', '{{pl_gun_dpm_equip}}', '{{pl_vision_radius}}',
     '{{pl_gun_aiming_time}}'
 ]
-
 COMPARE_MACROS = ['compareDelim', 'compareColor']
 
 
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.0 %(file_compile_date)s'
+        self.version = '1.8.0 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
+            'enabled': True,
             'aliveOnly': False,
             'altKey': self.defaultKeys['altKey'],
             'compareValues': {
@@ -46,23 +57,15 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'moreThan': {'color': '#FF0000', 'delim': '&gt;'}
             },
             'delay': 5,
-            'enabled': True,
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'><b>Tank: <font color=\'#C3C3C3\'>{{vehicle_name}}</font></font>\nReload: <font color=\'#14AFF1\'>{{gun_reload_equip}} sec.</font>\nView Range: <font color=\'#96CC29\'>{{vision_radius}} mt.</font>',
+            'format': "<font face='$FieldFont' size='16' color='#FFFFFF'><b>Tank: <font color='#C3C3C3'>{{vehicle_name}}</font></font>\nReload: <font color='#14AFF1'>{{gun_reload_equip}} sec.</font>\nView Range: <font color='#96CC29'>{{vision_radius}} mt.</font>",
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 700.0, 'y': 300.0, 'alignX': 'center', 'alignY': 'center'},
-            'panelSize': {'height': 70.0, 'width': 150.0},
-            'textShadow': {
-                'alpha': 0.8,
-                'angle': 90,
-                'blurX': 5,
-                'blurY': 5,
-                'color': '#000000',
-                'distance': 1,
-                'enabled': True,
-                'quality': 2,
-                'strength': 2
-            },
+            'panelSize': {'height': 88.0, 'width': 150.0},
+            'textShadow': {'alpha': 0.8, 'angle': 90, 'blurX': 5, 'blurY': 5, 'color': '#000000', 'distance': 1, 'enabled': True, 'quality': 2, 'strength': 2},
+            'backgroundEnabled': True,
+            'backgroundColor': '000000',
+            'backgroundAlpha': 0.5,
             'version': calculate_version(self.version)
         }
         self.i18n = {
@@ -71,7 +74,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_textLock_text': 'Disable text mouse dragging',
             'UI_setting_textLock_tooltip': 'This setting controls whether you are able to move text window with a mouse or not.',
             'UI_setting_showFor_text': 'Show For',
-            'UI_setting_showFor_tooltip': ' • <b>Ally</b> - Just show to \'ALLY\' players tanks.\n • <b>Enemy</b> - Just show to \'ENEMY\' players tanks.\n • <b>All</b> - Show to \'ALL\' players tanks.',
+            'UI_setting_showFor_tooltip': " \xe2\x80\xa2 <b>Ally</b> - Just show to 'ALLY' players tanks.\n \xe2\x80\xa2 <b>Enemy</b> - Just show to 'ENEMY' players tanks.\n \xe2\x80\xa2 <b>All</b> - Show to 'ALL' players tanks.",
             'UI_showFor_ally': 'Ally',
             'UI_showFor_enemy': 'Enemy',
             'UI_showFor_all': 'All',
@@ -82,16 +85,28 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Hide panel delay (in seconds)',
             'UI_delay_format': ' sec.',
-            "armor_piercing": 'AP',
-            "high_explosive": 'HE',
-            "armor_piercing_cr": 'APCR',
-            "armor_piercing_he": 'HESH',
-            "hollow_charge": 'HEAT'
+            'UI_setting_backgroundEnabled_text': 'Enable Background',
+            'UI_setting_backgroundEnabled_tooltip': 'Show a background behind the text',
+            'UI_setting_backgroundColor_text': "<font color='#%(color)s'>Current color: #%(color)s</font>",
+            'UI_setting_backgroundColor_tooltip': 'Color of the background panel',
+            'UI_setting_backgroundColorCheck_text': 'Choose background Color:',
+            'UI_setting_backgroundAlpha_text': 'Background Opacity',
+            'UI_setting_backgroundAlpha_tooltip': 'Opacity of the background panel (0-1)',
+            'armor_piercing': 'AP',
+            'high_explosive': 'HE',
+            'armor_piercing_cr': 'APCR',
+            'armor_piercing_he': 'HESH',
+            'hollow_charge': 'HEAT'
         }
+
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         xFormat = self.i18n['UI_delay_format']
+        colorLabel = self.tb.createControl('backgroundColor', self.tb.types.ColorChoice)
+        colorLabel['text'] = self.tb.getLabel('backgroundColorCheck')
+        colorLabel['tooltip'] %= {'color': self.data['backgroundColor']}
+
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
@@ -102,16 +117,20 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createHotKey('altKey'),
                 self.tb.createOptions('showFor', [self.i18n['UI_showFor_' + x] for x in ('all', 'ally', 'enemy')])
             ],
-            'column2': []
+            'column2': [
+                self.tb.createControl('backgroundEnabled'),
+                self.tb.createControl('backgroundColor', self.tb.types.ColorChoice),
+                self.tb.createSlider('backgroundAlpha', 0.1, 1.0, 0.1, '{{value}}')
+            ]
         }
 
     def l10n(self, text):
         if text is None:
-            return None
+            return
         if text in self.i18n:
             text = self.i18n[text]
             if text is None:
-                return None
+                return
         while True:
             localizedMacroStart = text.find('{{l10n:')
             if localizedMacroStart == -1:
@@ -127,9 +146,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                 try:
                     macro = macro.format(*parts)
                 except StandardError:
-                    print 'macro:  {}'.format(macro)
-                    print 'params: {}'.format(parts)
-                    print traceback.format_exc()
+                    print('macro:  {}'.format(macro))
+                    print('params: {}'.format(parts))
+                    traceback.print_exc()
             text = text[:localizedMacroStart] + macro + text[localizedMacroEnd + 2:]
         return self.i18n.get(text, text)
 
@@ -137,25 +156,57 @@ class ConfigInterface(DriftkingsConfigInterface):
 class Flash(object):
     def __init__(self, ID):
         self.ID = ID
-        self._panelSize = config.data['panelSize']
+        self._textBoxCreated = False
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
 
+    @staticmethod
+    def convertColor(color):
+        if color.startswith('#'):
+            return '0x' + color[1:]
+        return '0x' + color
+
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock']))
+        textPosition = config.data['textPosition']
+        width, height = config.data['panelSize']['width'], config.data['panelSize']['height']
+        g_guiFlash.updateComponent(self.ID, {
+            'x': textPosition['x'],
+            'y': textPosition['y'],
+            'alignX': textPosition['alignX'],
+            'alignY': textPosition['alignY'],
+            'width': width,
+            'height': height,
+            'drag': not config.data['textLock'],
+            'border': not config.data['textLock']
+        })
 
     def setup(self):
-        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], width=self._panelSize['width'], height=self._panelSize['height'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
-        self.createBox()
+        textPosition = config.data['textPosition']
+        width, height = config.data['panelSize']['width'], config.data['panelSize']['height']
+        try:
+            g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.PANEL, {'x': textPosition['x'], 'y': textPosition['y'], 'alignX': textPosition['alignX'], 'alignY': textPosition['alignY'], 'width': width, 'height': height, 'drag': not config.data['textLock'], 'border': not config.data['textLock'], 'limit': True})
+            self.createBox()
+            self._textBoxCreated = True
+        except Exception as e:
+            logError(self.ID, 'Failed to setup Flash component. {}', e)
 
     def createBox(self):
-        shadow = config.data['textShadow']
-        if shadow.get('enabled', False):
-            g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
+        bg_color = self.convertColor(config.data['backgroundColor'])
+        textPosition = config.data['textPosition']
+        width, height = config.data['panelSize']['width'], config.data['panelSize']['height']
+        try:
+            g_guiFlash.createComponent(self.ID + '.text', COMPONENT_TYPE.LABEL, {'x': textPosition['x'], 'y': textPosition['y'], 'width': width - 10, 'height': height - 10, 'alignX': config.data['textPosition'].get('alignX', 'center'),  'alignY': config.data['textPosition'].get('alignY', 'center'), 'background': config.data['backgroundEnabled'], 'color': bg_color, 'alpha': config.data['backgroundAlpha'], 'visible': True})
+            shadow = config.data['textShadow']
+            if shadow.get('enabled', False):
+                g_guiFlash.updateComponent(self.ID + '.text', {'shadow': shadow})
+        except Exception as e:
+            logError(self.ID, 'Failed to create text box. {}', e)
 
     def destroy(self):
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        g_guiFlash.deleteComponent(self.ID + '.text')
         g_guiFlash.deleteComponent(self.ID)
+        self._textBoxCreated = False
 
     def __updatePosition(self, alias, data):
         if alias != self.ID:
@@ -164,8 +215,10 @@ class Flash(object):
 
     def addText(self, text):
         format_text = str(text)
-        self.createBox()
-        g_guiFlash.updateComponent(self.ID, {'text': format_text})
+        if not self._textBoxCreated:
+            self.createBox()
+            self._textBoxCreated = True
+        g_guiFlash.updateComponent(self.ID + '.text', {'text': format_text})
 
     def setVisible(self, status):
         data = {'visible': status}
@@ -187,9 +240,8 @@ except Exception as err:
     logError(config.ID, 'Un-expected error. {}', err)
     traceback.print_exc()
 
-
 class DataConstants(object):
-    __slots__ = ('_playerVehicle', '_vehicle', '_typeDescriptor', '_gunShots',)
+    __slots__ = ('_playerVehicle', '_vehicle', '_typeDescriptor', '_gunShots')
 
     def __init__(self):
         self._playerVehicle = None
@@ -200,11 +252,11 @@ class DataConstants(object):
     def init(self, vehicle, playerVehicle=None):
         if not vehicle and not playerVehicle:
             logError(config.ID, 'Both vehicle and playerVehicle are None in init method.')
-            return
-        self._playerVehicle = playerVehicle
-        self._vehicle = vehicle
-        self._typeDescriptor = vehicle.typeDescriptor if vehicle is not None else self._playerVehicle.typeDescriptor
-        self._gunShots = self._typeDescriptor.gun.shots if self._typeDescriptor else None
+        else:
+            self._playerVehicle = playerVehicle
+            self._vehicle = vehicle
+            self._typeDescriptor = vehicle.typeDescriptor if vehicle is not None else self._playerVehicle.typeDescriptor
+            self._gunShots = self._typeDescriptor.gun.shots if self._typeDescriptor else None
 
     def reset(self):
         self._playerVehicle = None
@@ -223,13 +275,13 @@ class DataConstants(object):
             tags = self._typeDescriptor.type.tags
             if 'lightTank' in tags:
                 return 'LT'
-            elif 'mediumTank' in tags:
+            if 'mediumTank' in tags:
                 return 'MT'
-            elif 'heavyTank' in tags:
+            if 'heavyTank' in tags:
                 return 'HT'
-            elif 'AT-SPG' in tags:
+            if 'AT-SPG' in tags:
                 return 'TD'
-            elif 'SPG' in tags:
+            if 'SPG' in tags:
                 return 'SPG'
         return None
 
@@ -254,55 +306,57 @@ class DataConstants(object):
     def gun_dpm(self):
         if not self._typeDescriptor:
             return None
-        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-        shell = self._typeDescriptor.gun.shots[0].shell
-        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-        return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
+        else:
+            time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
+            shell = self._typeDescriptor.gun.shots[0].shell
+            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+            return '%d' % round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0)
 
     def gun_reload_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         if not self._typeDescriptor:
             return None
         else:
             reload_orig = self._typeDescriptor.gun.reloadTime
-            rammer = 0.9 if (self._typeDescriptor.gun.clip[0] == 1) and (eq1 == 1) else 1
-            if (eq2 == 1) and (eq3 == 1) and (eq4 == 1):
+            rammer = 0.9 if self._typeDescriptor.gun.clip[0] == 1 and eq1 == 1 else 1
+            if eq2 == 1 and eq3 == 1 and eq4 == 1:
                 crew = 1.32
-            elif (eq2 == 1) and (eq3 == 1) and (eq4 == 0):
+            elif eq2 == 1 and eq3 == 1 and eq4 == 0:
                 crew = 1.27
-            elif (eq2 == 1) and (eq3 == 0) and (eq4 == 1):
+            elif eq2 == 1 and eq3 == 0 and eq4 == 1:
                 crew = 1.21
-            elif (eq2 == 1) and (eq3 == 0) and (eq4 == 0):
+            elif eq2 == 1 and eq3 == 0 and eq4 == 0:
                 crew = 1.16
-            elif (eq2 == 0) and (eq3 == 1) and (eq4 == 1):
+            elif eq2 == 0 and eq3 == 1 and eq4 == 1:
                 crew = 1.27
-            elif (eq2 == 0) and (eq3 == 1) and (eq4 == 0):
+            elif eq2 == 0 and eq3 == 1 and eq4 == 0:
                 crew = 1.21
-            elif (eq2 == 0) and (eq3 == 0) and (eq4 == 1):
+            elif eq2 == 0 and eq3 == 0 and eq4 == 1:
                 crew = 1.16
             else:
-                crew = 1.10
-            return '%.2f' % (round((reload_orig / (0.57 + 0.43 * crew)) * rammer, 2))
+                crew = 1.1
+            return '%.2f' % round(reload_orig / (0.57 + 0.43 * crew) * rammer, 2)
 
     def gun_dpm_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         if not self._typeDescriptor:
             return None
-        reload_equip = float(self.gun_reload_equip(eq1, eq2, eq3, eq4))
-        time = reload_equip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-        shell = self._typeDescriptor.gun.shots[0].shell
-        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-        return '%d' % (round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0))
+        else:
+            reload_equip = float(self.gun_reload_equip(eq1, eq2, eq3, eq4))
+            time = reload_equip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
+            shell = self._typeDescriptor.gun.shots[0].shell
+            damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+            return '%d' % round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0)
 
     def gun_clip(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.gun.clip[0])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.gun.clip[0]
 
     def gun_clip_reload(self):
-        return None if not self._typeDescriptor else '%.1f' % (self._typeDescriptor.gun.clip[1])
+        return None if not self._typeDescriptor else '%.1f' % self._typeDescriptor.gun.clip[1]
 
     def gun_burst(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.gun.burst[0])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.gun.burst[0]
 
     def gun_burst_reload(self):
-        return None if not self._typeDescriptor else '%.1f' % (self._typeDescriptor.gun.burst[1])
+        return None if not self._typeDescriptor else '%.1f' % self._typeDescriptor.gun.burst[1]
 
     def gun_aiming_time(self):
         return None if not self._typeDescriptor else '%.1f' % self._typeDescriptor.gun.aimingTime
@@ -311,138 +365,133 @@ class DataConstants(object):
         return None if not self._typeDescriptor else '%.2f' % round(self._typeDescriptor.gun.shotDispersionAngle * 100, 2)
 
     def shell_name_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%s' % self._gunShots[0].shell.userString
+        return None if not self._gunShots or len(self._gunShots) < 1 else '%s' % self._gunShots[0].shell.userString
 
     def shell_name_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%s' % self._gunShots[1].shell.userString
+        return None if not self._gunShots or len(self._gunShots) < 2 else '%s' % self._gunShots[1].shell.userString
 
     def shell_name_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%s' % self._gunShots[2].shell.userString
+        return None if not self._gunShots or len(self._gunShots) < 3 else '%s' % self._gunShots[2].shell.userString
 
     def shell_damage_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].shell.armorDamage[0] if hasattr(self._gunShots[0].shell, 'armorDamage') else self._gunShots[0].shell.damage[0])
+        return None if not self._gunShots or len(self._gunShots) < 1 else '%d' % (self._gunShots[0].shell.armorDamage[0] if hasattr(self._gunShots[0].shell, 'armorDamage') else self._gunShots[0].shell.damage[0])
 
     def shell_damage_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].shell.armorDamage[0] if hasattr(self._gunShots[1].shell, 'armorDamage') else self._gunShots[1].shell.damage[0])
+        return None if not self._gunShots or len(self._gunShots) < 2 else '%d' % (self._gunShots[1].shell.armorDamage[0] if hasattr(self._gunShots[1].shell, 'armorDamage') else self._gunShots[1].shell.damage[0])
 
     def shell_damage_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].shell.armorDamage[0] if hasattr(self._gunShots[2].shell, 'armorDamage') else self._gunShots[2].shell.damage[0])
+        return None if not self._gunShots or len(self._gunShots) < 3 else '%d' % (self._gunShots[2].shell.armorDamage[0] if hasattr(self._gunShots[2].shell, 'armorDamage') else self._gunShots[2].shell.damage[0])
 
     def shell_power_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % (self._gunShots[0].piercingPower[0])
+        return None if not self._gunShots or len(self._gunShots) < 1 else '%d' % self._gunShots[0].piercingPower[0]
 
     def shell_power_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % (self._gunShots[1].piercingPower[0])
+        return None if not self._gunShots or len(self._gunShots) < 2 else '%d' % self._gunShots[1].piercingPower[0]
 
     def shell_power_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % (self._gunShots[2].piercingPower[0])
+        return None if not self._gunShots or len(self._gunShots) < 3 else '%d' % self._gunShots[2].piercingPower[0]
 
     def shell_type_1(self):
-        if not self._gunShots or len(self._gunShots) < 1:
-            return None
-        return config.l10n(self._gunShots[0].shell.kind.lower())
+        return None if not self._gunShots or len(self._gunShots) < 1 else config.l10n(self._gunShots[0].shell.kind.lower())
 
     def shell_type_2(self):
-        if not self._gunShots or len(self._gunShots) < 2:
-            return None
-        return config.l10n(self._gunShots[1].shell.kind.lower())
+        return None if not self._gunShots or len(self._gunShots) < 2 else config.l10n(self._gunShots[1].shell.kind.lower())
 
     def shell_type_3(self):
-        if not self._gunShots or len(self._gunShots) < 3:
-            return None
-        return config.l10n(self._gunShots[2].shell.kind.lower())
+        return None if not self._gunShots or len(self._gunShots) < 3 else config.l10n(self._gunShots[2].shell.kind.lower())
 
     def shell_speed_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % round(self._gunShots[0].speed * 1.25)
+        return None if not self._gunShots or len(self._gunShots) < 1 else '%d' % round(self._gunShots[0].speed * 1.25)
 
     def shell_speed_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % round(self._gunShots[1].speed * 1.25)
+        return None if not self._gunShots or len(self._gunShots) < 2 else '%d' % round(self._gunShots[1].speed * 1.25)
 
     def shell_speed_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % round(self._gunShots[2].speed * 1.25)
+        return None if not self._gunShots or len(self._gunShots) < 3 else '%d' % round(self._gunShots[2].speed * 1.25)
 
     def shell_distance_1(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 1) else '%d' % self._gunShots[0].maxDistance
+        return None if not self._gunShots or len(self._gunShots) < 1 else '%d' % self._gunShots[0].maxDistance
 
     def shell_distance_2(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 2) else '%d' % self._gunShots[1].maxDistance
+        return None if not self._gunShots or len(self._gunShots) < 2 else '%d' % self._gunShots[1].maxDistance
 
     def shell_distance_3(self):
-        return None if (not self._gunShots) or (len(self._gunShots) < 3) else '%d' % self._gunShots[2].maxDistance
+        return None if not self._gunShots or len(self._gunShots) < 3 else '%d' % self._gunShots[2].maxDistance
 
     def stun_radius(self):
-        if (self._gunShots is not None) and (self._gunShots[0].shell.stun is not None):
+        if self._gunShots is not None and self._gunShots[0].shell.stun is not None:
             return '%d' % self._gunShots[0].shell.stun.stunRadius
         else:
-            return None
+            return
 
     def stun_duration_min(self):
-        if (self._gunShots is not None) and (self._gunShots[0].shell.stun is not None):
-            time = (round(self._gunShots[0].shell.stun.stunRadius * self._gunShots[0].shell.stun.guaranteedStunDuration, 1))
+        if self._gunShots is not None and self._gunShots[0].shell.stun is not None:
+            time = round(self._gunShots[0].shell.stun.stunRadius * self._gunShots[0].shell.stun.guaranteedStunDuration, 1)
             return '%.1f' % time
         else:
-            return None
+            return
 
     def stun_duration_max(self):
-        if (self._gunShots is not None) and (self._gunShots[0].shell.stun is not None):
+        if self._gunShots is not None and self._gunShots[0].shell.stun is not None:
             return '%d' % self._gunShots[0].shell.stun.stunDuration
         else:
-            return None
+            return
 
     def angle_pitch_up(self):
-        return None if not self._typeDescriptor else '%d' % (degrees(-self._typeDescriptor.gun.pitchLimits['absolute'][0]))
+        return None if not self._typeDescriptor else '%d' % degrees(-self._typeDescriptor.gun.pitchLimits['absolute'][0])
 
     def angle_pitch_down(self):
-        return None if not self._typeDescriptor else '%d' % (degrees(-self._typeDescriptor.gun.pitchLimits['absolute'][1]))
+        return None if not self._typeDescriptor else '%d' % degrees(-self._typeDescriptor.gun.pitchLimits['absolute'][1])
 
     def angle_pitch_left(self):
-        return None if (not self._typeDescriptor) or (not self._typeDescriptor.gun.turretYawLimits) else '%d' % (degrees(-self._typeDescriptor.gun.turretYawLimits[0]))
+        return None if not self._typeDescriptor or not self._typeDescriptor.gun.turretYawLimits else '%d' % degrees(-self._typeDescriptor.gun.turretYawLimits[0])
 
     def angle_pitch_right(self):
-        return None if (not self._typeDescriptor) or (not self._typeDescriptor.gun.turretYawLimits) else '%d' % (degrees(self._typeDescriptor.gun.turretYawLimits[1]))
+        return None if not self._typeDescriptor or not self._typeDescriptor.gun.turretYawLimits else '%d' % degrees(self._typeDescriptor.gun.turretYawLimits[1])
 
     def vehicle_max_health(self):
         return None if not self._typeDescriptor else '%d' % self._typeDescriptor.maxHealth
 
     def armor_hull_front(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.hull.primaryArmor[0])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.hull.primaryArmor[0]
 
     def armor_hull_side(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.hull.primaryArmor[1])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.hull.primaryArmor[1]
 
     def armor_hull_back(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.hull.primaryArmor[2])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.hull.primaryArmor[2]
 
     def turret_name(self):
         return None if not self._typeDescriptor else '%s' % self._typeDescriptor.turret.shortUserString
 
     def armor_turret_front(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.turret.primaryArmor[0])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[0]
 
     def armor_turret_side(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.turret.primaryArmor[1])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[1]
 
     def armor_turret_back(self):
-        return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.turret.primaryArmor[2])
+        return None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[2]
 
     def vehicle_weight(self):
-        return '%.1f' % (round(self._typeDescriptor.physics['weight'] / 1000, 1)) if self._typeDescriptor else None
+        return '%.1f' % round(self._typeDescriptor.physics['weight'] / 1000, 1) if self._typeDescriptor else None
 
     def chassis_max_weight(self):
-        return None if not self._typeDescriptor else '%.1f' % (round(self._typeDescriptor.chassis.maxLoad / 1000, 1))
+        return None if not self._typeDescriptor else '%.1f' % round(self._typeDescriptor.chassis.maxLoad / 1000, 1)
 
     def engine_name(self):
         return None if not self._typeDescriptor else '%s' % self._typeDescriptor.engine.shortUserString
 
     def engine_power(self):
-        return None if not self._typeDescriptor else '%d' % (round(self._typeDescriptor.engine.power / 735.49875, 0))
+        return None if not self._typeDescriptor else '%d' % round(self._typeDescriptor.engine.power / 735.49875, 0)
 
     def engine_power_density(self):
         if not self._typeDescriptor:
             return None
-        power = self._typeDescriptor.engine.power / 735.49875
-        weight = self._typeDescriptor.physics['weight'] / 1000
-        return '%.2f' % (round(power / weight, 2))
+        else:
+            power = self._typeDescriptor.engine.power / 735.49875
+            weight = self._typeDescriptor.physics['weight'] / 1000
+            return '%.2f' % round(power / weight, 2)
 
     def speed_forward(self):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.physics['speedLimits'][0] * 3.6)
@@ -451,10 +500,10 @@ class DataConstants(object):
         return None if not self._typeDescriptor else '%d' % (self._typeDescriptor.physics['speedLimits'][1] * 3.6)
 
     def hull_speed_turn(self):
-        return None if not self._typeDescriptor else '%.2f' % (degrees(self._typeDescriptor.chassis.rotationSpeed))
+        return None if not self._typeDescriptor else '%.2f' % degrees(self._typeDescriptor.chassis.rotationSpeed)
 
     def turret_speed_turn(self):
-        return None if not self._typeDescriptor else '%.2f' % (degrees(self._typeDescriptor.turret.rotationSpeed))
+        return None if not self._typeDescriptor else '%.2f' % degrees(self._typeDescriptor.turret.rotationSpeed)
 
     def invis_stand(self):
         return None if not self._typeDescriptor else '%.1f' % (self._typeDescriptor.type.invisibility[1] * 57)
@@ -522,10 +571,12 @@ class CompareMacros(object):
     def __init__(self):
         self.value1 = None
         self.value2 = None
+        return
 
     def reset(self):
         self.value1 = None
         self.value2 = None
+        return
 
     def set_data(self, value1, value2):
         try:
@@ -560,6 +611,7 @@ class InfoPanel(DataConstants):
         self.visible = False
         self.timer = None
         super(InfoPanel, self).__init__()
+        return
 
     def reset(self):
         super(InfoPanel, self).reset()
@@ -568,36 +620,40 @@ class InfoPanel(DataConstants):
         self.visible = False
         self.timer = None
         g_macros.reset()
-
+        return
 
     @staticmethod
     def isConditions(entity):
         player = getPlayer()
         if entity is None or not hasattr(entity, 'publicInfo'):
             return False
-        enabled_for = config.data['showFor']
-        player_team = player.team
-        team = getattr(entity.publicInfo, 'team', 0)
-        is_ally = (team > 0) and (team == player_team)
-        if enabled_for == 0:
-            show_for = True
-        elif enabled_for == 1:
-            show_for = is_ally
-        elif enabled_for == 2:
-            show_for = not is_ally
         else:
-            show_for = False
-        is_alive = entity.isAlive() if config.data['aliveOnly'] else True
-        return show_for and is_alive
+            enabled_for = config.data['showFor']
+            player_team = player.team
+            team = getattr(entity.publicInfo, 'team', 0)
+            is_ally = team > 0 and team == player_team
+            if enabled_for == 0:
+                show_for = True
+            elif enabled_for == 1:
+                show_for = is_ally
+            elif enabled_for == 2:
+                show_for = not is_ally
+            else:
+                show_for = False
+            is_alive = entity.isAlive() if config.data['aliveOnly'] else True
+            return show_for and is_alive
 
     def get_func_response(self, func_name):
         if not hasattr(self, func_name):
-            return None
-        func = getattr(self, func_name, None)
-        if callable(func):
-            result = func()
-            return str(result) if result is not None else ''
-        return None
+            return
+        else:
+            func = getattr(self, func_name, None)
+            if callable(func):
+                result = func()
+                if result is not None:
+                    return str(result)
+                return ''
+            return
 
     def set_texts_formatted(self):
         if not config.data['enabled']:
@@ -643,39 +699,42 @@ class InfoPanel(DataConstants):
             else:
                 self.hide()
 
-
     def hide(self):
         if self.timer is not None and self.timer.isStarted():
             self.timer.stop()
             self.timer = None
         g_flash.setVisible(False)
+        return
 
     def onUpdateBlur(self):
-        if self.hotKeyDown or (getPlayer().getVehicleAttached() is None):
+        if self.hotKeyDown or getPlayer().getVehicleAttached() is None:
             return
-        if self.timer is not None and self.timer.isStarted():
-            self.timer.stop()
-            self.timer = None
-        self.timer = TimeInterval(config.data['delay'], self, 'hide')
-        self.timer.start()
+        else:
+            if self.timer is not None and self.timer.isStarted():
+                self.timer.stop()
+                self.timer = None
+            self.timer = TimeInterval(config.data['delay'], self, 'hide')
+            self.timer.start()
+            return
 
     def onUpdateVehicle(self, vehicle):
         player = getPlayer()
         if self.hotKeyDown:
             return
-        player_vehicle = player.getVehicleAttached()
-        if player_vehicle is not None:
-            g_flash.setVisible(True)
-            if hasattr(vehicle, 'typeDescriptor'):
-                self.init(vehicle, player_vehicle)
-            elif hasattr(player_vehicle, 'typeDescriptor'):
-                self.init(None, player_vehicle)
-            g_flash.addText(self.set_texts_formatted())
+        else:
+            player_vehicle = player.getVehicleAttached()
+            if player_vehicle is not None:
+                g_flash.setVisible(True)
+                if hasattr(vehicle, 'typeDescriptor'):
+                    self.init(vehicle, player_vehicle)
+                elif hasattr(player_vehicle, 'typeDescriptor'):
+                    self.init(None, player_vehicle)
+                g_flash.addText(self.set_texts_formatted())
+            return
 
 
 g_macros = CompareMacros()
 g_mod = InfoPanel()
-
 
 @override(PlayerAvatar, 'targetBlur')
 def new__targetBlur(func, self, prevEntity):
@@ -695,7 +754,7 @@ def new_targetFocus(func, self, entity):
 @override(PlayerAvatar, 'handleKey')
 def new_handleKey(func, self, isDown, key, mods):
     func(self, isDown, key, mods)
-    if not config.data['enabled'] or (key != checkKeys(config.data['altKey'])) or MessengerEntry.g_instance.gui.isFocused():
+    if not config.data['enabled'] or key != checkKeys(config.data['altKey']) or MessengerEntry.g_instance.gui.isFocused():
         return
     g_mod.handleKey(isDown)
 

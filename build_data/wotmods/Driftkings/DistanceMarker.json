@@ -1,0 +1,8 @@
+﻿{
+    "enabled": true,
+    "ext": ".wotmod",
+    "files": {
+		"res/scripts/client/gui/mods/mod_DistanceMarker.pyc": "build/scripts/client/gui/mods/mod_DistanceMarker.pyc",
+		"res/gui/flash/DistanceMarkerFlash.swf": "res/flash/DistanceMarkerFlash.swf"
+    }
+}

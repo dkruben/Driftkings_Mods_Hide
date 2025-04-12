@@ -4,7 +4,6 @@ from functools import partial
 from random import choice
 
 import ResMgr
-import SoundGroups
 from PlayerEvents import g_playerEvents
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from frameworks.wulf import WindowLayer
@@ -14,9 +13,10 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
+from SoundGroups import g_instance
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, getPlayer, square_position, sendChatMessage, calculate_version
-from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, SixthSenseTimer, g_events
+from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, g_events
 
 AS_INJECTOR = 'SixthSenseInjector'
 AS_BATTLE = 'SixthSenseView'
@@ -44,22 +44,25 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.5.0 (%(file_compile_date)s)'
+        self.version = '1.6.5 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'defaultIcon': True,
+            'userIcon': 'mods/configs/Driftkings/' + self.ID + '/SixthSenseIcon.png',
             'lampShowTime': 10,
             'playTickSound': False,
             'userSound': True,
+            'defaultIconName': 0,
+            'sixthSenseSound': 'SixthSense_06',
+            'showTimer': True,
+            'showTimerGraphics': True,
+            'showTimerGraphicsColor': 'FFFFFF',
+            'showTimerGraphicsRadius': 45,
+            'iconSize': 180,
             'spottedMessage': True,
             'helpMessage': False,
-            'defaultIconName': 0,
-            'userIcon': 'mods/configs/Driftkings/' + self.ID + '/SixthSenseIcon.png',
             'spottedText': 'I\'m Spotted at %(pos)s!',
             'delay': 4,
-            'sixthSenseSound': 'SixthSense_06',
-            'customColors': False,
-            'detectedColor': 'daff8f'
         }
 
         self.i18n = {
@@ -76,6 +79,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_userSound_text': 'User Sound',
             'UI_setting_userSound_tooltip': 'Enable custom sound when spotted.',
             'UI_setting_infoSpottedMessage_text': 'Spotted Messages:',
+            'UI_setting_timerSettings_text': 'Timer Settings:',
             'UI_setting_spottedMessage_text': 'Spotted',
             'UI_setting_spottedMessage_tooltip': 'Enable spotted text in battle.',
             'UI_setting_spottedText_text': 'Text Format',
@@ -84,15 +88,22 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_helpMessage_tooltip': 'Send for chat (Help me) message automatically.',
             'UI_setting_delay_text': 'Delay',
             'UI_setting_delay_tooltip': 'Text message remains on screen for this amount of seconds before fading out.',
-            'UI_setting_customColors_text': 'Custom Colors',
-            'UI_setting_customColors_tooltip': 'Enable custom colors for detection messages.',
-            'UI_setting_detectedColor_text': 'Detection Color',
-            'UI_setting_detectedColor_tooltip': 'Color for detection timer text (HEX format).'
+            'UI_setting_showTimer_text': 'Show Timer',
+            'UI_setting_showTimer_tooltip': 'Show countdown timer when spotted.',
+            'UI_setting_showTimerGraphics_text': 'Show Timer Graphics.',
+            'UI_setting_showTimerGraphics_tooltip': 'Show graphical timer circle.',
+            'UI_setting_showTimerGraphicsColor_text': 'Graphics color.',
+            'UI_setting_showTimerGraphicsColor_tooltip': 'Color of the graphic circle.',
+            'UI_setting_showTimerGraphicsRadius_text': 'Radius of the graphic circle.',
+            'UI_setting_showTimerGraphicsRadius_tooltip': 'Size of the timer circle in pixels.',
+            'UI_setting_iconSize_text': 'Image size',
+            'UI_setting_iconSize_tooltip': 'In pixels (max 180)',
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
         infoSLabel = self.tb.createLabel('infoSpottedMessage')
+        infoTimerLabel = self.tb.createLabel('timerSettings')
 
         return {
             'modDisplayName': self.i18n['UI_description'],
@@ -102,8 +113,12 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createImageOptions('defaultIconName', self.sixthSenseIconsNamesList()),
                 self.tb.createControl('playTickSound'),
                 self.tb.createSlider('lampShowTime', 2.0, 15.0, 1.0, '{{value}} sec'),
-                self.tb.createControl('customColors'),
-                self.tb.createControl('detectedColor', self.tb.types.ColorChoice),
+                self.tb.createSlider('iconSize', 50, 180, 10, '{{value}} px'),
+                infoTimerLabel,
+                self.tb.createControl('showTimer'),
+                self.tb.createControl('showTimerGraphics'),
+                self.tb.createControl('showTimerGraphicsColor', self.tb.types.ColorChoice),
+                self.tb.createSlider('showTimerGraphicsRadius', 20, 100, 5, '{{value}} px'),
             ],
             'column2': [
                 infoSLabel,
@@ -160,14 +175,15 @@ class MessagesSpotted(object):
 g_messages = MessagesSpotted()
 
 
-class SixthSense(SixthSenseMeta, SixthSenseTimer):
+class SixthSense(SixthSenseMeta):
     def __init__(self):
         super(SixthSense, self).__init__(config.ID)
         self.radio_installed = False
+        self.__sounds = dict()
         self.__visible = False
         self.__message = None
         self.__radar = None
-        self.__last_detection_type = None
+        self.__soundID = None
         try:
             from constants import DIRECT_DETECTION_TYPE
             self.__radar = DIRECT_DETECTION_TYPE.STEALTH_RADAR
@@ -177,11 +193,21 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
     def getSettings(self):
         return config.data
 
+    def callWWISE(self, wwiseEventName):
+        if wwiseEventName in self.__sounds:
+            sound = self.__sounds[wwiseEventName]
+        else:
+            sound = g_instance.getSound2D(wwiseEventName)
+            self.__sounds[wwiseEventName] = sound
+        if sound is not None:
+            if sound.isPlaying:
+                sound.stop()
+            sound.play()
+
     def _populate(self):
         super(SixthSense, self)._populate()
         if config.data['playTickSound']:
-            self.setSound(self._arenaVisitor.type.getCountdownTimerSound())
-        # Register event handlers
+            self.__soundID = self._arenaVisitor.type.getCountdownTimerSound()
         g_playerEvents.onRoundFinished += self._onRoundFinished
         ctrl = self.sessionProvider.shared.vehicleState
         if ctrl is not None:
@@ -192,8 +218,11 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
 
     def _dispose(self):
         if self.sessionProvider.isReplayPlaying and self._getPyReloading():
-            self.hide()
-        self.destroyTimer()
+            self.as_hideS()
+        for sound in self.__sounds.values():
+            sound.stop()
+        self.__sounds.clear()
+        self.__soundID = None
         g_playerEvents.onRoundFinished -= self._onRoundFinished
         ctrl = self.sessionProvider.shared.vehicleState
         if ctrl is not None:
@@ -220,49 +249,32 @@ class SixthSense(SixthSenseMeta, SixthSenseTimer):
                 if hasattr(self, 'isComp7Battle') and self.isComp7Battle:
                     if detection_type == self.__radar:
                         time = 2
-                        if config.data['userSound']:
-                            SoundGroups.g_instance.playSound2D('enemy_sighted_for_team')
                     else:
                         time = 4
                         if config.data['userSound'] and not config.data['playTickSound']:
-                            SoundGroups.g_instance.playSound2D(config.data['sixthSenseSound'])
+                            g_instance.playSound2D(config.data['sixthSenseSound'])
                 else:
                     time = config.data['lampShowTime']
                     if config.data['userSound'] and not config.data['playTickSound']:
-                        SoundGroups.g_instance.playSound2D(config.data['sixthSenseSound'])
+                        g_instance.playSound2D(config.data['sixthSenseSound'])
                     if self.radio_installed:
-                        time -= 2
+                        time -= 1.5
                 self.__message = self.getNewRandomMessage()
-                self.show(time)
+                self.as_showS(time)
             else:
-                self.hide()
+                self.as_hideS()
         elif state in _STATES_TO_HIDE:
-            self.hide()
+            self.as_hideS()
 
     def _onRoundFinished(self, *_):
-        self.hide()
+        self.as_hideS()
 
-    def handleTimer(self, timeLeft):
-        if config.data['customColors']:
-            formatted_message = self.__message.replace('#daff8f', '#' + config.data['detectedColor'])
-            self.as_updateTimerS(formatted_message.format(timeLeft))
-        else:
-            self.as_updateTimerS(self.__message.format(timeLeft))
+    def getTimerString(self, timeLeft):
+        return self.__message.format(timeLeft)
 
-        if timeLeft == 0:
-            self.hide()
-
-    def show(self, seconds):
-        if not self.__visible:
-            self.as_showS()
-            self.__visible = True
-        self.timeTicking(seconds)
-
-    def hide(self):
-        if self.__visible:
-            self.cancelCallback()
-            self.as_hideS()
-            self.__visible = False
+    def playSound(self):
+        if self.__soundID is not None:
+            self.callWWISE(self.__soundID)
 
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))

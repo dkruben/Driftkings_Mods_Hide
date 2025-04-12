@@ -13,14 +13,13 @@ package driftkings.views.utils.tween
 	[Event(name = "motionLoop", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionFinish", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionChange", type = "driftkings.views.utils.tween.TweenEvent")]
-	
 	public class Tween extends EventDispatcher
 	{
 		private var _position:Number  = NaN;
 		public var prevTime:Number    = NaN;
 		public var prevPos:Number     = NaN;
 		public var isPlaying:Boolean  = false;
-		private var _fps:Number       = 30;
+		private var _fps:Number       = 25;
 		private var _time:Number      = 0;
 		public var begin:Number       = NaN;
 		public var change:Number      = NaN;
