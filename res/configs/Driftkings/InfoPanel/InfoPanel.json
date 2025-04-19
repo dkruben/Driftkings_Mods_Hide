@@ -1,6 +1,8 @@
 ﻿{
-    "aliveOnly": true,
-    "altKey": [["KEY_LALT", "KEY_RALT"]],
+    "aliveOnly": false,
+    "altKey": ["KEY_LALT"],
+    "backgroundAlpha": 0.8,
+    "backgroundEnabled": true,
     "compareValues": {
         "equal": {
             "color": "#FFFFFF",
@@ -17,18 +19,14 @@
     },
     "delay": 5,
     "enabled": true,
-    "format": "<font face='$FieldFont' size='16' color='#FFFFFF'><b>Tank: <font color='#C3C3C3'>{{vehicle_name}}</font></font>\nReload: <font color='#14AFF1'>{{gun_reload_equip}} sec.</font>\nView Range: <font color='#96CC29'>{{vision_radius}} mt.</font>",
-    "panelSize": {
-        "height": 70.0,
-        "width": 150.0
-    },
-    "showFor": 2,
+    "showFor": 0,
+    "templatePreset": 0,
     "textLock": false,
     "textPosition": {
         "alignX": "center",
         "alignY": "center",
-        "x": -742.0,
-        "y": 277.0
+        "x": -831.0,
+        "y": 243.0
     },
     "textShadow": {
         "alpha": 0.8,
@@ -41,5 +39,5 @@
         "quality": 2,
         "strength": 2
     },
-    "version": 175
+    "version": 180
 }

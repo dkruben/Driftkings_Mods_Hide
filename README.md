@@ -47,6 +47,9 @@
 
 ## Technologies
 * Python 2.7.18
+* ActionScript 3.0
+* FlashDeveloper 5.3.3
+* Animate CC 2024
 * PyCharm Community Edition 2024.1.3
 * AI Assistant (JetBrains)
 * MonicaIA (JetBrains)
