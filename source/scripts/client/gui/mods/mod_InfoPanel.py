@@ -726,7 +726,7 @@ class InfoPanel(DataConstants):
         if self.timer is not None and self.timer.isStarted():
             self.timer.stop()
             self.timer = None
-        g_flash.setVisible(False)
+            g_flash.setVisible(False)
 
     def onUpdateBlur(self):
         if self.hotKeyDown or getPlayer().getVehicleAttached() is None:

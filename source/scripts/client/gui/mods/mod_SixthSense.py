@@ -58,7 +58,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showTimerGraphics': True,
             'showTimerGraphicsColor': 'FFFFFF',
             'showTimerGraphicsRadius': 45,
-            'iconSize': 180,
+            'iconSize': 90,
             'spottedMessage': True,
             'helpMessage': False,
             'spottedText': 'I\'m Spotted at %(pos)s!',
