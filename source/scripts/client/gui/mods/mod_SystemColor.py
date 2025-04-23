@@ -7,10 +7,17 @@ from helpers.EdgeDetectColorController import g_instance, _OVERLAY_TARGET_INDEXE
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer
 
-isSquad = False
-isTeamKill = False
 
 class ConfigInterface(DriftkingsConfigInterface):
+    def __init__(self):
+        self.isSquad = False
+        self.isTeamKill = False
+        super(ConfigInterface, self).__init__()
+        override(FadingMessages, '_populate', self.new_populate)
+        override(g_instance, '_EdgeDetectColorController__changeColor', self.new__changeColor)
+        override(PlayerAvatar, 'onEnterWorld', self.new__onEnterWorld)
+        override(PlayerAvatar, 'targetFocus', self.new__targetFocus)
+
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.4.0 (%(file_compile_date)s)'
@@ -84,80 +91,70 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     @staticmethod
     def to_html_color(value):
-        return value[2:] if value.startswith('0x') else value
+        return '#{}'.format(value[2:]) if value[:2] == '0x' else value
 
     @staticmethod
-    def color_vector(value, default):
+    def color_vector(color, default):
         try:
-            value = '#{}{}'.format(value[-6:], 'FF')
-            return tuple(int(value[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+            color = '#{}{}'.format(color[-6:], 'FF')
+            return tuple(int(color[i:i + 2], 16) / 255.0 for i in (0, 2, 4, 6))
         except ValueError:
             return default
+
+    def new_populate(self, func, orig):
+        func(orig)
+        ally_dead = self.to_html_color(self.data.get('allyDead', None))
+        enemy_dead = self.to_html_color(self.data.get('enemyDead', None))
+        for k, v in orig._messages.iteritems():
+            if k[:6] == 'DEATH_':
+                message, colors = v
+                if 'red' in colors and enemy_dead is not None:
+                    orig._messages[k] = '<font color=\'#%s\'>%s</font>' % (enemy_dead, message), colors
+                elif 'green' in colors and ally_dead is not None:
+                    orig._messages[k] = '<font color=\'#%s\'>%s</font>' % (ally_dead, message), colors
+
+    def new__changeColor(self, base, diff):
+        if 'isColorBlind' not in diff:
+            return
+        cType = 'colorBlind' if diff['isColorBlind'] else 'common'
+        isHangar = isinstance(getPlayer(), PlayerAccount)
+        colors = g_instance._EdgeDetectColorController__colors[cType]
+        if self.isSquad:
+            friend = self.color_vector(config.data.get('squadmanAlive', 'FFB964'), colors['friend'])
+            enemy = self.color_vector(config.data.get('enemyAlive', '2C9AFF'), colors['enemy'])
+        elif self.isTeamKill:
+            currentColor = config.data.get('teamKillerAlive', '00EAFF')
+            friend = self.color_vector(currentColor, colors['friend'])
+            enemy = self.color_vector(currentColor, colors['enemy'])
+        else:
+            friend = self.color_vector(config.data.get('allyAlive', '96FF00'), colors['friend'])
+            enemy = self.color_vector(config.data.get('enemyAlive', '2C9AFF'), colors['enemy'])
+        colorsSet = (colors['hangar'] if isHangar else colors['self'], enemy, friend, colors['flag'])
+        i = 0
+        for c in colorsSet:
+            BigWorld.wgSetEdgeDetectEdgeColor(i, c)
+            i += 1
+        for target, idx in _OVERLAY_TARGET_INDEXES.iteritems():
+            BigWorld.wgSetEdgeDetectSolidColors(idx, *colors['overlaySolidColors'][target]['packed'])
+            BigWorld.wgSetEdgeDetectPatternColors(idx, *colors['overlayPatternColors'][target]['packed'])
+
+    def new__onEnterWorld(self, func, orig, prereqs):
+        func(orig, prereqs)
+        self.isSquad = False
+        self.isTeamKill = False
+        g_instance.updateColors()
+
+    def new__targetFocus(self, func, orig, entity):
+        func(orig, entity)
+        if hasattr(orig, '_PlayerAvatar__vehicles') and entity in orig._PlayerAvatar__vehicles:
+            prev_isSquad = self.isSquad
+            prev_isTeamKill = self.isTeamKill
+            getArenaDP = orig.guiSessionProvider.getArenaDP()
+            self.isSquad = getArenaDP.isSquadMan(vID=entity.id)
+            self.isTeamKill = getArenaDP.isTeamKiller(vID=entity.id)
+            if (prev_isSquad != self.isSquad) or (prev_isTeamKill != self.isTeamKill):
+                g_instance.updateColors()
 
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
-
-
-@override(FadingMessages, '_populate')
-def new_populate(func, self):
-    func(self)
-    ally_dead = config.to_html_color(config.data.get('allyDead', None))
-    enemy_dead = config.to_html_color(config.data.get('enemyDead', None))
-    for k, v in self._messages.iteritems():
-        if k[:6] == 'DEATH_':
-            message, colors = v
-            if 'red' in colors and ally_dead is not None:
-                self._messages[k] = '<font color=\'#{}\'>{}</font>'.format(enemy_dead, message), colors
-            elif 'green' in colors and enemy_dead is not None:
-                self._messages[k] = '<font color=\'#{}\'>{}</font>'.format(ally_dead,  message), colors
-
-
-@override(g_instance, '_EdgeDetectColorController__changeColor')
-def new__changeColor(func, diff):
-    if 'isColorBlind' not in diff:
-        return
-    cType = 'colorBlind' if diff['isColorBlind'] else 'common'
-    isHangar = isinstance(getPlayer(), PlayerAccount)
-    colors = g_instance._EdgeDetectColorController__colors[cType]
-
-    if isSquad:
-        friend = config.color_vector(config.data['squadManAlive'], colors['friend'])
-        enemy = config.color_vector(config.data['enemyAlive'], colors['enemy'])
-    elif isTeamKill:
-        current_color = config.data['teamKillerAlive']
-        friend = config.color_vector(current_color, colors['friend'])
-        enemy = config.color_vector(current_color, colors['enemy'])
-    else:
-        friend = config.color_vector(config.data['allyAlive'], colors['friend'])
-        enemy = config.color_vector(config.data['enemyAlive'], colors['enemy'])
-
-    colorsSet = (colors['hangar'] if isHangar else colors['self'], enemy, friend, colors['flag'])
-    i = 0
-    for c in colorsSet:
-        BigWorld.wgSetEdgeDetectEdgeColor(i, c)
-        i += 1
-
-    for target, idx in _OVERLAY_TARGET_INDEXES.iteritems():
-        BigWorld.wgSetEdgeDetectSolidColors(idx, *colors['overlaySolidColors'][target]['packed'])
-        BigWorld.wgSetEdgeDetectPatternColors(idx, *colors['overlayPatternColors'][target]['packed'])
-
-
-@override(PlayerAvatar, 'onEnterWorld')
-def new__onEnterWorld(func, self, prereqs):
-    func(self, prereqs)
-    g_instance.updateColors()
-
-
-@override(PlayerAvatar, 'targetFocus')
-def new__targetFocus(func, self, entity):
-    func(self, entity)
-    global isSquad, isTeamKill
-    if entity in self._PlayerAvatar__vehicles:
-        prev_isSquad = isSquad
-        getArenaDP = self.guiSessionProvider.getArenaDP()
-        isSquad = getArenaDP.isSquadMan(vID=entity.id)
-        prev_isTeamKill = isTeamKill
-        isTeamKill = getArenaDP.isTeamKiller(vID=entity.id)
-        if (prev_isSquad != isSquad) or (prev_isTeamKill != isTeamKill):
-            g_instance.updateColors()
