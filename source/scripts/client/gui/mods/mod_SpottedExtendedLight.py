@@ -23,7 +23,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.0 (%(file_compile_date)s)'
+        self.version = '1.8.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.data = {
             'enabled': True,
@@ -44,7 +44,6 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            # Sound settings
             'UI_setting_sound_text': 'Enable battle sounds',
             'UI_setting_sound_tooltip': 'Toggle sound notifications for spotted enemies and assist damage',
             'UI_setting_sound_default': 'Default: %s' % ('Enabled' if self.data['sound'] else 'Disabled'),
@@ -54,7 +53,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_soundAssist_text': 'Assist notification sound',
             'UI_setting_soundAssist_tooltip': 'Sound played when you get assist damage (radio, track or stun)',
             'UI_setting_soundAssist_default': 'Default: %s' % self.data['soundAssist'],
-            # Icon size settings
             'UI_setting_iconSizeX_text': 'Icon width',
             'UI_setting_iconSizeX_value': ' px',
             'UI_setting_iconSizeX_tooltip': 'Width of vehicle icons in notifications',
@@ -63,7 +61,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_iconSizeY_value': ' px',
             'UI_setting_iconSizeY_tooltip': 'Height of vehicle icons in notifications',
             'UI_setting_iconSizeY_default': 'Default: %s px' % self.data['iconSizeY'],
-            # Message color settings
             'UI_setting_messageColorSpottedCheck_text': 'Spotted message color',
             'UI_setting_messageColorSpotted_text': 'Current: <font color=\'#%(messageColorSpotted)s\'>■■■■</font>',
             'UI_setting_messageColorSpotted_tooltip': 'Color used for the "Spotted" notification text',
@@ -76,7 +73,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_messageColorAssistStunCheck_text': 'Stun assist message color',
             'UI_setting_messageColorAssistStun_text': 'Current: <font color=\'#%(messageColorAssistStun)s\'>■■■■</font>',
             'UI_setting_messageColorAssistStun_tooltip': 'Color used for the "Stun Hit Assist" notification text',
-            # Message format settings
             'UI_setting_Spotted_text': 'Spotted message format:',
             'UI_setting_Spotted_default': 'Default: %s' % self.data['Spotted'],
             'UI_setting_Spotted_description': 'Format of the message shown when you spot an enemy',
@@ -93,7 +89,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_AssistStun_default': 'Default: %s' % self.data['AssistStun'],
             'UI_setting_AssistStun_description': 'Format of the message shown for stun assist damage',
             'UI_setting_AssistStun_tooltip': 'Customize the message shown when you get stun assist damage',
-            # Macros help
             'UI_setting_macrosList': 'Available macros: {icons} - vehicle icons, {names} - player names, {vehicles} - vehicle names, {icons_names} - icons with names, {icons_vehicles} - icons with vehicle names, {full} - complete information, {damage} - damage amount',
             'UI_macros_help_title': 'Macro Usage Guide',
             'UI_macros_help': 'Use these macros in your message formats to customize notifications:\n• {icons} - Shows vehicle icons\n• {names} - Shows player names\n• {vehicles} - Shows vehicle names\n• {icons_names} - Shows icons with player names\n• {icons_vehicles} - Shows icons with vehicle names\n• {full} - Shows complete information\n• {damage} - Shows damage amount (for assist messages only)'

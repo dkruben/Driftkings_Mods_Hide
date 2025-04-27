@@ -61,8 +61,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' X'),
-                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' Y')
+                self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' px'),
+                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' py')
             ],
             'column2': []
         }

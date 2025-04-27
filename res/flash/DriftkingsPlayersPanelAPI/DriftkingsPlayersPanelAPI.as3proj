@@ -65,7 +65,6 @@
     <element path="swc\gui_battle-1.0-SNAPSHOT.swc" />
     <element path="swc\gui_lobby-1.0-SNAPSHOT.swc" />
     <element path="swc\lobby.swc" />
-
     <element path="..\swc\base_app-1.0-SNAPSHOT.swc" />
     <element path="..\swc\battle.swc" />
     <element path="..\swc\common_i18n_library-1.0-SNAPSHOT.swc" />
@@ -89,7 +88,7 @@
   </library>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\driftkings\views\battle\DriftkingsPlayersPanelAPI.as" />
+    <compile path="src\driftkings\DriftkingsPlayersPanelUI.as" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>

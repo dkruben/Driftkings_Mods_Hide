@@ -24,6 +24,12 @@ class PlayersPanelController(DriftkingsConfigInterface):
         self.__vCache = set()
         self.displayed = True
         super(PlayersPanelController, self).__init__()
+        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__afterCreate)
+        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__beforeDelete)
+        override(ArenaVehiclesPlugin, '_setInAoI', self.new__setInAoI)
+        override(PlayerAvatar, 'vehicle_onAppearanceReady', self.new__onAppearanceReady)
+        override(Vehicle, 'onHealthChanged', self.new__onHealthChanged)
+        override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS', self.new__setPanelHPBarVisibilityStateS)
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -32,7 +38,53 @@ class PlayersPanelController(DriftkingsConfigInterface):
         self.defaultKeys = {'toggleKey': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
             'enabled': True,
-            'textFields': {},
+            'textFields': {
+                "1text": {
+                    "left": {
+                        "align": "center",
+                        "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
+                        "x": 111,
+                        "y": 3
+                    },
+                    "right": {
+                        "align": "center",
+                        "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
+                        "x": -115,
+                        "y": 3
+                    }
+                },
+                "2img": {
+                    "hideIfDead": True,
+                    "left": {
+                        "align": "left",
+                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_l.png' width='%(barWidth)d' height='14'>",
+                        "width": 72,
+                        "x": 75,
+                        "y": 3
+                    },
+                    "right": {
+                        "align": "left",
+                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_r.png' width='%(barWidth)d' height='14'>",
+                        "width": 72,
+                        "x": -151,
+                        "y": 3
+                    }
+                },
+                "3bg": {
+                    "left": {
+                        "align": "left",
+                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
+                        "x": 76,
+                        "y": 4
+                    },
+                    "right": {
+                        "align": "left",
+                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
+                        "x": -150,
+                        "y": 4
+                    }
+                }
+            },
             'mode': 0,
             'toggleKey': self.defaultKeys['toggleKey']
         }
@@ -50,7 +102,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
             'UI_setting_toggleKey_text': 'Toggle hotkey',
             'UI_setting_toggleKey_tooltip': 'Pressing this button in-battle toggles HP markers displaying.'
         }
-        g_driftkingsPlayersPanels.events.onUIReady += self.onStartBattle
         super(PlayersPanelController, self).init()
 
     def createTemplate(self):
@@ -61,15 +112,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
             ],
             'column2': [self.tb.createHotKey('toggleKey')]
         }
-
-    def readData(self, quiet=True):
-        for fieldName in self.data['textFields']:
-            g_driftkingsPlayersPanels.delete(self.ID + fieldName)
-        super(PlayersPanelController, self).readData(quiet)
-        self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
-        self.displayed = not self.data['mode']
-        for fieldName, fieldData in self.data['textFields'].iteritems():
-            g_driftkingsPlayersPanels.create(self.ID + fieldName, fieldData)
 
     def onApplySettings(self, settings):
         super(PlayersPanelController, self).onApplySettings(settings)
@@ -87,26 +129,36 @@ class PlayersPanelController(DriftkingsConfigInterface):
             return ''
 
     def onStartBattle(self):
-        getPlayer().arena.onVehicleKilled += self.onVehicleKilled
-        collection = vos_collections.VehiclesInfoCollection().iterator(self.sessionProvider.getArenaDP())
-        for vInfoVO in collection:
-            vehicleID = vInfoVO.vehicleID
-            self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': vInfoVO.vehicleType.maxHealth}
-            self.setHPField(vehicleID)
+        if g_driftkingsPlayersPanels.viewLoad:
+            self.hasOwnProperty()
+            getPlayer().arena.onVehicleKilled += self.onVehicleKilled
+            collection = vos_collections.VehiclesInfoCollection().iterator(self.sessionProvider.getArenaDP())
+            for vInfoVO in collection:
+                vehicleID = vInfoVO.vehicleID
+                self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': vInfoVO.vehicleType.maxHealth}
+                self.setHPField(vehicleID)
 
     def setHPField(self, vehicleID):
         player = getPlayer()
         if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING):
             return
-        team = player.arena.vehicles[vehicleID]['team']
-        panelSide = 'left' if player.team == team else 'right'
-        currentHP = self.__hpCache[vehicleID]['current']
-        maxHP = self.__hpCache[vehicleID]['max']
+        if g_driftkingsPlayersPanels.viewLoad:
+            team = player.arena.vehicles[vehicleID]['team']
+            panelSide = 'left' if player.team == team else 'right'
+            currentHP = self.__hpCache[vehicleID]['current']
+            maxHP = self.__hpCache[vehicleID]['max']
+            self.hasOwnProperty()
+            for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
+                barWidth = currentHP
+                if 'width' in fieldData[panelSide]:
+                    barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
+                g_driftkingsPlayersPanels.update(self.ID + fieldName, {'vehicleID': vehicleID, 'text': (fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}) if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth) else ''})
+
+    def hasOwnProperty(self):
         for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
-            barWidth = currentHP
-            if 'width' in fieldData[panelSide]:
-                barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
-            g_driftkingsPlayersPanels.update(self.ID + fieldName, {'vehicleID': vehicleID, 'text': (fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}) if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth) else ''})
+            container = self.ID + fieldName
+            if not g_driftkingsPlayersPanels.hasOwnProperty(container):
+                g_driftkingsPlayersPanels.create(container, fieldData)
 
     def onEndBattle(self):
         getPlayer().arena.onVehicleKilled -= self.onVehicleKilled
@@ -120,14 +172,16 @@ class PlayersPanelController(DriftkingsConfigInterface):
             self.setHPField(targetID)
 
     def updateHealth(self, vehicleID, newHealth=-1, *_, **__):
-        if vehicleID not in self.__hpCache or newHealth == -1:
-            vehicle = getPlayer().arena.vehicles.get(vehicleID)
-            maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else -1
-            self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': maxHealth}
-        else:
-            health = newHealth if newHealth > 0 else 0
-            self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else self.__hpCache[vehicleID]['max']
-        self.setHPField(vehicleID)
+        if g_driftkingsPlayersPanels.viewLoad:
+            self.hasOwnProperty()
+            if vehicleID not in self.__hpCache or newHealth == -1:
+                vehicle = getPlayer().arena.vehicles.get(vehicleID)
+                maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else -1
+                self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': maxHealth}
+            else:
+                health = newHealth if newHealth > 0 else 0
+                self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else self.__hpCache[vehicleID]['max']
+            self.setHPField(vehicleID)
 
     def validateCache(self, vehicleID):
         if vehicleID not in self.__vCache:
@@ -143,6 +197,53 @@ class PlayersPanelController(DriftkingsConfigInterface):
         for vehicleID in self.__hpCache:
             self.setHPField(vehicleID)
 
+    # hooks
+    def new__beforeDelete(self, func, orig):
+        func(orig)
+        self.onEndBattle()
+
+    def new__afterCreate(self, func, orig):
+        func(orig)
+        self.onStartBattle()
+
+    def new__setInAoI(self, func, orig, entry, isInAoI, *args, **kwargs):
+        result = func(orig, entry, isInAoI, *args, **kwargs)
+        try:
+            for vehicleID, entry2 in orig._entries.iteritems():
+                if entry == entry2 and isInAoI:
+                    if vehicleID in self.vCache:
+                        break
+                    self.updateHealth(vehicleID)
+        except StandardError:
+            traceback.print_exc()
+        finally:
+            return result
+
+    def new__onAppearanceReady(self, func, orig, vehicle, *args, **kwargs):
+        result = func(orig, vehicle, *args, **kwargs)
+        try:
+            vehicleID = vehicle.id
+            self.validateCache(vehicleID)
+            self.updateHealth(vehicleID)
+        except StandardError:
+            traceback.print_exc()
+        finally:
+            return result
+
+    def new__onHealthChanged(self, func, orig, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
+        result = func(orig, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
+        try:
+            self.updateHealth(orig.id, newHealth)
+        except StandardError:
+            traceback.print_exc()
+        finally:
+            return result
+
+    def new__setPanelHPBarVisibilityStateS(self, func, orig, value):
+        if self.data['enabled']:
+            return
+        func(orig, value)
+
 
 config = None
 try:
@@ -150,50 +251,6 @@ try:
     config = PlayersPanelController()
     statistic_mod = Analytics(config.ID, config.version)
 except ImportError:
-    logWarning(config.ID, '%(mod_ID)s: Battle Flash API not found.')
+    logWarning(config.ID, 'Battle Flash API not found.')
 except StandardError:
-    traceback.print_exc()
-else:
-    @override(ArenaVehiclesPlugin, '_setInAoI')
-    def new__setInAoI(func, self, entry, isInAoI, *args, **kwargs):
-        result = func(self, entry, isInAoI, *args, **kwargs)
-        try:
-            for vehicleID, entry2 in self._entries.iteritems():
-                if entry == entry2 and isInAoI:
-                    if vehicleID in config.vCache:
-                        break
-                    config.updateHealth(vehicleID)
-        except StandardError:
-            traceback.print_exc()
-        finally:
-            return result
-
-
-    @override(PlayerAvatar, 'vehicle_onAppearanceReady')
-    def new__onAppearanceReady(func, self, vehicle, *args, **kwargs):
-        result = func(self, vehicle, *args, **kwargs)
-        try:
-            vehicleID = vehicle.id
-            config.validateCache(vehicleID)
-            config.updateHealth(vehicleID)
-        except StandardError:
-            traceback.print_exc()
-        finally:
-            return result
-
-
-    @override(Vehicle, 'onHealthChanged')
-    def new__onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
-        result = func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
-        try:
-            config.updateHealth(self.id, newHealth)
-        except StandardError:
-            traceback.print_exc()
-        finally:
-            return result
-
-    @override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS')
-    def new__setPanelHPBarVisibilityStateS(func, self, value):
-        if config.data['enabled']:
-            return
-        func(self, value)
+    logWarning(config.ID,'Battle Flash API not found.')

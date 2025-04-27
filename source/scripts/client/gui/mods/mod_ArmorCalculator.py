@@ -30,7 +30,7 @@ AS_BATTLE = 'ArmorCalculatorView'
 AS_SWF = 'ArmorCalculator.swf'
 
 # Constants
-MinMax = namedtuple("MinMax", ("min", "max"))
+MinMax = namedtuple('MinMax', ('min', 'max'))
 DEFAULT_RANDOMIZATION = MinMax(1.0 - DEFAULT_PIERCING_POWER_RANDOMIZATION, 1.0 + DEFAULT_PIERCING_POWER_RANDOMIZATION)
 UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None, None, None, False, False)
 FULL_PP_RANGE = (SHELL_TYPES.HIGH_EXPLOSIVE, SHELL_TYPES.HOLLOW_CHARGE)
@@ -45,7 +45,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.0 (%(file_compile_date)s)'
+        self.version = '1.2.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -160,15 +160,13 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['message'] = config.data['messages'].get(color, '')
 
     def onCameraChanged(self, ctrlMode, *_, **__):
-        _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM,
-                      CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
+        _CTRL_MODE = {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
         if ctrlMode in _CTRL_MODE:
             self.as_armorCalculatorS('')
 
     def onArmorChanged(self, data):
         if data[1] is None:
             return self.as_armorCalculatorS('')
-
         armor, piercingPower, caliber, ricochet, noDamage = data[1:]
         self.calcMacro['ricochet'] = config.i18n['UI_ricochet'] if ricochet else ''
         self.calcMacro['noDamage'] = config.i18n['UI_noDamage'] if noDamage else ''

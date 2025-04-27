@@ -69,7 +69,6 @@
 1740609214|configs/Driftkings/OwnHealth/i18n/en.json
 1743718054|configs/Driftkings/PlayersPanelHP/PlayersPanelHP.json
 1712021103|configs/Driftkings/PlayersPanelHP/i18n/en.json
-1697714475|configs/Driftkings/PlayersPanelHP/i18n/pt.json
 1712020569|configs/Driftkings/PlayersPanelHP/icons/hp_alive_l.png
 1712020569|configs/Driftkings/PlayersPanelHP/icons/hp_alive_r.png
 1712020569|configs/Driftkings/PlayersPanelHP/icons/hp_bg.png
@@ -171,9 +170,13 @@
 1710344394|flash/DistanceToEnemy/src/mods/common/AbstractViewInjector.as
 1710344394|flash/DistanceToEnemy/src/mods/common/BattleDisplayable.as
 1710344394|flash/DistanceToEnemy/src/mods/common/IAbstractInjector.as
-1738969896|flash/DriftkingsPlayersPanelAPI.swf
-1738966661|flash/DriftkingsPlayersPanelAPI/DriftkingsPlayersPanelAPI.as3proj
-1738966648|flash/DriftkingsPlayersPanelAPI/src/driftkings/views/battle/DriftkingsPlayersPanelAPI.as
+1745790548|flash/DriftkingsPlayersPanelAPI.swf
+1745789912|flash/DriftkingsPlayersPanelAPI/DriftkingsPlayersPanelAPI.as3proj
+1744236519|flash/DriftkingsPlayersPanelAPI/src/driftkings/DriftkingsPlayersPanelUI.as
+1745790076|flash/DriftkingsPlayersPanelAPI/src/driftkings/views/battle/DriftkingsPlayersPanelAPI.as
+1745790533|flash/DriftkingsPlayersPanelAPI/src/driftkings/views/battle/utils/Utils.as
+1738886554|flash/DriftkingsPlayersPanelAPI/src/mods/common/AbstractViewInjector.as
+1738886561|flash/DriftkingsPlayersPanelAPI/src/mods/common/BattleDisplayable.as
 1734996438|flash/FlightTimer.swf
 1734996342|flash/FlightTimer/FlightTimer.as3proj
 1727048053|flash/FlightTimer/src/driftkings/FlightTimerInjector.as

@@ -8,10 +8,10 @@ from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version, logError
+from DriftkingsCore import DriftkingsConfigInterface, override, Analytics, logWarning, getPlayer, calculate_version
 
 
-class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
+class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
@@ -19,9 +19,10 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
         self.as_create = False
         CallbackDelayer.__init__(self)
         self.place = os.path.join('..', 'mods', 'configs', 'Driftkings', '%(mod_ID)s', 'icons')
-        super(ConfigInterface, self).__init__()
+        super(SpottedStatusController, self).__init__()
         override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGui)
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
+        override(ArenaVehiclesPlugin, '_setInAoI', self.new__setInAoI)
 
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -33,7 +34,8 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
             'neverSeen': '<img src=\'img://' + self.place + 'neverSeen.png\' width=\'22\' height=\'22\'>',
             'spotted': '<img src=\'img://' + self.place + 'spotted.png\' width=\'22\' height=\'22\'>',
             'lost': '<img src=\'img://' + self.place + 'lost.png\' width=\'22\' height=\'22\'>',
-            'dead': '<img src=\'img://' + self.place + 'dead.png\' width=\'22\' height=\'22\'>'
+            'dead': '<img src=\'img://' + self.place + 'dead.png\' width=\'22\' height=\'22\'>',
+            'artillery': '<img src=\'img://' + self.place + 'artillery.png\' width=\'22\' height=\'22\'>'
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -46,6 +48,8 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_lost_tooltip': '',
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
+            'UI_setting_artillery_text': 'Artillery',
+            'UI_setting_artillery_tooltip': '',
             'UI_setting_help_text': 'Help:',
             'UI_setting_help_tooltip': (
                 ' * You can change images to text or icons.\n'
@@ -56,7 +60,7 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
                 )
             )
         }
-        super(ConfigInterface, self).init()
+        super(SpottedStatusController, self).init()
 
     def createTemplate(self):
         help = self.tb.createLabel('help')
@@ -133,19 +137,19 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
                 self._spotted_cache[vInfo.vehicleID] = 'neverSeen'
 
     def start(self):
-        if g_driftkingsPlayersPanels.events.onUIReady and not self.as_create:
+        if g_driftkingsPlayersPanels.viewLoad and not self.as_create:
             self.as_create = True
             g_driftkingsPlayersPanels.create(self.ID, {'right': {'x': self.data['text']['x'], 'y': self.data['text']['y']}})
         if hasattr(getPlayer(), 'arena'):
             arena = getPlayer().arena
-            for vID in self._spotted_cache:
-                if self._spotted_cache[vID] != 'dead':
-                    arenaVehicle = arena.vehicles[vID] if vID in arena.vehicles else None
+            for vehicleID in self._spotted_cache:
+                if self._spotted_cache[vehicleID] != 'dead':
+                    arenaVehicle = arena.vehicles[vehicleID] if vehicleID in arena.vehicles else None
                     if arenaVehicle:
                         if not arenaVehicle['isAlive']:
-                            self._spotted_cache[vID] = 'dead'
-                    elif not self.sessionProvider.getArenaDP().getVehicleInfo(vID).isAlive():
-                        self._spotted_cache[vID] = 'dead'
+                            self._spotted_cache[vehicleID] = 'dead'
+                    elif not self.sessionProvider.getArenaDP().getVehicleInfo(vehicleID).isAlive():
+                        self._spotted_cache[vehicleID] = 'dead'
         self.getSpottedStatus()
         return 0.3
 
@@ -153,27 +157,26 @@ class ConfigInterface(DriftkingsConfigInterface, CallbackDelayer):
         self.updateSpottedStatus(vehicleID, spotted)
         self.getSpottedStatus()
 
-
-config = None
-try:
-    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-    config = ConfigInterface()
-    statistic_mod = Analytics(config.ID, config.version)
-except ImportError:
-    logWarning(config.ID, 'Battle Flash API not found.')
-except Exception as err:
-    logError(config.ID, 'Error initializing mod: {}', err)
-    traceback.print_exc()
-else:
-    @override(ArenaVehiclesPlugin, '_setInAoI')
-    def new_setInAoI(func, self, entry, isInAoI, *args, **kwargs):
-        result = func(self, entry, isInAoI, *args, **kwargs)
+    def new__setInAoI(self, func, orig, entry, isInAoI, *args, **kwargs):
+        result = func(orig, entry, isInAoI, *args, **kwargs)
         try:
-            for vehicleID, entry2 in self._entries.iteritems():
-                if entry == entry2 and config.data['enabled']:
-                    config.arenaVehiclesPlugin(vehicleID, isInAoI)
-                    break
+            if self.data['enabled']:
+                for vehicleID, entry2 in orig._entries.iteritems():
+                    if entry == entry2:
+                        self.arenaVehiclesPlugin(vehicleID, isInAoI)
+                        break
         except StandardError:
             traceback.print_exc()
         finally:
             return result
+
+
+config = None
+try:
+    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
+    config = SpottedStatusController()
+    statistic_mod = Analytics(config.ID, config.version)
+except ImportError:
+    logWarning(config.ID, 'Battle Flash API not found.')
+except StandardError:
+    logWarning(config.ID,'Battle Flash API not found.')

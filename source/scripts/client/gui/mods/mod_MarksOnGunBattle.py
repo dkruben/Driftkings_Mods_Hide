@@ -988,7 +988,7 @@ class Worker(object):
         if pC == 101:
             pC = 100
             dC = data[7]
-        return (pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
+        return pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7]
 
     def calcStatistics(self, p, d):
         pC = math.floor(p) + 1
@@ -1014,7 +1014,7 @@ class Worker(object):
         if pC == 101:
             pC = 100
             dC = data[7]
-        return (pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7])
+        return pC, dC, data[1], data[2], data[3], data[4], data[5], data[6], data[7]
 
 
 class Flash(object):

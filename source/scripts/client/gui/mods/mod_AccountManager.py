@@ -193,7 +193,6 @@ class AccountsManager(AbstractWindowView):
                     self.destroy()
                     loadWindow('AccountsManager')
                     return
-
             DialogsInterface.showDialog(meta, onClickAction)
 
     def callToFlash(self, data):

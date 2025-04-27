@@ -10,13 +10,13 @@ from time import strftime
 import CommandMapping
 import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar
-# from AvatarInputHandler import gun_marker_ctrl
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
+from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
@@ -33,7 +33,7 @@ from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEqui
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logInfo, logDebug, square_position, isReplay, calculate_version, callback
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, logDebug, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 _cache = set()
@@ -42,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.5.0 (%(file_compile_date)s)'
+        self.version = '2.5.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -61,11 +61,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'postmortemTips': True,
             'showAnonymous': False,
             'showBattleHint': False,
-            # 'camLimits' False,
             'showFriends': False,
             'showPostmortemDogTag': True,
             'stunSound': False,
-            'showPlayerSatisfactionWidget': False
+            'showPlayerSatisfactionWidget': False,
+            'addEnemyName': True,
         }
 
         self.i18n = {
@@ -102,14 +102,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showBattleHint_tooltip': 'Hide the tips aiming mode changing in strategic mode.',
             'UI_setting_showFriends_text': 'Show Friends',
             'UI_setting_showFriends_tooltip': 'Show friends in players panel.',
-            # 'UI_setting_camLimits_text': 'Camera Limits',
-            # 'UI_setting_camLimits_tooltip': 'Enable camera limits.',
             'UI_setting_showPostmortemDogTag_text': 'Show Postmortem DogTag',
             'UI_setting_showPostmortemDogTag_tooltip': 'Disable pop-up panel with a dog tag.',
             'UI_setting_stunSound_text': 'Stun Sound',
             'UI_setting_stunSound_tooltip': 'Disable Stun Sound Effect.',
             'UI_setting_showPlayerSatisfactionWidget_text': 'Show Player Satisfaction Widget',
-            'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.'
+            'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.',
+            'UI_setting_addEnemyName_text': 'Add Enemy Name',
+            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.'
         }
         super(ConfigInterface, self).init()
 
@@ -135,11 +135,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'column2': [
                 colorLabel,
                 self.tb.createControl('showPlayerSatisfactionWidget'),
+                self.tb.createControl('addEnemyName'),
                 self.tb.createControl('inBattle'),
                 self.tb.createControl('disableSoundCommander'),
                 self.tb.createControl('directivesOnlyFromStorage'),
                 self.tb.createControl('showFriends'),
-                # self.tb.createControl('camLimits'),
                 self.tb.createControl('clipLoad'),
                 self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
             ]
@@ -374,6 +374,24 @@ def new_showRateSatisfactionCmp(func, self, value, reusable):
     if not config.data.get('showPlayerSatisfactionWidget', True):
         return False
     return func(self, value, reusable)
+
+
+# add enemy name to damage log
+@override(DamageLogPanel, '_addToBottomLog')
+def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
+    if not config.data['enabled'] or not config.data['addEnemyName']:
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+    try:
+        player = getPlayer()
+        arena = player.arena
+        attackerName = 'Unknown'
+        for vID, vData in arena.vehicles.items():
+            if vData['vehicleType'].type.shortUserString == vehicleName:
+                attackerName = vData['name']
+                break
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
+    except Exception:
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
 
 
 @adisp_process

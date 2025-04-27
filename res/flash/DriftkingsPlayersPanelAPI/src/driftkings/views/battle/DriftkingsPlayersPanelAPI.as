@@ -1,181 +1,275 @@
-﻿package driftkings.views.battle
+package driftkings.views.battle
 {
+	import flash.events.Event;
     import flash.filters.DropShadowFilter;
+    import flash.geom.ColorTransform;
+    import flash.text.AntiAliasType;
     import flash.text.TextField;
-    import net.wg.data.constants.generated.LAYER_NAMES;
+    import flash.text.TextFormat;
+    import mods.common.BattleDisplayable;
+    import driftkings.views.battle.utils.Utils;
+    import net.wg.gui.battle.components.*;
     import net.wg.gui.battle.random.views.BattlePage;
-    import net.wg.gui.components.containers.MainViewContainer;
-    import net.wg.infrastructure.base.AbstractView;
-    import net.wg.infrastructure.managers.impl.ContainerManagerBase;
     import scaleform.gfx.TextFieldEx;
 
-    public class DriftkingsPlayersPanelAPI extends AbstractView
-    {
-        private static const NAME_MAIN:String = "main";
-        
-        public static var ui:DriftkingsPlayersPanelAPI;
+	public class DriftkingsPlayersPanelAPI extends BattleDisplayable
+	{
+		public var flashLogS:Function;
 
-        private var viewPage:BattlePage;
-        private var configs:Object = {};
-        private var textFields:Object = {};
+		private var configs:Object = {};
+		private var textFields:Object = {};
 
-        public function DriftkingsPlayersPanelAPI()
-        {
-            super();
-            ui = this;
-        }
-
-        override protected function onPopulate():void
-        {
-            super.onPopulate();
-            initializeViewPage();
-        }
-
-        override protected function onDispose():void
-        {
-            cleanUpTextFields();
-            viewPage = null;
-            ui = null;
-            configs = null;
-            textFields = null;
-            super.onDispose();
-        }
-
-        public function as_create(linkage:String, config:Object):void
-        {
-            if (!linkage || !config) return;
-
-            if (viewPage)
-            {
-                configs[linkage] = config;
-                textFields[linkage] = {};
-            }
-        }
-
-        public function as_update(linkage:String, data:Object):void
-        {
-            if (viewPage && linkage in configs)
-            {
-                updateComponent(linkage, data);
-            }
-        }
-
-        public function as_delete(linkage:String):void
-        {
-            if (viewPage)
-            {
-                delete configs[linkage];
-                delete textFields[linkage];
-            }
-        }
-
-        private function initializeViewPage():void
+		public function DriftkingsPlayersPanelAPI()
 		{
-			try
+			super();
+			name = this.componentName;
+		}
+
+		public function as_create(linkage:String, config:Object) : void
+		{
+			this.createComponent(linkage, config);
+		}
+
+		public function as_update(linkage:String, data:Object) : void
+		{
+			this.updateComponent(linkage, data);
+		}
+
+		public function as_hasOwnProperty(linkage:String) : Boolean
+		{
+			return this.hasOwnPropertyComponent(linkage);
+		}
+
+		public function as_delete(linkage:String) : void
+		{
+			this.deleteComponent(linkage);
+		}
+
+		private function hasOwnPropertyComponent(linkage:String) : Boolean
+		{
+			return this.configs.hasOwnProperty(linkage);
+		}
+
+		private function createComponent(linkage:String, config:Object) : void
+		{
+			this.configs[linkage] = config;
+			this.textFields[linkage] = {};
+		}
+
+		public function deleteComponent(linkage:String) : void
+		{
+			if (this.textFields[linkage])
 			{
-				parent.removeChild(this);
-                if (!App.containerMgr) {
-                    DebugUtils.LOG_ERROR("App.containerMgr is null.");
-                    return;
-                }
-                const containerManager:ContainerManagerBase = App.containerMgr as ContainerManagerBase;
-				const viewContainer:MainViewContainer = containerManager.getContainer(LAYER_NAMES.LAYER_ORDER.indexOf(LAYER_NAMES.VIEWS)) as MainViewContainer;
-
-				if (!viewContainer) throw new Error("MainViewContainer is null.");
-
-				viewContainer.setFocusedView(viewContainer.getTopmostView());
-				viewPage = viewContainer.getChildByName(NAME_MAIN) as BattlePage;
-
-				if (!viewPage) throw new Error("BattlePage is not found.");
+				for (var vehicleID:String in this.textFields[linkage])
+				{
+					if (this.textFields[linkage][vehicleID] is TextField)
+					{
+						var textField:TextField = this.textFields[linkage][vehicleID];
+						if (textField.parent)
+						{
+							textField.parent.removeChild(textField);
+						}
+					}
+				}
 			}
-			catch (error:Error)
+			delete this.configs[linkage];
+			delete this.textFields[linkage];
+		}
+
+		private function getListItem(list:*, vehicleID:Number) : *
+		{
+			if (!list || !list._items)
 			{
-				DebugUtils.LOG_ERROR("initializeViewPage failed: " + error.message);
+				return null;
+			}
+			var itemCount:int = int(list._items.length);
+			for (var i:int = 0; i < itemCount; i++)
+			{
+				if (list._items[i] && list._items[i].vehicleID == vehicleID)
+				{
+					return list._items[i]._listItem;
+				}
+			}
+			return null;
+		}
+
+		public function as_getPPListItem(vehicleID:int) : *
+		{
+			if (!this.battlePage)
+			{
+				return null;
+			}
+			var listRight:* = (this.battlePage as BattlePage).playersPanel.listRight;
+			if (!listRight || !listRight.getHolderByVehicleID(int(vehicleID)))
+			{
+				var listLeft:* = (this.battlePage as BattlePage).playersPanel.listLeft;
+				return this.getListItem(listLeft, vehicleID);
+			}
+			return this.getListItem(listRight, vehicleID);
+		}
+
+		private function isRightP(vehicleID:int) : Boolean
+		{
+			if (!this.battlePage)
+			{
+				return false;
+			}
+			var listRight:* = (this.battlePage as BattlePage).playersPanel.listRight;
+			return listRight && listRight.getHolderByVehicleID(int(vehicleID));
+		}
+
+		public function as_updatePosition(linkage:String, vehicleID:int) : void
+		{
+			var listItem:* = undefined;
+			var config:Object = null;
+			var isRight:Boolean = this.isRightP(vehicleID);
+			if (!this.textFields[linkage] || !this.configs[linkage])
+			{
+				return;
+			}
+			if(!this.textFields[linkage].hasOwnProperty(int(vehicleID)))
+			{
+				this.createPpanelTF(linkage, int(vehicleID));
+			}
+			listItem = this.as_getPPListItem(int(vehicleID));
+			if (!listItem)
+			{
+				return;
+			}
+			config = this.configs[linkage][isRight ? "right" : "left"];
+			if (!config || !this.configs[linkage]["holder"])
+			{
+				return;
+			}
+			this.textFields[linkage][vehicleID].x = listItem[this.configs[linkage]["holder"]].x + config.x;
+			this.textFields[linkage][vehicleID].y = listItem[this.configs[linkage]["holder"]].y + config.y;
+		}
+
+		public function as_shadowListItem(show:Object) : *
+		{
+			if (!show)
+			{
+				return null;
+			}
+			return Utils.getDropShadowFilter(show.distance || 0, show.angle || 45, show.color || "#FFFFFF", show.alpha || 1, show.blurX || 2, show.blurY || 2, show.strength || 1);
+		}
+
+		public function extendedSetting(linkage:String, vehicleID:int) : *
+		{
+			if (!this.textFields[linkage])
+			{
+				return null;
+			}
+			if(!this.textFields[linkage].hasOwnProperty(int(vehicleID)))
+			{
+				this.createPpanelTF(linkage, int(vehicleID));
+			}
+			return this.textFields[linkage][vehicleID];
+		}
+
+		public function as_vehicleIconColor(vehicleID:int, colorValue:String) : void
+		{
+			var listItem:* = undefined;
+			var vehicleIcon:BattleAtlasSprite = null;
+			listItem = this.as_getPPListItem(int(vehicleID));
+			if (listItem && listItem.vehicleIcon)
+			{
+				vehicleIcon = listItem.vehicleIcon;
+				vehicleIcon["DriftkingsPlayersPanelAPI"] = {"color":Utils.colorConvert(colorValue)};
+				if(!vehicleIcon.hasEventListener(Event.RENDER))
+				{
+					vehicleIcon.addEventListener(Event.RENDER, this.onRenderHandle);
+				}
 			}
 		}
 
-        private function updateComponent(linkage:String, data:Object):void
-        {
-            try
-            {
-                if (!textFields[linkage].hasOwnProperty(data.vehicleID) && !createTextField(linkage, data.vehicleID))
-                {
-                    return;
-                }
-
-                const textField:TextField = textFields[linkage][data.vehicleID];
-                textField.htmlText = configs[linkage].isHtml ? data.text : data.text;
-            }
-            catch (error:Error)
-            {
-                DebugUtils.LOG_ERROR("updateComponent failed: " + error.message);
-            }
-        }
-
-        private function createTextField(linkage:String, vehicleID:Object):Boolean
+		private function onRenderHandle(event:Event) : void
 		{
-			if (!viewPage) return false;
-
-			const playersPanel:* = viewPage.playersPanel;
-			if (!playersPanel || !playersPanel.listLeft || !playersPanel.listRight) return false;
-
-			const isRight:Boolean = !getPlayersPanelHolder(vehicleID, playersPanel.listLeft);
-			const playersPanelHolder:* = isRight ? playersPanel.listRight.getHolderByVehicleID(vehicleID) : playersPanel.listLeft.getHolderByVehicleID(vehicleID);
-
-			if (!playersPanelHolder) return false;
-
-			const config:Object = configs[linkage][isRight ? "right" : "left"];
-			const shadow:Object = configs[linkage].shadow;
-
-			const textField:TextField = new TextField();
-			configureTextField(textField, config, shadow);
-
-			textField.x = playersPanelHolder._listItem.vehicleIcon.x + config.x;
-			textField.y = playersPanelHolder._listItem.vehicleIcon.y + config.y;
-
-			const movieIndex:int = playersPanelHolder._listItem.getChildIndex(playersPanelHolder._listItem.vehicleTF) + 1;
-			playersPanelHolder._listItem.addChildAt(textField, movieIndex);
-
-			if (!textFields[linkage])
+			var sprite:BattleAtlasSprite = event.target as BattleAtlasSprite;
+			if (!sprite || !sprite["DriftkingsPlayersPanelAPI"] || !sprite["DriftkingsPlayersPanelAPI"]["color"])
 			{
-				textFields[linkage] = {};
+				return;
 			}
-
-			textFields[linkage][vehicleID] = textField;
-			return true;
+			var colorTransform:ColorTransform = sprite.transform.colorTransform;
+			colorTransform.color = sprite["DriftkingsPlayersPanelAPI"]["color"];
+			sprite.transform.colorTransform = colorTransform;
 		}
 
-        private function configureTextField(textField:TextField, config:Object, shadow:Object):void
-        {
-            textField.visible = true;
-            textField.height = config.height;
-            textField.width = config.width;
-            textField.autoSize = config.align;
-            textField.selectable = false;
+		private function updateComponent(linkage:String, data:Object) : void
+		{
+			if (!data || !data.hasOwnProperty("vehicleID") || !data.hasOwnProperty("text"))
+			{
+				return;
+			}
+			if (!this.textFields[linkage])
+			{
+				return;
+			}
+			if(!this.textFields[linkage].hasOwnProperty(int(data.vehicleID)))
+			{
+				this.createPpanelTF(linkage, int(data.vehicleID));
+			}
+			if (this.textFields[linkage][data.vehicleID])
+			{
+				this.textFields[linkage][data.vehicleID].htmlText = data.text;
+			}
+		}
 
-            const shadowFilter:DropShadowFilter = new DropShadowFilter(shadow.distance, shadow.angle, parseInt("0x" + shadow.color.replace("#", ""), 16), shadow.alpha, shadow.blurX, shadow.blurY, shadow.strength, shadow.quality);
-            textField.filters = [shadowFilter];
-            TextFieldEx.setNoTranslate(textField, true);
-        }
-
-        private function getPlayersPanelHolder(vehicleID:Object, list:*):*
-        {
-            return list.getHolderByVehicleID(vehicleID);
-        }
-
-        private function cleanUpTextFields():void
-        {
-            for (var linkage:String in textFields)
-            {
-                for (var vehicleID:String in textFields[linkage])
-                {
-                    var textField:TextField = textFields[linkage][vehicleID];
-                    if (textField && textField.parent)
-                    {
-                        textField.parent.removeChild(textField);
-                    }
-                }
-            }
-        }
-    }
+		private function createPpanelTF(linkage:String, vehicleID:int) : void
+		{
+			var childIndex:Number = 0;
+			var listItem:* = undefined;
+			var config:Object = null;
+			var shadow:Object = null;
+			var isRight:Boolean = this.isRightP(vehicleID);
+			var textField:TextField = null;
+			var filter:DropShadowFilter = null;
+			if (!this.configs[linkage])
+			{
+				return;
+			}
+			listItem = this.as_getPPListItem(int(vehicleID));
+			if (!listItem)
+			{
+				return;
+			}
+			config = this.configs[linkage][isRight ? "right" : "left"];
+			if (!config)
+			{
+				return;
+			}
+			shadow = this.configs[linkage]["shadow"] || {};
+			textField = new TextField();
+			TextFieldEx.setNoTranslate(textField, true);
+			if (this.configs[linkage]["child"] && listItem[this.configs[linkage]["child"]])
+			{
+				childIndex = Number(listItem.getChildIndex(listItem[this.configs[linkage]["child"]]));
+				listItem.addChildAt(textField, childIndex + 1);
+			}
+			else
+			{
+				listItem.addChild(textField);
+			}
+			textField.defaultTextFormat = new TextFormat("$UniversCondC", 16, Utils.colorConvert("#ffffff"), false, false, false, "", "", "left", 0, 0, 0, 0);
+			textField.mouseEnabled = false;
+			textField.background = false;
+			textField.backgroundColor = 0;
+			textField.embedFonts = true;
+			textField.multiline = true;
+			textField.selectable = false;
+			textField.tabEnabled = false;
+			textField.antiAliasType = AntiAliasType.ADVANCED;
+			textField.width = config.width || 100;
+			textField.height = config.height || 20;
+			textField.autoSize = config.align || "left";
+			filter = Utils.getDropShadowFilter(shadow.distance || 0,  shadow.angle || 45, shadow.color || "#FFFFFF", shadow.alpha || 1, shadow.blurX || 2, shadow.blurY || 2, shadow.strength || 1);
+			textField.filters = [filter];
+			if (this.configs[linkage]["holder"] && listItem[this.configs[linkage]["holder"]])
+			{
+				textField.x = listItem[this.configs[linkage]["holder"]].x + (config.x || 0);
+				textField.y = listItem[this.configs[linkage]["holder"]].y + (config.y || 0);
+			}
+			this.textFields[linkage][vehicleID] = textField;
+		}
+	}
 }

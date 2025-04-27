@@ -147,12 +147,12 @@ class ConfigInterface(DriftkingsConfigInterface):
     def new__targetFocus(self, func, orig, entity):
         func(orig, entity)
         if hasattr(orig, '_PlayerAvatar__vehicles') and entity in orig._PlayerAvatar__vehicles:
-            prev_isSquad = self.isSquad
-            prev_isTeamKill = self.isTeamKill
+            prevIsSquad = self.isSquad
+            prevIsTeamKill = self.isTeamKill
             getArenaDP = orig.guiSessionProvider.getArenaDP()
             self.isSquad = getArenaDP.isSquadMan(vID=entity.id)
             self.isTeamKill = getArenaDP.isTeamKiller(vID=entity.id)
-            if (prev_isSquad != self.isSquad) or (prev_isTeamKill != self.isTeamKill):
+            if (prevIsSquad != self.isSquad) or (prevIsTeamKill != self.isTeamKill):
                 g_instance.updateColors()
 
 

@@ -31,8 +31,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
-        self.author = 'orig. Spoter, Updated by: DriftKing\'s'
+        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.author = 'orig. Spoter, Re-Worked by: DriftKing\'s'
         self.data = {
             'enabled': True,
             'useFreeExp': True,
@@ -63,39 +63,30 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showQuestTitle_tooltip': '',
             'UI_setting_showConditions_text': 'Display description',
             'UI_setting_showConditions_tooltip': '',
-
             'UI_setting_eliteStatus_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/EliteXpIcon-2.png\' height=\'16\' width=\'16\' vspace=\'-3\'> <font color=\'#00FF00\'>{chk-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> from <font color=\'#FF0000\'>{need-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> (~{battles-left}<img align=\'top\' src=\'img://gui/maps/icons/library/BattleResultIcon-1.png\' height=\'14\' width=\'14\' vspace=\'-3\'>)',
             'UI_setting_eliteStatusReady_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/EliteXpIcon-2.png\' height=\'16\' width=\'16\' vspace=\'-3\'> <font color=\'#00FF00\'>Elite status available!</font>',
             'UI_setting_eliteStatusReadyTitle_text': '{tank-name}',
             'UI_setting_eliteStatusTitle_text': '{tank-name}',
             'UI_setting_eliteStatus_tooltip': 'Discount {discount}<img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'>',
-
             'UI_setting_experience_header': 'Research',
-
             'UI_setting_moduleStatus_text': '<img align=\'top\' src=\'img://gui/maps/icons/buttons/removeGold.png\' height=\'15\' width=\'13\' vspace=\'-2\'> <font color=\'#00FF00\'>{chk-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> from <font color=\'#FF0000\'>{need-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> (~{battles-left}<img align=\'top\' src=\'img://gui/maps/icons/library/BattleResultIcon-1.png\' height=\'14\' width=\'14\' vspace=\'-3\'>)',
             'UI_setting_moduleStatusReady_text': '<img align=\'top\' src=\'img://gui/maps/icons/buttons/removeGold.png\' height=\'16\' width=\'14\' vspace=\'-2\'> <font color=\'#00FF00\'>Module research available!</font>',
             'UI_setting_moduleStatusReadyTitle_text': 'Modules',
             'UI_setting_moduleStatusTitle_text': 'Modules',
-
             'UI_setting_nextTanks_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/UnlockPrice.png\' height=\'16\' width=\'16\' vspace=\'-2\'> <font color=\'#00FF00\'>{chk-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> from <font color=\'#FF0000\'>{need-exp}</font><img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'> (~{battles-left}<img align=\'top\' src=\'img://gui/maps/icons/library/BattleResultIcon-1.png\' height=\'14\' width=\'14\' vspace=\'-3\'>)',
             'UI_setting_nextTanksReady_text': '<img align=\'top\' src=\'img://gui/maps/icons/library/UnlockPrice.png\' height=\'16\' width=\'16\' vspace=\'-2\'> <font color=\'#00FF00\'>Research available!</font>',
             'UI_setting_nextTanksReadyTitle_text': '{tank-name}',
             'UI_setting_nextTanksTitle_text': '{tank-name}',
             'UI_setting_nextTanks_tooltip': 'Discount {discount}<img align=\'top\' src=\'img://gui/maps/icons/library/XpIcon-1.png\' height=\'16\' width=\'16\' vspace=\'-3\'>',
-
             'UI_setting_questSettingsLabel_text': 'Personal Mission status:',
             'UI_setting_questsHeader': 'Personal Assignments',
             'UI_setting_questsHeader_pm2': 'Personal Assignments Campaign 2',
             'UI_setting_questsHeader_regular': 'Personal Assignments Campaign 1',
-
             'UI_text_add_condition': '<font color=\'#aefe57\'>{quest-add-condition}</font>',
             'UI_text_add_condition_extra': 'Secondary condition',
             'UI_text_main_condition': '<b><font color=\'#aefe57\'>{quest-main-condition}</font></b>',
             'UI_text_main_condition_extra': 'Main condition',
-
-            'UI_setting_questInfo_text': '<b><font color=\'#E8E0BD\'>{quest-name}</b></font> (min. level #{quest-min-level})',
-
-
+            'UI_setting_questInfo_text': '<b><font color=\'#E8E0BD\'>{quest-name}</b></font> (min. level #{quest-min-level})'
         }
         super(ConfigInterface, self).init()
 
@@ -104,7 +95,6 @@ class ConfigInterface(DriftkingsConfigInterface):
         xQuestsHeader['text'] += ''
         return {
             'modDisplayName': self.ID,
-            'settingsVersion': 1,
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('isTruncateNumbers'),
@@ -120,10 +110,6 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showEliteStatus'),
             ]
         }
-
-    def onApplySettings(self, settings, isFirst=False):
-        if not isFirst:
-            g_currentVehicle.onChanged()
 
     @staticmethod
     def formatConditions(conditions):

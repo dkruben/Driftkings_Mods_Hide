@@ -1,8 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import _LogViewComponent, DamageLogPanel
-from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE as _ETYPE
+from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -16,8 +16,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'logSwapper': True,
             'wgLogHideCritics': True,
             'wgLogHideBlock': True,
-            'wgLogHideAssist': True,
-            'addEnemyName': True,
+            'wgLogHideAssist': True
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -29,9 +28,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_wgLogHideBlock_text': 'WG Log Hide Block',
             'UI_setting_wgLogHideBlock_tooltip': 'Hides blocked damage messages in the standard WG battle log.',
             'UI_setting_wgLogHideAssist_text': 'WG Log Hide Assist',
-            'UI_setting_wgLogHideAssist_tooltip': 'Hides damage assist messages in the standard WG battle log.',
-            'UI_setting_addEnemyName_text': 'Add Enemy Name',
-            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.',
+            'UI_setting_wgLogHideAssist_tooltip': 'Hides damage assist messages in the standard WG battle log.'
         }
         super(ConfigInterface, self).init()
 
@@ -45,9 +42,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('wgLogHideBlock'),
                 self.tb.createControl('wgLogHideAssist')
             ],
-            'column2': [
-                self.tb.createControl('addEnemyName')
-            ]
+            'column2': []
         }
 
 
@@ -60,13 +55,13 @@ class WGLogs(object):
 
     def __init__(self):
         self.validated = {
-            _ETYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
-            _ETYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
-            _ETYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
-            _ETYPE.STUN: config.data['wgLogHideAssist']
+            PERSONAL_EFFICIENCY_TYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
+            PERSONAL_EFFICIENCY_TYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
+            PERSONAL_EFFICIENCY_TYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
+            PERSONAL_EFFICIENCY_TYPE.STUN: config.data['wgLogHideAssist']
         }
         override(_LogViewComponent, 'addToLog', self.new__addToLog)
-        override(DamageLogPanel, '_addToBottomLog', self.new__addToBottomLog)
+        
 
     def new__addToLog(self, func, component, event):
         if not config.data['enabled']:
@@ -75,29 +70,12 @@ class WGLogs(object):
         return func(component, filtered_events)
 
     def update_settings(self):
-        """Update validated settings from config"""
         self.validated = {
-            _ETYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
-            _ETYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
-            _ETYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
-            _ETYPE.STUN: config.data['wgLogHideAssist']
+            PERSONAL_EFFICIENCY_TYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
+            PERSONAL_EFFICIENCY_TYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
+            PERSONAL_EFFICIENCY_TYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
+            PERSONAL_EFFICIENCY_TYPE.STUN: config.data['wgLogHideAssist']
         }
-
-    @staticmethod
-    def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
-        if not config.data['addEnemyName']:
-            return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
-        try:
-            player = getPlayer()
-            arena = player.arena
-            attackerName = 'Unknown'
-            for vID, vData in arena.vehicles.items():
-                if vData['vehicleType'].type.shortUserString == vehicleName:
-                    attackerName = vData['name']
-                    break
-        except:
-            attackerName = 'Enemy'
-        func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
 
 
 g_logs = WGLogs()
