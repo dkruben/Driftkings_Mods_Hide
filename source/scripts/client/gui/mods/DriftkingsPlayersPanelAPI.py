@@ -34,29 +34,29 @@ class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
     def flashLogS(self, *args):
         print('DriftkingsPlayersPanelUI: %s', args)
 
-    def as_createS(self, container, config):
-        return self.flashObject.as_create(container, config) if self._isDAAPIInited() else None
+    def as_createS(self, linkage, config):
+        return self.flashObject.as_create(linkage, config) if self._isDAAPIInited() else None
 
-    def as_updateS(self, container, data):
-        return self.flashObject.as_update(container, data) if self._isDAAPIInited() else None
+    def as_updateS(self, linkage, data):
+        return self.flashObject.as_update(linkage, data) if self._isDAAPIInited() else None
 
-    def as_deleteS(self, container):
-        return self.flashObject.as_delete(container) if self._isDAAPIInited() else None
+    def as_deleteS(self, linkage):
+        return self.flashObject.as_delete(linkage) if self._isDAAPIInited() else None
 
-    def as_updatePositionS(self, container, vehicleID):
-        return self.flashObject.as_updatePosition(container, vehicleID) if self._isDAAPIInited() else None
+    def as_updatePositionS(self, linkage, vehicleID):
+        return self.flashObject.as_updatePosition(linkage, vehicleID) if self._isDAAPIInited() else None
 
     def as_shadowListItemS(self, shadow):
         return self.flashObject.as_shadowListItem(shadow) if self._isDAAPIInited() else None
 
-    def as_extendedSettingS(self, container, vehicleID):
-        return self.flashObject.extendedSetting(container, vehicleID) if self._isDAAPIInited() else None
+    def as_extendedSettingS(self, linkage, vehicleID):
+        return self.flashObject.extendedSetting(linkage, vehicleID) if self._isDAAPIInited() else None
 
     def as_getPPListItemS(self, vehicleID):
         return self.flashObject.as_getPPListItem(vehicleID) if self._isDAAPIInited() else None
 
-    def as_hasOwnPropertyS(self, container):
-        return self.flashObject.as_hasOwnProperty(container) if self._isDAAPIInited() else None
+    def as_hasOwnPropertyS(self, linkage):
+        return self.flashObject.as_hasOwnProperty(linkage) if self._isDAAPIInited() else None
 
     def as_vehicleIconColorS(self, vehicleID, color):
         return self.flashObject.as_vehicleIconColor(vehicleID, color) if self._isDAAPIInited() else None
@@ -134,41 +134,41 @@ class Events(object):
         self.viewLoad = False
         self.componentUI = None
 
-    def create(self, container, config=None):
+    def create(self, linkage, config=None):
         if not self.componentUI:
             return None
         conf = copy.deepcopy(self.config)
         if config:
             smart_update(conf, config)
-        return self.componentUI.as_createS(container, conf)
+        return self.componentUI.as_createS(linkage, conf)
 
-    def update(self, container, data):
+    def update(self, linkage, data):
         if not self.componentUI:
             return None
         if 'text' in data:
             data['text'] = data['text'].replace('$IMELanguageBar', '$FieldFont')
-        return self.componentUI.as_updateS(container, data)
+        return self.componentUI.as_updateS(linkage, data)
 
-    def delete(self, container):
-        return self.componentUI.as_deleteS(container) if self.componentUI else None
+    def delete(self, linkage):
+        return self.componentUI.as_deleteS(linkage) if self.componentUI else None
 
     def shadowListItem(self, shadow):
         return self.componentUI.as_shadowListItemS(shadow) if self.componentUI else None
 
-    def hasOwnProperty(self, container):
-        return self.componentUI.as_hasOwnPropertyS(container) if self.componentUI else None
+    def hasOwnProperty(self, linkage):
+        return self.componentUI.as_hasOwnPropertyS(linkage) if self.componentUI else None
 
     def vehicleIconColor(self, vehicleID, color):
         return self.componentUI.as_vehicleIconColorS(vehicleID, color) if self.componentUI else None
 
-    def extendedSetting(self, container, vehicleID):
-        return self.componentUI.as_extendedSettingS(container, vehicleID) if self.componentUI else None
+    def extendedSetting(self, linkage, vehicleID):
+        return self.componentUI.as_extendedSettingS(linkage, vehicleID) if self.componentUI else None
 
     def getPPListItem(self, vehicleID):
         return self.componentUI.as_getPPListItemS(vehicleID) if self.componentUI else None
 
-    def updatePosition(self, container, vehicleID):
-        return self.componentUI.as_updatePositionS(container, vehicleID) if self.componentUI else None
+    def updatePosition(self, linkage, vehicleID):
+        return self.componentUI.as_updatePositionS(linkage, vehicleID) if self.componentUI else None
 
     def onComponentRegistered(self, event):
         if event.alias != BATTLE_VIEW_ALIASES.PLAYERS_PANEL:
@@ -183,6 +183,6 @@ class Events(object):
 
 if not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
     g_driftkingsPlayersPanels = Events()
-    g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI_V2.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+    g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
     g_entitiesFactories.addSettings(ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
     g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)

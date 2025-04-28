@@ -38,53 +38,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         self.defaultKeys = {'toggleKey': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
             'enabled': True,
-            'textFields': {
-                "1text": {
-                    "left": {
-                        "align": "center",
-                        "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
-                        "x": 111,
-                        "y": 3
-                    },
-                    "right": {
-                        "align": "center",
-                        "text": "<font face='$FieldFont' color='#FFFFFF' size='11'>%(curHealth)s/%(maxHealth)s</font>",
-                        "x": -115,
-                        "y": 3
-                    }
-                },
-                "2img": {
-                    "hideIfDead": True,
-                    "left": {
-                        "align": "left",
-                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_l.png' width='%(barWidth)d' height='14'>",
-                        "width": 72,
-                        "x": 75,
-                        "y": 3
-                    },
-                    "right": {
-                        "align": "left",
-                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_alive_r.png' width='%(barWidth)d' height='14'>",
-                        "width": 72,
-                        "x": -151,
-                        "y": 3
-                    }
-                },
-                "3bg": {
-                    "left": {
-                        "align": "left",
-                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
-                        "x": 76,
-                        "y": 4
-                    },
-                    "right": {
-                        "align": "left",
-                        "text": "<img src='img://../mods/configs/Driftkings/PlayersPanelHP/icons/hp_bg.png' width='70' height='12'>",
-                        "x": -150,
-                        "y": 4
-                    }
-                }
-            },
+            'textFields': {},
             'mode': 0,
             'toggleKey': self.defaultKeys['toggleKey']
         }
@@ -130,7 +84,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def onStartBattle(self):
         if g_driftkingsPlayersPanels.viewLoad:
-            self.hasOwnProperty()
             getPlayer().arena.onVehicleKilled += self.onVehicleKilled
             collection = vos_collections.VehiclesInfoCollection().iterator(self.sessionProvider.getArenaDP())
             for vInfoVO in collection:
@@ -147,7 +100,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
             panelSide = 'left' if player.team == team else 'right'
             currentHP = self.__hpCache[vehicleID]['current']
             maxHP = self.__hpCache[vehicleID]['max']
-            self.hasOwnProperty()
             for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
                 barWidth = currentHP
                 if 'width' in fieldData[panelSide]:
@@ -155,14 +107,17 @@ class PlayersPanelController(DriftkingsConfigInterface):
                 g_driftkingsPlayersPanels.update(self.ID + fieldName, {'vehicleID': vehicleID, 'text': (fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}) if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth) else ''})
 
     def hasOwnProperty(self):
-        for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
-            container = self.ID + fieldName
-            if not g_driftkingsPlayersPanels.hasOwnProperty(container):
-                g_driftkingsPlayersPanels.create(container, fieldData)
+        self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
+        self.displayed = not self.data['mode']
+        for fieldName, fieldData in self.data['textFields'].iteritems():
+            if not g_driftkingsPlayersPanels.hasOwnProperty(self.ID + fieldName):
+                g_driftkingsPlayersPanels.create(self.ID + fieldName, fieldData)
 
     def onEndBattle(self):
         getPlayer().arena.onVehicleKilled -= self.onVehicleKilled
         self.displayed = not self.data['mode']
+        for fieldName in self.data['textFields']:
+            g_driftkingsPlayersPanels.delete(self.ID + fieldName)
         self.__hpCache.clear()
         self.__vCache.clear()
 
@@ -173,7 +128,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def updateHealth(self, vehicleID, newHealth=-1, *_, **__):
         if g_driftkingsPlayersPanels.viewLoad:
-            self.hasOwnProperty()
             if vehicleID not in self.__hpCache or newHealth == -1:
                 vehicle = getPlayer().arena.vehicles.get(vehicleID)
                 maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else -1
@@ -204,6 +158,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def new__afterCreate(self, func, orig):
         func(orig)
+        self.hasOwnProperty()
         self.onStartBattle()
 
     def new__setInAoI(self, func, orig, entry, isInAoI, *args, **kwargs):

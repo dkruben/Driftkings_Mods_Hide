@@ -204,7 +204,8 @@ class ScaleRating(object):
             with open(local_path, 'w') as f:
                 json.dump({'key': 'value'}, f)
         try:
-            response = urllib2.urlopen(url, config.data['performance']['requestTimeout'])
+            # Fix: Pass timeout as a keyword argument
+            response = urllib2.urlopen(url, timeout=config.data['performance']['requestTimeout'])
             with open(local_path, 'wb') as f:
                 f.write(response.read())
             logInfo(config.ID, 'Successfully downloaded data from {}', url)
@@ -267,7 +268,8 @@ class StatRating(object):
             with open(local_path, 'w') as f:
                 json.dump({'key': 'value'}, f)
         try:
-            response = urllib2.urlopen(url, config.data['performance']['requestTimeout'])
+            # Fix: Pass timeout as a keyword argument
+            response = urllib2.urlopen(url, timeout=config.data['performance']['requestTimeout'])
             with open(local_path, 'wb') as f:
                 f.write(response.read())
             logInfo(config.ID, 'Successfully downloaded data from {}', url)
@@ -627,18 +629,16 @@ class PlayersPanels(CallbackDelayer):
         return 1
 
 
-
+config = ConfigInterface()
+statistic_mod = Analytics(config.ID, config.version)
 g_event = Events()
 g_scale = ScaleRating()
 g_statR = StatRating()
 g_calRating = CalculatorRating()
 g_stats = Statistics()
 g_panels = PlayersPanels()
-config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-    config = ConfigInterface()
-    statistic_mod = Analytics(config.ID, config.version)
 except ImportError:
     logWarning(config.ID, 'Battle Flash API not found.')
 except StandardError:
