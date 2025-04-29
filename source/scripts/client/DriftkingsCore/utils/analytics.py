@@ -4,12 +4,12 @@ import json
 import urllib2
 import uuid
 import time
+import traceback
 
 import BigWorld
 from PlayerEvents import g_playerEvents
 
 __all__ = ('Analytics',)
-
 
 GA4_MEASUREMENT_ID = 'G-B7Z425MJ3L'
 GA4_API_SECRET = '5687050102'
@@ -47,22 +47,32 @@ class Analytics(object):
                 self._thread_modManager.join(timeout=1.0)
                 self._thread_modManager = None
 
-    def trackEvent(self, event_name, event_params=None):
+    def trackEvent(self, eventName, eventParams=None):
         if not self.modManager_started:
             return
-        tracking_thread = threading.Thread(target=self._send_ga4_event, args=(event_name, event_params), name='ga4_tracking_%s' % event_name)
+        tracking_thread = threading.Thread(target=self._send_event, args=(eventName, eventParams), name='ga4_tracking_%s' % eventName)
         tracking_thread.daemon = True
         tracking_thread.start()
 
-    def _send_ga4_event(self, event_name, event_params=None):
-        url = "{0}?measurement_id={1}&api_secret={2}".format(GA4_ENDPOINT, GA4_MEASUREMENT_ID, GA4_API_SECRET)
-        payload = {'clientID': self.clientID, 'events': [{'name': event_name, 'params': event_params or {}}]}
-        payload['events'][0]['params']['timestamp'] = int(time.time())
-        payload["events"][0]['params']["ID"] = self.ID
-        payload["events"][0]['params']['version'] = self.version
-        data = json.dumps(payload)
-        request = urllib2.Request(url, data=data)
-        request.add_header('Content-Type', 'application/json')
-        request.add_header('User-Agent', 'WoT-Mod/{0}-{1}'.format(self.ID, self.version))
-        response = urllib2.urlopen(request, timeout=5)
-        print('Analytics: %s' % response.read())
+    def _send_event(self, eventName, eventParams=None):
+        try:
+            url = '{0}?measurement_id={1}&api_secret={2}'.format(GA4_ENDPOINT, GA4_MEASUREMENT_ID, GA4_API_SECRET)
+            payload = {'client_id': self.clientID, 'events': [{'name': eventName, 'params': eventParams or {}}]}
+            payload['events'][0]['params']['timestamp'] = int(time.time())
+            payload['events'][0]['params']['ID'] = self.ID
+            payload['events'][0]['params']['version'] = self.version
+            data = json.dumps(payload)
+            request = urllib2.Request(url, data=data)
+            request.add_header('Content-Type', 'application/json')
+            request.add_header('User-Agent', 'WoT-Mod/{0}-{1}'.format(self.ID, self.version))
+            try:
+                response = urllib2.urlopen(request, timeout=3)
+                print('Analytics: Event "{0}" sent successfully'.format(eventName))
+            except urllib2.URLError as e:
+                print('Analytics: Failed to send event \'{0}\': {1}'.format(eventName, e.reason))
+            except Exception as e:
+                print('Analytics: Error sending event \'{0}\': {1}'.format(eventName, str(e)))
+        except Exception:
+            # Catch any exceptions to prevent the thread from crashing
+            print('Analytics: Unexpected error in _send_ga4_event:')
+            print(traceback.format_exc())

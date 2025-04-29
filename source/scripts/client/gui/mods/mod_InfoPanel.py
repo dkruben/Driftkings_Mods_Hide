@@ -23,15 +23,17 @@ PRESET_TEMPLATES = {
     'detailed': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}} | Aim: {{gun_aiming_time}}s</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}/{{invis_move}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | Turret: {{armor_turret_front}}/{{armor_turret_side}}/{{armor_turret_back}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | HP: {{vehicle_max_health}} | Power: {{engine_power_density}}hp/t</font>\n<font color='#CCCCCC'>Shell: {{shell_name_1}} {{shell_damage_1}}dmg | Pen: {{shell_power_1}}mm</font>",
     'full': "<font face='$FieldFont' size='16' color='#FFFFFF'><font color='#FF557F'><tab>Tank: {{vehicle_name}}</font>\n<tab>Reload: <font color='#17EB17'>{{gun_reload_equip}}sec.</font>\n<img src='img://gui/maps/icons/vehicle/{{icon_system_name}}.png'>\n<textformat tabstops='[65]'>Weight: <font color='#FF3C38'>{{vehicle_weight}} ton.</font><tab>View: <font color='#002AFF'>{{vision_radius}} mt.</font></textformat>\n<textformat tabstops='[65,105,145]'>Cassis:<tab>{{armor_hull_front}}<tab>{{armor_hull_side}}<tab>{{armor_hull_back}}</textformat>\n<textformat tabstops='[65,105,145]'>Torret:<tab>{{armor_turret_front}}<tab>{{armor_turret_side}}<tab>{{armor_turret_back}}</textformat>\n<textformat tabstops='[65,105,145]'>Shell Type:<tab><font color='#FF7F00'>{{shell_type_1}}</font><tab><font color='#FFD400'>{{shell_type_2}}</font><tab><font color='#FFAA55'>{{shell_type_3}}</font></textformat>\n<textformat tabstops='[65,105,145]'>Piercing:<tab>{{shell_power_1}}<tab>{{shell_power_2}}<tab>{{shell_power_3}}</textformat>\n<textformat tabstops='[65,105,145]'>Av. Dmg:<tab>{{shell_damage_1}}<tab>{{shell_damage_2}}<tab>{{shell_damage_3}}</textformat></font>",
     'kmp': "<font face='$FieldFont' size='16' color='#FFFFFF'><b>{{vehicle_name}}\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\nView: {{vision_radius}} mt.\n<font color='{{compareColor({{vehicle_weight}}, {{pl_vehicle_weight}})}}'>{{vehicle_weight}} ton. {{compareDelim({{vehicle_weight}}, {{pl_vehicle_weight}})}} {{pl_vehicle_weight}} ton.</font></font>",
-    'ndo': "<font face='$FieldFont' size='16' color='#FFFFFF'><textformat tabstops='[5,150,214]'><font size='0'>.</font><tab><font color='#FF9900'>{{vehicle_name}}</font>\nReload:  {{gun_reload_equip}} sec</textformat></b><textformat tabstops='[5,54,150,214,246,279]'><font size='0'>.</font><tab>\nView:  {{vision_radius}} mt\nShell Type:  {{shell_type_1}}  {{shell_type_2}}  {{shell_type_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nTorret:  {{armor_turret_front}}  {{armor_turret_side}}  {{armor_turret_back}}\nAv. Damage:  {{shell_damage_1}}  {{shell_damage_2}}  {{shell_damage_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nChassis:  {{armor_hull_front}}  {{armor_hull_side}}  {{armor_hull_back}}\nPiercing:  {{shell_power_1}}  {{shell_power_2}}  {{shell_power_3}}</textformat></font>"
+    'ndo': "<font face='$FieldFont' size='16' color='#FFFFFF'><textformat tabstops='[5,150,214]'><font size='0'>.</font><tab><font color='#FF9900'>{{vehicle_name}}</font>\nReload:  {{gun_reload_equip}} sec</textformat></b><textformat tabstops='[5,54,150,214,246,279]'><font size='0'>.</font><tab>\nView:  {{vision_radius}} mt\nShell Type:  {{shell_type_1}}  {{shell_type_2}}  {{shell_type_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nTorret:  {{armor_turret_front}}  {{armor_turret_side}}  {{armor_turret_back}}\nAv. Damage:  {{shell_damage_1}}  {{shell_damage_2}}  {{shell_damage_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nChassis:  {{armor_hull_front}}  {{armor_hull_side}}  {{armor_hull_back}}\nPiercing:  {{shell_power_1}}  {{shell_power_2}}  {{shell_power_3}}</textformat></font>",
+    'driftkings': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | HP: {{vehicle_max_health}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | Power: {{engine_power_density}}hp/t | Turn: {{chassis_rotation_speed}}°/s</font>\n<font color='#CCCCCC'>Shell: {{shell_name_1}} {{shell_damage_1}}dmg | Pen: {{shell_power_1}}mm</font>"
 }
+TEMPLATE_INDEX_TO_KEY = {0: 'default', 1: 'minimal', 2: 'detailed', 3: 'full', 4: 'kmp', 5: 'ndo', 6: 'driftkings'}
 
 
 class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.0 (%(file_compile_date)s)'
+        self.version = '1.8.5 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -44,13 +46,13 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'moreThan': {'color': '#FF0000', 'delim': '&gt;'}
             },
             'delay': 5,
-            'templatePreset': 'default',
+            'templatePreset': 0,
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 700.0, 'y': 300.0, 'alignX': 'center', 'alignY': 'center'},
             'textShadow': {'alpha': 0.8, 'angle': 90, 'blurX': 5, 'blurY': 5, 'color': '#000000', 'distance': 1, 'enabled': True, 'quality': 2, 'strength': 2},
             'backgroundEnabled': True,
-            'backgroundAlpha': 0.5,
+            'backgroundAlpha': 0.7,
             'version': calculate_version(self.version)
         }
         self.i18n = {
@@ -82,6 +84,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_templatePreset_full': 'Full',
             'UI_templatePreset_kmp': 'KMP',
             'UI_templatePreset_ndo': 'NDO',
+            'UI_templatePreset_driftkings': 'Driftkings',
             'armor_piercing': 'AP',
             'high_explosive': 'HE',
             'armor_piercing_cr': 'APCR',
@@ -94,7 +97,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         xFormat = self.i18n['UI_delay_format']
         showForOptions = ['all', 'ally', 'enemy']
         showForLabels = [self.i18n['UI_showFor_' + x] for x in showForOptions]
-        templateOptions = ['default', 'minimal', 'detailed', 'full', 'kmp', 'ndo']
+        templateOptions = ['default', 'minimal', 'detailed', 'full', 'kmp', 'ndo', 'driftkings']
         templateLabels = [self.i18n['UI_templatePreset_' + x] for x in templateOptions]
         return {
             'modDisplayName': self.ID,
@@ -129,69 +132,86 @@ class Flash(object):
             return
         self.data = self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
-        self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
-        self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['backgroundEnabled']})
-        self.updateObject(COMPONENT_TYPE.LABEL, {'alpha': config.data['backgroundAlpha']})
-        shadow = config.data['textShadow']['enabled']
-        if shadow:
-            self.updateObject(COMPONENT_TYPE.LABEL, {
-                'shadow': {
-                    'distance': config.data['textShadow']['distance'],
-                    'angle': config.data['textShadow']['angle'],
-                    'color': config.data['textShadow']['color'],
-                    'alpha': config.data['textShadow']['alpha'],
-                    'blurX': config.data['textShadow']['blurX'],
-                    'blurY': config.data['textShadow']['blurY'],
-                    'strength': config.data['textShadow']['strength'],
-                    'quality': config.data['textShadow']['quality']
-                }
-            })
+        if g_guiFlash is not None and COMPONENT_TYPE is not None:
+            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+            self.createObject(component_label, self.data[component_label])
+            self.updateObject(component_label, {'background': config.data['backgroundEnabled']})
+            self.updateObject(component_label, {'alpha': config.data['backgroundAlpha']})
+            self.setShadow()
         g_guiResetters.add(self.screenResize)
+
+    def setShadow(self):
+        shadow = config.data['textShadow']['enabled']
+        if g_guiFlash is not None:
+            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+            if shadow:
+                self.updateObject(component_label, {
+                    'shadow': {
+                        'distance': config.data['textShadow']['distance'],
+                        'angle': config.data['textShadow']['angle'],
+                        'color': config.data['textShadow']['color'],
+                        'alpha': config.data['textShadow']['alpha'],
+                        'blurX': config.data['textShadow']['blurX'],
+                        'blurY': config.data['textShadow']['blurY'],
+                        'strength': config.data['textShadow']['strength'],
+                        'quality': config.data['textShadow']['quality']
+                    }
+                })
 
     def stopBattle(self):
         if not config.data['enabled']:
             return
         g_guiResetters.remove(self.screenResize)
-        COMPONENT_EVENT.UPDATED -= self.__updatePosition
-        self.deleteObject(COMPONENT_TYPE.LABEL)
+        if COMPONENT_EVENT is not None:
+            COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        if g_guiFlash is not None and COMPONENT_TYPE is not None:
+            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+            self.deleteObject(component_label)
 
     def deleteObject(self, name):
-        g_guiFlash.deleteComponent(self.name[name])
+        if g_guiFlash is not None and name in self.name:
+            g_guiFlash.deleteComponent(self.name[name])
 
     def createObject(self, name, data):
-        g_guiFlash.createComponent(self.name[name], name, data)
+        if g_guiFlash is not None:
+            g_guiFlash.createComponent(self.name[name], name, data)
 
     def updateObject(self, name, data):
-        g_guiFlash.updateComponent(self.name[name], data)
+        if g_guiFlash is not None and name in self.name:
+            g_guiFlash.updateComponent(self.name[name], data)
 
     def __updatePosition(self, alias, props):
         if str(alias) == str(config.ID):
             x = props.get('x', config.data['textPosition']['x'])
-            if x and x != config.data['textPosition']['x']:
+            if x is not None and x != config.data['textPosition']['x']:
                 config.data['textPosition']['x'] = x
-                self.data[COMPONENT_TYPE.LABEL]['x'] = x
+                component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+                self.data[component_label]['x'] = x
             y = props.get('y', config.data['textPosition']['y'])
-            if y and y != config.data['textPosition']['y']:
+            if y is not None and y != config.data['textPosition']['y']:
                 config.data['textPosition']['y'] = y
-                self.data[COMPONENT_TYPE.LABEL]['y'] = y
+                component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+                self.data[component_label]['y'] = y
             config.onApplySettings({'textPosition': {'x': x, 'y': y}})
 
     def setup(self):
-        self.name = {COMPONENT_TYPE.LABEL: str(config.ID)}
-        self.data = {
-            COMPONENT_TYPE.LABEL: {'x': 0, 'y': 0, 'drag': not config.data['textLock'], 'border': not config.data['textLock'], 'alignX': 'center', 'alignY': 'center', 'visible': True, 'text': ''}}
+        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+        self.name = {component_label: str(config.ID)}
+        self.data = {component_label: {'x': 0, 'y': 0, 'drag': not config.data['textLock'], 'border': not config.data['textLock'], 'alignX': 'center', 'alignY': 'center', 'visible': True, 'text': ''}}
         for key, value in config.data['textPosition'].items():
-            if key in self.data[COMPONENT_TYPE.LABEL]:
-                self.data[COMPONENT_TYPE.LABEL][key] = value
+            if key in self.data[component_label]:
+                self.data[component_label][key] = value
         return self.data
 
     def addText(self, text):
         formatText = str(text)
-        self.updateObject(COMPONENT_TYPE.LABEL, {'text': formatText})
+        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+        self.updateObject(component_label, {'text': formatText})
 
     def setVisible(self, status):
         data = {'visible': status}
-        self.updateObject(COMPONENT_TYPE.LABEL, data)
+        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+        self.updateObject(component_label, data)
 
     @staticmethod
     def screenFix(screen, value, align=1):
@@ -214,33 +234,33 @@ class Flash(object):
         return value
 
     def screenResize(self):
-        try:
-            curScr = GUI.screenResolution()
-            scale = float(self.settingsCore.interfaceScale.get())
-            xMo, yMo = curScr[0] / scale, curScr[1] / scale
-            x = config.data['textPosition'].get('x', None)
-            if config.data['textPosition']['alignX'] == COMPONENT_ALIGN.LEFT:
-                x = self.screenFix(xMo, config.data['textPosition']['x'], 1)
-            elif config.data['textPosition']['alignX'] == COMPONENT_ALIGN.RIGHT:
-                x = self.screenFix(xMo, config.data['textPosition']['x'], -1)
-            elif config.data['textPosition']['alignX'] == COMPONENT_ALIGN.CENTER:
-                x = self.screenFix(xMo, config.data['textPosition']['x'], 0)
-            if x is not None and x != config.data['textPosition']['x']:
-                config.data['textPosition']['x'] = x
-                self.data[COMPONENT_TYPE.LABEL]['x'] = x
-            y = config.data['textPosition'].get('y', None)
-            if config.data['textPosition']['alignY'] == COMPONENT_ALIGN.TOP:
-                y = self.screenFix(yMo, config.data['textPosition']['y'], 1)
-            elif config.data['textPosition']['alignY'] == COMPONENT_ALIGN.BOTTOM:
-                y = self.screenFix(yMo, config.data['textPosition']['y'], -1)
-            elif config.data['textPosition']['alignY'] == COMPONENT_ALIGN.CENTER:
-                y = self.screenFix(yMo, config.data['textPosition']['y'], 0)
-            if y is not None and y != config.data['textPosition']['y']:
-                config.data['textPosition']['y'] = y
-                self.data[COMPONENT_TYPE.LABEL]['y'] = y
-            self.updateObject(COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
-        except Exception as e:
-            logError(config.ID, 'Error during screen resize: {}', e)
+        curScr = GUI.screenResolution()
+        scale = float(self.settingsCore.interfaceScale.get())
+        xMo, yMo = curScr[0] / scale, curScr[1] / scale
+        x = config.data['textPosition'].get('x', None)
+        if config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'LEFT', 'left'):
+            x = self.screenFix(xMo, config.data['textPosition']['x'], 1)
+        elif config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'RIGHT', 'right'):
+            x = self.screenFix(xMo, config.data['textPosition']['x'], -1)
+        elif config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'CENTER', 'center'):
+            x = self.screenFix(xMo, config.data['textPosition']['x'], 0)
+        if x is not None and x != config.data['textPosition']['x']:
+            config.data['textPosition']['x'] = x
+            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+            self.data[component_label]['x'] = x
+        y = config.data['textPosition'].get('y', None)
+        if config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'TOP', 'top'):
+            y = self.screenFix(yMo, config.data['textPosition']['y'], 1)
+        elif config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'BOTTOM', 'bottom'):
+            y = self.screenFix(yMo, config.data['textPosition']['y'], -1)
+        elif config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'CENTER', 'center'):
+            y = self.screenFix(yMo, config.data['textPosition']['y'], 0)
+        if y is not None and y != config.data['textPosition']['y']:
+            config.data['textPosition']['y'] = y
+            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+            self.data[component_label]['y'] = y
+        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
+        self.updateObject(component_label, {'x': x, 'y': y})
 
     def getData(self):
         return self.data
@@ -330,6 +350,7 @@ class DataConstants(object):
             'gun_name': lambda: self._typeDescriptor.gun.shortUserString if self._typeDescriptor else None,
             'max_ammo': lambda: self._typeDescriptor.gun.maxAmmo if self._typeDescriptor else None,
             'gun_reload': lambda: '%.2f' % self._typeDescriptor.gun.reloadTime if self._typeDescriptor else None,
+            'gun_reload_with_crew': lambda: '%.2f' % round(self._typeDescriptor.gun.reloadTime * self._typeDescriptor.miscAttrs.get('gunReloadTimeFactor', 1) / 1.0695 + 0.0043 * self._typeDescriptor.miscAttrs.get('crewLevelIncrease', 0), 1) if self._typeDescriptor else None,
             'gun_dpm': self._get_gun_dpm,
             'gun_reload_equip': self._get_gun_reload_equip,
             'gun_dpm_equip': self._get_gun_dpm_equip,
@@ -351,7 +372,7 @@ class DataConstants(object):
             'armor_turret_front': lambda: None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[0],
             'armor_turret_side': lambda: None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[1],
             'armor_turret_back': lambda: None if not self._typeDescriptor else '%d' % self._typeDescriptor.turret.primaryArmor[2],
-            'vehicle_weight': lambda: '%.1f' % round(self._typeDescriptor.physics['weight'] / 1000,1) if self._typeDescriptor else None,
+            'vehicle_weight': lambda: '%.1f' % round(self._typeDescriptor.physics['weight'] / 1000, 1) if self._typeDescriptor else None,
             'chassis_max_weight': lambda: None if not self._typeDescriptor else '%.1f' % round(self._typeDescriptor.chassis.maxLoad / 1000, 1),
             'engine_name': lambda: None if not self._typeDescriptor else '%s' % self._typeDescriptor.engine.shortUserString,
             'engine_power': lambda: None if not self._typeDescriptor else '%d' % round(self._typeDescriptor.engine.power / 735.49875, 0),
@@ -360,6 +381,7 @@ class DataConstants(object):
             'speed_backward': lambda: None if not self._typeDescriptor else '%d' % (self._typeDescriptor.physics['speedLimits'][1] * 3.6),
             'hull_speed_turn': lambda: None if not self._typeDescriptor else '%.2f' % degrees(self._typeDescriptor.chassis.rotationSpeed),
             'turret_speed_turn': lambda: None if not self._typeDescriptor else '%.2f' % degrees(self._typeDescriptor.turret.rotationSpeed),
+            'chassis_rotation_speed': lambda: None if not self._typeDescriptor else '%d' % degrees(self._typeDescriptor.chassis.rotationSpeed),
             'invis_stand': lambda: None if not self._typeDescriptor else '%.1f' % (self._typeDescriptor.type.invisibility[1] * 57),
             'invis_stand_shot': lambda: None if not self._typeDescriptor else '%.2f' % (self._typeDescriptor.type.invisibility[1] * self._typeDescriptor.gun.invisibilityFactorAtShot * 57),
             'invis_move': lambda: None if not self._typeDescriptor else '%.1f' % (self._typeDescriptor.type.invisibility[0] * 57),
@@ -379,7 +401,7 @@ class DataConstants(object):
             'pl_gun_aiming_time': self._get_pl_gun_aiming_time,
         }
         handlers.update(self._generateShellHandlers())
-        handlers.update({'stun_radius': self._get_stun_radius, 'stun_duration_min': self._get_stun_duration_min, 'stun_duration_max': self._get_stun_duration_max,})
+        handlers.update({'stun_radius': self._get_stun_radius, 'stun_duration_min': self._get_stun_duration_min, 'stun_duration_max': self._get_stun_duration_max, })
         return handlers
 
     def _generateShellHandlers(self):
@@ -467,7 +489,7 @@ class DataConstants(object):
         return result
 
     def _get_gun_dpm_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
-        cache_key = 'gun_reload_equip_%s_%s_%s_%s' % (eq1, eq2, eq3, eq4)
+        cache_key = 'gun_dpm_equip_%s_%s_%s_%s' % (eq1, eq2, eq3, eq4)
         if cache_key in self._cachedResults:
             return self._cachedResults[cache_key]
         if not self._typeDescriptor:
@@ -631,20 +653,9 @@ class InfoPanel(DataConstants):
 
     @staticmethod
     def getText():
-        text = ''
-        if config.data['templatePreset'] == 0:
-            text = PRESET_TEMPLATES['default']
-        elif config.data['templatePreset'] == 1:
-            text = PRESET_TEMPLATES['minimal']
-        elif config.data['templatePreset'] == 2:
-            text = PRESET_TEMPLATES['detailed']
-        elif config.data['templatePreset'] == 3:
-            text = PRESET_TEMPLATES['full']
-        elif config.data['templatePreset'] == 4:
-            text = PRESET_TEMPLATES['kmp']
-        elif config.data['templatePreset'] == 5:
-            text = PRESET_TEMPLATES['ndo']
-        return text
+        template_index = config.data['templatePreset']
+        template_key = TEMPLATE_INDEX_TO_KEY.get(template_index, 'default')
+        return PRESET_TEMPLATES.get(template_key, PRESET_TEMPLATES['default'])
 
     @staticmethod
     def isConditions(entity):
@@ -773,8 +784,7 @@ def new_targetFocus(func, self, entity):
 @override(PlayerAvatar, 'handleKey')
 def new_handleKey(func, self, isDown, key, mods):
     func(self, isDown, key, mods)
-    if not config.data['enabled'] or key != checkKeys(
-            config.data['altKey']) or MessengerEntry.g_instance.gui.isFocused():
+    if not config.data['enabled'] or key != checkKeys(config.data['altKey']) or MessengerEntry.g_instance.gui.isFocused():
         return
     g_mod.handleKey(isDown)
 
@@ -782,8 +792,7 @@ def new_handleKey(func, self, isDown, key, mods):
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new_startGUI(func, *args):
     func(*args)
-    if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
-        g_flash.startBattle()
+    g_flash.startBattle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
