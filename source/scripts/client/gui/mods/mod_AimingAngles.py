@@ -430,4 +430,4 @@ class ConfigsInterface(DriftkingsConfigInterface):
 
 
 config = ConfigsInterface()
-analytics = AnalyticsAnalytics(config.ID, config.version)
+analytics = Analytics(config.ID, config.version)

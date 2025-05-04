@@ -64,7 +64,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_triggerMessage_tooltip': 'Show/hide notification messages when shots are blocked',
             'UI_setting_activateMessage_text': 'Activate Message',
             'UI_setting_activateMessage_tooltip': 'Show notification message when entering battle',
-            'UI_battle_activateMessage': 'Mod: SafeShot Activated!',
+            'UI_battle_activateMessage': 'SafeShot: Activated!',
             'UI_triggerText_enabled': 'SafeShot: Enabled!',
             'UI_triggerText_disabled': 'SafeShot: Disabled!'
         }

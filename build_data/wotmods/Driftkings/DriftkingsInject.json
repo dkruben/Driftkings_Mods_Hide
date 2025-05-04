@@ -17,9 +17,8 @@
         "res/scripts/client/DriftkingsInject/views/__init__.pyc"		    : "build/scripts/client/DriftkingsInject/views/__init__.pyc",
         "res/scripts/client/DriftkingsInject/views/armorCalc_view.pyc"      : "build/scripts/client/DriftkingsInject/views/armorCalc_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc": "build/scripts/client/DriftkingsInject/views/dispercionTimer_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/distance_view.pyc"       : "build/scripts/client/DriftkingsInject/views/distance_view.pyc",
 		"res/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc"  : "build/scripts/client/DriftkingsInject/views/efficiencyLog_view.pyc",
-		"res/scripts/client/DriftkingsInject/views/flightTime_view.pyc": "build/scripts/client/DriftkingsInject/views/flightTime_view.pyc",
+		"res/scripts/client/DriftkingsInject/views/flightTime_view.pyc"     : "build/scripts/client/DriftkingsInject/views/flightTime_view.pyc",
         "res/scripts/client/DriftkingsInject/views/mainGun_view.pyc"        : "build/scripts/client/DriftkingsInject/views/mainGun_view.pyc",
         "res/scripts/client/DriftkingsInject/views/ownHealth_view.pyc"      : "build/scripts/client/DriftkingsInject/views/ownHealth_view.pyc",
         "res/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"     : "build/scripts/client/DriftkingsInject/views/sixthSense_view.pyc"
