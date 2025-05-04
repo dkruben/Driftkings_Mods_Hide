@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-BattleStat - A World of Tanks mod that displays team win chance statistics during battles.
-"""
 import GUI
 from Avatar import PlayerAvatar
 from Vehicle import Vehicle
@@ -18,11 +15,9 @@ from DriftkingsInject import g_events
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-    """Configuration interface for the BattleStat mod."""
     def init(self):
-        """Initialize configuration settings."""
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.6 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'by: StranikS_Scan, re-coded by: Driftkings'
         self.data = {
             'enabled': True,
@@ -65,39 +60,39 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_description': self.ID,
             'UI_setting_teamChances_text': 'Show team chances',
             'UI_setting_teamChances_tooltip': 'Displays win chance percentage for each team during battle',
+            'UI_setting_background_text': 'Show background',
+            'UI_setting_background_tooltip': 'Displays background for the text',
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
-        """Create settings template."""
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
-            'column1': [],
+            'column1': [
+                self.tb.createControl('format', self.tb.types.TextInput, width=300),
+                self.tb.createControl('background')
+            ],
             'column2': []
         }
 
 
 class Flash:
-    """Handles the Flash UI elements for displaying statistics."""
     settingsCore = dependency.descriptor(ISettingsCore)
 
     def __init__(self):
-        """Initialize Flash UI settings."""
         textFormat = config.data['textFormat']
         self.font = textFormat['font']
         self.size = textFormat['size']
         self.color = textFormat['color']
         self.bold = textFormat['bold']
         self.italic = textFormat['italic']
-        # Prepare HTML formatting tags
         self._begin_tag = '<font face=\'%s\' size=\'%d\' color=\'%s\'>%s%s' % (self.font, self.size, self.color, '<b>' if self.bold else '', '<i>' if self.italic else '')
         self._end_tag = '%s%s</font>' % ('</b>' if self.bold else '', '</i>' if self.italic else '')
         self.name = {}
         self.data = {}
 
     def startBattle(self):
-        """Set up UI elements at battle start."""
         if not config.data['enabled']:
             return
         self.data = self._setup()
@@ -108,7 +103,6 @@ class Flash:
         g_guiResetters.add(self.screenResize)
 
     def stopBattle(self):
-        """Clean up UI elements at battle end."""
         if not config.data['enabled']:
             return
         g_guiResetters.remove(self.screenResize)
@@ -116,19 +110,15 @@ class Flash:
         self.deleteObject(COMPONENT_TYPE.LABEL)
 
     def deleteObject(self, name):
-        """Delete a UI component."""
         g_guiFlash.deleteComponent(self.name[name])
 
     def createObject(self, name, data):
-        """Create a UI component."""
         g_guiFlash.createComponent(self.name[name], name, data)
 
     def updateObject(self, name, data):
-        """Update a UI component."""
         g_guiFlash.updateComponent(self.name[name], data)
 
     def _updatePosition(self, alias, props):
-        """Update component position when dragged."""
         if str(alias) == str(config.ID):
             x = props.get('x', config.data['textPosition']['x'])
             y = props.get('y', config.data['textPosition']['y'])
@@ -141,7 +131,6 @@ class Flash:
             config.onApplySettings({'textPosition': {'x': x, 'y': y}})
 
     def _setup(self):
-        """Set up component data."""
         self.name = {COMPONENT_TYPE.LABEL: str(config.ID)}
         component_data = {
             COMPONENT_TYPE.LABEL: {
@@ -163,41 +152,36 @@ class Flash:
     def setShadow(self):
         """Apply shadow settings to the text."""
         if config.data['textShadow']['enabled']:
-            shadow_config = config.data['textShadow']
+            shadow = config.data['textShadow']
             self.updateObject(COMPONENT_TYPE.LABEL, {
                 'shadow': {
-                    'distance': shadow_config['distance'],
-                    'angle': shadow_config['angle'],
-                    'color': shadow_config['color'],
-                    'alpha': shadow_config['alpha'],
-                    'blurX': shadow_config['blurX'],
-                    'blurY': shadow_config['blurY'],
-                    'strength': shadow_config['strength'],
-                    'quality': shadow_config['quality']
+                    'distance': shadow['distance'],
+                    'angle': shadow['angle'],
+                    'color': shadow['color'],
+                    'alpha': shadow['alpha'],
+                    'blurX': shadow['blurX'],
+                    'blurY': shadow['blurY'],
+                    'strength': shadow['strength'],
+                    'quality': shadow['quality']
                 }
             })
 
     def getHtmlTextWithTags(self, text, font=None, size=None, color=None, bold=None, italic=None):
-        """Format text with HTML tags."""
         if not text:
             return ''
         return '<font face=\'%s\' size=\'%d\' color=\'%s\'>%s%s%s%s%s</font>' % (font if font else self.font, size if size else self.size, color if color else self.color, '<b>' if bold or self.bold else '', '<i>' if italic or self.italic else '', text, '</b>' if bold or self.bold else '', '</i>' if italic or self.italic else '')
 
     def getSimpleTextWithTags(self, text):
-        """Apply default formatting to text."""
         return self._begin_tag + text + self._end_tag if text else ''
 
     def HtmlText(self, text):
-        """Update the label with formatted text."""
         self.updateObject(COMPONENT_TYPE.LABEL, {'text': str(text)})
 
     def setVisible(self, status):
-        """Set component visibility."""
         self.updateObject(COMPONENT_TYPE.LABEL, {'visible': status})
 
     @staticmethod
     def screenFix(screen, value, align=1):
-        """Fix position values to stay within screen bounds."""
         if align == 1:
             if value > screen:
                 return float(max(0, screen))
@@ -217,7 +201,6 @@ class Flash:
         return value
 
     def screenResize(self):
-        """Handle screen resize events."""
         current_screen = GUI.screenResolution()
         scale = float(self.settingsCore.interfaceScale.get())
         x_max, y_max = current_screen[0] / scale, current_screen[1] / scale
@@ -246,20 +229,15 @@ class Flash:
         self.updateObject(COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
 
     def getData(self):
-        """Get component data."""
         return self.data
 
     def getNames(self):
-        """Get component names."""
         return self.name
 
 
-# Initialize configuration and UI components
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
 g_flash = Flash()
-
-# Import gambiter components with error handling
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
@@ -269,15 +247,11 @@ except ImportError as err:
 
 
 class TanksStatistic:
-    """Tracks and calculates team statistics and win chances."""
-
     def __init__(self):
-        """Initialize statistics tracking."""
         self.base = {}
         self.reset()
 
     def reset(self):
-        """Reset all statistical values."""
         self.__allyTanksCount = None
         self.__enemyTanksCount = None
         self.__allyTeamHP = None
@@ -291,129 +265,100 @@ class TanksStatistic:
         self.__enemyChance = None
         self.__allyChance = None
 
-    # Properties with descriptive docstrings
     @property
     def allyChance(self):
-        """Win chance percentage for ally team."""
         return self.__allyChance
 
     @property
     def enemyChance(self):
-        """Win chance percentage for enemy team."""
         return self.__enemyChance
 
     @property
     def allyTanksCount(self):
-        """Number of tanks in ally team."""
         return self.__allyTanksCount
 
     @property
     def enemyTanksCount(self):
-        """Number of tanks in enemy team."""
         return self.__enemyTanksCount
 
     @property
     def allyTeamHP(self):
-        """Health points of ally team."""
         return self.__allyTeamHP
 
     @property
     def enemyTeamHP(self):
-        """Health points of enemy team."""
         return self.__enemyTeamHP
 
     @property
     def allyTeamOneDamage(self):
-        """Average damage per shot for ally team."""
         return self.__allyTeamOneDamage
 
     @property
     def enemyTeamOneDamage(self):
-        """Average damage per shot for enemy team."""
         return self.__enemyTeamOneDamage
 
     @property
     def allyTeamDPM(self):
-        """Damage per minute for ally team."""
         return self.__allyTeamDPM
 
     @property
     def enemyTeamDPM(self):
-        """Damage per minute for enemy team."""
         return self.__enemyTeamDPM
 
     @property
     def allyTeamForces(self):
-        """Combat effectiveness of ally team."""
         return self.__allyTeamForces
 
     @property
     def enemyTeamForces(self):
-        """Combat effectiveness of enemy team."""
         return self.__enemyTeamForces
 
     def _get_team_count(self, is_enemy, with_dead=False):
-        """Count tanks in a team."""
         return sum(1 for value in self.base.values() if value['isEnemy'] == is_enemy and (with_dead or value['isAlive']))
 
     def _get_team_hp(self, is_enemy, with_dead=False):
-        """Get total HP of a team."""
         return sum(value['hp'] for value in self.base.values() if value['isEnemy'] == is_enemy and (with_dead or value['isAlive']))
 
     def _get_team_damage(self, is_enemy, with_dead=False):
-        """Get total damage per shot of a team."""
         return sum(value['gun']['currentDamage'] for value in self.base.values() if value['isEnemy'] == is_enemy and (with_dead or value['isAlive']))
 
     def _get_team_dpm(self, is_enemy, with_dead=False):
-        """Get total DPM of a team."""
         return sum(value['gun']['currentDpm'] for value in self.base.values() if value['isEnemy'] == is_enemy and (with_dead or value['isAlive']))
 
     def _get_team_forces(self, is_enemy, with_dead=False):
-        """Get total combat effectiveness of a team."""
         return sum(value['force'] for value in self.base.values() if value['isEnemy'] == is_enemy and (with_dead or value['isAlive']))
 
     def __getAllyTanksCount(self, with_dead=False):
-        """Count ally tanks."""
         return self._get_team_count(False, with_dead)
 
     def __getEnemyTanksCount(self, with_dead=False):
-        """Count enemy tanks."""
         return self._get_team_count(True, with_dead)
 
     def __getAllyTeamHP(self, with_dead=False):
-        """Get ally team HP."""
         return self._get_team_hp(False, with_dead)
 
     def __getEnemyTeamHP(self, with_dead=False):
-        """Get enemy team HP."""
         return self._get_team_hp(True, with_dead)
 
     def __getAllyTeamOneDamage(self, with_dead=False):
-        """Get ally team damage per shot."""
         return self._get_team_damage(False, with_dead)
 
     def __getEnemyTeamOneDamage(self, with_dead=False):
-        """Get enemy team damage per shot."""
         return self._get_team_damage(True, with_dead)
 
     def __getAllyTeamDPM(self, with_dead=False):
-        """Get ally team DPM."""
         return self._get_team_dpm(False, with_dead)
 
     def __getEnemyTeamDPM(self, with_dead=False):
-        """Get enemy team DPM."""
         return self._get_team_dpm(True, with_dead)
 
     def __getAllyTeamForces(self, with_dead=False):
-        """Get ally team forces."""
         return self._get_team_forces(False, with_dead)
 
     def __getEnemyTeamForces(self, with_dead=False):
-        """Get enemy team forces."""
         return self._get_team_forces(True, with_dead)
 
     def addVehicleInfo(self, vehicle_id, vehicle_info):
-        """Add or update vehicle information in the statistics."""
         if vehicle_id not in self.base:
             v_type = vehicle_info['vehicleType']
             self.base[vehicle_id] = tank = {}
@@ -445,11 +390,10 @@ class TanksStatistic:
             tank['gun']['currentShell'] = shell
             tank['gun']['currentDamage'] = tank['gun']['shell'][shell]['damage']
             tank['gun']['currentDpm'] = tank['gun']['shell'][shell]['dpm']
-
             self.update(0, vehicle_id)
 
-    def _getShellType(self, shell_kind):
-        """Convert shell kind to string identifier."""
+    @staticmethod
+    def _getShellType(shell_kind):
         if shell_kind == SHELL_TYPES.ARMOR_PIERCING_CR:
             return 'APRC'
         elif shell_kind == SHELL_TYPES.HOLLOW_CHARGE:
@@ -461,13 +405,11 @@ class TanksStatistic:
 
     @staticmethod
     def _getShellDamage(shell):
-        """Get shell damage value."""
         damage = shell.armorDamage[0] if hasattr(shell, 'armorDamage') else shell.damage[0]
         return float(damage)
 
     @staticmethod
     def _getBestShellType(shell_data):
-        """Determine best shell type based on available options."""
         if shell_data['AP']['damage'] > 0:
             return 'AP'
         elif shell_data['APRC']['damage'] > 0:
@@ -478,7 +420,6 @@ class TanksStatistic:
             return 'HE'
 
     def update(self, reason, vehicleID):
-        """Update statistics based on changes."""
         if not self.base:
             return
         if reason <= 2:
@@ -509,7 +450,6 @@ class TanksStatistic:
         self._triggerEvents(reason, vehicleID)
 
     def _calculateForces(self):
-        """Calculate combat effectiveness for each vehicle."""
         for value in self.base.values():
             if value['isAlive']:
                 if value['isEnemy']:
@@ -525,7 +465,6 @@ class TanksStatistic:
                 value['force'] = 0
 
     def _triggerEvents(self, reason, vehicleID):
-        """Trigger events based on statistic changes."""
         g_events.onVehiclesChanged(self, reason, vehicleID)
         if reason <= 1:
             g_events.onCountChanged(self.__allyTanksCount, self.__enemyTanksCount)
@@ -533,21 +472,17 @@ class TanksStatistic:
         g_events.onChanceChanged(self.__allyChance, self.__enemyChance, self.__allyTeamForces, self.__enemyTeamForces)
 
 
-# Initialize statistics tracker
 g_tanksStatistic = TanksStatistic()
 
 
 class BattleStatDisplay(CallbackDelayer):
-    """Handles the display of battle statistics."""
     def __init__(self):
-        """Initialize the display handler."""
         CallbackDelayer.__init__(self)
         self.macro = {}
         self.compareValuesColor = (config.data['compareValuesColor']['bestValue'], config.data['compareValuesColor']['worstValue'], config.data['textFormat']['color'])
 
     @staticmethod
     def compare_sign(ally, enemy):
-        """Get HTML comparison sign based on values."""
         if ally < enemy:
             return '&#x003C;'
         elif ally > enemy:
@@ -555,7 +490,6 @@ class BattleStatDisplay(CallbackDelayer):
         return '&#x007C;'
 
     def flash_text(self):
-        """Update the displayed text."""
         if not config.data.get('enabled', False):
             return
         g_flash.setVisible(True)
@@ -569,7 +503,6 @@ class BattleStatDisplay(CallbackDelayer):
         self.delayCallback(0.3, self.flash_text)
 
     def formatChanceText(self, value, comparison_value):
-        """Format chance text with color based on comparison."""
         if value > comparison_value:
             color = self.compareValuesColor[0]
         elif value < comparison_value:
@@ -579,12 +512,10 @@ class BattleStatDisplay(CallbackDelayer):
         return g_flash.getHtmlTextWithTags('%6.2f' % value, color=color)
 
     def updateMacros(self, data):
-        """Update macro dictionary with new values."""
         for key, value in data.items():
             self.macro['{%s}' % key] = str(value)
 
     def formatText(self, ally_text, enemy_text, ally, enemy):
-        """Format the final display text using macros."""
         data = {'header': 'Chances', 'allyChance': ally_text, 'enemyChance': enemy_text, 'compareSign': self.compare_sign(ally, enemy)}
         self.updateMacros(data)
         return replaceMacros(config.data['format'], self.macro)
@@ -596,7 +527,6 @@ g_mod = BattleStatDisplay()
 # Override hooks for game events
 @override(Vehicle, 'onHealthChanged')
 def new__onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs):
-    """Handle vehicle health changes."""
     func(self, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
     if self.id in g_tanksStatistic.base:
         tank = g_tanksStatistic.base[self.id]
@@ -611,7 +541,6 @@ def new__onHealthChanged(func, self, newHealth, oldHealth, attackerID, attackRea
 
 @override(PlayerAvatar, 'vehicle_onAppearanceReady')
 def new__onAppearanceReady(func, self, vehicle):
-    """Handle vehicle appearance ready event."""
     func(self, vehicle)
     if vehicle.id in g_tanksStatistic.base:
         entity = getEntity(vehicle.id)
@@ -628,7 +557,6 @@ def new__onAppearanceReady(func, self, vehicle):
 
 @override(CompoundAppearance, 'prerequisites')
 def new__prerequisites(func, self, typeDescriptor, vehicleID, *args, **kwargs):
-    """Handle vehicle prerequisites loading."""
     result = func(self, typeDescriptor, vehicleID, *args, **kwargs)
     try:
         g_tanksStatistic.addVehicleInfo(vehicleID, getPlayer().arena.vehicles.get(vehicleID))
@@ -638,7 +566,6 @@ def new__prerequisites(func, self, typeDescriptor, vehicleID, *args, **kwargs):
 
 @override(PlayerAvatar, '_PlayerAvatar__onArenaVehicleKilled')
 def new__onArenaVehicleKilled(func, self, targetID, *args, **kwargs):
-    """Handle vehicle killed event."""
     func(self, targetID, *args, **kwargs)
     if targetID in g_tanksStatistic.base:
         tank = g_tanksStatistic.base[targetID]
@@ -650,7 +577,6 @@ def new__onArenaVehicleKilled(func, self, targetID, *args, **kwargs):
 
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new__startGUI(func, self):
-    """Handle battle start."""
     func(self)
     if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         g_tanksStatistic.reset()
@@ -662,7 +588,6 @@ def new__startGUI(func, self):
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new__destroyGUI(func, *args):
-    """Handle battle end."""
     func(*args)
     if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         g_flash.stopBattle()

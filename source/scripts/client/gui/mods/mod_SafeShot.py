@@ -12,7 +12,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.isEventBattle = False
         self.deadDict = {}
-        self.is_key_pressed = True
+        self.isKeyPressed = True
         # overrides methods
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
         override(PlayerAvatar, 'shoot', self.new__shoot)
@@ -118,8 +118,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             return
         if checkKeys(self.data['disableKey']) and event.isKeyDown():
             if self.data['triggerMessage']:
-                self.is_key_pressed = not self.is_key_pressed
-                sendPanelMessage(self.i18n['UI_triggerText_enabled'] if self.is_key_pressed else self.i18n['UI_triggerText_disabled'], 'Green' if self.is_key_pressed else 'Red')
+                self.isKeyPressed = not self.isKeyPressed
+                sendPanelMessage(self.i18n['UI_triggerText_enabled'] if self.isKeyPressed else self.i18n['UI_triggerText_disabled'], 'Green' if self.isKeyPressed else 'Red')
 
     def new__addVehicleStatusUpdate(self, func, orig, vInfoVO):
         func(orig, vInfoVO)
@@ -148,7 +148,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         func(orig, *args)
         self.endBattle()
         self.isEventBattle = False
-        self.is_key_pressed = False
+        self.isKeyPressed = False
         self.deadDict.clear()
 
 

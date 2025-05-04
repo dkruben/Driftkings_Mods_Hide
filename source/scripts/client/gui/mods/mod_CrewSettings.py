@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-import logging
 import os
 from io import open
 
@@ -9,21 +8,19 @@ from CurrentVehicle import g_currentVehicle
 from external_strings_utils import unicode_from_utf8
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.cyberSport.VehicleSelectorPopup import VehicleSelectorPopup
-from gui.shared.gui_items.processors.tankman import TankmanReturn
+from gui.shared.gui_items.processors.tankman import TankmanReturn, TankmanUnload
 from gui.shared.utils import decorators
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, cancelCallback, calculate_version
-
-logger = logging.getLogger(__name__)
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, cancelCallback, calculate_version, logException
 
 
 def getCachePath():
     path = os.path.join(os.path.normpath(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1])), 'Driftkings')
     if not os.path.exists(path):
-        os.makedirs(path)
+            os.makedirs(path)
     return path
 
 
@@ -39,20 +36,16 @@ def encodeData(data):
 
 
 def openJsonFile(path):
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8') as dataFile:
-            try:
-                return encodeData(json.load(dataFile, encoding='utf-8'))
-            except ValueError:
-                return encodeData(json.loads(dataFile.read(), encoding='utf-8'))
-            except Exception:
-                return {}
+    if not os.path.exists(path):
+        return {}
+    with open(path, 'r', encoding='utf-8') as dataFile:
+        return encodeData(json.load(dataFile, encoding='utf-8'))
 
 
 def writeJsonFile(path, data):
-    """Creates a new json file in a folder or replace old."""
     with open(path, 'w', encoding='utf-8') as dataFile:
         dataFile.write(unicode(json.dumps(data, skipkeys=True, ensure_ascii=False, indent=2, sort_keys=True)))
+    return True
 
 
 def openIgnoredVehicles():
@@ -60,23 +53,26 @@ def openIgnoredVehicles():
     if not os.path.exists(path):
         writeJsonFile(path, {'vehicles': []})
         return set()
-    return set(openJsonFile(path).get('vehicles'))
+    data = openJsonFile(path)
+    return set(data.get('vehicles', []))
+
+
+def updateIgnoredVehicles(vehicles):
+    path = os.path.join(getCachePath(), 'auto_prev_crew.json')
+    if isinstance(vehicles, (str, unicode)):
+        vehicles_set = ignored_vehicles.copy()
+        vehicles_set.add(vehicles)
+        vehicles = vehicles_set
+    return writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 
 ignored_vehicles = openIgnoredVehicles()
 
 
-def updateIgnoredVehicles(vehicles):
-    path = os.path.join(getCachePath(), 'auto_prev_crew.json')
-    writeJsonFile(path, {'vehicles': sorted(vehicles)})
-    return True  # Add return value
-
-
 class ConfigInterface(DriftkingsConfigInterface):
-
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -84,12 +80,12 @@ class ConfigInterface(DriftkingsConfigInterface):
             'crewReturnByDefault': False
         }
         self.i18n = {
-            'UI_description': self.ID,
+            'UI_description': 'Crew Settings',
             'UI_version': calculate_version(self.version),
             'UI_setting_crewAutoReturn_text': 'Crew Auto Return',
-            'UI_setting_crewAutoReturn_tooltip': '',
+            'UI_setting_crewAutoReturn_tooltip': 'Automatically return crew to their vehicle',
             'UI_setting_crewReturnByDefault_text': 'Crew Return By Default',
-            'UI_setting_crewReturnByDefault_tooltip': '',
+            'UI_setting_crewReturnByDefault_tooltip': 'Return crew by default when switching vehicles',
         }
         super(ConfigInterface, self).init()
 
@@ -101,10 +97,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('crewAutoReturn'),
                 self.tb.createControl('crewReturnByDefault')
             ],
-            'column2': [
-            ]
+            'column2': []
         }
-    
+
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
@@ -118,31 +113,36 @@ class Crew(object):
         self.__callbackID = None
 
     def init(self):
-        vehicle = g_currentVehicle.item
-        intCD = vehicle.intCD
-        self.intCD = intCD
+        if g_currentVehicle.isPresent():
+            vehicle = g_currentVehicle.item
+            self.intCD = vehicle.intCD
 
     def invalidate(self):
         self.intCD = None
         if self.__callbackID is not None:
             cancelCallback(self.__callbackID)
             self.__callbackID = None
-    
+
     @decorators.adisp_process('crewReturning')
     def processReturnCrew(self, print_message=True):
+        """Process returning crew to current vehicle."""
+        if not g_currentVehicle.isPresent():
+            return
         result = yield TankmanReturn(g_currentVehicle.item).request()
-        if len(result.userMsg) and print_message:
+        if result and result.userMsg and print_message:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
 
     @decorators.adisp_process('crewReturning')
     def processReturnCrewForVehicleSelectorPopup(self, vehicle):
-        if not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
+        if vehicle and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
             yield TankmanReturn(vehicle).request()
 
     @decorators.adisp_process('unloading')
     def processUnloadCrew(self):
+        if not g_currentVehicle.isPresent():
+            return
         result = yield TankmanUnload(g_currentVehicle.item.invID).request()
-        if result.userMsg:
+        if result and result.userMsg:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
 
     def handleVehicleChange(self):
@@ -152,22 +152,29 @@ class Crew(object):
             if self.__callbackID is not None:
                 cancelCallback(self.__callbackID)
                 self.__callbackID = None
+            if not g_currentVehicle.isPresent():
+                return
             vehicle = g_currentVehicle.item
             intCD = vehicle.intCD
             if intCD != self.intCD:
                 self.__callbackID = callback(1.5, self.returnCrew)
                 self.intCD = intCD
 
+    @logException
     def handlePopupSelect(self, items):
+        if not items or not config.data['enabled'] or not config.data['crewAutoReturn']:
+            return
         if len(items) == 1:
             cd = int(items[0])
             vehicle = self.itemsCache.items.getItemByCD(cd)
-            if vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
-                if config.data['enabled'] and config.data['crewAutoReturn']:
-                    if updateIgnoredVehicles(str(vehicle.invID)):
-                        self.processReturnCrewForVehicleSelectorPopup(vehicle)
+            if (vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked)):
+                vehicle_id = str(vehicle.invID)
+                if updateIgnoredVehicles(vehicle_id):
+                    self.processReturnCrewForVehicleSelectorPopup(vehicle)
 
     def isLastCrewAvailable(self):
+        if not g_currentVehicle.isPresent():
+            return False
         vehicle = g_currentVehicle.item
         lastCrewIDs = vehicle.lastCrew
         if lastCrewIDs is None:
@@ -182,13 +189,16 @@ class Crew(object):
 
     def returnCrew(self):
         self.__callbackID = None
-        if not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull():
+        if not g_currentVehicle.isPresent():
+            return
+        if (not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull()):
             return
         if not self.isLastCrewAvailable():
             return
         self.processReturnCrew()
 
 
+# Create global crew instance
 g_crew = Crew()
 
 
@@ -197,27 +207,26 @@ def onGUISpaceEntered(spaceID):
     if spaceID == GuiGlobalSpaceID.LOBBY:
         g_crew.init()
         g_currentVehicle.onChanged += g_currentVehicle_onChanged
-    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE,):
+    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE):
         g_crew.invalidate()
+        if g_currentVehicle.onChanged.has_key(g_currentVehicle_onChanged):
+            g_currentVehicle.onChanged -= g_currentVehicle_onChanged
 
 
 # Handlers/g_currentVehicle
+@logException
 def g_currentVehicle_onChanged():
-    try:
-        g_crew.handleVehicleChange()
-    except:
-        logger.exception('g_currentVehicle_onChanged')
+    g_crew.handleVehicleChange()
 
 
 # Handlers/VehicleSelectorPopup
 @override(VehicleSelectorPopup, 'onSelectVehicles')
+@logException
 def new__onSelectVehicles(func, self, items):
     func(self, items)
-    try:
-        g_crew.handlePopupSelect(items)
-    except:
-        logger.exception('VehicleSelectorPopup_onSelectVehicles')
+    g_crew.handlePopupSelect(items)
 
 
-# Handlers/AppLoader
-dependency.instance(IAppLoader).onGUISpaceEntered += onGUISpaceEntered
+# Register app loader event handler
+app = dependency.instance(IAppLoader)
+app.onGUISpaceEntered += onGUISpaceEntered

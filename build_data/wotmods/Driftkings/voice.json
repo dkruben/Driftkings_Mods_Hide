@@ -1,8 +1,0 @@
-﻿{
-    "enabled": false,
-    "ext": ".wotmod",
-    "files": {
-        "meta.xml": "res/meta/Voice.xml",
-        "res/sound/SoundBank.bnk": "res/res/sound/SoundBank.bnk"
-    }
-}
