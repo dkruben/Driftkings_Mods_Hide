@@ -48,8 +48,6 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_lost_tooltip': '',
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
-            'UI_setting_artillery_text': 'Artillery',
-            'UI_setting_artillery_tooltip': '',
             'UI_setting_help_text': 'Help:',
             'UI_setting_help_tooltip': (
                 ' * You can change images to text or icons.\n'

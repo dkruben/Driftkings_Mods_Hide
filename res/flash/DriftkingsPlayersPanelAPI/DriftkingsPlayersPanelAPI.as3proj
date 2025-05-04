@@ -57,14 +57,6 @@
   </libraryPaths>
   <!-- External Libraries -->
   <externalLibraryPaths>
-    <element path="swc\base_app-1.0-SNAPSHOT.swc" />
-    <element path="swc\battle.swc" />
-    <element path="swc\common_i18n_library-1.0-SNAPSHOT.swc" />
-    <element path="swc\common-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_base-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_battle-1.0-SNAPSHOT.swc" />
-    <element path="swc\gui_lobby-1.0-SNAPSHOT.swc" />
-    <element path="swc\lobby.swc" />
     <element path="..\swc\base_app-1.0-SNAPSHOT.swc" />
     <element path="..\swc\battle.swc" />
     <element path="..\swc\common_i18n_library-1.0-SNAPSHOT.swc" />
@@ -73,6 +65,8 @@
     <element path="..\swc\gui_battle-1.0-SNAPSHOT.swc" />
     <element path="..\swc\gui_lobby-1.0-SNAPSHOT.swc" />
     <element path="..\swc\lobby.swc" />
+	<element path="..\swc\frontline_gui_battle-1.0-SNAPSHOT.swc" />
+	<element path="..\swc\frontline_common_i18n_library-1.0-SNAPSHOT.swc" />
   </externalLibraryPaths>
   <!-- Runtime Shared Libraries -->
   <rslPaths>

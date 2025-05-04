@@ -2,7 +2,6 @@
 import copy
 
 import Event
-from Avatar import PlayerAvatar
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.classic.players_panel import PlayersPanel
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange.stats_ctrl import BattleStatisticsDataController
@@ -14,7 +13,6 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.Scaleform.genConsts.BATTLE_VIEW_ALIASES import BATTLE_VIEW_ALIASES
 from gui.shared import events, g_eventBus, EVENT_BUS_SCOPE
 from gui.shared.personality import ServicesLocator
-from helpers import getShortClientVersion
 
 from DriftkingsCore import override, smart_update, getPlayer
 
@@ -32,7 +30,7 @@ class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
         super(DriftkingsPlayersPanelMeta, self)._dispose()
 
     def flashLogS(self, *args):
-        print('DriftkingsPlayersPanelUI: %s', args)
+        print('DriftkingsPlayersPanelAPI: %s', args)
 
     def as_createS(self, linkage, config):
         return self.flashObject.as_create(linkage, config) if self._isDAAPIInited() else None
@@ -62,7 +60,7 @@ class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
         return self.flashObject.as_vehicleIconColor(vehicleID, color) if self._isDAAPIInited() else None
 
 
-class Events(object):
+class PlayersPanelAPI(object):
     def __init__(self):
         self.impl = False
         self.viewLoad = False
@@ -182,7 +180,7 @@ class Events(object):
 
 
 if not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
-    g_driftkingsPlayersPanels = Events()
+    g_driftkingsPlayersPanels = PlayersPanelAPI()
     g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
     g_entitiesFactories.addSettings(ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
     g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)

@@ -7,12 +7,12 @@ from Avatar import PlayerAvatar
 from Vehicle import Vehicle
 from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.minimap.plugins import ArenaVehiclesPlugin
-from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 from gui.battle_control.arena_info import vos_collections
+from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, override, getEntity, logWarning, getPlayer, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, calculate_version, logWarning, getPlayer, getEntity
 
 
 class PlayersPanelController(DriftkingsConfigInterface):
@@ -20,28 +20,25 @@ class PlayersPanelController(DriftkingsConfigInterface):
     sessionProvider = dependency.descriptor(IBattleSessionProvider)
 
     def __init__(self):
-        self.__hpCache = {}
+        self.__hpCache = dict()
         self.__vCache = set()
         self.displayed = True
+        self.macro = {}
         super(PlayersPanelController, self).__init__()
-        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__afterCreate)
-        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__beforeDelete)
+        override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__destroyGUI)
+        override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__startGUI)
         override(ArenaVehiclesPlugin, '_setInAoI', self.new__setInAoI)
         override(PlayerAvatar, 'vehicle_onAppearanceReady', self.new__onAppearanceReady)
         override(Vehicle, 'onHealthChanged', self.new__onHealthChanged)
         override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS', self.new__setPanelHPBarVisibilityStateS)
 
+
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.0 (%(file_compile_date)s)'
-        self.author = 'by: _DKRuben__EU'
+        self.version = '1.8.5 (%(file_compile_date)s)'
+        self.author = 'Re-Coded by DriftKing\'s'
         self.defaultKeys = {'toggleKey': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
-        self.data = {
-            'enabled': True,
-            'textFields': {},
-            'mode': 0,
-            'toggleKey': self.defaultKeys['toggleKey']
-        }
+        self.data = {'enabled': True, 'textFields': {}, 'mode': 0, 'toggleKey': self.defaultKeys['toggleKey']}
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
@@ -54,16 +51,14 @@ class PlayersPanelController(DriftkingsConfigInterface):
             'UI_setting_mode_toggle': 'Toggle',
             'UI_setting_mode_holding': 'Holding',
             'UI_setting_toggleKey_text': 'Toggle hotkey',
-            'UI_setting_toggleKey_tooltip': 'Pressing this button in-battle toggles HP markers displaying.'
-        }
+            'UI_setting_toggleKey_tooltip': 'Pressing this button in-battle toggles HP markers displaying.'}
         super(PlayersPanelController, self).init()
 
     def createTemplate(self):
         return {
-            'modDisplayName': self.i18n['UI_description'],
+            'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
-            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])
-            ],
+            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])],
             'column2': [self.tb.createHotKey('toggleKey')]
         }
 
@@ -82,6 +77,13 @@ class PlayersPanelController(DriftkingsConfigInterface):
                 return vehicle['vehicleType'].maxHealth
             return ''
 
+    def hasOwnProperty(self):
+        self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
+        self.displayed = not self.data['mode']
+        for fieldName, fieldData in self.data['textFields'].iteritems():
+            if not g_driftkingsPlayersPanels.hasOwnProperty(self.ID + fieldName):
+                g_driftkingsPlayersPanels.create(self.ID + fieldName, fieldData)
+
     def onStartBattle(self):
         if g_driftkingsPlayersPanels.viewLoad:
             getPlayer().arena.onVehicleKilled += self.onVehicleKilled
@@ -93,25 +95,16 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def setHPField(self, vehicleID):
         player = getPlayer()
-        if player.arena.guiType in (ARENA_GUI_TYPE.EPIC_RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM_TRAINING):
-            return
-        if g_driftkingsPlayersPanels.viewLoad:
-            team = player.arena.vehicles[vehicleID]['team']
-            panelSide = 'left' if player.team == team else 'right'
-            currentHP = self.__hpCache[vehicleID]['current']
-            maxHP = self.__hpCache[vehicleID]['max']
-            for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
-                barWidth = currentHP
-                if 'width' in fieldData[panelSide]:
-                    barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
+        team = player.arena.vehicles[vehicleID]['team']
+        panelSide = 'left' if player.team == team else 'right'
+        currentHP = self.__hpCache[vehicleID]['current']
+        maxHP = self.__hpCache[vehicleID]['max']
+        for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
+            barWidth = currentHP
+            if 'width' in fieldData[panelSide]:
+                barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
+            if g_driftkingsPlayersPanels.viewLoad:
                 g_driftkingsPlayersPanels.update(self.ID + fieldName, {'vehicleID': vehicleID, 'text': (fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}) if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth) else ''})
-
-    def hasOwnProperty(self):
-        self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
-        self.displayed = not self.data['mode']
-        for fieldName, fieldData in self.data['textFields'].iteritems():
-            if not g_driftkingsPlayersPanels.hasOwnProperty(self.ID + fieldName):
-                g_driftkingsPlayersPanels.create(self.ID + fieldName, fieldData)
 
     def onEndBattle(self):
         getPlayer().arena.onVehicleKilled -= self.onVehicleKilled
@@ -151,13 +144,13 @@ class PlayersPanelController(DriftkingsConfigInterface):
         for vehicleID in self.__hpCache:
             self.setHPField(vehicleID)
 
-    # hooks
-    def new__beforeDelete(self, func, orig):
-        func(orig)
+    # overrides
+    def new__destroyGUI(self, func, *args):
+        func(*args)
         self.onEndBattle()
 
-    def new__afterCreate(self, func, orig):
-        func(orig)
+    def new__startGUI(self, func, *args):
+        func(*args)
         self.hasOwnProperty()
         self.onStartBattle()
 
@@ -166,7 +159,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         try:
             for vehicleID, entry2 in orig._entries.iteritems():
                 if entry == entry2 and isInAoI:
-                    if vehicleID in self.vCache:
+                    if vehicleID in g_config.vCache:
                         break
                     self.updateHealth(vehicleID)
         except StandardError:
@@ -200,12 +193,12 @@ class PlayersPanelController(DriftkingsConfigInterface):
         func(orig, value)
 
 
-config = None
+g_config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-    config = PlayersPanelController()
-    statistic_mod = Analytics(config.ID, config.version)
+    g_config = PlayersPanelController()
+    statistic_mod = Analytics(g_config.ID, g_config.version)
 except ImportError:
-    logWarning(config.ID, 'Battle Flash API not found.')
+    logWarning(g_config.ID, 'Battle Flash API not found.')
 except StandardError:
-    logWarning(config.ID,'Battle Flash API not found.')
+    traceback.print_exc()
