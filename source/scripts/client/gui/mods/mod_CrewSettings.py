@@ -125,7 +125,6 @@ class Crew(object):
 
     @decorators.adisp_process('crewReturning')
     def processReturnCrew(self, print_message=True):
-        """Process returning crew to current vehicle."""
         if not g_currentVehicle.isPresent():
             return
         result = yield TankmanReturn(g_currentVehicle.item).request()
@@ -198,28 +197,9 @@ class Crew(object):
         self.processReturnCrew()
 
 
-# Create global crew instance
 g_crew = Crew()
 
 
-# Handlers/AppLoader
-def onGUISpaceEntered(spaceID):
-    if spaceID == GuiGlobalSpaceID.LOBBY:
-        g_crew.init()
-        g_currentVehicle.onChanged += g_currentVehicle_onChanged
-    elif spaceID in (GuiGlobalSpaceID.LOGIN, GuiGlobalSpaceID.BATTLE):
-        g_crew.invalidate()
-        if g_currentVehicle.onChanged.has_key(g_currentVehicle_onChanged):
-            g_currentVehicle.onChanged -= g_currentVehicle_onChanged
-
-
-# Handlers/g_currentVehicle
-@logException
-def g_currentVehicle_onChanged():
-    g_crew.handleVehicleChange()
-
-
-# Handlers/VehicleSelectorPopup
 @override(VehicleSelectorPopup, 'onSelectVehicles')
 @logException
 def new__onSelectVehicles(func, self, items):
@@ -227,6 +207,30 @@ def new__onSelectVehicles(func, self, items):
     g_crew.handlePopupSelect(items)
 
 
-# Register app loader event handler
-app = dependency.instance(IAppLoader)
-app.onGUISpaceEntered += onGUISpaceEntered
+class Register(object):
+    def __init__(self):
+        try:
+            appLoader = dependency.instance(IAppLoader)
+            appLoader.onGUISpaceEntered += self.onGUISpaceEntered
+            appLoader.onGUISpaceLeft += self.onGUISpaceLeft
+        except Exception:
+            pass
+        g_currentVehicle.onChanged -= self.onChanged
+
+    def onGUISpaceEntered(self, spaceID):
+        if spaceID == GuiGlobalSpaceID.LOBBY:
+            g_crew.init()
+            g_currentVehicle.onChanged += self.onChanged
+
+    @staticmethod
+    def onGUISpaceLeft(spaceID):
+        if spaceID == GuiGlobalSpaceID.LOBBY:
+            g_crew.invalidate()
+
+    @staticmethod
+    @logException
+    def onChanged():
+        g_crew.handleVehicleChange()
+
+
+Register()

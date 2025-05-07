@@ -64,3 +64,9 @@ Thumbs.db
 *.tmp
 
 
+source/scripts/client/gui/mods/test_1.py
+*.bnk
+res/sound_bank_wwise/SixthSense/Driftkings_SixthSense.Ruben.validationcache
+res/sound_bank_wwise/SixthSense/Driftkings_SixthSense.Ruben.wsettings
+res/sound_bank_wwise/SixthSense/.cache/SoundBankInfoCache.dat
+res/sound_bank_wwise/SixthSense/.cache/LMDB/data.mdb

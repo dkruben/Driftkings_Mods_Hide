@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import copy
 
+import BigWorld
 import Event
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.classic.players_panel import PlayersPanel
@@ -14,10 +15,14 @@ from gui.Scaleform.genConsts.BATTLE_VIEW_ALIASES import BATTLE_VIEW_ALIASES
 from gui.shared import events, g_eventBus, EVENT_BUS_SCOPE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import override, smart_update, getPlayer
+from DriftkingsCore import override
+
 
 
 class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
+    @staticmethod
+    def logInfo(name, message, *args):
+        print('%s: %s %s' % (name, message, args))
 
     def _populate(self):
         # noinspection PyProtectedMember
@@ -30,7 +35,8 @@ class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
         super(DriftkingsPlayersPanelMeta, self)._dispose()
 
     def flashLogS(self, *args):
-        print('DriftkingsPlayersPanelAPI: %s', args)
+        self.logInfo('DriftkingsPlayersPanelAPI: ', args)
+        return True
 
     def as_createS(self, linkage, config):
         return self.flashObject.as_create(linkage, config) if self._isDAAPIInited() else None
@@ -107,6 +113,19 @@ class PlayersPanelAPI(object):
             }
         }
 
+    def smartUpdate(self, old_setting, new_setting):
+        changed = False
+        for k in old_setting:
+            v = new_setting.get(k)
+            if isinstance(v, dict):
+                changed |= self.smartUpdate(old_setting[k], v)
+            elif v is not None:
+                if isinstance(v, unicode):
+                    v = v.encode('utf-8')
+                changed |= old_setting[k] != v
+                old_setting[k] = v
+        return changed
+
     def updateVehicles(self, func, orig, updated, arenaDP):
         func(orig, updated, arenaDP)
         if self.impl:
@@ -137,7 +156,7 @@ class PlayersPanelAPI(object):
             return None
         conf = copy.deepcopy(self.config)
         if config:
-            smart_update(conf, config)
+            self.smartUpdate(conf, config)
         return self.componentUI.as_createS(linkage, conf)
 
     def update(self, linkage, data):
@@ -171,7 +190,7 @@ class PlayersPanelAPI(object):
     def onComponentRegistered(self, event):
         if event.alias != BATTLE_VIEW_ALIASES.PLAYERS_PANEL:
             return
-        arena_visitor = getPlayer().guiSessionProvider.arenaVisitor.gui
+        arena_visitor = BigWorld.player().guiSessionProvider.arenaVisitor.gui
         if arena_visitor.isEpicRandomBattle() or arena_visitor.isBattleRoyale():
             return
         self.impl = True
