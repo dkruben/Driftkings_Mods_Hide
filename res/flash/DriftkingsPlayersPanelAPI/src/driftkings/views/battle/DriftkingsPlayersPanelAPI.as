@@ -6,11 +6,11 @@ package driftkings.views.battle
     import flash.text.AntiAliasType;
     import flash.text.TextField;
     import flash.text.TextFormat;
-    import mods.common.BattleDisplayable;
-    import driftkings.views.battle.utils.Utils;
-    import net.wg.gui.battle.components.*;
-    import net.wg.gui.battle.random.views.BattlePage;
-    import scaleform.gfx.TextFieldEx;
+    import net.wg.gui.battle.components.BattleAtlasSprite;
+	import net.wg.gui.battle.random.views.BattlePage;
+	import scaleform.gfx.TextFieldEx;
+	import driftkings.views.battle.utils.Utils;
+	import mods.common.BattleDisplayable;
 
 	public class DriftkingsPlayersPanelAPI extends BattleDisplayable
 	{

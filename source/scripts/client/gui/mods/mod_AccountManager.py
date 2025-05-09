@@ -3,6 +3,7 @@ import hashlib
 import json
 import os
 import time
+import traceback
 
 import BigWorld
 from external_strings_utils import unicode_from_utf8
@@ -68,6 +69,7 @@ analytics = Analytics(config.ID, config.version)
 class AM_MODES:
     def __init__(self):
         pass
+
     ADD = 'add'
     EDIT = 'edit'
     DELETE = 'delete'
@@ -83,24 +85,75 @@ class UserAccounts:
 
     def __init__(self):
         self.__accounts_manager = os.path.join(getPreferencesDir(), 'Driftkings', 'accounts.manager')
+        directory = os.path.dirname(self.__accounts_manager)
+        if not os.path.exists(directory):
+            try:
+                os.makedirs(directory)
+            except:
+                print('[AccountManager]: Failed to create directory: %s' % directory)
+
+        self.accounts = []
         if not os.path.isfile(self.__accounts_manager):
-            self.accounts = []
             self.write_accounts()
-        self.renew_accounts()
+        else:
+            self.renew_accounts()
 
     def renew_accounts(self):
         try:
+            if not os.path.exists(self.__accounts_manager):
+                self.accounts = []
+                return
             with open(self.__accounts_manager, 'r') as f:
                 filedata = f.read()
-            filedata = BigWorld.wg_ucpdata(filedata)
-            self.accounts = json.loads(filedata.decode('base64').decode('zlib'))
-        except StandardError:
+            if not filedata:
+                self.accounts = []
+                return
+            try:
+                filedata = BigWorld.wg_ucpdata(filedata)
+                decoded_data = filedata.decode('base64')
+                self.accounts = json.loads(decoded_data.decode('zlib'))
+            except:
+                try:
+                    self.accounts = json.loads(filedata)
+                except:
+                    print('[AccountManager]: Failed to decode accounts file, resetting accounts')
+                    self.accounts = []
+                    if os.path.exists(self.__accounts_manager):
+                        backup_path = self.__accounts_manager + '.bak'
+                        try:
+                            import shutil
+                            shutil.copy2(self.__accounts_manager, backup_path)
+                            print('[AccountManager]: Backed up corrupted accounts file to %s' % backup_path)
+                        except:
+                            pass
+        except Exception as e:
+            print('[AccountManager]: Error in renew_accounts: %s' % e)
+            print(traceback.format_exc())
             self.accounts = []
 
     def write_accounts(self):
-        data = BigWorld.wg_cpdata(json.dumps(self.accounts).encode('zlib').encode('base64'))
-        with open(self.__accounts_manager, 'w') as f:
-            f.write(data)
+        try:
+            directory = os.path.dirname(self.__accounts_manager)
+            if not os.path.exists(directory):
+                try:
+                    os.makedirs(directory)
+                except:
+                    print('[AccountManager]: Failed to create directory: %s' % directory)
+                    return
+            try:
+                data = BigWorld.wg_cpdata(json.dumps(self.accounts).encode('zlib').encode('base64'))
+                with open(self.__accounts_manager, 'w') as f:
+                    f.write(data)
+            except Exception as e:
+                print('[AccountManager]: Error encoding account data: %s' % e)
+                try:
+                    with open(self.__accounts_manager, 'w') as f:
+                        json.dump(self.accounts, f)
+                except Exception as e2:
+                    print('[AccountManager]: Fallback write failed: %s' % e2)
+        except Exception as e:
+            print('[AccountManager]: Error in write_accounts: %s' % e)
+            print(traceback.format_exc())
 
 
 class RemoveConfirmDialogButtons:
@@ -193,6 +246,7 @@ class AccountsManager(AbstractWindowView):
                     self.destroy()
                     loadWindow('AccountsManager')
                     return
+
             DialogsInterface.showDialog(meta, onClickAction)
 
     def callToFlash(self, data):
