@@ -17,7 +17,7 @@ from DriftkingsInject import g_events
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = 'by: StranikS_Scan, re-coded by: Driftkings'
         self.data = {
             'enabled': True,
@@ -60,6 +60,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_description': self.ID,
             'UI_setting_teamChances_text': 'Show team chances',
             'UI_setting_teamChances_tooltip': 'Displays win chance percentage for each team during battle',
+            'UI_setting_format_text': 'Text Format',
+            'UI_setting_format_tooltip': 'Sets the format of the text',
             'UI_setting_background_text': 'Show background',
             'UI_setting_background_tooltip': 'Displays background for the text',
         }
@@ -150,7 +152,6 @@ class Flash:
         return component_data
 
     def setShadow(self):
-        """Apply shadow settings to the text."""
         if config.data['textShadow']['enabled']:
             shadow = config.data['textShadow']
             self.updateObject(COMPONENT_TYPE.LABEL, {

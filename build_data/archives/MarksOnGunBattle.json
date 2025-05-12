@@ -1,11 +1,11 @@
-﻿{
-    "enabled": true,
-    "ext": ".zip",
+{
     "files": {
-        "mods/{GAME_VERSION}/Driftkings/MarksOnGunBattle.wotmod": "build/wotmods/Driftkings/MarksOnGunBattle.wotmod",
-		"mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
-		"mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*",
-        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
-        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*"
-    }
+        "mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*", 
+        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*", 
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod", 
+        "mods/{GAME_VERSION}/Driftkings/MarksOnGunBattle.wotmod": "build/wotmods/Driftkings/MarksOnGunBattle.wotmod"
+    }, 
+    "ext": ".zip", 
+    "enabled": true
 }

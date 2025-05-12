@@ -215,10 +215,10 @@ class ScaleValues(object):
 
 
 try:
-    scale_values_instance = ScaleValues()
-    getVehicleInfoData = scale_values_instance.getVehicleInfoData
-    calculateXvmScale = scale_values_instance.calculateXvmScale
-    calculateXTDB = scale_values_instance.calculateXTDB
-    calculateXTE = scale_values_instance.calculateXTE
+    scaleValuesInstance = ScaleValues()
+    getVehicleInfoData = scaleValuesInstance.getVehicleInfoData
+    calculateXvmScale = scaleValuesInstance.calculateXvmScale
+    calculateXTDB = scaleValuesInstance.calculateXTDB
+    calculateXTE = scaleValuesInstance.calculateXTE
 except ImportError as error:
     logError(__CORE_NAME__, 'Scale not imported {}', error)

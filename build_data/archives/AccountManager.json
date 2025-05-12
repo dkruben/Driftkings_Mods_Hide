@@ -1,6 +1,6 @@
 {
     "files": {
-        "mods/{GAME_VERSION}/Driftkings/ZoomExtended.wotmod": "build/wotmods/Driftkings/ZoomExtended.wotmod", 
+        "mods/{GAME_VERSION}/Driftkings/AccountManager.wotmod": "build/wotmods/Driftkings/AccountManager.wotmod", 
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*", 
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod"

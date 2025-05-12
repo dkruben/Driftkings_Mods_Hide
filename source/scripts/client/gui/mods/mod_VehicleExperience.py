@@ -186,7 +186,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             return []
         else:
             header = self.getHeader(self.i18n['UI_setting_experience_header'])
-            # Only add progress bar if eliteNeedXP is greater than zero
             if eliteNeedXP > 0:
                 value = min((exp + freeXP if self.data['useFreeExp'] else exp) + eliteDiscountXP, eliteNeedXP)
                 header.append({
