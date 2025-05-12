@@ -24,10 +24,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.ID = '%(mod_ID)s'
         self.version = '2.1.0 (%(file_compile_date)s)'
         self.author = ' (orig by spoter, refactored by DriftKings)'
-        self.defaultKeys = {
-            'buttonRepair': [Keys.KEY_SPACE],
-            'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]
-        }
+        self.defaultKeys = {'buttonRepair': [Keys.KEY_SPACE], 'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
             'enabled': True,
             'buttonChassis': self.defaultKeys['buttonChassis'],
