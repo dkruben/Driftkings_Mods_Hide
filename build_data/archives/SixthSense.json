@@ -1,11 +1,14 @@
-{
+﻿{
+    "enabled": true,
+    "ext": ".zip",
     "files": {
-        "mods/{GAME_VERSION}/Driftkings/SixthSense.wotmod": "build/wotmods/Driftkings/SixthSense.wotmod", 
-        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
-        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*", 
-        "mods/{GAME_VERSION}/Driftkings/BanksLoader.wotmod": "build/wotmods/Driftkings/BanksLoader.wotmod", 
-        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod"
-    }, 
-    "ext": ".zip", 
-    "enabled": true
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
+        "mods/{GAME_VERSION}/Driftkings/driftkings_sixthsense.wotmod": "res/audioww/driftkings_sixthsense.wotmod",
+		"mods/{GAME_VERSION}/Driftkings/_aaa_BanksLoader_audioMods.wotmod": "res/audioww/_aaa_BanksLoader_audioMods.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/BanksLoader.wotmod": "build/wotmods/Driftkings/BanksLoader.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsInject.wotmod": "build/wotmods/Driftkings/DriftkingsInject.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/SixthSense.wotmod": "build/wotmods/Driftkings/SixthSense.wotmod"
+    }
 }

@@ -1,37 +1,29 @@
 # -*- coding: utf-8 -*-
-import GUI
 from Avatar import PlayerAvatar
 from Vehicle import Vehicle
 from constants import ARENA_BONUS_TYPE, SHELL_TYPES
-from gui import g_guiResetters
-from helpers import dependency
 from helpers.CallbackDelayer import CallbackDelayer
 from items import vehicles
-from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.CompoundAppearance import CompoundAppearance
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, getPlayer, getEntity, replaceMacros
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getEntity, replaceMacros, logError
 from DriftkingsInject import g_events
 
 
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'
         self.author = 'by: StranikS_Scan, re-coded by: Driftkings'
         self.data = {
             'enabled': True,
             'format': '{header}: {allyChance} {compareSign} {enemyChance}',
-            'background': True,
+            'textLock': False,
             'textPosition': {
                 'alignX': 'right',
                 'alignY': 'top',
                 'x': -250,
                 'y': 443,
-                'drag': True,
-                'border': False,
-                'visible': True,
-                'alpha': 1.0,
             },
             'textShadow': {
                 'enabled': True,
@@ -61,9 +53,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_teamChances_text': 'Show team chances',
             'UI_setting_teamChances_tooltip': 'Displays win chance percentage for each team during battle',
             'UI_setting_format_text': 'Text Format',
-            'UI_setting_format_tooltip': 'Sets the format of the text',
-            'UI_setting_background_text': 'Show background',
-            'UI_setting_background_tooltip': 'Displays background for the text',
+            'UI_setting_format_tooltip': 'Sets the format of the text'
         }
         super(ConfigInterface, self).init()
 
@@ -72,102 +62,51 @@ class ConfigInterface(DriftkingsConfigInterface):
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
             'column1': [
-                self.tb.createControl('format', self.tb.types.TextInput, width=300),
-                self.tb.createControl('background')
+                self.tb.createControl('format', self.tb.types.TextInput, width=300)
             ],
             'column2': []
         }
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if g_flash is not None:
+            g_flash.onApplySettings()
 
-class Flash:
-    settingsCore = dependency.descriptor(ISettingsCore)
-
-    def __init__(self):
-        textFormat = config.data['textFormat']
-        self.font = textFormat['font']
-        self.size = textFormat['size']
-        self.color = textFormat['color']
-        self.bold = textFormat['bold']
-        self.italic = textFormat['italic']
+class Flash(object):
+    def __init__(self, ID, params):
+        self.ID = ID
+        self.setup()
+        self.font = params['font']
+        self.size = params['size']
+        self.color = params['color']
+        self.bold = params['bold']
+        self.italic = params['italic']
         self._begin_tag = '<font face=\'%s\' size=\'%d\' color=\'%s\'>%s%s' % (self.font, self.size, self.color, '<b>' if self.bold else '', '<i>' if self.italic else '')
         self._end_tag = '%s%s</font>' % ('</b>' if self.bold else '', '</i>' if self.italic else '')
-        self.name = {}
-        self.data = {}
+        COMPONENT_EVENT.UPDATED += self.__updatePosition
 
-    def startBattle(self):
-        if not config.data['enabled']:
+    def setup(self):
+        g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock'], limit=True))
+        self.createBox()
+
+    def onApplySettings(self):
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
+
+    def createBox(self):
+        shadow = config.data['textShadow']
+        if shadow['enabled']:
+            g_guiFlash.updateComponent(self.ID, {'shadow': shadow})
+
+    def destroy(self):
+        COMPONENT_EVENT.UPDATED -= self.__updatePosition
+        g_guiFlash.deleteComponent(self.ID)
+
+    def __updatePosition(self, alias, data):
+        if alias != self.ID:
             return
-        self.data = self._setup()
-        COMPONENT_EVENT.UPDATED += self._updatePosition
-        self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
-        self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['background']})
-        self.setShadow()
-        g_guiResetters.add(self.screenResize)
+        config.onApplySettings({'textPosition': data})
 
-    def stopBattle(self):
-        if not config.data['enabled']:
-            return
-        g_guiResetters.remove(self.screenResize)
-        COMPONENT_EVENT.UPDATED -= self._updatePosition
-        self.deleteObject(COMPONENT_TYPE.LABEL)
-
-    def deleteObject(self, name):
-        g_guiFlash.deleteComponent(self.name[name])
-
-    def createObject(self, name, data):
-        g_guiFlash.createComponent(self.name[name], name, data)
-
-    def updateObject(self, name, data):
-        g_guiFlash.updateComponent(self.name[name], data)
-
-    def _updatePosition(self, alias, props):
-        if str(alias) == str(config.ID):
-            x = props.get('x', config.data['textPosition']['x'])
-            y = props.get('y', config.data['textPosition']['y'])
-            if x and x != config.data['textPosition']['x']:
-                config.data['textPosition']['x'] = x
-                self.data[COMPONENT_TYPE.LABEL]['x'] = x
-            if y and y != config.data['textPosition']['y']:
-                config.data['textPosition']['y'] = y
-                self.data[COMPONENT_TYPE.LABEL]['y'] = y
-            config.onApplySettings({'textPosition': {'x': x, 'y': y}})
-
-    def _setup(self):
-        self.name = {COMPONENT_TYPE.LABEL: str(config.ID)}
-        component_data = {
-            COMPONENT_TYPE.LABEL: {
-                'x': 0,
-                'y': 0,
-                'drag': True,
-                'border': True,
-                'alignX': 'center',
-                'alignY': 'center',
-                'visible': True,
-                'text': ''
-            }
-        }
-        for key, value in config.data['textPosition'].items():
-            if key in component_data[COMPONENT_TYPE.LABEL]:
-                component_data[COMPONENT_TYPE.LABEL][key] = value
-        return component_data
-
-    def setShadow(self):
-        if config.data['textShadow']['enabled']:
-            shadow = config.data['textShadow']
-            self.updateObject(COMPONENT_TYPE.LABEL, {
-                'shadow': {
-                    'distance': shadow['distance'],
-                    'angle': shadow['angle'],
-                    'color': shadow['color'],
-                    'alpha': shadow['alpha'],
-                    'blurX': shadow['blurX'],
-                    'blurY': shadow['blurY'],
-                    'strength': shadow['strength'],
-                    'quality': shadow['quality']
-                }
-            })
-
-    def getHtmlTextWithTags(self, text, font=None, size=None, color=None, bold=None, italic=None):
+    def getHtmlTextWithTags(self, text='', font=None, size=None, color=None, bold=None, italic=None):
         if not text:
             return ''
         return '<font face=\'%s\' size=\'%d\' color=\'%s\'>%s%s%s%s%s</font>' % (font if font else self.font, size if size else self.size, color if color else self.color, '<b>' if bold or self.bold else '', '<i>' if italic or self.italic else '', text, '</b>' if bold or self.bold else '', '</i>' if italic or self.italic else '')
@@ -175,76 +114,27 @@ class Flash:
     def getSimpleTextWithTags(self, text):
         return self._begin_tag + text + self._end_tag if text else ''
 
-    def HtmlText(self, text):
-        self.updateObject(COMPONENT_TYPE.LABEL, {'text': str(text)})
+    def HtmlText(self, text=''):
+        self.createBox()
+        g_guiFlash.updateComponent(self.ID, {'text': text})
 
     def setVisible(self, status):
-        self.updateObject(COMPONENT_TYPE.LABEL, {'visible': status})
-
-    @staticmethod
-    def screenFix(screen, value, align=1):
-        if align == 1:
-            if value > screen:
-                return float(max(0, screen))
-            if value < 0:
-                return 0.0
-        elif align == -1:
-            if value < -screen:
-                return min(0, -screen)
-            if value > 0:
-                return 0.0
-        elif align == 0:
-            scr = screen / 2.0
-            if value < scr:
-                return float(scr)
-            if value > -scr:
-                return float(-scr)
-        return value
-
-    def screenResize(self):
-        current_screen = GUI.screenResolution()
-        scale = float(self.settingsCore.interfaceScale.get())
-        x_max, y_max = current_screen[0] / scale, current_screen[1] / scale
-        x = config.data['textPosition'].get('x', None)
-        align_x = config.data['textPosition']['alignX']
-        if align_x == COMPONENT_ALIGN.LEFT:
-            x = self.screenFix(x_max, config.data['textPosition']['x'], 1)
-        elif align_x == COMPONENT_ALIGN.RIGHT:
-            x = self.screenFix(x_max, config.data['textPosition']['x'], -1)
-        elif align_x == COMPONENT_ALIGN.CENTER:
-            x = self.screenFix(x_max, config.data['textPosition']['x'], 0)
-        if x is not None and x != config.data['textPosition']['x']:
-            config.data['textPosition']['x'] = x
-            self.data[COMPONENT_TYPE.LABEL]['x'] = x
-        y = config.data['textPosition'].get('y', None)
-        align_y = config.data['textPosition']['alignY']
-        if align_y == COMPONENT_ALIGN.TOP:
-            y = self.screenFix(y_max, config.data['textPosition']['y'], 1)
-        elif align_y == COMPONENT_ALIGN.BOTTOM:
-            y = self.screenFix(y_max, config.data['textPosition']['y'], -1)
-        elif align_y == COMPONENT_ALIGN.CENTER:
-            y = self.screenFix(y_max, config.data['textPosition']['y'], 0)
-        if y is not None and y != config.data['textPosition']['y']:
-            config.data['textPosition']['y'] = y
-            self.data[COMPONENT_TYPE.LABEL]['y'] = y
-        self.updateObject(COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
-
-    def getData(self):
-        return self.data
-
-    def getNames(self):
-        return self.name
+        g_guiFlash.updateComponent(self.ID, {'visible': status})
 
 
+g_flash = None
 config = ConfigInterface()
-analytics = Analytics(config.ID, config.version)
-g_flash = Flash()
+statistic_mod = Analytics(config.ID, config.version)
 try:
     from gambiter import g_guiFlash
-    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
-except ImportError as err:
+    from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
+    g_flash = Flash(config.ID, config.data['textFormat'])
+except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found. {}', err)
+    logError(config.ID, 'Loading mod: Not found \'gambiter.flash\' module, loading stop!')
+except Exception as e:
+    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    logError(config.ID, '{}', e)
 
 
 class TanksStatistic:
@@ -583,12 +473,4 @@ def new__startGUI(func, self):
         g_tanksStatistic.reset()
         for vehicleID in self.arena.vehicles:
             g_tanksStatistic.addVehicleInfo(vehicleID, self.arena.vehicles.get(vehicleID))
-        g_flash.startBattle()
         g_mod.flash_text()
-
-
-@override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
-def new__destroyGUI(func, *args):
-    func(*args)
-    if getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
-        g_flash.stopBattle()

@@ -33,7 +33,7 @@ from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEqui
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, logDebug, square_position, isReplay, calculate_version, callback
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, logError, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
 
 _cache = set()
@@ -42,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.5.5 (%(file_compile_date)s)'
+        self.version = '2.6.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -327,7 +327,8 @@ def new__handleKey(func, self, isDown, key, mods):
                 self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
                 callback(0.5, partial(onReload, self))
                 return True
-        except StandardError:
+        except Exception as e:
+            logError(config.ID, 'Error in handleKey {}', e)
             traceback.print_exc()
     func(self, isDown, key, mods)
 
@@ -377,6 +378,23 @@ def new_showRateSatisfactionCmp(func, self, value, reusable):
 
 
 # add enemy name to damage log
+@override(DamageLogPanel, '_addToTopLog')
+def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
+    if not config.data['enabled'] or not config.data['addEnemyName']:
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+    try:
+        player = getPlayer()
+        arena = player.arena
+        attackerName = 'Unknown'
+        for vID, vData in arena.vehicles.items():
+            if vData['vehicleType'].type.shortUserString == vehicleName:
+                attackerName = vData['name']
+                break
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
+    except Exception:
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+
+
 @override(DamageLogPanel, '_addToBottomLog')
 def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
     if not config.data['enabled'] or not config.data['addEnemyName']:
@@ -405,7 +423,6 @@ def onVehicleChanged(vehicle):
     if vehicle is None or vehicle.isLocked or vehicle.isInBattle:
         return
     if not hasattr(vehicle, 'battleBoosters') or vehicle.battleBoosters is None:
-        logDebug(config.ID, True, 'No battle boosters available for this vehicle: {vehicle}', vehicle=vehicle.userName)
         return
     is_auto = vehicle.isAutoBattleBoosterEquip()
     boosters = vehicle.battleBoosters.installed.getItems()

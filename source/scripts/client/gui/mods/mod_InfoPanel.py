@@ -12,8 +12,10 @@ from helpers import dependency
 from messenger import MessengerEntry
 from nations import NAMES
 from skeletons.account_helpers.settings_core import ISettingsCore
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, calculate_version, logError
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, calculate_version
 
 COMPARE_MACROS = ['compareDelim', 'compareColor']
 ROMAN_LEVELS = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI')
@@ -133,19 +135,17 @@ class Flash(object):
         self.data = self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
         if g_guiFlash is not None and COMPONENT_TYPE is not None:
-            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-            self.createObject(component_label, self.data[component_label])
-            self.updateObject(component_label, {'background': config.data['backgroundEnabled']})
-            self.updateObject(component_label, {'alpha': config.data['backgroundAlpha']})
+            self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
+            self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['backgroundEnabled']})
+            self.updateObject(COMPONENT_TYPE.LABEL, {'alpha': config.data['backgroundAlpha']})
             self.setShadow()
         g_guiResetters.add(self.screenResize)
 
     def setShadow(self):
         shadow = config.data['textShadow']['enabled']
         if g_guiFlash is not None:
-            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
             if shadow:
-                self.updateObject(component_label, {
+                self.updateObject(COMPONENT_TYPE.LABEL, {
                     'shadow': {
                         'distance': config.data['textShadow']['distance'],
                         'angle': config.data['textShadow']['angle'],
@@ -165,53 +165,54 @@ class Flash(object):
         if COMPONENT_EVENT is not None:
             COMPONENT_EVENT.UPDATED -= self.__updatePosition
         if g_guiFlash is not None and COMPONENT_TYPE is not None:
-            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-            self.deleteObject(component_label)
+            self.deleteObject(COMPONENT_TYPE.LABEL)
 
     def deleteObject(self, name):
-        if g_guiFlash is not None and name in self.name:
-            g_guiFlash.deleteComponent(self.name[name])
+        g_guiFlash.deleteComponent(self.name[name])
 
     def createObject(self, name, data):
-        if g_guiFlash is not None:
-            g_guiFlash.createComponent(self.name[name], name, data)
+        g_guiFlash.createComponent(self.name[name], name, data)
 
     def updateObject(self, name, data):
-        if g_guiFlash is not None and name in self.name:
-            g_guiFlash.updateComponent(self.name[name], data)
+        g_guiFlash.updateComponent(self.name[name], data)
 
     def __updatePosition(self, alias, props):
         if str(alias) == str(config.ID):
             x = props.get('x', config.data['textPosition']['x'])
             if x is not None and x != config.data['textPosition']['x']:
                 config.data['textPosition']['x'] = x
-                component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-                self.data[component_label]['x'] = x
+                self.data[COMPONENT_TYPE.LABEL]['x'] = x
             y = props.get('y', config.data['textPosition']['y'])
             if y is not None and y != config.data['textPosition']['y']:
                 config.data['textPosition']['y'] = y
-                component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-                self.data[component_label]['y'] = y
+                self.data[COMPONENT_TYPE.LABEL]['y'] = y
             config.onApplySettings({'textPosition': {'x': x, 'y': y}})
 
     def setup(self):
-        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-        self.name = {component_label: str(config.ID)}
-        self.data = {component_label: {'x': 0, 'y': 0, 'drag': not config.data['textLock'], 'border': not config.data['textLock'], 'alignX': 'center', 'alignY': 'center', 'visible': True, 'text': ''}}
+        self.name = {COMPONENT_TYPE.LABEL: '%s' % config.ID}
+        self.data = {
+            COMPONENT_TYPE.LABEL: {
+                'x': 0,
+                'y': 0,
+                'drag': not config.data['textLock'],
+                'border': not config.data['textLock'],
+                'alignX': 'center',
+                'alignY': 'center',
+                'visible': True,
+                'text': ''
+            }
+        }
         for key, value in config.data['textPosition'].items():
-            if key in self.data[component_label]:
-                self.data[component_label][key] = value
+            if key in self.data[COMPONENT_TYPE.LABEL]:
+                self.data[COMPONENT_TYPE.LABEL][key] = value
         return self.data
 
-    def addText(self, text):
-        formatText = str(text)
-        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-        self.updateObject(component_label, {'text': formatText})
+    def addText(self, text=''):
+        self.updateObject(COMPONENT_TYPE.LABEL, {'text': text})
 
     def setVisible(self, status):
         data = {'visible': status}
-        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-        self.updateObject(component_label, data)
+        self.updateObject(COMPONENT_TYPE.LABEL, data)
 
     @staticmethod
     def screenFix(screen, value, align=1):
@@ -238,29 +239,26 @@ class Flash(object):
         scale = float(self.settingsCore.interfaceScale.get())
         xMo, yMo = curScr[0] / scale, curScr[1] / scale
         x = config.data['textPosition'].get('x', None)
-        if config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'LEFT', 'left'):
+        if config.data['textPosition']['alignX'] == COMPONENT_ALIGN.LEFT:
             x = self.screenFix(xMo, config.data['textPosition']['x'], 1)
-        elif config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'RIGHT', 'right'):
+        elif config.data['textPosition']['alignX'] == COMPONENT_ALIGN.RIGHT:
             x = self.screenFix(xMo, config.data['textPosition']['x'], -1)
-        elif config.data['textPosition']['alignX'] == getattr(COMPONENT_ALIGN, 'CENTER', 'center'):
+        elif config.data['textPosition']['alignX'] == COMPONENT_ALIGN.CENTER:
             x = self.screenFix(xMo, config.data['textPosition']['x'], 0)
         if x is not None and x != config.data['textPosition']['x']:
             config.data['textPosition']['x'] = x
-            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-            self.data[component_label]['x'] = x
+            self.data[COMPONENT_TYPE.LABEL]['x'] = x
         y = config.data['textPosition'].get('y', None)
-        if config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'TOP', 'top'):
+        if config.data['textPosition']['alignY'] == COMPONENT_ALIGN.TOP:
             y = self.screenFix(yMo, config.data['textPosition']['y'], 1)
-        elif config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'BOTTOM', 'bottom'):
+        elif config.data['textPosition']['alignY'] == COMPONENT_ALIGN.BOTTOM:
             y = self.screenFix(yMo, config.data['textPosition']['y'], -1)
-        elif config.data['textPosition']['alignY'] == getattr(COMPONENT_ALIGN, 'CENTER', 'center'):
+        elif config.data['textPosition']['alignY'] == COMPONENT_ALIGN.CENTER:
             y = self.screenFix(yMo, config.data['textPosition']['y'], 0)
         if y is not None and y != config.data['textPosition']['y']:
             config.data['textPosition']['y'] = y
-            component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-            self.data[component_label]['y'] = y
-        component_label = getattr(COMPONENT_TYPE, 'LABEL', 'LABEL')
-        self.updateObject(component_label, {'x': x, 'y': y})
+            self.data[COMPONENT_TYPE.LABEL]['y'] = y
+        self.updateObject(COMPONENT_TYPE.LABEL, {'x': x, 'y': y})
 
     def getData(self):
         return self.data
@@ -272,15 +270,6 @@ class Flash(object):
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
 g_flash = Flash()
-try:
-    from gambiter import g_guiFlash
-    from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
-except ImportError as err:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'gambiter.GUIFlash not found. {}', err)
-except Exception as err:
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    logError(config.ID, 'Unexpected error initializing Flash. {}', err)
 
 
 class DataConstants(object):

@@ -146,7 +146,7 @@ class Flash(object):
     def __updatePosition(self, alias, data):
         if alias != self.ID:
             return
-        config.onApplySettings({'textPosition': data})
+        config.onApplySettings({'position': data})
 
     @safe_execution()
     def addText(self, text):
