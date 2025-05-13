@@ -86,7 +86,6 @@ class Flash(object):
         self.data = self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
         self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
-        self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['background']})
         g_guiResetters.add(self.screenResize)
 
     def stopBattle(self):
