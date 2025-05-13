@@ -52,7 +52,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 700.0, 'y': 300.0, 'alignX': 'center', 'alignY': 'center'},
-            'textShadow': {'alpha': 0.8, 'angle': 90, 'blurX': 5, 'blurY': 5, 'color': '#000000', 'distance': 1, 'enabled': True, 'quality': 2, 'strength': 2},
+            'textShadow': {'alpha': 0.8, 'angle': 90, 'blurX': 5, 'blurY': 5, 'color': '#000000', 'distance': 1, 'quality': 2, 'strength': 2},
             'backgroundEnabled': True,
             'backgroundAlpha': 0.7,
             'version': calculate_version(self.version)
@@ -138,25 +138,7 @@ class Flash(object):
             self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
             self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['backgroundEnabled']})
             self.updateObject(COMPONENT_TYPE.LABEL, {'alpha': config.data['backgroundAlpha']})
-            self.setShadow()
         g_guiResetters.add(self.screenResize)
-
-    def setShadow(self):
-        shadow = config.data['textShadow']['enabled']
-        if g_guiFlash is not None:
-            if shadow:
-                self.updateObject(COMPONENT_TYPE.LABEL, {
-                    'shadow': {
-                        'distance': config.data['textShadow']['distance'],
-                        'angle': config.data['textShadow']['angle'],
-                        'color': config.data['textShadow']['color'],
-                        'alpha': config.data['textShadow']['alpha'],
-                        'blurX': config.data['textShadow']['blurX'],
-                        'blurY': config.data['textShadow']['blurY'],
-                        'strength': config.data['textShadow']['strength'],
-                        'quality': config.data['textShadow']['quality']
-                    }
-                })
 
     def stopBattle(self):
         if not config.data['enabled']:
@@ -199,7 +181,17 @@ class Flash(object):
                 'alignX': 'center',
                 'alignY': 'center',
                 'visible': True,
-                'text': ''
+                'text': '',
+                'shadow': {
+                    'distance': config.data['textShadow']['distance'],
+                    'angle': config.data['textShadow']['angle'],
+                    'color': config.data['textShadow']['color'],
+                    'alpha': config.data['textShadow']['alpha'],
+                    'blurX': config.data['textShadow']['blurX'],
+                    'blurY': config.data['textShadow']['blurY'],
+                    'strength': config.data['textShadow']['strength'],
+                    'quality': config.data['textShadow']['quality']
+                }
             }
         }
         for key, value in config.data['textPosition'].items():
@@ -273,7 +265,7 @@ g_flash = Flash()
 
 
 class DataConstants(object):
-    __slots__ = ('_playerVehicle', '_vehicle', '_typeDescriptor', '_gunShots', '_macroHandlers', '_cachedResults')
+    __slots__ = ('_playerVehicle', '_vehicle', '_typeDescriptor', '_gunShots', '_macroHandlers', '_cachedResults',)
 
     def __init__(self):
         self._playerVehicle = None
