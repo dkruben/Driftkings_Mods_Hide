@@ -15,7 +15,7 @@ from skeletons.account_helpers.settings_core import ISettingsCore
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, checkKeys, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, calculate_version, checkKeys
 
 COMPARE_MACROS = ['compareDelim', 'compareColor']
 ROMAN_LEVELS = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI')
