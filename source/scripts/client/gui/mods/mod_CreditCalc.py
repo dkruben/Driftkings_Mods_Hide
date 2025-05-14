@@ -181,6 +181,9 @@ class FlashMeta(View):
     def _dispose(self):
         super(FlashMeta, self)._dispose()
 
+    def py_log(self, text):
+        print('[%s]: %s' % (config.ID, text))
+
     @staticmethod
     def py_newPos(posX, posY):
         config.onApplySettings({'hangar_x': posX, 'hangar_y': posY})

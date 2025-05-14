@@ -73,3 +73,5 @@ res/sound_bank_wwise/SixthSense/.cache/LMDB/data.mdb
 res/flash/AccountsManager/obj/AccountsManagerWindowConfig.xml
 /build_tools/complete_archives.py
 /build_tools/configs_generator.py
+res/flash/CreditCalc/obj/CreditCalcConfig.old
+res/flash/CreditCalc/obj/CreditCalcConfig.xml
