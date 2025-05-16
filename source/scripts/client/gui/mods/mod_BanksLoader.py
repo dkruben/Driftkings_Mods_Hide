@@ -27,7 +27,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.0 (%(file_compile_date)s)'
+        self.version = '1.6.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'defaultPool': 36,
@@ -78,10 +78,16 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             print self.LOG, 'requesting client restart...'
             reasons = []
             if self.data['debug']:
-                reasons = [ self.i18n['UI_restart_' + key] + ', '.join(('<b>%s</b>' % x for x in remDups(self.editedBanks[key]))) for key in self.editedBanks if self.editedBanks[key] ]
+                reasons = []
+                for key in self.editedBanks:
+                    if self.editedBanks[key]:
+                        if isinstance(self.editedBanks[key], (list, set)):
+                            reason_text = self.i18n['UI_restart_' + key] + ', '.join(('<b>%s</b>' % x for x in remDups(self.editedBanks[key])))
+                            reasons.append(reason_text)
             reasonStr = self.i18n['UI_restart_reason'].format(';\n'.join(reasons)) if reasons else ''
             dialogText = self.i18n['UI_restart_text'].format(reason=self.i18n['UI_restart_reason_' + ('update' if self.version_changed else 'new')], reasons=reasonStr)
-            builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(self.i18n['UI_restart_header'])
+            builder = WarningDialogBuilder().setFormattedMessage(dialogText).setFormattedTitle(
+                self.i18n['UI_restart_header'])
             for ID, key in ((DButtons.PURCHASE, 'restart'), (DButtons.RESEARCH, 'shutdown'), (DButtons.SUBMIT, 'close')):
                 builder.addButton(ID, None, ID == DButtons.PURCHASE, rawLabel=self.i18n['UI_restart_button_%s' % key])
             try:
@@ -143,7 +149,9 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             new_filePath = BLMarker.join(os.path.splitext(filePath))
             _filePath = filePath.replace(modsRoot, '')
             if os.path.isfile(new_filePath) and os.stat(filePath).st_mtime == os.stat(new_filePath).st_mtime:
-                order_changed |= _filePath not in order and not order.append(_filePath)
+                if _filePath not in order:
+                    order.append(_filePath)
+                    order_changed = True
                 BL_present = True
                 continue
             with zipfile.ZipFile(filePath) as zip_orig:
@@ -164,7 +172,9 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                         fileInfo.extra = ''
                         zip_new.writestr(fileInfo, zip_orig.read(fileName))
             print self.LOG, 'config renamed for package', os.path.basename(filePath)
-            order_changed |= _filePath not in order and not order.append(_filePath)
+            if _filePath not in order:
+                order.append(_filePath)
+                order_changed = True
             BL_present = True
             if os.path.isfile(new_filePath):
                 try:
@@ -191,7 +201,8 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             path = curCV + '/' + 'engine_config.xml'
             if not os.path.isfile(path):
                 break
-            if orig_engine.has_key('BanksLoader_gameVersion') and orig_engine['BanksLoader_gameVersion'].asString == getClientVersion():
+            if orig_engine.has_key('BanksLoader_gameVersion') and orig_engine[
+                'BanksLoader_gameVersion'].asString == getClientVersion():
                 break
             print self.LOG, 'client version change detected'
             self.version_changed = True
@@ -220,15 +231,18 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 profile = soundMgr[soundMgr[profile_name].asString]
                 self.manageProfileMemorySettings(profile_type, profile)
                 self.manageProfileBanks(profile_type, profile, bankFiles)
-            self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml', ('delete', 'move', 'remap'))
+            self.saveNewFile(audio_mods_new, mediaPath + '/', 'audio_mods_edited.xml', mediaPath + '/audio_mods.xml',('delete', 'move', 'remap'))
             self.saveNewFile(new_engine, '', 'engine_config_edited.xml', 'engine_config.xml', ('delete', 'move', 'create', 'memory'))
 
     def collectBankFiles(self, mediaPath):
-        bankFiles = {'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {}, 'audio_mods_allowed': ('protanki.bnk',), 'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}}
+        bankFiles = {
+            'mods': set(), 'pkg': set(), 'ignore': set(), 'section': {},
+            'audio_mods_allowed': ('protanki.bnk',),
+            'res': {os.path.basename(path) for path in glob.iglob('./res/' + mediaPath + '/*') if os.path.splitext(path)[1] in ('.bnk', '.pck')}
+        }
         for pkgPath in glob.iglob('res/packages/audioww*.pkg'):
             with zipfile.ZipFile(pkgPath) as pkg:
                 bankFiles['pkg'].update({os.path.basename(name) for name in pkg.namelist()})
-
         bankFiles['orig'] = bankFiles['res'] | bankFiles['pkg']
         bankFiles['mods'] = set((x for x in ResMgr.openSection(mediaPath).keys() if os.path.splitext(x)[1] in ('.bnk', '.pck') and not any((y in bankFiles['orig'] for y in (x, x.lower())))))
         bankFiles['all'] = bankFiles['orig'] | bankFiles['mods']
@@ -254,7 +268,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                     self.editedBanks['remap'].add(key)
                     print self.LOG, 'cleaned wrong section for setting', key
                 continue
-            data = {x:sect[x].asString for x in struct['keys']}
+            data = {x: sect[x].asString for x in struct['keys']}
             if struct['data']:
                 sub_name = struct['data']['name']
                 if sect.has_key(sub_name):
@@ -276,17 +290,20 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
         audio_mods_new = ResMgr.openSection(mediaPath + '/audio_mods_edited.xml', True)
         audio_mods_banks = []
         if audio_mods is None:
-            print _config.LOG, 'audio_mods.xml not found, will be created if needed'
+            print self.LOG, 'audio_mods.xml not found, will be created if needed'
         data_structure = [
             {'name': 'events', 'key': 'event', 'keys': ('name', 'mod'), 'data': ()},
-            {'name': 'switches','key': 'switch', 'keys': ('name', 'mod'), 'data': {'name': 'states', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}},
+            {'name': 'switches', 'key': 'switch', 'keys': ('name', 'mod'), 'data': {'name': 'states', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}},
             {'name': 'RTPCs', 'key': 'RTPC', 'keys': ('name', 'mod'), 'data': ()},
             {'name': 'states', 'key': 'stateGroup', 'keys': ('name', 'mod'), 'data': {'name': 'stateNames', 'key': 'state', 'keys': ('name', 'mod'), 'data': ()}}
         ]
         data_old, data_new = {}, {}
         for struct in data_structure:
             key = struct['name']
-            data_old[key] = self.check_and_collect_data(key, audio_mods[key], struct, True)
+            if audio_mods is not None and audio_mods.has_key(key):
+                data_old[key] = self.check_and_collect_data(key, audio_mods[key], struct, True)
+            else:
+                data_old[key] = []
         banksData = {}
         for path in ResMgr.openSection(mediaPath).keys():
             if not path.endswith('.xml') or path.replace('.xml', '.bnk') not in bankFiles['all']:
@@ -305,15 +322,16 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 data_new.setdefault(key, []).extend(bankData.get(key, []))
             if sect.has_key('engine_config_section'):
                 bankFiles['section'][bankName] = sect['engine_config_section'].asString
-        for bankSect in audio_mods['loadBanks'].values():
-            bankName = bankSect.asString or getattr(bankSect['name'], 'asString', None)
-            if bankName not in bankFiles['audio_mods_allowed']:
-                print self.LOG, 'clearing audio_mods section for bank', bankName
-                self.editedBanks['delete'].append(bankName)
-            if bankName not in audio_mods_banks:
-                audio_mods_banks.append(bankName)
+        if audio_mods is not None and audio_mods.has_key('loadBanks'):
+            for bankSect in audio_mods['loadBanks'].values():
+                bankName = bankSect.asString or getattr(bankSect['name'], 'asString', None)
+                if bankName not in bankFiles['audio_mods_allowed']:
+                    print self.LOG, 'clearing audio_mods section for bank', bankName
+                    self.editedBanks['delete'].append(bankName)
+                if bankName not in audio_mods_banks:
+                    audio_mods_banks.append(bankName)
         self.editedBanks['delete'] = remDups(self.editedBanks['delete'])
-        for key in ['loadBanks'] + [ struct['name'] for struct in data_structure ]:
+        for key in ['loadBanks'] + [struct['name'] for struct in data_structure]:
             audio_mods_new.createSection(key)
         for bankName in audio_mods_banks:
             audio_mods_new['loadBanks'].createSection('bank').writeString('name', bankName)
@@ -335,7 +353,11 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                 print self.LOG, 'changing value for memory setting:', mgrKey
 
     def manageProfileMemorySettings(self, profile_type, profile):
-        poolKeys = {'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'), 'soundRender': ('max_voices',)}
+        poolKeys = {
+            'memoryManager': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+            'memoryManager_64bit': ('defaultPool', 'lowEnginePool', 'streamingPool', 'IOPoolSize'),
+            'soundRender': ('max_voices',)
+        }
         for poolKey, poolValuesList in poolKeys.iteritems():
             for poolValue in poolValuesList:
                 value = profile[poolKey][poolValue]
@@ -371,7 +393,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                     self.editedBanks['delete'].append(bankName)
                     section.deleteSection(bank)
                 exist.add(bankName)
-        bankFiles['orig'] = [x.lower() for x in bankFiles['orig']]
+        bankFiles['orig'] = {x.lower() for x in bankFiles['orig']}
         for bankName in sorted(bankFiles['mods']):
             if not any((bankName in bankFiles[x] for x in ('orig', 'ignore', 'audio_mods_allowed'))) and bankName not in exist:
                 sectName = bankFiles['section'].get(bankName, 'SFX_soundbanks_loadonce')
