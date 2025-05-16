@@ -6,6 +6,7 @@ import GUI
 import Keys
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
+from gui import InputHandler
 from gui import g_guiResetters
 from gui.shared.utils.TimeInterval import TimeInterval
 from helpers import dependency
@@ -35,7 +36,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.5 (%(file_compile_date)s)'
+        self.version = '1.9.0 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -702,11 +703,13 @@ class InfoPanel(DataConstants):
                     textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
         return textFormat
 
-    def handleKey(self, isDown):
-        if isDown:
+    def keyPressed(self, event):
+        if not config.data['enabled']:
+            return
+        if checkKeys(config.data['altKey']) and event.isKeyDown():
             self.onUpdateVehicle(getPlayer().getVehicleAttached())
             self.hotKeyDown = True
-        elif not isDown:
+        elif not checkKeys(config.data['altKey']) and event.isKeyDown():
             self.hotKeyDown = False
             target = getTarget()
             if self.isConditions(target):
@@ -762,17 +765,10 @@ def new_targetFocus(func, self, entity):
     g_mod.onUpdateVehicle(entity)
 
 
-@override(PlayerAvatar, 'handleKey')
-def new_handleKey(func, self, isDown, key, mods):
-    func(self, isDown, key, mods)
-    if not config.data['enabled'] or key != checkKeys(config.data['altKey']) or MessengerEntry.g_instance.gui.isFocused():
-        return
-    g_mod.handleKey(isDown)
-
-
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new_startGUI(func, *args):
     func(*args)
+    InputHandler.g_instance.onKeyDown += g_mod.keyPressed
     g_flash.startBattle()
 
 
@@ -783,5 +779,6 @@ def new_destroyGUI(func, *args):
         return
     if not getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         return
+    InputHandler.g_instance.onKeyDown -= g_mod.keyPressed
     g_mod.reset()
     g_flash.stopBattle()

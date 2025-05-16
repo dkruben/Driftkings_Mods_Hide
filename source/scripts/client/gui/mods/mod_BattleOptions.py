@@ -7,6 +7,7 @@ from functools import partial
 from string import printable
 from time import strftime
 
+import BigWorld
 import CommandMapping
 import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar
@@ -42,7 +43,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.6.0 (%(file_compile_date)s)'
+        self.version = '2.6.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -66,6 +67,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'stunSound': False,
             'showPlayerSatisfactionWidget': False,
             'addEnemyName': True,
+            'removeFog': True
         }
 
         self.i18n = {
@@ -109,7 +111,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showPlayerSatisfactionWidget_text': 'Show Player Satisfaction Widget',
             'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.',
             'UI_setting_addEnemyName_text': 'Add Enemy Name',
-            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.'
+            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.',
+            'UI_setting_removeFog_text': 'Add Enemy Name',
+            'UI_setting_removeFog_tooltip': 'Adds the name of the enemy vehicle to the damage log.'
         }
         super(ConfigInterface, self).init()
 
@@ -134,6 +138,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             ],
             'column2': [
                 colorLabel,
+                self.tb.createControl('removeFog'),
                 self.tb.createControl('showPlayerSatisfactionWidget'),
                 self.tb.createControl('addEnemyName'),
                 self.tb.createControl('inBattle'),
@@ -190,6 +195,44 @@ battle_clock = BattleClock()
 def new_startGUI(func, *args):
     func(*args)
     battle_clock.start()
+
+
+# remove fog
+def removeFog():
+    if not config.data['enabled'] and not config.data['removeFog']:
+        return
+    player = getPlayer()
+    if player and hasattr(player, 'arena') and player.arena:
+        arena = player.arena
+        if hasattr(arena, 'weather'):
+            weather = arena.weather
+            if hasattr(weather, 'fogDensity'):
+                weather.fogDensity = 0.0
+            if hasattr(weather, 'fogStart'):
+                weather.fogStart = 10000.0
+            if hasattr(weather, 'fogEnd'):
+                weather.fogEnd = 10000.0
+        else:
+            space = getPlayer().spaceID
+            if space and hasattr(BigWorld, 'spaces'):
+                currentSpace = BigWorld.spaces.get(space)
+                if currentSpace and hasattr(currentSpace, 'weather'):
+                    weather = currentSpace.weather
+                    if hasattr(weather, 'fogDensity'):
+                        weather.fogDensity = 0.0
+                    if hasattr(weather, 'fogStart'):
+                        weather.fogStart = 10000.0
+                    if hasattr(weather, 'fogEnd'):
+                        weather.fogEnd = 10000.0
+
+
+@override(PlayerAvatar, 'onBecomePlayer')
+def new_onBecomePlayer(func, *args):
+    func(*args)
+    if not config.data['enabled'] and not config.data['removeFog']:
+        return
+    callback(3.0, removeFog)
+
 
 # disable commander voices
 @override(SpecialSoundCtrl, '__setSpecialVoiceByTankmen')

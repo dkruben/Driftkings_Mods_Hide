@@ -1,8 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
+# Updated by: __DKRuben_EU__ for Driftkings mod Wot ver. 1.29.0.0
 import datetime
 import locale
-import logging
-import traceback
 
 import gui.shared.tooltips.vehicle as tooltips
 from CurrentVehicle import g_currentVehicle
@@ -37,7 +36,6 @@ from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
-from shared_utils import safeCancelCallback
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.tankStructure import ModelStates
 
@@ -53,7 +51,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.4.0 (%(file_compile_date)s)'
+        self.version = '3.4.5 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -84,7 +82,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
-                'position':{'x': -10.0, 'y': 49.0},
+                'position': {'x': -10.0, 'y': 49.0},
                 'width': 210,
                 'height': 50,
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
@@ -178,8 +176,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showRankedBattleResults'),
                 self.tb.createControl('showHangarPrestigeWidget'),
                 self.tb.createControl('showProfilePrestigeWidget'),
-                self.tb.createControl('showReferralButton'),
-                self.tb.createControl('showEventBanner')
+                self.tb.createControl('showReferralButton')
             ]
         }
 
@@ -218,11 +215,10 @@ def new__changeVehicle(func, *args, **kwargs):
     callback(1.0, g_events.onVehicleChangedDelayed, g_currentVehicle.item)
 
 
-# Hangar
 # hide referral program button
 @override(MessengerBarMeta, 'as_setInitDataS')
 def new__setInitDataS(func, self, data):
-    if config.data['enabled'] and config.data['showReferralButton'] and ('isReferralEnabled' in data):
+    if config.data['enabled'] and not config.data['showReferralButton'] and ('isReferralEnabled' in data):
         data['isReferralEnabled'] = False
     return func(self, data)
 
@@ -260,7 +256,7 @@ def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDA
 # hide display pop-up messages in the hangar
 @override(TeaserViewer, 'show')
 def new__show(func, self, teaserData, promoCount):
-    if config.data['enabled'] and config.data['showPopUpMessages']:
+    if config.data['enabled'] and not config.data['showPopUpMessages']:
         return
     func(self, teaserData, promoCount)
 
@@ -268,15 +264,15 @@ def new__show(func, self, teaserData, promoCount):
 # hide display unread notifications counter in the menu
 @override(PromoController, 'getPromoCount')
 def new__getPromoCount(func, self):
-    if config.data['enabled'] and config.data['showUnreadCounter']:
-        return
-    func(self)
+    if config.data['enabled'] and not config.data['showUnreadCounter']:
+        return 0
+    return func(self)
 
 
 # hide ranked battle results window
 @override(RankedBattlesResults, '_populate')
 def new__populate(func, self):
-    if config.data['enabled'] and config.data['showRankedBattleResults']:
+    if config.data['enabled'] and not config.data['showRankedBattleResults']:
         return
     func(self)
 
@@ -284,7 +280,7 @@ def new__populate(func, self):
 # hide display session statistics button
 @override(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
 def new__updateSessionStatsBtn(func, self):
-    if config.data['enabled'] and config.data['showButton']:
+    if config.data['enabled'] and not config.data['showButton']:
         self.as_setSessionStatsButtonVisibleS(False)
         self._MessengerBar__onSessionStatsBtnOnlyOnceHintHidden(True)
         return
@@ -294,7 +290,7 @@ def new__updateSessionStatsBtn(func, self):
 # hide display the counter of spent battles on the button
 @override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
 def new__updateBattleCount(func, self):
-    if config.data['enabled'] and config.data['showBattleCount']:
+    if config.data['enabled'] and not config.data['showBattleCount']:
         return
     func(self)
 
@@ -310,7 +306,7 @@ def new__shouldHide(func, self):
 # hide display pop-up window when receiving progressive decals
 @override(ProgressiveItemsRewardHandler, '_showAward')
 def new__showAward(func, self, ctx):
-    if config.data['enabled'] and config.data['showProgressiveDecalsWindow']:
+    if config.data['enabled'] and not config.data['showProgressiveDecalsWindow']:
         return
     func(self, ctx)
 
@@ -318,7 +314,7 @@ def new__showAward(func, self, ctx):
 # hide display banner of various events in the hangar
 @override(EventEntryPointsContainer, 'as_updateEntriesS')
 def new__updateEntries(func, self, data):
-    if config.data['enabled'] and config.data['showEventBanner']:
+    if config.data['enabled'] and not config.data['showEventBanner']:
         return func(self, [])
     return func(self, data)
 
@@ -326,7 +322,7 @@ def new__updateEntries(func, self, data):
 # hide prestige (elite levels) system widget in the hangar
 @override(Hangar, 'as_setPrestigeWidgetVisibleS')
 def new__setPrestigeWidgetVisibleS(func, self, value):
-    if config.data['enabled'] and config.data['showHangarPrestigeWidget']:
+    if config.data['enabled'] and not config.data['showHangarPrestigeWidget']:
         value = False
     return func(self, value)
 
@@ -334,7 +330,7 @@ def new__setPrestigeWidgetVisibleS(func, self, value):
 # hide prestige (elite levels) system widget in the profile
 @override(ProfileTechnique, 'as_setPrestigeVisibleS')
 def new__setPrestigeVisibleS(func, self, value):
-    if config.data['enabled'] and config.data['showProfilePrestigeWidget']:
+    if config.data['enabled'] and not config.data['showProfilePrestigeWidget']:
         value = False
     return func(self, value)
 
@@ -345,6 +341,7 @@ LOBBY_HEADER_BUTTON_TO_CONFIG = {
     LobbyHeader.BUTTONS.PREM: 'showBuyPremiumButton',
     LobbyHeader.BUTTONS.PREMSHOP: 'showPremiumShopButton'
 }
+
 
 @override(LobbyHeader, 'as_setHeaderButtonsS')
 def new__setHeaderButtonsS(func, self, buttons):
@@ -357,7 +354,7 @@ def new__setHeaderButtonsS(func, self, buttons):
 # hide button counters in lobbyHeader
 @override(LobbyHeader, '_LobbyHeader__setCounter')
 def new__setCounter(func, self, alias, counter=None):
-    if config.data['enabled'] and config.data['showButtonCounters']:
+    if config.data['enabled'] and not config.data['showButtonCounters']:
         return
     return func(self, alias, counter)
 
@@ -365,7 +362,7 @@ def new__setCounter(func, self, alias, counter=None):
 # hide button counters on customization button
 @override(AmmunitionPanel, 'as_setCustomizationBtnCounterS')
 def new__setCustomizationBtnCounterS(func, self, value):
-    if config.data['enabled'] and config.data['showButtonCounters']:
+    if config.data['enabled'] and not config.data['showButtonCounters']:
         value = 0
     return func(self, value)
 
@@ -373,7 +370,7 @@ def new__setCustomizationBtnCounterS(func, self, value):
 # hide counter on service channel button
 @override(NotificationListButton, '_NotificationListButton__setState')
 def new__setState(func, self, count):
-    if config.data['enabled'] and config.data['showButtonCounters']:
+    if config.data['enabled'] and not config.data['showButtonCounters']:
         return
     return func(self, count)
 
@@ -381,7 +378,7 @@ def new__setState(func, self, count):
 # hide counters in service channel
 @override(NotificationListView, '_NotificationListView__updateCounters')
 def new__updateCounters(func, self):
-    if config.data['enabled'] and config.data['showButtonCounters']:
+    if config.data['enabled'] and not config.data['showButtonCounters']:
         return
     return func(self)
 
@@ -389,11 +386,11 @@ def new__updateCounters(func, self):
 # Auto-Login
 class AutoLoginHandler:
     def __init__(self):
-        self.first_time = False
+        self.firstTime = False
 
     def auto_login(self, login):
-        if not self.first_time:
-            self.first_time = True
+        if not self.firstTime:
+            self.firstTime = True
             if config.data.get('enabled', False) and config.data.get('autoLogin', False):
                 callback(0, login.as_doAutoLoginS)
 
@@ -411,35 +408,25 @@ def new__LoginViewPopulate(func, self):
 # Show Xp To Unlock Veh.
 @override(tooltips.StatusBlockConstructor, 'construct')
 def new__construct(func, self):
-    block = func(self)
-    if block and config.data['enabled'] and config.data['showXpToUnlockVeh']:
-        try:
-            techTreeNode = self.configuration.node
-            vehicle = self.vehicle
-            isUnlocked = vehicle.isUnlocked
-            parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
-            if parentCD is not None:
-                isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
-                if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
-                    if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
-                        icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
-                        template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
-                        block[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
-            return block
-        except Exception:
-            logging.getLogger('Driftkings/HangarOptions').exception('new__construct')
-            return block
-    else:
-        return block
+    result = func(self)
+    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
+        techTreeNode = self.configuration.node
+        vehicle = self.vehicle
+        isUnlocked = vehicle.isUnlocked
+        parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
+        if parentCD is not None:
+            isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
+            if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
+                icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
+                template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
+                result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
+        return result
 
 
 @override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
 def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
-    try:
-        if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
-            return unlockStats.getVehTotalXP(nodeCD)
-    except Exception:
-        logging.getLogger('Driftkings/HangarOptions').exception('new__getAllVehiclePossibleXP')
+    if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
+        return unlockStats.getVehTotalXP(nodeCD)
     return func(self, nodeCD, unlockStats)
 
 
@@ -453,14 +440,14 @@ def new__getIsActive(func, state):
 
 @override(Hangar, 'as_updateCarouselEventEntryStateS')
 def new__updateCarouselEventEntryStateS(func, self, isVisible):
-    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
         isVisible = False
     return func(self, isVisible)
 
 
 @override(Hangar, 'as_setEventTournamentBannerVisibleS')
 def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
-    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
         visible = False
     return func(self, alias, visible)
 
@@ -468,7 +455,7 @@ def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
 # Destroy widget if hidden
 @override(TournamentsWidgetComponent, '_makeInjectView')
 def new__makeInjectView(func, self):
-    if not config.data.get('enabled', True) and not config.data.get('showLootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
         self.destroy()
         return
     return func(self)
@@ -493,14 +480,14 @@ def new__removeListeners(func, self):
 # Handlers
 @override(ChannelsCarouselHandler, 'addChannel')
 def new__addChannel(func, self, channel, lazy=False, isNotified=False):
-    if not config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True):
+    if config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True):
         isNotified = False
     func(self, channel, lazy, isNotified)
 
 
 @override(ChannelsCarouselHandler, '_ChannelsCarouselHandler__setItemField')
 def new__setItemField(func, self, clientID, key, value):
-    if not config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True) and key == 'isNotified':
+    if config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True) and key == 'isNotified':
         value = False
     return func(self, clientID, key, value)
 
@@ -556,7 +543,7 @@ class Flash(object):
     def cleanup(self):
         self.stopTimer()
         if self.updateCallback:
-            self.updateCallback = safeCancelCallback(self.updateCallback)
+            self.updateCallback = cancelCallback(self.updateCallback)
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
         g_guiFlash.destroyComponent(self.ID)
 
@@ -568,24 +555,21 @@ class Flash(object):
     def isLobby(self, value):
         self.__isLobby = value
         if self.updateCallback:
-            self.updateCallback = safeCancelCallback(self.updateCallback)
+            self.updateCallback = cancelCallback(self.updateCallback)
         self.updateCallback = callback(1.0, self.updateTimeData) if not value else self.updateTimeData()
 
     def updateTimeData(self):
         if not config.data.get('enabled', False) or not config.data.get('clock', False):
             return
-        try:
-            encoding = 'utf-8' if locale.getpreferredencoding() in ('cp65001', 'UTF-8') else locale.getpreferredencoding()
-            current_time = datetime.datetime.now()
-            weekday_capitalized = current_time.strftime('%A').capitalize()
-            format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
-            current_time_str = current_time.strftime(format_with_capital)
-            formatted_time = current_time_str.decode(encoding) if isinstance(current_time_str, str) else current_time_str
-            g_guiFlash.updateComponent(self.ID, {'text': formatted_time})
-        except (UnicodeError, AttributeError) as err:
-            logError(config.ID, 'Error formatting clock time: {}', err)
-        except Exception as err:
-            logError(config.ID, 'Unexpected error updating clock: {}', err)
+        encoding = 'utf-8' if locale.getpreferredencoding() in ('cp65001', 'UTF-8') else locale.getpreferredencoding()
+        current_time = datetime.datetime.now()
+        weekday_capitalized = current_time.strftime('%A').capitalize()
+        format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
+        current_time_str = current_time.strftime(format_with_capital)
+        formatted_time = current_time_str.decode(encoding) if isinstance(current_time_str, str) else current_time_str
+        g_guiFlash.updateComponent(self.ID, {'text': formatted_time})
+        if not self.__isLobby and self.updateCallback is None:
+            self.updateCallback = callback(1.0, self.updateTimeData)
 
 
 g_flash = None
@@ -599,4 +583,3 @@ except ImportError as e:
 except Exception as e:
     logError(config.ID, 'Error initializing Flash: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-    traceback.print_exc()
