@@ -1,5 +1,4 @@
 ﻿# -*- coding: utf-8 -*-
-# Updated by: __DKRuben_EU__ for Driftkings mod Wot ver. 1.29.0.0
 import datetime
 import locale
 
@@ -25,6 +24,7 @@ from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
+from gui.game_control.achievements_earning_controller import EarningAnimationCommand
 from gui.impl import backport
 from gui.impl.gen import R
 from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
@@ -51,7 +51,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.4.5 (%(file_compile_date)s)'
+        self.version = '3.5.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -64,6 +64,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showUnreadCounter': True,
             'showRankedBattleResults': False,
             'showButton': False,
+            'showAchievementPopups': False,
             'showBattleCount': True,
             'showDailyQuestWidget': False,
             'showProgressiveDecalsWindow': False,
@@ -71,6 +72,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showHangarPrestigeWidget': False,
             'showProfilePrestigeWidget': True,
             'showWotPlusButton': False,
+            'showEventTournamentWidget': True,
             'showBuyPremiumButton': True,
             'showPremiumShopButton': True,
             'showButtonCounters': True,
@@ -142,7 +144,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
             'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
             'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
-            'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar'
+            'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
+            'UI_setting_showEventTournamentWidget_text': 'Event Tournament Widget',
+            'UI_setting_showEventTournamentWidget_tooltip': 'Show/hide event tournaments widget in hangar.',
+            'UI_setting_showAchievementPopups_text': 'Achievement Popups',
+            'UI_setting_showAchievementPopups_tooltip': 'Show/hide Achievement Popups.',
         }
         super(ConfigInterface, self).init()
 
@@ -176,7 +182,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showRankedBattleResults'),
                 self.tb.createControl('showHangarPrestigeWidget'),
                 self.tb.createControl('showProfilePrestigeWidget'),
-                self.tb.createControl('showReferralButton')
+                self.tb.createControl('showReferralButton'),
+                self.tb.createControl('showEventTournamentWidget'),
+                self.tb.createControl('showAchievementPopups')
             ]
         }
 
@@ -218,7 +226,7 @@ def new__changeVehicle(func, *args, **kwargs):
 # hide referral program button
 @override(MessengerBarMeta, 'as_setInitDataS')
 def new__setInitDataS(func, self, data):
-    if config.data['enabled'] and not config.data['showReferralButton'] and ('isReferralEnabled' in data):
+    if config.data.get('enabled', True) and not config.data.get('showReferralButton', True) and ('isReferralEnabled' in data):
         data['isReferralEnabled'] = False
     return func(self, data)
 
@@ -226,14 +234,14 @@ def new__setInitDataS(func, self, data):
 # hide button counters in lobby header
 @override(LobbyHeader, '__setCounter')
 def buttonCounterS(base, *args, **kwargs):
-    if not config.data['hideBtnCounters']:
+    if config.data.get('enabled', True) and not config.data.get('hideBtnCounters', True):
         return base(*args, **kwargs)
 
 
 # hide shared chat button
 @override(LobbyEntry, '_LobbyEntry__handleLazyChannelCtlInited')
 def new__handleLazyChannelCtlInited(func, self, event):
-    if config.data['enabled'] and not config.data['showGeneralChatButton']:
+    if config.data.get('enabled', True) and not config.data.get('showGeneralChatButton', True):
         ctx = event.ctx
         controller = ctx.get('controller')
         if controller is None:
@@ -256,7 +264,7 @@ def new__recreateVehicle(func, self, typeDescriptor=None, state=ModelStates.UNDA
 # hide display pop-up messages in the hangar
 @override(TeaserViewer, 'show')
 def new__show(func, self, teaserData, promoCount):
-    if config.data['enabled'] and not config.data['showPopUpMessages']:
+    if config.data.get('enabled', True) and not config.data.get('showPopUpMessages', True):
         return
     func(self, teaserData, promoCount)
 
@@ -264,7 +272,7 @@ def new__show(func, self, teaserData, promoCount):
 # hide display unread notifications counter in the menu
 @override(PromoController, 'getPromoCount')
 def new__getPromoCount(func, self):
-    if config.data['enabled'] and not config.data['showUnreadCounter']:
+    if config.data.get('enabled', True) and not config.data.get('showUnreadCounter', True):
         return 0
     return func(self)
 
@@ -272,7 +280,7 @@ def new__getPromoCount(func, self):
 # hide ranked battle results window
 @override(RankedBattlesResults, '_populate')
 def new__populate(func, self):
-    if config.data['enabled'] and not config.data['showRankedBattleResults']:
+    if config.data.get('enabled', True) and not config.data.get('showRankedBattleResults', True):
         return
     func(self)
 
@@ -280,7 +288,7 @@ def new__populate(func, self):
 # hide display session statistics button
 @override(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
 def new__updateSessionStatsBtn(func, self):
-    if config.data['enabled'] and not config.data['showButton']:
+    if config.data.get('enabled', True) and not config.data.get('showButton', True):
         self.as_setSessionStatsButtonVisibleS(False)
         self._MessengerBar__onSessionStatsBtnOnlyOnceHintHidden(True)
         return
@@ -290,7 +298,7 @@ def new__updateSessionStatsBtn(func, self):
 # hide display the counter of spent battles on the button
 @override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
 def new__updateBattleCount(func, self):
-    if config.data['enabled'] and not config.data['showBattleCount']:
+    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
         return
     func(self)
 
@@ -306,23 +314,23 @@ def new__shouldHide(func, self):
 # hide display pop-up window when receiving progressive decals
 @override(ProgressiveItemsRewardHandler, '_showAward')
 def new__showAward(func, self, ctx):
-    if config.data['enabled'] and not config.data['showProgressiveDecalsWindow']:
+    if config.data.get('enabled', True) and not config.data.get('showProgressiveDecalsWindow', True):
         return
     func(self, ctx)
 
 
 # hide display banner of various events in the hangar
-@override(EventEntryPointsContainer, 'as_updateEntriesS')
+@override(EventEntryPointsContainer, '_EventEntryPointsContainer__updateEntries')
 def new__updateEntries(func, self, data):
-    if config.data['enabled'] and not config.data['showEventBanner']:
-        return func(self, [])
-    return func(self, data)
+    if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
+        return self.as_updateEntriesS([])
+    func(self, data)
 
 
 # hide prestige (elite levels) system widget in the hangar
 @override(Hangar, 'as_setPrestigeWidgetVisibleS')
 def new__setPrestigeWidgetVisibleS(func, self, value):
-    if config.data['enabled'] and not config.data['showHangarPrestigeWidget']:
+    if config.data.get('enabled', True) and not config.data.get('showHangarPrestigeWidget', True):
         value = False
     return func(self, value)
 
@@ -330,7 +338,7 @@ def new__setPrestigeWidgetVisibleS(func, self, value):
 # hide prestige (elite levels) system widget in the profile
 @override(ProfileTechnique, 'as_setPrestigeVisibleS')
 def new__setPrestigeVisibleS(func, self, value):
-    if config.data['enabled'] and not config.data['showProfilePrestigeWidget']:
+    if config.data.get('enabled', True) and not config.data.get('showProfilePrestigeWidget', True):
         value = False
     return func(self, value)
 
@@ -354,7 +362,7 @@ def new__setHeaderButtonsS(func, self, buttons):
 # hide button counters in lobbyHeader
 @override(LobbyHeader, '_LobbyHeader__setCounter')
 def new__setCounter(func, self, alias, counter=None):
-    if config.data['enabled'] and not config.data['showButtonCounters']:
+    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         return
     return func(self, alias, counter)
 
@@ -362,7 +370,7 @@ def new__setCounter(func, self, alias, counter=None):
 # hide button counters on customization button
 @override(AmmunitionPanel, 'as_setCustomizationBtnCounterS')
 def new__setCustomizationBtnCounterS(func, self, value):
-    if config.data['enabled'] and not config.data['showButtonCounters']:
+    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         value = 0
     return func(self, value)
 
@@ -370,7 +378,7 @@ def new__setCustomizationBtnCounterS(func, self, value):
 # hide counter on service channel button
 @override(NotificationListButton, '_NotificationListButton__setState')
 def new__setState(func, self, count):
-    if config.data['enabled'] and not config.data['showButtonCounters']:
+    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         return
     return func(self, count)
 
@@ -378,9 +386,18 @@ def new__setState(func, self, count):
 # hide counters in service channel
 @override(NotificationListView, '_NotificationListView__updateCounters')
 def new__updateCounters(func, self):
-    if config.data['enabled'] and not config.data['showButtonCounters']:
+    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         return
     return func(self)
+
+
+# hide achievement popups
+@override(EarningAnimationCommand, 'execute')
+def new__execute(base, self):
+    if config.data.get('enabled', True) and config.data.get('showAchievementPopups', True):
+        base(self)
+        return
+    self.release()
 
 
 # Auto-Login
@@ -445,9 +462,10 @@ def new__updateCarouselEventEntryStateS(func, self, isVisible):
     return func(self, isVisible)
 
 
+# hide lootBoxes widget in hangar
 @override(Hangar, 'as_setEventTournamentBannerVisibleS')
 def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
-    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('showEventTournamentWidget', True):
         visible = False
     return func(self, alias, visible)
 
@@ -455,7 +473,7 @@ def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
 # Destroy widget if hidden
 @override(TournamentsWidgetComponent, '_makeInjectView')
 def new__makeInjectView(func, self):
-    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
+    if config.data.get('enabled', True) and not config.data.get('showEventTournamentWidget', True):
         self.destroy()
         return
     return func(self)
