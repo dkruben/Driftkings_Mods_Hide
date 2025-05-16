@@ -112,8 +112,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.',
             'UI_setting_addEnemyName_text': 'Add Enemy Name',
             'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.',
-            'UI_setting_removeFog_text': 'Add Enemy Name',
-            'UI_setting_removeFog_tooltip': 'Adds the name of the enemy vehicle to the damage log.'
+            'UI_setting_removeFog_text': 'Remove Fog',
+            'UI_setting_removeFog_tooltip': 'Remove Fog of War in battle.',
         }
         super(ConfigInterface, self).init()
 
