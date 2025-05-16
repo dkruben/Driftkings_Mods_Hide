@@ -102,7 +102,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showButtonCounters_text': 'Button Counters',
             'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_hideBtnCounters_text': 'Disable tooltips on buttons in the hangar header',
-            'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#\'>To enable / disable you need to restart the game.</font>' + ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'))),
+            'UI_setting_hideBtnCounters_tooltip': (''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#FF0000\'>To enable / disable you need to restart the game.</font>' + ''.join(' '.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'))),
             'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
             'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
             'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
@@ -233,9 +233,9 @@ def new__setInitDataS(func, self, data):
 
 # hide button counters in lobby header
 @override(LobbyHeader, '__setCounter')
-def buttonCounterS(base, *args, **kwargs):
+def buttonCounterS(func, *args, **kwargs):
     if config.data.get('enabled', True) and not config.data.get('hideBtnCounters', True):
-        return base(*args, **kwargs)
+        return func(*args, **kwargs)
 
 
 # hide shared chat button
