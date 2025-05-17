@@ -1,19 +1,18 @@
 package driftkings.battle.distancemarker
 {
-
 	import driftkings.battle.distancemarker.config.Config;
 	import driftkings.battle.distancemarker.markers.DistanceMarker;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.utils.getTimer;
-	
+
 	public class DistanceMarkerFlash extends Sprite 
 	{
 		private static const SWF_HALF_WIDTH:Number = 400;
 		private static const SWF_HALF_HEIGHT:Number = 300;
 		private static const REFRESH_DISTANCE_INTERVAL_MS:int = 100;
 		private static const SORT_BY_DISTANCE_INTERVAL_MS:int = 500;
-		
+
 		public var py_requestFrameData:Function;
 		private var _config:Config = new Config();
 		private var _lastRefreshDistanceTimestamp:int = 0;
@@ -23,12 +22,12 @@ package driftkings.battle.distancemarker
 		{
 			super();
 		}
-		
+
 		public function as_populate() : void
 		{
 			this.addEventListener(Event.ENTER_FRAME, this.onEnterFrame);
 		}
-		
+
 		public function as_dispose() : void
 		{
 			this.removeEventListener(Event.ENTER_FRAME, this.onEnterFrame);
@@ -42,33 +41,29 @@ package driftkings.battle.distancemarker
 			this._config.disposeState();
 			this._config = null;
 		}
-		
+
 		private function onEnterFrame() : void
 		{
 			if (this.py_requestFrameData == null)
 			{
 				return;
 			}
-			
 			var serializedFrameData:Object = this.py_requestFrameData();
-			
 			this.updateAppPosition(serializedFrameData);
 			this.updateMarkers(serializedFrameData);
-			
 			var observedVehicles:Array = serializedFrameData["observedVehicles"];
 			observedVehicles.splice(0, observedVehicles.length);
 		}
-		
+
 		public function as_applyConfig(serializedConfig:Object) : void
 		{
 			this._config.deserialize(serializedConfig);
 		}
-		
+
 		public function as_isPointInMarker(mouseX:Number, mouseY:Number) : Boolean
 		{
 			mouseX += this.x;
 			mouseY += this.y;
-			
 			for (var i:int = 0; i < this.numChildren; ++i)
 			{
 				var marker:DistanceMarker = this.getMarkerAt(i);
@@ -80,7 +75,7 @@ package driftkings.battle.distancemarker
 			}
 			return false;
 		}
-		
+
 		private function updateAppPosition(serializedFrameData:Object) : void
 		{	
 			var screenWidth:int = serializedFrameData["screenWidth"];
@@ -88,7 +83,7 @@ package driftkings.battle.distancemarker
 			this.x = SWF_HALF_WIDTH - (screenWidth / 2.0);
 			this.y = SWF_HALF_HEIGHT - (screenHeight / 2.0);
 		}
-		
+
 		private function updateMarkers(serializedFrameData:Object) : void
 		{
 			var observedVehicles:Array = serializedFrameData["observedVehicles"];
@@ -105,7 +100,7 @@ package driftkings.battle.distancemarker
 				this.sortMarkersByDistance();
 			}
 		}
-		
+
 		private function destroyInvalidMarkers(observedVehicles:Array) : void
 		{			
 			nextMarkerLabel:
@@ -125,7 +120,7 @@ package driftkings.battle.distancemarker
 				marker.disposeState();
 			}
 		}
-		
+
 		private function createOrUpdateMarkers(observedVehicles:Array) : void
 		{
 			var shouldRefreshDistance:Boolean = false;
@@ -149,14 +144,13 @@ package driftkings.battle.distancemarker
 				}
 				marker.x = x;
 				marker.y = y;
-				
 				if (marker.visible != isVisible)
 				{
 					marker.visible = isVisible;
 				}
 			}
 		}
-		
+
 		private function sortMarkersByDistance() : void
 		{
 			for(var i:int = 1; i < this.numChildren; i++)
@@ -169,12 +163,12 @@ package driftkings.battle.distancemarker
 				}
 			}
 		}
-		
+
 		private function getMarkerAt(index:int) : DistanceMarker
 		{
 			return this.getChildAt(index) as DistanceMarker;
 		}
-		
+
 		private function getOrCreateMarkerById(vehicleID:String) : DistanceMarker
 		{
 			var marker:DistanceMarker = this.getChildByName(vehicleID) as DistanceMarker;
@@ -188,7 +182,7 @@ package driftkings.battle.distancemarker
 			this._lastSortByDistanceTimestamp = 0;
 			return marker;
 		}
-		
+
 		public function get config() : Config
 		{
 			return this._config;

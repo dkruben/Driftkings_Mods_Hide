@@ -5,15 +5,15 @@ package driftkings.views.battle
     import driftkings.views.utils.Align;
     import driftkings.views.utils.TextExt;
     import mods.common.BattleDisplayable;
-    
+
     public class FlightTimerUI extends BattleDisplayable
     {
         private var flightTime:TextExt;
         private var alignX:String = Align.CENTER;
         private var alignY:String = Align.CENTER;
-        
+
         public var getSettings:Function;
-        
+
         public function FlightTimerUI()
         {
             super();
@@ -24,7 +24,7 @@ package driftkings.views.battle
             this.buttonMode = false;
             this.addEventListener(Event.RESIZE, onResizeHandle);
         }
-        
+
         override protected function onPopulate():void 
         {
             super.onPopulate();
@@ -40,14 +40,14 @@ package driftkings.views.battle
                 }
             }
         }
-        
+
         override protected function onBeforeDispose():void 
         {
             super.onBeforeDispose();
             this.flightTime = null;
             this.removeEventListener(Event.RESIZE, onResizeHandle);
         }
-        
+
         private function updatePosition() : void
         {
             var posX:Number = App.appWidth >> 1;
@@ -73,18 +73,18 @@ package driftkings.views.battle
             this.x = posX;
             this.y = posY;
         }
-        
+
         public function as_onCrosshairPositionChanged(x:Number, y:Number):void
         {
             this.x = x;
             this.y = y;
         }
-        
+
         private function onResizeHandle(event:Event) : void
         {
             this.updatePosition();
         }
-        
+
         public function as_flightTime(text:String):void
         {
             this.flightTime.htmlText = text;

@@ -5,17 +5,17 @@ package
 	import net.wg.infrastructure.base.*;
 	import scaleform.clik.data.*;
 	import scaleform.clik.events.*;
-   
+
 	public class AccountsManagerWindow extends AbstractWindowView
     {
 		private static const ACTION_ADD_ACCOUNT:String = "add";
      	private static const ACTION_EDIT_ACCOUNT:String = "edit";
-       
+
 		public var py_get_clusters:Function;
 		public var py_getTranslate:Function;
 		public var py_setAddAccount:Function;
 		public var py_setEditAccount:Function;
-		
+
 		private var langData:Object;
 		private var modeType:String;
 		private var submitBtn:SoundButton;
@@ -98,18 +98,18 @@ package
 			{
 				this.titleLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort", TextFieldShort, {"label":this.langData.nick_l10n, "selectable":false,	"showToolTip":false, "x":5, "y":10})) as TextFieldShort;
 				this.titleVal = addChild(App.utils.classFactory.getComponent("TextInput", TextInput, {"width":210, "x":60, "y":5})) as TextInput;
-				this.emailLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort",TextFieldShort,{"label":"Email:", "selectable":false, "showToolTip":false, "x":5, "y":40})) as TextFieldShort;
-				this.loginVal = addChild(App.utils.classFactory.getComponent("TextInput",TextInput,{"width":210,"x":60,"y":35})) as TextInput;
-				this.passwordLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort",TextFieldShort,{"label":this.langData.password_l10n,"selectable":false,"showToolTip":false,"x":5,"y":70})) as TextFieldShort;
-				this.passwordVal = addChild(App.utils.classFactory.getComponent("TextInput",TextInput,{"displayAsPassword":true,"width":210,"x":60,"y":65})) as TextInput;
-				this.showPswd = addChild(App.utils.classFactory.getComponent("CheckBox",CheckBox,{"label":this.langData.show_password_l10n,"visible":true,"x":60,"y":95})) as CheckBox;
+				this.emailLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort", TextFieldShort, {"label":"Email:", "selectable":false, "showToolTip":false, "x":5, "y":40})) as TextFieldShort;
+				this.loginVal = addChild(App.utils.classFactory.getComponent("TextInput", TextInput, {"width":210,"x":60,"y":35})) as TextInput;
+				this.passwordLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort", TextFieldShort, {"label":this.langData.password_l10n,"selectable":false,"showToolTip":false,"x":5,"y":70})) as TextFieldShort;
+				this.passwordVal = addChild(App.utils.classFactory.getComponent("TextInput", TextInput, {"displayAsPassword":true,"width":210,"x":60,"y":65})) as TextInput;
+				this.showPswd = addChild(App.utils.classFactory.getComponent("CheckBox", CheckBox, {"label":this.langData.show_password_l10n,"visible":true,"x":60,"y":95})) as CheckBox;
 				this.showPswd.addEventListener(ButtonEvent.CLICK,this.handleShowPswdClick);
-				this.clusterLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort",TextFieldShort,{"label":this.langData.server_l10n,"selectable":false,"showToolTip":false,"x":5,"y":125})) as TextFieldShort;
+				this.clusterLabel = addChild(App.utils.classFactory.getComponent("TextFieldShort", TextFieldShort, {"label":this.langData.server_l10n,"selectable":false,"showToolTip":false,"x":5,"y":125})) as TextFieldShort;
 				dp = this.py_get_clusters();
-				this.clusterVal = addChild(App.utils.classFactory.getComponent("DropdownMenuUI",DropdownMenu,{"rowCount":10,"width":210,"x":60,"y":120,"menuDirection":"down","itemRenderer":"DropDownListItemRendererSound","dropdown":"DropdownMenu_ScrollingList","dataProvider":new DataProvider(dp),"selectedIndex":0})) as DropdownMenu;
-				this.submitBtn = addChild(App.utils.classFactory.getComponent("ButtonNormal",SoundButton,{"label":this.langData.save_l10n,"width":100,"x":120, "y":165})) as SoundButton;
+				this.clusterVal = addChild(App.utils.classFactory.getComponent("DropdownMenuUI", DropdownMenu, {"rowCount":10,"width":210,"x":60,"y":120,"menuDirection":"down","itemRenderer":"DropDownListItemRendererSound","dropdown":"DropdownMenu_ScrollingList","dataProvider":new DataProvider(dp),"selectedIndex":0})) as DropdownMenu;
+				this.submitBtn = addChild(App.utils.classFactory.getComponent("ButtonNormal", SoundButton, {"label":this.langData.save_l10n,"width":100,"x":120, "y":165})) as SoundButton;
 				this.submitBtn.addEventListener(ButtonEvent.CLICK,this.handleSubmitBtnClick);
-				this.cancelBtn = addChild(App.utils.classFactory.getComponent("ButtonBlack", SoundButton,{"label":this.langData.cancel_l10n, "width":100, "x":230, "y":165})) as SoundButton;
+				this.cancelBtn = addChild(App.utils.classFactory.getComponent("ButtonBlack", SoundButton, {"label":this.langData.cancel_l10n, "width":100, "x":230, "y":165})) as SoundButton;
 				this.cancelBtn.addEventListener(ButtonEvent.CLICK,this.handleCancelBtnClick);
 			}
 			catch(err:Error)

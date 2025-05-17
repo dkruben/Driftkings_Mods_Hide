@@ -7,7 +7,7 @@ package
 	import flash.text.TextField;
 	// ------ MARKS ON GUN END ------ //
 	import net.wg.gui.lobby.techtree.nodes.NationTreeNode;
-	
+
 	public dynamic class NationTreeNodeSkinned extends NationTreeNode
 	{
 		public var __setPropDict:Dictionary = new Dictionary(true);
@@ -20,7 +20,7 @@ package
 		private var _markWidth:int = 0;
 		private var _cachedText:String = "";
 		private var __uiF376:int = 0;
-		
+
 		// ------ MARKS ON GUN END ------ //
 		public function NationTreeNodeSkinned()
 		{
@@ -38,7 +38,7 @@ package
 			// ------ MARKS ON GUN END ------ //
 			addEventListener(Event.FRAME_CONSTRUCTED, this.__setProp_handler, false, 0, true);
 		}
-		
+
 		// ------ MARKS ON GUN NOTE: Origin function in internal scope ------ //
 		internal function __setProp_typeAndLevel_NationTreeNodeSkinned_typeandlevel_0():*
 		{
@@ -63,7 +63,7 @@ package
 				return;
 			}
 		}
-		
+
 		// ------ MARKS ON GUN START ------ //
 		override protected function validateData():void
 		{
@@ -93,7 +93,7 @@ package
 			this._markTF.htmlText = mark_text;
 			this.nameTF.text = tank_name;
 		}
-		
+
 		override protected function draw():void
 		{
 			super.draw();
@@ -106,9 +106,8 @@ package
 				_markTF.htmlText = _cachedText;
 			}
 		}
-		
+
 		// ------ MARKS ON GUN END ------ //
-		
 		internal function __setProp_button_NationTreeNodeSkinned_button_0(frame:int):*
 		{
 			if (button != null && frame >= 1 && frame <= 81 && (this.__setPropDict[button] == undefined || !(int(this.__setPropDict[button]) >= 1 && int(this.__setPropDict[button]) <= 81)))
@@ -149,7 +148,7 @@ package
 				return;
 			}
 		}
-		
+
 		internal function __setProp_button_NationTreeNodeSkinned_button_81(frame:int):*
 		{
 			if (button != null && frame >= 82 && frame <= 161 && (this.__setPropDict[button] == undefined || !(int(this.__setPropDict[button]) >= 82 && int(this.__setPropDict[button]) <= 161)))
@@ -190,7 +189,7 @@ package
 				return;
 			}
 		}
-		
+
 		internal function __setProp_button_NationTreeNodeSkinned_button_161(frame:int):*
 		{
 			if (button != null && frame >= 162 && frame <= 361 && (this.__setPropDict[button] == undefined || !(int(this.__setPropDict[button]) >= 162 && int(this.__setPropDict[button]) <= 361)))
@@ -231,7 +230,7 @@ package
 				return;
 			}
 		}
-		
+
 		internal function __setProp_button_NationTreeNodeSkinned_button_361(frame:int):*
 		{
 			if (button != null && frame >= 362 && frame <= 481 && (this.__setPropDict[button] == undefined || !(int(this.__setPropDict[button]) >= 362 && int(this.__setPropDict[button]) <= 481)))
@@ -272,7 +271,7 @@ package
 				return;
 			}
 		}
-		
+
 		internal function __setProp_handler(param1:Object):*
 		{
 			var frame:int = int(currentFrame);
@@ -286,307 +285,307 @@ package
 			this.__setProp_button_NationTreeNodeSkinned_button_161(frame);
 			this.__setProp_button_NationTreeNodeSkinned_button_361(frame);
 		}
-		
+
 		internal function frame1():*
 		{
 			stop();
 		}
-		
+
 		internal function frame9():*
 		{
 			stop();
 		}
-		
+
 		internal function frame17():*
 		{
 			stop();
 		}
-		
+
 		internal function frame25():*
 		{
 			stop();
 		}
-		
+
 		internal function frame33():*
 		{
 			stop();
 		}
-		
+
 		internal function frame41():*
 		{
 			stop();
 		}
-		
+
 		internal function frame49():*
 		{
 			stop();
 		}
-		
+
 		internal function frame57():*
 		{
 			stop();
 		}
-		
+
 		internal function frame65():*
 		{
 			stop();
 		}
-		
+
 		internal function frame73():*
 		{
 			stop();
 		}
-		
+
 		internal function frame81():*
 		{
 			stop();
 		}
-		
+
 		internal function frame89():*
 		{
 			stop();
 		}
-		
+
 		internal function frame97():*
 		{
 			stop();
 		}
-		
+
 		internal function frame105():*
 		{
 			stop();
 		}
-		
+
 		internal function frame113():*
 		{
 			stop();
 		}
-		
+
 		internal function frame121():*
 		{
 			stop();
 		}
-		
+
 		internal function frame129():*
 		{
 			stop();
 		}
-		
+
 		internal function frame137():*
 		{
 			stop();
 		}
-		
+
 		internal function frame145():*
 		{
 			stop();
 		}
-		
+
 		internal function frame153():*
 		{
 			stop();
 		}
-		
+
 		internal function frame161():*
 		{
 			stop();
 		}
-		
+
 		internal function frame169():*
 		{
 			stop();
 		}
-		
+
 		internal function frame177():*
 		{
 			stop();
 		}
-		
+
 		internal function frame185():*
 		{
 			stop();
 		}
-		
+
 		internal function frame193():*
 		{
 			stop();
 		}
-		
+
 		internal function frame201():*
 		{
 			stop();
 		}
-		
+
 		internal function frame209():*
 		{
 			stop();
 		}
-		
+
 		internal function frame217():*
 		{
 			stop();
 		}
-		
+
 		internal function frame225():*
 		{
 			stop();
 		}
-		
+
 		internal function frame233():*
 		{
 			stop();
 		}
-		
+
 		internal function frame241():*
 		{
 			stop();
 		}
-		
+
 		internal function frame249():*
 		{
 			stop();
 		}
-		
+
 		internal function frame257():*
 		{
 			stop();
 		}
-		
+
 		internal function frame265():*
 		{
 			stop();
 		}
-		
+
 		internal function frame273():*
 		{
 			stop();
 		}
-		
+
 		internal function frame281():*
 		{
 			stop();
 		}
-		
+
 		internal function frame289():*
 		{
 			stop();
 		}
-		
+
 		internal function frame297():*
 		{
 			stop();
 		}
-		
+
 		internal function frame305():*
 		{
 			stop();
 		}
-		
+
 		internal function frame313():*
 		{
 			stop();
 		}
-		
+
 		internal function frame321():*
 		{
 			stop();
 		}
-		
+
 		internal function frame329():*
 		{
 			stop();
 		}
-		
+
 		internal function frame337():*
 		{
 			stop();
 		}
-		
+
 		internal function frame345():*
 		{
 			stop();
 		}
-		
+
 		internal function frame353():*
 		{
 			stop();
 		}
-		
+
 		internal function frame361():*
 		{
 			stop();
 		}
-		
+
 		internal function frame369():*
 		{
 			stop();
 		}
-		
+
 		internal function frame377():*
 		{
 			stop();
 		}
-		
+
 		internal function frame385():*
 		{
 			stop();
 		}
-		
+
 		internal function frame393():*
 		{
 			stop();
 		}
-		
+
 		internal function frame401():*
 		{
 			stop();
 		}
-		
+
 		internal function frame409():*
 		{
 			stop();
 		}
-		
+
 		internal function frame417():*
 		{
 			stop();
 		}
-		
+
 		internal function frame425():*
 		{
 			stop();
 		}
-		
+
 		internal function frame433():*
 		{
 			stop();
 		}
-		
+
 		internal function frame441():*
 		{
 			stop();
 		}
-		
+
 		internal function frame449():*
 		{
 			stop();
 		}
-		
+
 		internal function frame457():*
 		{
 			stop();
 		}
-		
+
 		internal function frame465():*
 		{
 			stop();
 		}
-		
+
 		internal function frame473():*
 		{
 			stop();
 		}
-		
+
 		internal function frame481():*
 		{
 			stop();

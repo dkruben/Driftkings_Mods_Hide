@@ -5,12 +5,11 @@ package driftkings
    
    public class ArmorCalculatorInjector extends AbstractViewInjector
    {
-	
 	   public function ArmorCalculatorInjector()
 		{
 			super();
 		}
-		
+
 		override protected function onPopulate() : void
 		{
 			autoDestroy = false;

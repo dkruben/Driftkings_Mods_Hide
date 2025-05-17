@@ -1,14 +1,14 @@
 package
 {
-   import components.*;
-   import flash.display.*;
-   import flash.events.*;
-   import flash.text.*;
-   import flash.utils.*;
-   import net.wg.gui.components.controls.*;
-   import net.wg.gui.login.impl.views.*;
-   import net.wg.infrastructure.base.*;
-   import scaleform.clik.events.*;
+	import components.*;
+   	import flash.display.*;
+   	import flash.events.*;
+   	import flash.text.*;
+   	import flash.utils.*;
+   	import net.wg.gui.components.controls.*;
+   	import net.wg.gui.login.impl.views.*;
+   	import net.wg.infrastructure.base.*;
+   	import scaleform.clik.events.*;
 
     public class AccountsManager extends AbstractWindowView
     {
@@ -22,7 +22,7 @@ package
 		private var newAccButton:SoundButton;
 		private var autoEnterCheckBox:CheckBox;
 		private var _form:SimpleForm;
-			
+
 		public function AccountsManager()
 		{
 			super();
@@ -68,7 +68,6 @@ package
                     action = AM_MODES.DELETE;
                     break;
             }
-
             if (action == "submit")
             {
                 py_setLoginDataById(id, _form);
@@ -119,7 +118,7 @@ package
 				return;
 			}
 		}
-		
+
 		private function recursiveFindDOC(dOC:DisplayObjectContainer, className:String) : DisplayObjectContainer
 		{
 			var child:DisplayObject = null;

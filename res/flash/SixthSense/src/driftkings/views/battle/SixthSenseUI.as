@@ -41,7 +41,7 @@ package driftkings.views.battle
 		public var getTimerString:Function;
 		[Embed(source = "error.png")]
 		private var DefaultIcon:Class;
-		
+
 		public function SixthSenseUI()
 		{
 			super();
@@ -49,7 +49,7 @@ package driftkings.views.battle
 			this.loader.contentLoaderInfo.addEventListener(Event.COMPLETE, this.imageLoaded);
 			this.loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, this.onLoadError);
 		}
-		
+
 		override protected function onPopulate():void
 		{
 			super.onPopulate();
@@ -66,7 +66,7 @@ package driftkings.views.battle
 				this.loader.load(new URLRequest('../../../' + this.params.userIcon));
 			}
 		}
-		
+
 		override protected function onBeforeDispose():void
 		{
 			super.onBeforeDispose();
@@ -85,7 +85,7 @@ package driftkings.views.battle
 			this._container = null;
 			App.utils.data.cleanupDynamicObject(this.params);
 		}
-		
+
 		private function addAnimations(finish:Number):void
 		{
 			this.hideAnimation = new Tween(this._container, "y", this.POSITION_Y, -finish, 0.5);
@@ -93,7 +93,7 @@ package driftkings.views.battle
 			this.showAnimation = new Tween(this._container, "alpha", 0, 1.0, 0.1);
 			this._container.alpha = 0;
 		}
-		
+
 		private function updateParams():void
 		{
 			var size:Number = this.params.iconSize || 90.0;
@@ -138,7 +138,7 @@ package driftkings.views.battle
 			var radius:Number = Math.round(this.params.showTimerGraphicsRadius * scale) || half_size;
 			this.radial_progress.setParams(0, half_size, radius, scale, Utils.colorConvert(this.params.showTimerGraphicsColor));
 		}
-		
+
 		public function as_show(seconds:Number):void
 		{
 			if (this.hideAnimation.isPlaying)
@@ -175,7 +175,7 @@ package driftkings.views.battle
 			this.showAnimation.start();
 			this.is_visible = true;
 		}
-		
+
 		private function clearTimers():void
 		{
 			if (this.timerId)
@@ -189,7 +189,7 @@ package driftkings.views.battle
 				this.timeoutID = 0;
 			}
 		}
-		
+
 		public function as_hide():void
 		{
 			this.clearTimers();
@@ -200,7 +200,7 @@ package driftkings.views.battle
 				this.is_visible = false;
 			}
 		}
-		
+
 		private function updateProgress():void
 		{
 			this.progress -= 100;
@@ -218,21 +218,21 @@ package driftkings.views.battle
 				this.as_hide();
 			}
 		}
-		
+
 		private function onLoadError(e:IOErrorEvent):void
 		{
 			this.loader.close();
 			this._image = new DefaultIcon() as Bitmap;
 			this.updateParams();
 		}
-		
+
 		private function imageLoaded(e:Event):void
 		{
 			this._image = this.loader.content as Bitmap;
 			this.updateParams();
 			this.loader.unload();
 		}
-		
+
 		public function onResizeHandle(event:Event):void
 		{
 			this.x = App.appWidth >> 1;

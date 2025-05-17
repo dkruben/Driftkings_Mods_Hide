@@ -6,7 +6,7 @@ package driftkings.views.utils.tween
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	import scaleform.clik.motion.Tween;
-	
+
 	[Event(name = "motionStop", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionStart", type = "driftkings.views.utils.tween.TweenEvent")]
 	[Event(name = "motionResume", type = "driftkings.views.utils.tween.TweenEvent")]
@@ -29,7 +29,7 @@ package driftkings.views.utils.tween
 		public var prop:String        = "";
 		private var _duration:Number  = NaN;
 		public var obj:Object         = null;
-		
+
 		public function Tween(obj:Object, prop:String, begin:Number, finish:Number, duration:Number = 1.0)
 		{
 			super();
@@ -45,7 +45,7 @@ package driftkings.views.utils.tween
 			this.finish = finish;
 			this._timer = new Timer(100);
 		}
-		
+
 		public function continueTo(finish:Number, duration:Number):void
 		{
 			this.begin = this.position;
@@ -56,7 +56,7 @@ package driftkings.views.utils.tween
 			}
 			this.start();
 		}
-		
+
 		protected function startEnterFrame():void
 		{
 			this._timer.delay = 1000 / this._fps;
@@ -64,35 +64,35 @@ package driftkings.views.utils.tween
 			this._timer.start();
 			this.isPlaying = true;
 		}
-		
+
 		public function stop():void
 		{
 			this.stopEnterFrame();
 			this.dispatchEvent(new TweenEvent(TweenEvent.MOTION_STOP, this._time, this._position));
 		}
-		
+
 		private function fixTime():void
 		{
 			this._startTime = getTimer() - this._time * 1000;
 		}
-		
+
 		public function get finish():Number
 		{
 			return this.begin + this.change;
 		}
-		
+
 		public function get duration():Number
 		{
 			return this._duration;
 		}
-		
+
 		protected function stopEnterFrame():void
 		{
 			
 			this._timer.stop();
 			this.isPlaying = false;
 		}
-		
+
 		public function set time(t:Number):void
 		{
 			this.prevTime = this._time;
@@ -123,7 +123,7 @@ package driftkings.views.utils.tween
 				this.update();
 			}
 		}
-		
+
 		public function getPosition(t:Number = NaN):Number
 		{
 			if (isNaN(t))
@@ -132,22 +132,22 @@ package driftkings.views.utils.tween
 			}
 			return this.change * t / this._duration + this.begin;
 		}
-		
+
 		public function set finish(value:Number):void
 		{
 			this.change = value - this.begin;
 		}
-		
+
 		public function set duration(d:Number):void
 		{
 			this._duration = d <= 0 ? Number(Infinity) : Number(d);
 		}
-		
+
 		public function get position():Number
 		{
 			return this.getPosition(this._time);
 		}
-		
+
 		public function setPosition(p:Number):void
 		{
 			this.prevPos = this._position;
@@ -157,63 +157,63 @@ package driftkings.views.utils.tween
 			}
 			this.dispatchEvent(new TweenEvent(TweenEvent.MOTION_CHANGE, this._time, this._position));
 		}
-		
+
 		public function resume():void
 		{
 			this.fixTime();
 			this.startEnterFrame();
 			this.dispatchEvent(new TweenEvent(TweenEvent.MOTION_RESUME, this._time, this._position));
 		}
-		
+
 		public function fforward():void
 		{
 			this.time = this._duration;
 			this.fixTime();
 		}
-		
+
 		protected function onEnterFrame(event:Event):void
 		{
 			this.nextFrame();
 		}
-		
+
 		public function yoyo():void
 		{
 			this.continueTo(this.begin, this.time);
 		}
-		
+
 		public function nextFrame():void
 		{
 			this.time = (getTimer() - this._startTime) / 1000;
 		}
-		
+
 		protected function timerHandler(timerEvent:TimerEvent):void
 		{
 			this.nextFrame();
 			timerEvent.updateAfterEvent();
 		}
-		
+
 		public function rewind(t:Number = 0):void
 		{
 			this._time = t;
 			this.fixTime();
 			this.update();
 		}
-		
+
 		public function set position(p:Number):void
 		{
 			this.setPosition(p);
 		}
-		
+
 		public function get time():Number
 		{
 			return this._time;
 		}
-		
+
 		private function update():void
 		{
 			this.setPosition(this.getPosition(this._time));
 		}
-		
+
 		public function start():void
 		{
 			this.rewind();

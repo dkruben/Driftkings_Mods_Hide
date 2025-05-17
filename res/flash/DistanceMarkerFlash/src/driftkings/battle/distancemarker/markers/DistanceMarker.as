@@ -18,7 +18,7 @@ package driftkings.battle.distancemarker.markers
 		private var _currentDistance:Number = -1.0;
 		private var _textField:TextField = new TextField();
 		private var _shape:Shape;
-		
+
 		public function DistanceMarker(app:DistanceMarkerFlash) 
 		{
 			super()
@@ -48,7 +48,7 @@ package driftkings.battle.distancemarker.markers
 				this.updateBackgroundShape();
 			}
 		}
-		
+
 		public function set currentDistance(currentDistance:Number) : void
 		{	
 			this._currentDistance = currentDistance;
@@ -59,7 +59,7 @@ package driftkings.battle.distancemarker.markers
 				this.updateBackgroundShape();
 			}
 		}
-		
+
 		private function updateBackgroundShape() : void
 		{
 			var textWidth:Number = this._textField.textWidth + 4.0;
@@ -69,12 +69,12 @@ package driftkings.battle.distancemarker.markers
 			this._shape.graphics.drawEllipse(-8.0 - (textWidth / 2.0), 0.0, textWidth + 16.0, textHeight);
 			this._shape.graphics.endFill();
 		}
-		
+
 		public function get currentDistance() : Number
 		{
 			return this._currentDistance;
 		}
-		
+
 		public function disposeState() : void
 		{
 			this.removeChild(this._textField);
@@ -86,12 +86,12 @@ package driftkings.battle.distancemarker.markers
 			}
 			this._app = null;
 		}
-		
+
 		public function isInBounds(mouseX:Number, mouseY:Number) : Boolean
 		{
 			return this._textField.hitTestPoint(mouseX, mouseY);
 		}
-		
+
 		private function get config() : Config
 		{
 			return this._app.config;

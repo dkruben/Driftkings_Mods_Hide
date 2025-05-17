@@ -13,18 +13,20 @@
 	public class BigTextConsumablesPanel extends AbstractView
 	{
 		private static const NAME_MAIN:String = "main";
-		
+
 		public static var ui:BigTextConsumablesPanel;
 		public var py_log:Function;
-		
+
 		private var viewPage:BaseBattlePage;
-		
-		public function BigTextConsumablesPanel() : void {
+
+		public function BigTextConsumablesPanel() : void
+		{
 			super();
 			ui = this;
 		}
-		
-		override protected function onPopulate():void {
+
+		override protected function onPopulate():void
+		{
 			super.onPopulate();
 			try
 			{
@@ -33,13 +35,16 @@
 				viewContainer.setFocusedView(viewContainer.getTopmostView());
 				viewPage = viewContainer.getChildByName(NAME_MAIN) as BaseBattlePage;
 				this.invalidateRenderers();
-			} catch (error:Error) {
+			}
+			catch (error:Error)
+			{
 				DebugUtils.LOG_ERROR(error.getStackTrace());
 				py_log(error.getStackTrace());
 			}
 		}
 
-		public function invalidateRenderers(): void {
+		public function invalidateRenderers(): void
+		{
 			try
 			{
 				var consumablesPanel:* = viewPage["consumablesPanel"];
@@ -66,7 +71,9 @@
 						textField.y = 10.5;
 					}
 				}
-			} catch (error:Error) {
+			}
+			catch (error:Error)
+			{
 				DebugUtils.LOG_ERROR(error.getStackTrace());
 				py_log(error.getStackTrace());
 			}

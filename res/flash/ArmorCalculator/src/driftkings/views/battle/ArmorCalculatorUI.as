@@ -5,7 +5,7 @@ package driftkings.views.battle
 	import driftkings.views.utils.Constants;
 	import driftkings.views.utils.TextExt;
 	import mods.common.BattleDisplayable;
-	
+
 	public class ArmorCalculatorUI extends BattleDisplayable
 	{
 		private var armorCalc:TextExt;
@@ -15,7 +15,7 @@ package driftkings.views.battle
 		{
 			super();
 		}
-		
+
 		override protected function configUI():void
 		{
 			super.configUI();
@@ -25,7 +25,7 @@ package driftkings.views.battle
 			this.mouseChildren = false;
 			this.buttonMode = false;
 		}
-		
+
 		override protected function onPopulate():void 
 		{
 			super.onPopulate();
@@ -37,19 +37,19 @@ package driftkings.views.battle
 				this.armorCalc = new TextExt(settings.position.x, settings.position.y, Constants.largeText, TextFieldAutoSize.CENTER, this);
 			}
 		}
-		
+
 		override protected function onBeforeDispose():void 
 		{
 			super.onBeforeDispose();
 			this.armorCalc = null;
 		}
-		
+
 		public function as_onCrosshairPositionChanged(x:Number, y:Number):void
 		{
 			this.x = x;
 			this.y = y;
 		}
-		
+
 		public function as_armorCalculator(text:String):void
 		{
 			if (armorCalc)

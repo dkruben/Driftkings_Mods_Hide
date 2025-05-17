@@ -5,27 +5,27 @@
     import driftkings.views.utils.TextExt;
     import driftkings.views.utils.Align;
     import mods.common.BattleDisplayable;
-    
+
     public class TotalLogUI extends BattleDisplayable
     {
         private var top_log_inCenter:Boolean = true;
         private var top_log:TextExt = null;
         private var alignX:String = Align.TOP;
         private var alignY:String = Align.LEFT;
-        
+
         public function TotalLogUI()
         {
             super();
             App.stage.addEventListener(Event.RESIZE, this.onResizeHandle);
         }
-        
+
         override protected function onBeforeDispose():void
         {
             App.stage.removeEventListener(Event.RESIZE, this.onResizeHandle);
             super.onBeforeDispose();
             this.top_log = null;
         }
-        
+
         public function as_createTopLog(settings:Object):void
         {
             if (settings == null) return;
@@ -36,7 +36,7 @@
 
             this.updatePosition();
         }
-        
+
         public function as_updateTopLog(text:String):void
         {
             if (this.top_log != null)
@@ -70,7 +70,7 @@
             this.x = posX;
             this.y = posY;
         }
-        
+
         private function onResizeHandle(event:Event):void
         {
             this.updatePosition();

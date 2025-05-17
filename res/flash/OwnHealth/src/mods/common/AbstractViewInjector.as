@@ -5,29 +5,29 @@ package mods.common
 	import net.wg.gui.components.containers.MainViewContainer;
 	import net.wg.infrastructure.base.AbstractView;
 	import net.wg.infrastructure.interfaces.ISimpleManagedContainer;
-   
+
 	public class AbstractViewInjector extends AbstractView
 	{
 		public var componentUI:Class = null;
 		public var componentName:String = null;
 		public var autoDestroy:Boolean = false;
 		public var destroy:Function = null;
-      
+
 		public function AbstractViewInjector()
 		{
 			super();
 		}
-      
+
 		private function createComponent() : BattleDisplayable
 		{
 			var component:BattleDisplayable = new this.componentUI() as BattleDisplayable;
 			this.configureComponent(component);
 			return component;
 		}
-      
+
 		protected function configureComponent(param1:BattleDisplayable) : void
 		{}
-      
+
 		override protected function onPopulate() : void
 		{
 			var mainViewContainer:MainViewContainer;

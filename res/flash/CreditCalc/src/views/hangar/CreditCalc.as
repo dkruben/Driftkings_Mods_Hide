@@ -17,8 +17,8 @@ package views.hangar
 
 	public class CreditCalc extends AbstractView
 	{
-		private static const BACKGROUND_WIDTH:int = 400; // Updated to match text field width
-		private static const BACKGROUND_HEIGHT:int = 150; // Updated to match text field height
+		private static const BACKGROUND_WIDTH:int = 400;
+		private static const BACKGROUND_HEIGHT:int = 150;
 		private static const INITIAL_X_OFFSET:int = 400;
 		private static const INITIAL_Y_OFFSET:int = 35;
 
@@ -26,7 +26,7 @@ package views.hangar
 		private var _textField:TextField;
 		private var _background:MovieClip;
 		private var _container:Sprite;
-		
+
 		public var py_log:Function;
 
 		public function CreditCalc()
@@ -50,7 +50,6 @@ package views.hangar
 			try
 			{
 				_textField.htmlText = text;
-				// Update background to match text dimensions with some padding
 				_background.width = _textField.textWidth + 20;
 				_background.height = _textField.textHeight + 20;
 			}
@@ -84,7 +83,6 @@ package views.hangar
 				_background.visible = isEnabled;
 				_background.graphics.clear();
 				_background.graphics.beginFill(colorNum, alpha);
-				// Use actual dimensions of the text field
 				_background.graphics.drawRect(0, 0, _textField.width, _textField.height);
 				_background.graphics.endFill();
 			}
@@ -212,10 +210,7 @@ package views.hangar
 		}
 
 		private function handleMouseMove(event:MouseEvent) : void
-		{
-			// Empty implementation - no action needed while dragging
-			// Mouse move is handled by startDrag/stopDrag
-		}
+		{}
 
 		private function handleMouseUp(event:MouseEvent) : void
 		{

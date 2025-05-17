@@ -5,25 +5,24 @@ package mods.common
 	import net.wg.gui.components.containers.MainViewContainer;
 	import net.wg.infrastructure.base.AbstractView;
 	import net.wg.infrastructure.interfaces.ISimpleManagedContainer;
-   
+
 	public class AbstractViewInjector extends AbstractView implements IAbstractInjector
 	{
 		public function AbstractViewInjector()
 		{
 			super();
 		}
-	  
+
 		private function createComponent() : BattleDisplayable
 		{
 			var component:BattleDisplayable = new this.componentUI() as BattleDisplayable;
 			this.configureComponent(component);
 			return component;
 		}
-	  
+
 		protected function configureComponent(param1:BattleDisplayable) : void
-		{
-		}
-      
+		{}
+
 		override protected function onPopulate() : void
 		{
 			var view:BaseBattlePage = null;
@@ -49,12 +48,12 @@ package mods.common
 				windowContainer.removeChild(this);
 			}
 		}
-      
+
 		public function get componentUI() : Class
 		{
 			return null;
 		}
-      
+
 		public function get componentName() : String
 		{
 			return null;

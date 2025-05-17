@@ -2,7 +2,7 @@ package
 {
 	import driftkings.views.battle.MinimapCentred;
 	import driftkings.injector.AbstractViewInjector;
-   
+
 	public class MinimapCentredUI extends AbstractViewInjector
 	{
 		public function MinimapCentredUI()

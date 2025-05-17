@@ -1,9 +1,9 @@
 package driftkings.views.battle
 {
-   import driftkings.injector.BattleDisplayable;
-   import net.wg.gui.battle.components.*;
-   import net.wg.infrastructure.interfaces.IGraphicsOptimizationComponent;
-   
+	import driftkings.injector.BattleDisplayable;
+	import net.wg.gui.battle.components.*;
+	import net.wg.infrastructure.interfaces.IGraphicsOptimizationComponent;
+
 	public class MinimapCentred extends BattleDisplayable
 	{
 		private var minimap:* = null;
@@ -12,12 +12,12 @@ package driftkings.views.battle
 		private var oldscaleX:Number = 0;
 		private var oldscaleY:Number = 0;
 		private var oldSize:Number = 0;
-		
+
 		public function MinimapCentred()
 		{
 			super();
 		}
-      
+
 		override protected function onPopulate() : void
 		{
 			var topPosition:* = 0 //uint = 0;
@@ -30,12 +30,12 @@ package driftkings.views.battle
 				App.graphicsOptimizationMgr.unregister(minimap as IGraphicsOptimizationComponent);
 			}
 		}
-      
+
 		public function as_minimapCentered(isEnabled:Boolean, scale:Number): void
 		{
 			updateMinimap(isEnabled, scale);
 		}
-      
+
 		private function updateMinimap(isEnabled:Boolean, scale:Number): void
 		{
 			if(minimap)

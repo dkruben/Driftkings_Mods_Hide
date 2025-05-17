@@ -3,7 +3,7 @@
 	import flash.filters.GlowFilter;
 	import flash.text.*;
 	import driftkings.views.utils.Constants;
-	
+
 	public class TextExt extends TextField
 	{
 		public function TextExt(x:Number, y:Number, style:TextFormat, align:String, ui:*, enabled:Boolean = true)

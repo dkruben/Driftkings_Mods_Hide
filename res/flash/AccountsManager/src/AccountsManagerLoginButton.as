@@ -6,7 +6,6 @@ package
 	import flash.events.Event;
 	import flash.events.TextEvent;
 	import flash.utils.getQualifiedClassName;
-	//
 	import net.wg.gui.components.containers.MainViewContainer;
 	import net.wg.gui.login.impl.LoginPage;
 	import net.wg.gui.login.impl.views.SimpleForm;
@@ -18,16 +17,14 @@ package
 	import net.wg.data.constants.generated.LAYER_NAMES;
 	import net.wg.infrastructure.interfaces.IView;
 	import net.wg.infrastructure.events.LoaderEvent;
-	//
 	import components.AMButton;
 
-   
    public class AccountsManagerLoginButton extends AbstractView
     {
 		public var py_log:Function;
 		public var py_openAccMngr:Function;
 		public var py_getTranslate:Function;
-		
+
 		private var isLobby:Boolean = false;
 		private var amBtn:AMButton;
 		private var _login:LoginPage;
@@ -63,12 +60,12 @@ package
 				return;
 			}
 		}
-		
+
 		public function as_populateLobby() : void
 		{
 			this.isLobby = true;
 		}
-		
+
 		private function resize(event:Event = null) : void
 		{
 			var e:Event = event;
@@ -96,7 +93,7 @@ package
 		{
 			this.py_openAccMngr();
 		}
-		
+
 		override protected function nextFrameAfterPopulateHandler() : void
 		{
 			if(parent != App.instance)
@@ -104,12 +101,10 @@ package
 				(App.instance as MovieClip).addChild(this);
 			}
 		}
-		
+
 		override protected function configUI() : void 
 		{
 			super.configUI();
-
-			// process already loaded views
 			var viewContainer:MainViewContainer = _getContainer(LAYER_NAMES.VIEWS) as MainViewContainer;
 			if (viewContainer != null)
 			{
@@ -128,28 +123,21 @@ package
 					viewContainer.setFocusedView(topmostView);
 				}
 			}
-
-			// subscribe to stage resize
 			App.instance.stage.addEventListener(Event.RESIZE, resize);
-
-			// subscribe to container manager loader
 			(App.containerMgr as ContainerManagerBase).loader.addEventListener(LoaderEvent.VIEW_LOADED, onViewLoaded, false, 0, true);
 		}
 
-		
 		private function _getContainer(containerName:String) : ISimpleManagedContainer
 		{
 			return App.containerMgr.getContainer(LAYER_NAMES.LAYER_ORDER.indexOf(containerName))
 		}
 
-		
 		private function onViewLoaded(event:LoaderEvent) : void 
 		{
 			var view:IView = event.view as IView;
 			processView(view);
 		}
 
-		
 		private function processView(view:IView) : void 
 		{
 			var alias:String = view.as_config.alias;
