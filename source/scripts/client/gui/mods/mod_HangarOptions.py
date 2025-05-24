@@ -233,7 +233,7 @@ def new__setInitDataS(func, self, data):
 
 # hide button counters in lobby header
 @override(LobbyHeader, '__setCounter')
-def buttonCounterS(func, *args, **kwargs):
+def new__buttonCounterS(func, *args, **kwargs):
     if config.data.get('enabled', True) and not config.data.get('hideBtnCounters', True):
         return func(*args, **kwargs)
 
@@ -321,10 +321,10 @@ def new__showAward(func, self, ctx):
 
 # hide display banner of various events in the hangar
 @override(EventEntryPointsContainer, '_EventEntryPointsContainer__updateEntries')
-def new__updateEntries(func, self, data):
+def new__updateEntries(func, self):
     if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
         return self.as_updateEntriesS([])
-    func(self, data)
+    func(self)
 
 
 # hide prestige (elite levels) system widget in the hangar
