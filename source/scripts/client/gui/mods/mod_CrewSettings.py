@@ -72,7 +72,7 @@ ignored_vehicles = openIgnoredVehicles()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -166,7 +166,7 @@ class Crew(object):
         if len(items) == 1:
             cd = int(items[0])
             vehicle = self.itemsCache.items.getItemByCD(cd)
-            if (vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked)):
+            if vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
                 vehicle_id = str(vehicle.invID)
                 if updateIgnoredVehicles(vehicle_id):
                     self.processReturnCrewForVehicleSelectorPopup(vehicle)
@@ -190,7 +190,7 @@ class Crew(object):
         self.__callbackID = None
         if not g_currentVehicle.isPresent():
             return
-        if (not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull()):
+        if not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull():
             return
         if not self.isLastCrewAvailable():
             return

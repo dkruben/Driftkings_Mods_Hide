@@ -35,6 +35,17 @@ if not os.path.exists(CONFIG_DIR):
 
 
 class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
+    def __init__(self):
+        self.internal_conf = {
+            'performance': {
+                'cacheEnabled': True,
+                'cacheExpiry': 3600,
+                'minBattlesToShow': 10,
+                'requestTimeout': 5
+            }
+        }
+        super(ConfigInterface, self).__init__()
+
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.0.0 (%(file_compile_date)s)'
@@ -44,7 +55,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
             'global': {
                 'anonymizer': {
                     'textColor': 'FFFFFF',
-                    'textPrefix': '<b>***</b>'
+                    'textPrefix': '<b>**</b>'
                 }
             },
             'playersPanel': {
@@ -132,12 +143,6 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
                     {'value': 1800, 'color': 'color:very_good'},
                     {'value': 900000, 'color': 'color:unique'}
                 ]
-            },
-            'performance': {
-                'cacheEnabled': True,
-                'cacheExpiry': 3600,
-                'minBattlesToShow': 10,
-                'requestTimeout': 5
             }
         }
         self.i18n = {}
@@ -205,7 +210,7 @@ class ScaleRating(object):
                 json.dump({'key': 'value'}, f)
         try:
             # Fix: Pass timeout as a keyword argument
-            response = urllib2.urlopen(url, timeout=config.data['performance']['requestTimeout'])
+            response = urllib2.urlopen(url, timeout=config.internal_conf['performance']['requestTimeout'])
             with open(local_path, 'wb') as f:
                 f.write(response.read())
             logInfo(config.ID, 'Successfully downloaded data from {}', url)
@@ -269,7 +274,7 @@ class StatRating(object):
                 json.dump({'key': 'value'}, f)
         try:
             # Fix: Pass timeout as a keyword argument
-            response = urllib2.urlopen(url, timeout=config.data['performance']['requestTimeout'])
+            response = urllib2.urlopen(url, timeout=config.internal_conf['performance']['requestTimeout'])
             with open(local_path, 'wb') as f:
                 f.write(response.read())
             logInfo(config.ID, 'Successfully downloaded data from {}', url)
@@ -380,7 +385,7 @@ class Statistics(object):
             tanks_response = g_event.request(region,'wot/account/tanks', account_id=regionAccounts, fields=','.join(tankFields))
             if tanks_response:
                 dataTanks.update(tanks_response)
-        if config.data['performance']['cacheEnabled']:
+        if config.internal_conf['performance']['cacheEnabled']:
             currentTime = time.time()
             for dbID in dataInfo:
                 if dataInfo[dbID] is not None:
@@ -426,14 +431,14 @@ class Statistics(object):
             cachedData = self.statsCache.get(dbID, None) if config.data['performance']['cacheEnabled'] else None
             if cachedData:
                 cacheAge = time.time() - self.cacheTimestamp.get(dbID, 0)
-                if cacheAge < config.data['performance']['cacheExpiry']:
+                if cacheAge < config.internal_conf['performance']['cacheExpiry']:
                     dataInfo[dbID] = cachedData['info']
                     if dbID not in dataTanks and cachedData['tanks'] is not None:
                         dataTanks[dbID] = cachedData['tanks']
             if self.loadStat and dbID in dataInfo and dbID in dataTanks and dataInfo[dbID] is not None and dataTanks[
                 dbID] is not None:
                 battles = dataInfo[dbID]['statistics']['all']['battles']
-                if battles >= config.data['performance']['minBattlesToShow']:
+                if battles >= config.internal_conf['performance']['minBattlesToShow']:
                     wins = dataInfo[dbID]['statistics']['all']['wins']
                     avgDmg = dataInfo[dbID]['statistics']['all']['damage_dealt'] / float(battles)
                     avgFrags = dataInfo[dbID]['statistics']['all']['frags'] / float(battles)

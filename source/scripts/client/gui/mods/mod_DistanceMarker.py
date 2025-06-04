@@ -20,7 +20,7 @@ g_distanceMarkerFlash = None
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -51,7 +51,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_anchorHorizontalOffset_tooltip': 'Adjusts the horizontal position of the marker',
             'UI_setting_anchorVerticalOffset_text': 'Vertical Offset',
             'UI_setting_anchorVerticalOffset_tooltip': 'Adjusts the vertical position of the marker',
-            #
             'UI_setting_displayMode_always': 'Always',
             'UI_setting_displayMode_onAltPressed': 'When Alt is pressed',
             'UI_setting_markerTarget_allyAndEnemy': 'Allies and enemies',
@@ -59,7 +58,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_anchorPosition_tankMarker': 'Tank marker',
             'UI_setting_anchorPosition_tankCenter': 'Tank center',
             'UI_setting_anchorPosition_tankBottom': 'Tank bottom',
-            # Column 2 settings
             'UI_setting_decimalPrecision_text': 'Decimal Precision',
             'UI_setting_decimalPrecision_tooltip': 'Defines how many decimal places will be displayed in the distance',
             'UI_setting_textSize_text': 'Text Size',

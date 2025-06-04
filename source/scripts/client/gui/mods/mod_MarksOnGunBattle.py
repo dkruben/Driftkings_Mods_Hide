@@ -73,7 +73,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.0 (%(file_compile_date)s)'
+        self.version = '1.6.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.defaultKeys = {
             'buttonShow': [Keys.KEY_NUMPAD9, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -117,13 +117,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'alpha': 1.0,
                 'shadow': {'distance': 0, 'angle': 0, 'color': 0x000000, "alpha": 90, 'blurX': 1, 'blurY': 1, 'strength': 3000, 'quality': 1},
             },
-            'battleMessage': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n'
-                             '<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>',
-
-            'battleMessageAlt': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n'
-                                '<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>\n'
-                                '{c_damageToMark65}{c_damageToMark85}\n'
-                                '{c_damageToMark95}{c_damageToMark100}',
+            'battleMessage': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>',
+            'battleMessageAlt': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>\n{c_damageToMark65}{c_damageToMark85}\n{c_damageToMark95}{c_damageToMark100}',
             'battleMessage{status}Up': '<img src=\"img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_online.png\" vspace=\"-5\"/> ',
             'battleMessage{c_status}Up': '+',
             'battleMessage{status}Down': '<img src=\"img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy.png\" vspace=\"-5\"/>',
@@ -176,8 +171,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showInBattle_tooltip': '',
             'UI_setting_showInBattleHalfPercents_text': 'Battle: show damage to +0.5%',
             'UI_setting_showInBattleHalfPercents_tooltip': '',
-            'UI_setting_showInReplay_text': 'Replay[test]: enabled',
-            'UI_setting_showInReplay_tooltip': '{HEADER}Show in replay{/HEADER}{BODY}Not good, but useful for tests{/BODY}',
+            'UI_setting_showInReplay_text': 'Replay: enabled',
+            'UI_setting_showInReplay_tooltip': 'Not good, but useful for tests',
             'UI_setting_showInStatistic_text': 'Statistic: enabled',
             'UI_setting_showInStatistic_tooltip': '',
             'UI_setting_upColor_text': 'Battle: color when % mark up',
@@ -191,14 +186,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_techTreeMarkOfGunPercentSize_value': '',
             'UI_setting_showInHangar_text': 'Hangar: Show MoE mod',
             'UI_setting_showInHangar_tooltip': '',
-
             'UI_setting_UI_text': 'UI in battle',
-            'UI_setting_UI_tooltip': 'UI in battle Extended:\n'
-                                     '<img src=\"img://objects/ui_extended.png\"></img>\n'
-                                     'Simple:\n'
-                                     '<img src=\"img://objects/ui_simple.png\"></img>\n'
-                                     'Config:\n'
-                                     '/mods/configs/marksOnGunExtended/marksOnGunExtended.json\n',
+            'UI_setting_UI_tooltip': 'UI in battle Extended:\n<img src=\"img://objects/ui_extended.png\"></img>\nSimple:\n<img src=\"img://objects/ui_simple.png\"></img>\nConfig:\n/mods/configs/Driftkings/MarksOnGunExtended/MarksOnGunExtended.json\n',
             'UI_menu_UIskill4ltu': '<font color=\"#60FF00\">@skill</font> choice [<font color=\"#60FF00\">twitch.tv/skill4ltu</font>]',
             'UI_menu_UIMyp': '<font color=\"#D042F3\">@Myp</font> choice [<font color=\"#D042F3\">twitch.tv/myp_</font>]',
             'UI_menu_UIspoter': '<font color=\"#6595EE\">@spoter</font> choice [<font color=\"#6595EE\">github.com/spoter</font>]',
@@ -211,7 +200,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_menu_UIReplay': 'for Replays',
             'UI_menu_UIReplayDamage': 'for Replays with damage',
             'UI_menu_UIConfig': 'Config',
-
             'UI_color_red': 'Red',
             'UI_color_nice_red': 'Nice red',
             'UI_color_chocolate': 'Chocolate',
@@ -236,7 +224,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_color_wg_ally': 'WG Ally',
             'UI_color_wg_squadMan': 'WG Squadman',
             'UI_color_wg_player': 'WG Player',
-
             'UI_tooltips': '<font color=\"#FFFFFF\" size=\"12\">{currentMovingAvgDamage} current moving average damage</font>\n'
                            '<font color=\"#FFFFFF\" size=\"12\">{currentDamage} current summary damage</font>\n'
                            'To <font color=\"#FFFFFF\" size=\"12\">{nextPercent}% </font>   need <font color=\"#FFFFFF\" size=\"12\">{needDamage}</font> moving average damage\n'
@@ -248,13 +235,11 @@ class ConfigInterface(DriftkingsConfigInterface):
                            'To <font color=\"#FFFFFF\" size=\"12\">85% </font>   need <font color=\"#02C9B3\" size=\"12\">~{_85}</font> moving average damage\n'
                            'To <font color=\"#FFFFFF\" size=\"12\">95% </font>   need <font color=\"#D042F3\" size=\"12\">~{_95}</font> moving average damage\n'
                            'To <font color=\"#FFFFFF\" size=\"12\">100% </font>  need <font color=\"#D042F3\" size=\"12\">~{_100}</font> moving average damage',
-
             'battleMessageSizeUp': 'MoE mod: Size <b>+10%</b>',
             'battleMessageSizeDown': 'MoE mod: Size <b>-10%</b>',
             'battleMessageSizeLimitMin': 'MoE mod: Reached <b>minimum[10%]</b>',
             'battleMessageSizeLimitMax': 'MoE mod: Reached <b>maximum[1000%]</b>',
             'battleMessageSizeReset': 'MoE mod: Reset Settings</b>',
-
             'NaN': '[<b>NaN</b>]',
             'UI_HangarStatsStart': '<b>{currentPercent}<font size=\"14\">[{currentDamage}]</font> </b>',
             'UI_HangarStatsEnd': '{c_damageToMark65}, {c_damageToMark85}\n{c_damageToMark95}, {c_damageToMark100}'
@@ -336,25 +321,13 @@ class Worker(object):
         self.formatStrings = {'status': '', 'battleMarkOfGun': '', 'currentMarkOfGun': '', 'nextMarkOfGun': '', 'damageCurrent': '', 'damageCurrentPercent': '', 'damageNextPercent': '', 'damageToMark65': '', 'damageToMark85': '', 'damageToMark95': '', 'damageToMark100': '', 'damageToMarkInfo': '', 'damageToMarkInfoLevel': '', 'c_status': '', 'c_battleMarkOfGun': '', 'c_currentMarkOfGun': '', 'c__nextMarkOfGun': '', 'c_damageCurrent': '', 'c_damageCurrentPercent': '', 'c_damageNextPercent': '', 'c_damageToMark65': '', 'c_damageToMark85': '', 'c_damageToMark95': '', 'c_damageToMark100': '', 'c_damageToMarkInfo': '', 'c_damageToMarkInfoLevel': '', 'colorOpen': '<font color="{color}">', 'colorClose': '</font>', 'color': '', 'assistSpot': config.data['battleMessage{assistSpot}'], 'assistTrack': config.data['battleMessage{assistTrack}'], 'assistSpam': config.data['battleMessage{assistSpam}']}
         self.messages = {
             'battleMessageskill4ltu': '<font size=\"20\">{c_battleMarkOfGun} ({currentMarkOfGun}){status}</font>\n',
-            'battleMessageskill4ltuAlt': '<font size=\"20\">{c_battleMarkOfGun} ({currentMarkOfGun}){status}</font>\n'
-                                         '<font size=\"12\">{c_damageCurrent} ({damageCurrentPercent})</font>',
+            'battleMessageskill4ltuAlt': '<font size=\"20\">{c_battleMarkOfGun} ({currentMarkOfGun}){status}</font>\n<font size=\"12\">{c_damageCurrent} ({damageCurrentPercent})</font>',
             'battleMessagesMyp': '<font size=\"20\">{c_battleMarkOfGun}{c_damageCurrent}{status}</font>\n',
-            'battleMessagesMypAlt': '<font size=\"20\">{c_battleMarkOfGun}{c_damageCurrent}{status}</font>\n'
-                                    '<font size=\"15\">{currentMarkOfGun}{damageCurrentPercent}</font>',
-            'battleMessagesspoter': '<font size=\"20\">{c_battleMarkOfGun}:{c_damageCurrent}{assistCurrent}</font>\n'
-                                    '<font size=\"15\">{c_nextMarkOfGun}:{c_damageNextPercent}\n'
-                                    '{currentMarkOfGun}:{damageCurrentPercent}</font>',
-            'battleMessagesspoterAlt': '<font size=\"20\">{c_battleMarkOfGun}:{c_damageCurrent}{assistCurrent}</font>\n'
-                                       '<font size=\"15\">{c_nextMarkOfGun}:{c_damageNextPercent}\n'
-                                       '{currentMarkOfGun}:{damageCurrentPercent}</font>\n'
-                                       '<font size=\"12\">{c_damageToMark65}{c_damageToMark85}\n'
-                                       '{c_damageToMark95}{c_damageToMark100}</font>',
-            'battleMessagescircon': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n'
-                                    '<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>',
-            'battleMessagescirconAlt': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n'
-                                       '<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>\n'
-                                       '<font size=\"12\">{c_damageToMark65}{c_damageToMark85}\n'
-                                       '{c_damageToMark95}{c_damageToMark100}</font>',
+            'battleMessagesMypAlt': '<font size=\"20\">{c_battleMarkOfGun}{c_damageCurrent}{status}</font>\n<font size=\"15\">{currentMarkOfGun}{damageCurrentPercent}</font>',
+            'battleMessagesspoter': '<font size=\"20\">{c_battleMarkOfGun}:{c_damageCurrent}{assistCurrent}</font>\n<font size=\"15\">{c_nextMarkOfGun}:{c_damageNextPercent}\n{currentMarkOfGun}:{damageCurrentPercent}</font>',
+            'battleMessagesspoterAlt': '<font size=\"20\">{c_battleMarkOfGun}:{c_damageCurrent}{assistCurrent}</font>\n<font size=\"15\">{c_nextMarkOfGun}:{c_damageNextPercent}\n{currentMarkOfGun}:{damageCurrentPercent}</font>\n<font size=\"12\">{c_damageToMark65}{c_damageToMark85}\n{c_damageToMark95}{c_damageToMark100}</font>',
+            'battleMessagescircon': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>',
+            'battleMessagescirconAlt': '<font size=\"14\">{currentMarkOfGun}</font> <font size=\"10\">{damageCurrentPercent}</font><font size=\"14\"> ~ {c_nextMarkOfGun}</font> <font size=\"10\">{c_damageNextPercent}</font>\n<font size=\"20\">{c_battleMarkOfGun}{status}</font><font size=\"14\">{c_damageCurrent}</font>\n<font size=\"12\">{c_damageToMark65}{c_damageToMark85}\n{c_damageToMark95}{c_damageToMark100}</font>',
             'battleMessageReplay': '<font size=\"72\">{battleMarkOfGun}</font>',
             'battleMessageReplayAlt': '<font size=\"72\">{battleMarkOfGun}</font><font size=\"32\">{damageCurrent}</font>',
             'battleMessageReplayColor': '<font size=\"72\">{c_battleMarkOfGun}</font>',
@@ -363,13 +336,8 @@ class Worker(object):
             'battleMessageoldskoolAlt': '<font size=\"15\">{c_battleMarkOfGun}<tab>{c_nextMarkOfGun}\n{c_damageCurrent}{assistCurrent}<tab>{c_damageNextPercent}</font>',
             'battleMessagesspoterNew': '<font size=\"32\">{c_battleMarkOfGun}{c_damageCurrent}</font>',
             'battleMessagesspoterNewAlt': '<font size=\"32\">{c_nextMarkOfGun}:{c_damageNextPercent}</font>\n<font size=\"32\">{c_damageToMark100}</font>',
-            'battleMessageskorbenDallasNoMercy': '<p align=\"right\"><font size=\"54\"><font color=\"{status}\">{battleMarkOfGun}</font></font></p>\n'
-                                                 '<p align=\"right\"><font size=\"22\">{damageCurrent}</font></p>\n'
-                                                 '<p align=\"right\"><font size=\"22\">{damageCurrentPercent}</font></p>',
-            'battleMessageskorbenDallasNoMercyAlt': '<p align=\"right\"><font size=\"54\"><font color=\"{status}\">{battleMarkOfGun}</font></font></p>\n'
-                                                    '<p align=\"right\"><font size=\"22\">{damageCurrent}</font></p>\n'
-                                                    '<p align=\"right\"><font size=\"22\">{damageCurrentPercent}</font></p>',
-
+            'battleMessageskorbenDallasNoMercy': '<p align=\"right\"><font size=\"54\"><font color=\"{status}\">{battleMarkOfGun}</font></font></p>\n<p align=\"right\"><font size=\"22\">{damageCurrent}</font></p>\n<p align=\"right\"><font size=\"22\">{damageCurrentPercent}</font></p>',
+            'battleMessageskorbenDallasNoMercyAlt': '<p align=\"right\"><font size=\"54\"><font color=\"{status}\">{battleMarkOfGun}</font></font></p>\n<p align=\"right\"><font size=\"22\">{damageCurrent}</font></p>\n<p align=\"right\"><font size=\"22\">{damageCurrentPercent}</font></p>',
         }
         self.levels = []
         self.damages = []

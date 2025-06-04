@@ -326,7 +326,12 @@ def new_onAppearanceReady(func, self, vehicle):
         return
     if vehicle.id == self.playerVehicleID:
         g_calculator.registerVInfoData(vehicle.typeDescriptor.type.compactDescr)
-        g_battleEfficiency.startBattle()
+
+
+@override(PlayerAvatar, '_PlayerAvatar__startGUI')
+def new_startGUI(func, *args):
+    func(*args)
+    g_battleEfficiency.startBattle()
 
 
 @override(RibbonsAggregator, 'suspend')

@@ -36,7 +36,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.9.0 (%(file_compile_date)s)'
+        self.version = '1.9.5 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -716,6 +716,7 @@ class InfoPanel(DataConstants):
                 self.onUpdateVehicle(target)
             else:
                 self.hide()
+                g_flash.setVisible(False)
 
     def hide(self):
         if self.timer is not None and self.timer.isStarted():

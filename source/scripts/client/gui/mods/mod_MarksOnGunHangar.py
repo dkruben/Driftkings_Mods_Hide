@@ -61,25 +61,16 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.data = {
             'enabled': True,
             'UI': 1,
             'battleMessage': '<font size="14">{c_battleMarkOfGun} ({currentMarkOfGun}) {assistCurrent}</font>',
             'battleMessageAlt': '<font size="14">{c_damageCurrent} ({c_damageNextPercent})</font>',
-            'battleMessage{assistSpam}': (
-                '<img src="img://gui/maps/icons/library/efficiency/48x48/stun.png" width="16" '
-                'height="16" vspace="-5"/>'
-            ),
-            'battleMessage{assistSpot}': (
-                '<img src="img://gui/maps/icons/library/efficiency/48x48/detection.png" width="16" '
-                'height="16" vspace="-5"/>'
-            ),
-            'battleMessage{assistTrack}': (
-                '<img src="img://gui/maps/icons/library/efficiency/48x48/immobilized.png" width="16" '
-                'height="16" vspace="-5"/>'
-            ),
+            'battleMessage{assistSpam}': '<img src="img://gui/maps/icons/library/efficiency/48x48/stun.png" width="16" height="16" vspace="-5"/>',
+            'battleMessage{assistSpot}': '<img src="img://gui/maps/icons/library/efficiency/48x48/detection.png" width="16" height="16" vspace="-5"/>',
+            'battleMessage{assistTrack}': '<img src="img://gui/maps/icons/library/efficiency/48x48/immobilized.png" width="16" height="16" vspace="-5"/>',
             'battleMessage{battleMarkOfGun}': '%.2f%%',
             'battleMessage{c_battleMarkOfGun}': '%s',
             'battleMessage{c_currentMarkOfGun}': '%s',
@@ -107,18 +98,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'battleMessage{damageToMarkInfoLevel}': '%s%%',
             'battleMessage{damageToMarkInfo}': '%s',
             'battleMessage{nextMarkOfGun}': '%.1f%%',
-            'battleMessage{status}Down': (
-                '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy.png" '
-                'vspace="-5"/>'
-            ),
-            'battleMessage{status}Unknown': (
-                '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy_violet.png" '
-                'vspace="-5"/>'
-            ),
-            'battleMessage{status}Up': (
-                '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_online.png" '
-                'vspace="-5"/> '
-            ),
+            'battleMessage{status}Down': '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy.png "vspace="-5"/>',
+            'battleMessage{status}Unknown': '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_busy_violet.png" vspace="-5"/>',
+            'battleMessage{status}Up': '<img src="img://gui/maps/icons/messenger/status/24x24/chat_icon_user_is_online.png" vspace="-5"/>',
             'downColor': 21,
             'showInBattle': True,
             'showInBattleHalfPercents': False,
@@ -169,42 +151,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_color_wg_squadMan': 'WG Squadman',
             'UI_color_wg_player': 'WG Player',
             'UI_setting_UI_text': 'UI in battle',
-            'UI_setting_UI_tooltip': (
-                'UI in battle Extended:\n'
-                '<img src="img://objects/ui_extended.png"></img>\n'
-                'Simple:\n'
-                '<img src="img://objects/ui_simple.png"></img>\n'
-                'Config:\n'
-                '/mods/configs/marksOnGunExtended/marksOnGunExtended.json\n'
-            ),
-            'UI_menu_UIskill4ltu': (
-                '<font color="#60FF00">@skill</font> choice '
-                '[<font color="#60FF00">twitch.tv/skill4ltu</font>]'
-            ),
-            'UI_menu_UIMyp': (
-                '<font color="#D042F3">@Myp</font> choice '
-                '[<font color="#D042F3">twitch.tv/myp_</font>]'
-            ),
-            'UI_menu_UIspoter': (
-                '<font color="#6595EE">@spoter</font> choice '
-                '[<font color="#6595EE">github.com/spoter</font>]'
-            ),
-            'UI_menu_UIspoterNew': (
-                'new <font color="#6595EE">@spoter</font> choice '
-                '[<font color="#6595EE">github.com/spoter</font>]'
-            ),
-            'UI_menu_UIcircon': (
-                '<font color="#02C9B3">@Circon</font> choice '
-                '[<font color="#02C9B3">twitch.tv/circon</font>]'
-            ),
-            'UI_menu_UIoldskool': (
-                '<font color="#FFD700">@Oldskool</font> choice '
-                '[<font color="#FFD700">twitch.tv/oldskool</font>]'
-            ),
-            'UI_menu_UIkorbenDallasNoMercy': (
-                '<font color="#e3256b">@KorbenDallasNoMercy</font> choice '
-                '[<font color="#e3256b">youtube.com/c/KorbenDallasNoMercy</font>]'
-            ),
+            'UI_setting_UI_tooltip': 'UI in battle Extended:\n<img src="img://objects/ui_extended.png"></img>\nSimple:\n<img src="img://objects/ui_simple.png"></img>\nConfig:\n/mods/configs/Driftkings/MarksOnGunExtended/MarksOnGunExtended.json\n',
+            'UI_menu_UIskill4ltu': '<font color="#60FF00">@skill</font> choice [<font color="#60FF00">twitch.tv/skill4ltu</font>]',
+            'UI_menu_UIMyp': '<font color="#D042F3">@Myp</font> choice[<font color="#D042F3">twitch.tv/myp_</font>]',
+            'UI_menu_UIspoter': '<font color="#6595EE">@spoter</font> choice [<font color="#6595EE">github.com/spoter</font>]',
+            'UI_menu_UIspoterNew': 'new <font color="#6595EE">@spoter</font> choice [<font color="#6595EE">github.com/spoter</font>]',
+            'UI_menu_UIcircon': '<font color="#02C9B3">@Circon</font> choice [<font color="#02C9B3">twitch.tv/circon</font>]',
+            'UI_menu_UIoldskool': '<font color="#FFD700">@Oldskool</font> choice [<font color="#FFD700">twitch.tv/oldskool</font>]',
+            'UI_menu_UIkorbenDallasNoMercy': '<font color="#e3256b">@KorbenDallasNoMercy</font> choice [<font color="#e3256b">youtube.com/c/KorbenDallasNoMercy</font>]',
             'UI_menu_UIReplayColor': 'Colored for Replays',
             'UI_menu_UIReplayColorDamage': 'Colored for Replays with damage',
             'UI_menu_UIReplay': 'for Replays',
@@ -504,8 +458,7 @@ class Worker(object):
             tm = datetime.datetime.toordinal(datetime.datetime.utcnow()) - 1
             self.values.extend([tm, tm])
             config.values[self.check_player_thread()][self.name] = self.values
-        if movingAvgDamage not in self.values or datetime.datetime.toordinal(datetime.datetime.utcnow()) >= self.values[
-            5] + 1:
+        if movingAvgDamage not in self.values or datetime.datetime.toordinal(datetime.datetime.utcnow()) >= self.values[5] + 1:
             p0 = self.values[2]
             d0 = self.values[3]
             t0 = self.values[5]
@@ -969,12 +922,9 @@ def new__getUserCondition(func, *args):
                 levels = [p55, p65, p85, p95, p100, 10000000]
                 data = {
                     'nextPercent': '%.0f' % pC,
-                    'needDamage': '<font color="%s">%s</font>' % (
-                    color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
-                    'currentMovingAvgDamage': '<font color="%s">%s</font>' % (
-                    color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage),
-                    'currentDamage': '<font color="%s">%s</font>' % (
-                    color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage),
+                    'needDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= int(dC), levels)[0])], int(dC)),
+                    'currentMovingAvgDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= movingAvgDamage, levels)[0])], movingAvgDamage),
+                    'currentDamage': '<font color="%s">%s</font>' % (color[levels.index(filter(lambda x: x >= currentDamage, levels)[0])], currentDamage),
                     '_20': worker.getNormalizeDigits(p20),
                     '_40': worker.getNormalizeDigits(p40),
                     '_55': worker.getNormalizeDigits(p55),

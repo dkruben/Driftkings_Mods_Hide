@@ -26,7 +26,7 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.5 (%(file_compile_date)s)'
+        self.version = '1.5.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -49,14 +49,7 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
             'UI_setting_help_text': 'Help:',
-            'UI_setting_help_tooltip': (
-                ' * You can change images to text or icons.\n'
-                ' * For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n'
-                '{}\n{}'.format(
-                    '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>',
-                    '<font color=\'#\'>Please don\'t change the text in text box if you don\'t know what you\'re doing.</font>'
-                )
-            )
+            'UI_setting_help_tooltip': ' • You can change images to text or icons.\n • For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n{}\n{}'.format('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>', '<font color=\'#\'>Please don\'t change the text in text box if you don\'t know what you\'re doing.</font>')
         }
         super(SpottedStatusController, self).init()
 
@@ -94,19 +87,15 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
 
     def getSpottedStatus(self):
         for vehicleID in self._spotted_cache:
-            # neverSeen, spotted, lost, dead
             if self._spotted_cache[vehicleID] == 'neverSeen':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['neverSeen']})
-            # dead
             elif self._spotted_cache[vehicleID] == 'dead':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['dead']})
-            # lost
             elif self._spotted_cache[vehicleID] == 'lost':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['lost']})
-            # spotted
             elif self._spotted_cache[vehicleID] == 'spotted':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['spotted']})

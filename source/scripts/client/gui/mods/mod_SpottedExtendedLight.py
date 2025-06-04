@@ -189,7 +189,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             if self.data['sound']:
                 self.sound(0 if eventID == BATTLE_EVENT_TYPE.SPOTTED else 1)
             message, color = self.textGenerator(eventID)
-            sendPanelMessage(text="<font color='#%s'>%s</font>" % (color, message))
+            sendPanelMessage("<font color='#%s'>%s</font>" % (color, message))
 
 
 config = ConfigInterface()

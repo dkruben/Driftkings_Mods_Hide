@@ -23,9 +23,7 @@ def find_attr_name(obj, name, accept_property=False):
 
 def find_attr(obj, name, default=_sentinel, accept_property=False):
     _name = find_attr_name(obj, name, accept_property)
-    if _name is None and default is not _sentinel:
-        return default
-    return getattr(obj, (_name or ('_' + name)))
+    return default if _name is None and default is not _sentinel else getattr(obj, _name or '_' + name)
 
 
 def override(obj, prop=_sentinel, getter=None, setter=None, deleter=None):
