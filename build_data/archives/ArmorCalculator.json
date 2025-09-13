@@ -2,7 +2,8 @@
     "files": {
         "mods/{GAME_VERSION}/Driftkings/ArmorCalculator.wotmod": "build/wotmods/Driftkings/ArmorCalculator.wotmod", 
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
-        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*", 
+        "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
+		"mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*", 
         "mods/{GAME_VERSION}/Driftkings/DriftkingsInject.wotmod": "build/wotmods/Driftkings/DriftkingsInject.wotmod", 
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod"
     }, 

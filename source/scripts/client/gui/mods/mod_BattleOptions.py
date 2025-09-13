@@ -14,7 +14,7 @@ from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
-from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
+# from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
@@ -33,6 +33,7 @@ from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
+from gui.Scaleform.daapi.view.battle.shared.hint_panel import BattleHintPanel
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, logError, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
@@ -66,7 +67,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showPostmortemDogTag': True,
             'stunSound': False,
             'showPlayerSatisfactionWidget': False,
-            'addEnemyName': True
+            'addEnemyName': True,
+            'hideHint': True,
         }
 
         self.i18n = {
@@ -110,7 +112,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showPlayerSatisfactionWidget_text': 'Show Player Satisfaction Widget',
             'UI_setting_showPlayerSatisfactionWidget_tooltip': 'Display battle rating "player satisfaction" widget.',
             'UI_setting_addEnemyName_text': 'Add Enemy Name',
-            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.'
+            'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.',
+            'UI_setting_hideHint_text': 'Hide Hint',
+            'UI_setting_hideHint_tooltip': 'Disable battle hint.',
         }
         super(ConfigInterface, self).init()
 
@@ -142,6 +146,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('directivesOnlyFromStorage'),
                 self.tb.createControl('showFriends'),
                 self.tb.createControl('clipLoad'),
+                self.tb.createControl('hideHint'),
                 self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
             ]
         }
@@ -191,6 +196,17 @@ battle_clock = BattleClock()
 def new_startGUI(func, *args):
     func(*args)
     battle_clock.start()
+
+
+# disable battle hints
+@override(BattleHintPanel, '_initPlugins')
+def _initPlugins(func, self, *args, **kwargs):
+    if not config.data['enabled'] and not config.data['hideHint']:
+        func(self, *args, **kwargs)
+    elif self._plugins is not None:
+        self._plugins.stop()
+        self._plugins.fini()
+        self._plugins = None
 
 
 # disable commander voices
@@ -245,11 +261,11 @@ def new_playStunSoundIfNeed(func, *args, **kwargs):
         return func(*args, **kwargs)
 
 
-@override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
-def new_onVehicleStateUpdated(func, self, state, value):
-    if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
-        return
-    return func(self, state, value)
+# @override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
+# def new_onVehicleStateUpdated(func, self, state, value):
+#    if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
+#        return
+#    return func(self, state, value)
 
 
 # mute battle bases

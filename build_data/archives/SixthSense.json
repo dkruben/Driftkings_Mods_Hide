@@ -2,8 +2,9 @@
     "enabled": true,
     "ext": ".zip",
     "files": {
+        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
-        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
+		"mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*", 
         "mods/{GAME_VERSION}/Driftkings/driftkings_sixthsense.wotmod": "res/audioww/driftkings_sixthsense.wotmod",
 		"mods/{GAME_VERSION}/Driftkings/_aaa_BanksLoader_audioMods.wotmod": "res/audioww/_aaa_BanksLoader_audioMods.wotmod",
         "mods/{GAME_VERSION}/Driftkings/BanksLoader.wotmod": "build/wotmods/Driftkings/BanksLoader.wotmod",

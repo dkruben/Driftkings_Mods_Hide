@@ -428,7 +428,7 @@ class Statistics(object):
             self.playersInfo[0][dbID]['c_battles'] = self.getColor('battles', self.playersInfo[0][dbID]['battles'])
             self.playersInfo[0][dbID]['c_winrate'] = self.getColor('winrate', self.playersInfo[0][dbID]['winrate'])
             self.playersInfo[0][dbID]['c_tBattles'] = self.getColor('t_battles', self.playersInfo[0][dbID]['t_battles'])
-            cachedData = self.statsCache.get(dbID, None) if config.data['performance']['cacheEnabled'] else None
+            cachedData = self.statsCache.get(dbID, None) if config.internal_conf['performance']['cacheEnabled'] else None
             if cachedData:
                 cacheAge = time.time() - self.cacheTimestamp.get(dbID, 0)
                 if cacheAge < config.internal_conf['performance']['cacheExpiry']:

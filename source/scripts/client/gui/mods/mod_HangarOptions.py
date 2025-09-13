@@ -42,7 +42,6 @@ from vehicle_systems.tankStructure import ModelStates
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod
 from DriftkingsInject import g_events, CyclicTimerEvent
 
-
 class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
         self.callback = None
@@ -51,7 +50,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.5.0 (%(file_compile_date)s)'
+        self.version = '3.5.5 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -81,10 +80,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'premiumTime': False,
             'lootBoxesWidget': False,
             'hideBtnCounters': False,
+            'fieldMail': True,
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
-                'position': {'x': -10.0, 'y': 49.0},
+                'position': {'x': -5.0, 'y': 49.0},
                 'width': 210,
                 'height': 50,
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
@@ -149,6 +149,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showEventTournamentWidget_tooltip': 'Show/hide event tournaments widget in hangar.',
             'UI_setting_showAchievementPopups_text': 'Achievement Popups',
             'UI_setting_showAchievementPopups_tooltip': 'Show/hide Achievement Popups.',
+            'UI_setting_fieldMail_text': 'Field Mail',
+            'UI_setting_fieldMail_tooltip': 'Show/hide Field Mail.',
         }
         super(ConfigInterface, self).init()
 
@@ -184,7 +186,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showProfilePrestigeWidget'),
                 self.tb.createControl('showReferralButton'),
                 self.tb.createControl('showEventTournamentWidget'),
-                self.tb.createControl('showAchievementPopups')
+                self.tb.createControl('showAchievementPopups'),
+                self.tb.createControl('fieldMail')
             ]
         }
 
@@ -276,6 +279,16 @@ def new__getPromoCount(func, self):
         return 0
     return func(self)
 
+# disable field mail tips
+@override(PromoController, '__tryToShowTeaser')
+def _tryToShowTeaser(func, *args):
+    return None if config.data['enabled'] and config.data['fieldMail'] else func(*args)
+
+
+@override(PromoController, '__needToGetTeasersInfo')
+def _needToGetTeasersInfo(func, *args):
+    return False if config.data['enabled'] and config.data['fieldMail']  else func(*args)
+
 
 # hide ranked battle results window
 @override(RankedBattlesResults, '_populate')
@@ -288,7 +301,7 @@ def new__populate(func, self):
 # hide display session statistics button
 @override(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
 def new__updateSessionStatsBtn(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showButton', True):
+    if not config.data.get('enabled', True) and not config.data.get('showButton', True):
         self.as_setSessionStatsButtonVisibleS(False)
         self._MessengerBar__onSessionStatsBtnOnlyOnceHintHidden(True)
         return
@@ -298,7 +311,7 @@ def new__updateSessionStatsBtn(func, self):
 # hide display the counter of spent battles on the button
 @override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
 def new__updateBattleCount(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
+    if not config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
         return
     func(self)
 
@@ -408,7 +421,7 @@ class AutoLoginHandler:
     def auto_login(self, login):
         if not self.firstTime:
             self.firstTime = True
-            if config.data.get('enabled', False) and config.data.get('autoLogin', False):
+            if config.data['enabled'] and config.data['autoLogin']:
                 callback(0, login.as_doAutoLoginS)
 
 

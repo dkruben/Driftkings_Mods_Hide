@@ -19,7 +19,7 @@ from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, calculate_version, checkKeys
 
 COMPARE_MACROS = ['compareDelim', 'compareColor']
-ROMAN_LEVELS = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI')
+ROMAN_LEVELS = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII')
 PRESET_TEMPLATES = {
     'default': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | HP: {{vehicle_max_health}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | Shell: {{shell_damage_1}}dmg</font>",
     'minimal': "<font face='$FieldFont' size='16' color='#FFFFFF'><b>{{vehicle_name}} ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}}s | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m</font>",

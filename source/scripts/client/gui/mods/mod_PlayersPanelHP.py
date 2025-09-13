@@ -32,7 +32,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
         override(Vehicle, 'onHealthChanged', self.new__onHealthChanged)
         override(PlayersPanelMeta, 'as_setPanelHPBarVisibilityStateS', self.new__setPanelHPBarVisibilityStateS)
 
-
     def init(self):
         self.ID = '%(mod_ID)s'
         self.version = '1.8.5 (%(file_compile_date)s)'
@@ -75,7 +74,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
             vehicle = getPlayer().arena.vehicles.get(vehicleID)
             if vehicle is not None and vehicle['vehicleType'] is not None:
                 return vehicle['vehicleType'].maxHealth
-            return ''
+            return 0  # Changed from empty string to 0 to avoid conversion errors
 
     def hasOwnProperty(self):
         self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
@@ -99,10 +98,17 @@ class PlayersPanelController(DriftkingsConfigInterface):
         panelSide = 'left' if player.team == team else 'right'
         currentHP = self.__hpCache[vehicleID]['current']
         maxHP = self.__hpCache[vehicleID]['max']
+        # Ensure currentHP is a number, not a string
+        if isinstance(currentHP, str) and currentHP == '':
+            currentHP = 0
         for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
             barWidth = currentHP
             if 'width' in fieldData[panelSide]:
-                barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / maxHP))
+                # Make sure we're working with numeric values
+                try:
+                    barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / float(maxHP))) if float(maxHP) > 0 else 0
+                except (ValueError, TypeError, ZeroDivisionError):
+                    barWidth = 0
             if g_driftkingsPlayersPanels.viewLoad:
                 g_driftkingsPlayersPanels.update(self.ID + fieldName, {'vehicleID': vehicleID, 'text': (fieldData[panelSide]['text'] % {'curHealth': currentHP, 'maxHealth': maxHP, 'barWidth': barWidth}) if self.displayed and (not fieldData.get('hideIfDead', False) or barWidth) else ''})
 
@@ -196,6 +202,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
 g_config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
+
     g_config = PlayersPanelController()
     statistic_mod = Analytics(g_config.ID, g_config.version)
 except ImportError:

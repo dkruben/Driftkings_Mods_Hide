@@ -1,29 +1,37 @@
 ﻿# -*- coding: utf-8 -*-
-import time
-
-from gui.clans.clan_cache import g_clanCache
-from PlayerEvents import g_playerEvents
-from gui.clans.data_wrapper.clan_supply import QuestStatus as DataQuestStatus, DataNames
-from gui.wgcg.clan_supply.contexts import ClaimRewardsCtx
 from adisp import adisp_process
-from helpers import dependency
-from skeletons.gui.web import IWebController
-from skeletons.gui.shared import IItemsCache
-from skeletons.gui.app_loader import IAppLoader
 from gui import SystemMessages
+from gui.clans.clan_cache import g_clanCache
+from gui.clans.data_wrapper.clan_supply import DataNames, PointStatus, QuestStatus
+from gui.impl import backport
+from gui.impl.gen import R
+from gui.shared.money import Currency
+from gui.wgcg.clan_supply.contexts import ClaimRewardsCtx, PurchaseProgressionStageCtx
+from gui.wgnc import g_wgncEvents
+from gui.wgnc.settings import WGNC_DATA_PROXY_TYPE
+from helpers import dependency
+from skeletons.gui.shared import IItemsCache
+from skeletons.gui.shared.utils import IHangarSpace
+from skeletons.gui.web import IWebController
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, logInfo, logWarning, logError, calculate_version, callback
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, logWarning, calculate_version
+
+REWARD_STATUS_OK = (QuestStatus.REWARD_AVAILABLE, QuestStatus.REWARD_PENDING)
+SKIP_LEVELS = (5, 10, 15, 20)
 
 
 class AutoClaimClanReward(DriftkingsConfigInterface):
     __webController = dependency.descriptor(IWebController)
-    itemsCache = dependency.descriptor(IItemsCache)
-    appLoader = dependency.descriptor(IAppLoader)
-    started = False
+    __itemsCache = dependency.descriptor(IItemsCache)
+    __hangarSpace = dependency.descriptor(IHangarSpace)
 
     def __init__(self):
-        self.lastClaimAttempt = 0
-        self.claimCooldown = 10
+        self.__hangarSpace.onSpaceCreate += self.onCreate
+        self.__cachedProgressData = None
+        self.__cachedQuestsData = None
+        self.__cachedSettingsData = None
+        self.__claim_started = False
+        self.__enabled = False
         super(AutoClaimClanReward, self).__init__()
 
     def init(self):
@@ -32,30 +40,12 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
         self.author = 'Maintenance by: _DKRuben_EU_'
         self.data = {
             'enabled': True,
-            'debugLog': False,
-            'claimAfterBattle': True,
-            'claimAfterSync': True,
-            'claimOnDataReceived': True,
-            'claimDelay': 1.0,
-            'showNotifications': True,
         }
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
             'UI_setting_enabled_text': 'Enabled',
-            'UI_setting_enabled_tooltip': 'Enable/disable the mod.',
-            'UI_setting_debugLog_text': 'Debug Log',
-            'UI_setting_debugLog_tooltip': 'Enable/disable debug logging.',
-            'UI_setting_claimAfterBattle_text': 'Claim After Battle',
-            'UI_setting_claimAfterBattle_tooltip': 'Claim rewards after a battle.',
-            'UI_setting_claimAfterSync_text': 'Claim After Sync',
-            'UI_setting_claimAfterSync_tooltip': 'Claim rewards after a sync.',
-            'UI_setting_claimOnDataReceived_text': 'Claim On Data Received',
-            'UI_setting_claimOnDataReceived_tooltip': 'Claim rewards when data is received.',
-            'UI_setting_claimDelay_text': 'Claim Delay',
-            'UI_setting_claimDelay_tooltip': 'Delay between claim attempts.',
-            'UI_setting_showNotifications_text': 'Show Notifications',
-            'UI_setting_showNotifications_tooltip': 'Show notifications.',
+            'UI_setting_enabled_tooltip': 'Enable/disable the mod.'
         }
         super(AutoClaimClanReward, self).init()
 
@@ -63,164 +53,98 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
-            'column1': [
-                self.tb.createControl('debugLog'),
-                self.tb.createControl('claimAfterBattle'),
-                self.tb.createControl('claimAfterSync')
-            ],
-            'column2': [
-                self.tb.createControl('claimOnDataReceived'),
-                self.tb.createSlider('claimDelay', 1, 10, 1, '{{values}} sec.'),
-                self.tb.createControl('showNotifications')
-            ]
+            'column1': [],
+            'column2': []
         }
 
-    def fini(self):
-        if self.data['debugLog']:
-            logInfo(self.ID,'fini')
-        if self.started:
-            g_clanCache.clanSupplyProvider.onDataReceived -= self.__onDataReceived
-        self.itemsCache.onSyncCompleted -= self._onSyncCompleted
-        g_playerEvents.onBattleResultsReceived -= self._onBattleResultsReceived
-        self.started = False
+    def onApplySettings(self, settings):
+        super(AutoClaimClanReward, self).onApplySettings(settings)
+        self.__enabled = self.data['enabled']
 
-    def start(self):
-        if not self.data['enabled']:
-            return
-        if self.data['debugLog']:
-            logInfo(self.ID, 'start')
-        self.itemsCache.onSyncCompleted += self._onSyncCompleted
-        g_playerEvents.onBattleResultsReceived += self._onBattleResultsReceived
+    def onCreate(self):
+        self.__hangarSpace.onSpaceCreate -= self.onCreate
+        self.updateCache()
+        if self.__enabled and g_clanCache.isInClan and self.__cachedQuestsData and self.__cachedProgressData and self.__cachedSettingsData:
+            self.parseQuests(self.__cachedQuestsData)
+            self.parseProgression(self.__cachedProgressData)
+
+    def subscribe(self):
+        g_wgncEvents.onProxyDataItemShowByDefault += self.__onProxyDataItemShow
         g_clanCache.clanSupplyProvider.onDataReceived += self.__onDataReceived
-        self.started = True
-        if self.data['showNotifications']:
-            self.showNotification('Auto Claim Clan Reward mod activated', isSuccess=True)
 
-    def updateQuests(self):
-        if not g_clanCache.isInClan:
-            if self.data['debugLog']:
-                logWarning(self.ID, 'Not in a clan, skipping claim')
-            return
-        currentTime = time.time()
-        if currentTime - self.lastClaimAttempt < self.claimCooldown:
-            if self.data['debugLog']:
-                logInfo(self.ID, 'Claim on cooldown, skipping')
-            return
-        self.lastClaimAttempt = currentTime
-        try:
-            self.tryToClaimReward()
-        except Exception:
-            if self.data['debugLog']:
-                logWarning(self.ID, 'try to claim exception')
-        if self.data['debugLog']:
-            logInfo(self.ID, 'updateQuests complete')
+    def unsubscribe(self):
+        g_wgncEvents.onProxyDataItemShowByDefault -= self.__onProxyDataItemShow
+        g_clanCache.clanSupplyProvider.onDataReceived -= self.__onDataReceived
 
-    def _onBattleResultsReceived(self, _, __):
-        if not self.data['claimAfterBattle']:
-            return
-        if self.data['debugLog']:
-            logInfo(self.ID, 'br 1', self.started)
-        self.updateQuests()
-        if self.data['debugLog']:
-            logInfo(self.ID, 'br 2', self.started)
+    def updateCache(self):
+        self.__cachedQuestsData = g_clanCache.clanSupplyProvider.getQuestsInfo().data
+        self.__cachedSettingsData = g_clanCache.clanSupplyProvider.getProgressionSettings().data
+        self.__cachedProgressData = g_clanCache.clanSupplyProvider.getProgressionProgress().data
 
-    def _onSyncCompleted(self, *args):
-        if not self.data['claimAfterSync']:
-            return
-        if self.data['debugLog']:
-            logInfo(self.ID, 'sync 1', self.started)
-        self.updateQuests()
-        if self.data['debugLog']:
-            logInfo(self.ID, 'sync 2', self.started)
+    def __onProxyDataItemShow(self, _, item):
+        if self.__enabled and g_clanCache.isInClan and item.getType() == WGNC_DATA_PROXY_TYPE.CLAN_SUPPLY_QUEST_UPDATE:
+            status = item.getStatus()
+            if not self.__claim_started and status in REWARD_STATUS_OK:
+                self.__claimRewards()
+            elif status == QuestStatus.COMPLETE and self.__cachedProgressData and self.__cachedSettingsData:
+                self.parseProgression(self.__cachedProgressData)
 
     @adisp_process
-    def tryToClaimReward(self):
-        if self.data['debugLog']:
-            logInfo(self.ID, 'tryToClaimReward')
-        if self.data['claimDelay'] > 0:
-            yield callback(self.data['claimDelay'], lambda: None)
+    def __claimRewards(self):
+        self.__claim_started = True
         response = yield self.__webController.sendRequest(ctx=ClaimRewardsCtx())
-        if self.data['debugLog']:
-            logInfo(self.ID, 'tryToClaimReward response', response)
-        self.processClaimResponse(response)
+        if not response.isSuccess():
+            SystemMessages.pushMessage('Battle Observer: Auto Claim Clan Reward - ' + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error)
+            logWarning(self.ID, 'Failed to claim rewards. Code: {}', response.getCode())
+        self.__claim_started = False
 
-    def processClaimResponse(self, response):
-        success = False
-        message = 'No rewards to claim'
-        if response and response.isSuccess():
-            if hasattr(response, 'data') and response.data:
-                success = True
-                message = 'Successfully claimed clan rewards!'
-                if hasattr(response.data, 'rewards') and response.data.rewards:
-                    rewardsText = self.formatRewards(response.data.rewards)
-                    if rewardsText:
-                        message += '\n' + rewardsText
-        else:
-            if response and hasattr(response, 'errorMessage') and response.errorMessage:
-                message = 'Failed to claim rewards: ' + response.errorMessage
-            else:
-                message = 'Failed to claim rewards'
-        if self.data['showNotifications']:
-            self.showNotification(message, isSuccess=success)
-
-    @staticmethod
-    def formatRewards(rewards):
-        if not rewards:
-            return ''
-        formatted = []
-        if isinstance(rewards, dict):
-            for reward_type, reward_value in rewards.items():
-                formatted.append('{}: {}'.format(reward_type, reward_value))
-        elif isinstance(rewards, list):
-            for reward in rewards:
-                if isinstance(reward, dict):
-                    for k, v in reward.items():
-                        formatted.append('{}: {}'.format(k, v))
-                else:
-                    formatted.append(str(reward))
-        else:
-            formatted.append(str(rewards))
-        return "\n".join(formatted)
-
-    def showNotification(self, message, isSuccess=True):
-        try:
-            if isSuccess:
-                SystemMessages.pushMessage(message, type=SystemMessages.SM_TYPE.Information)
-            else:
-                SystemMessages.pushMessage(message, type=SystemMessages.SM_TYPE.Warning)
-        except Exception:
-            if self.data['debugLog']:
-                logError(self.ID, 'Showing notification')
+    @adisp_process
+    def __claimProgression(self, stageID, price):
+        response = yield self.__webController.sendRequest(ctx=PurchaseProgressionStageCtx(stageID, price))
+        if not response.isSuccess():
+            SystemMessages.pushMessage(self.ID + 'Auto Claim Clan Reward - Failed to claim Progression.', type=SystemMessages.SM_TYPE.Error)
+            logWarning(self.ID, 'Failed to claim Progression. Code: {}', response.getCode())
 
     def parseQuests(self, data):
-        if self.data['debugLog']:
-            logInfo(self.ID, 'parseQuests', data)
-        has_available_rewards = False
-        # Check if data has quests attribute
-        if hasattr(data, 'quests') and data.quests:
-            for q in data.quests:
-                if q.status == DataQuestStatus.REWARD_AVAILABLE or q.status == DataQuestStatus.REWARD_PENDING:
-                    has_available_rewards = True
-                    break
-            if has_available_rewards:
-                self.tryToClaimReward()
-            elif self.data['debugLog']:
-                logWarning(self.ID, 'No rewards available to claim')
-        elif self.data['debugLog']:
-            logWarning(self.ID, 'Invalid data structure - missing quests')
+        if data is not None and not self.__claim_started and any(q.status in REWARD_STATUS_OK for q in data.quests):
+            self.__claimRewards()
+
+    @staticmethod
+    def isMaximumLevelPurchased(data):
+        maximum_level = data.points.get(str(max(map(int, data.points.keys()))), None)
+        return maximum_level and maximum_level.status == PointStatus.PURCHASED
+
+    def parseProgression(self, data):
+        if not self.__cachedSettingsData.enabled or data is None:
+            return
+        maximum_level_purchased = self.isMaximumLevelPurchased(data)
+        available_levels = [int(stateID) for stateID, stageProgress in data.points.items() if stageProgress.status == PointStatus.AVAILABLE and (int(stateID) not in SKIP_LEVELS or maximum_level_purchased)]
+        if not available_levels:
+            return
+        next_level = min(available_levels)
+        next_point = self.__cachedSettingsData.points.get(str(next_level))
+        currency = self.__itemsCache.items.stats.dynamicCurrencies.get(Currency.TOUR_COIN, 0)
+        if next_point and currency >= next_point.price:
+            self.__claimProgression(next_level, next_point.price)
 
     def __onDataReceived(self, dataName, data):
-        if not self.data['claimOnDataReceived']:
-            return
-        if self.data['debugLog']:
-            logInfo(self.ID, '__onDataReceived 1', dataName)
-        if dataName not in (DataNames.QUESTS_INFO, DataNames.QUESTS_INFO_POST):
-            return
-        if self.data['debugLog']:
-            logInfo(self.ID, '__onDataReceived 2')
-        self.parseQuests(data)
+        if dataName in (DataNames.QUESTS_INFO, DataNames.QUESTS_INFO_POST):
+            self.__cachedQuestsData = data
+            if self.__enabled and g_clanCache.isInClan:
+                self.parseQuests(data)
+        elif dataName == DataNames.PROGRESSION_PROGRESS:
+            self.__cachedProgressData = data
+            if self.__enabled and g_clanCache.isInClan:
+                self.parseProgression(data)
+        elif dataName == DataNames.PROGRESSION_SETTINGS:
+            self.__cachedSettingsData = data
 
 
 # Create global instance
 g_autoClaimClanReward = AutoClaimClanReward()
+g_autoClaimClanReward.subscribe()
 analytics = Analytics(g_autoClaimClanReward.ID, g_autoClaimClanReward.version)
+
+
+def fini():
+    g_autoClaimClanReward.unsubscribe()

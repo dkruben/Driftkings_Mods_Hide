@@ -1,6 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
 import os
-import traceback
 
 from Avatar import PlayerAvatar
 from gui.Scaleform.daapi.view.battle.shared.minimap.plugins import ArenaVehiclesPlugin
@@ -18,24 +17,24 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
         self._spotted_cache = {}
         self.as_create = False
         CallbackDelayer.__init__(self)
-        self.place = os.path.join('..', 'mods', 'configs', 'Driftkings', '%(mod_ID)s', 'icons')
+        self.place = os.path.join('..', 'mods', 'configs', 'Driftkings', 'SpottedStatus', 'icons')
         super(SpottedStatusController, self).__init__()
         override(PlayerAvatar, '_PlayerAvatar__startGUI', self.__startGui)
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.__destroyGUI)
         override(ArenaVehiclesPlugin, '_setInAoI', self.new__setInAoI)
 
     def init(self):
-        self.ID = '%(mod_ID)s'
+        self.ID = 'SpottedStatus'
         self.version = '1.5.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'text': {'x': -60, 'y': 0},
-            'neverSeen': '<img src=\'img://' + self.place + 'neverSeen.png\' width=\'22\' height=\'22\'>',
-            'spotted': '<img src=\'img://' + self.place + 'spotted.png\' width=\'22\' height=\'22\'>',
-            'lost': '<img src=\'img://' + self.place + 'lost.png\' width=\'22\' height=\'22\'>',
-            'dead': '<img src=\'img://' + self.place + 'dead.png\' width=\'22\' height=\'22\'>',
-            'artillery': '<img src=\'img://' + self.place + 'artillery.png\' width=\'22\' height=\'22\'>'
+            'neverSeen': "<img src='img://" + self.place + "neverSeen.png' width='22' height='22'>",
+            'spotted': "<img src='img://" + self.place + "spotted.png' width='22' height='22'>",
+            'lost': "<img src='img://" + self.place + "lost.png' width='22' height='22'>",
+            'dead': "<img src='img://" + self.place + "dead.png' width='22' height='22'>",
+            'artillery': "<img src='img://" + self.place + "artillery.png' width='22' height='22'>"
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -49,14 +48,13 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
             'UI_setting_dead_text': 'Dead',
             'UI_setting_dead_tooltip': '',
             'UI_setting_help_text': 'Help:',
-            'UI_setting_help_tooltip': ' • You can change images to text or icons.\n • For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n{}\n{}'.format('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'18\' height=\'18\'>', '<font color=\'#\'>Please don\'t change the text in text box if you don\'t know what you\'re doing.</font>')
+            'UI_setting_help_tooltip': ' \xe2\x80\xa2 You can change images to text or icons.\n \xe2\x80\xa2 For icons go to game folder "mods/configs/Driftkings/SpottedStatus/icons/*.png" and replace names\n{}\n{}'.format("<img src='img://gui/maps/uiKit/dialogs/icons/alert.png' width='18' height='18'>", "<font color='#'>Please don't change the text in text box if you don't know what you're doing.</font>")
         }
         super(SpottedStatusController, self).init()
 
     def createTemplate(self):
         help = self.tb.createLabel('help')
         help['tooltip'] += 'help'
-
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
@@ -66,9 +64,7 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
                 self.tb.createControl('lost', self.tb.types.TextInput, 350),
                 self.tb.createControl('dead', self.tb.types.TextInput, 350)
             ],
-            'column2': [
-                help
-            ]
+            'column2': [help]
         }
 
     def clear(self):
@@ -90,13 +86,13 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
             if self._spotted_cache[vehicleID] == 'neverSeen':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['neverSeen']})
-            elif self._spotted_cache[vehicleID] == 'dead':
+            if self._spotted_cache[vehicleID] == 'dead':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['dead']})
-            elif self._spotted_cache[vehicleID] == 'lost':
+            if self._spotted_cache[vehicleID] == 'lost':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['lost']})
-            elif self._spotted_cache[vehicleID] == 'spotted':
+            if self._spotted_cache[vehicleID] == 'spotted':
                 if self.as_create:
                     g_driftkingsPlayersPanels.update(self.ID, {'vehicleID': vehicleID, 'text': self.data['spotted']})
 
@@ -104,19 +100,18 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
         arena = getPlayer().arena if hasattr(getPlayer(), 'arena') else None
         if arena is None:
             return
-        else:
-            arenaVehicle = arena.vehicles[vehicleID] if vehicleID in arena.vehicles else None
-            if arenaVehicle is None:
-                return
-            if vehicleID in self._spotted_cache:
-                if not arenaVehicle['isAlive']:
-                    self._spotted_cache[vehicleID] = 'dead'
-                    return
-                if spotted:
-                    self._spotted_cache[vehicleID] = 'spotted'
-                    return
-                self._spotted_cache[vehicleID] = 'lost'
+        arenaVehicle = arena.vehicles[vehicleID] if vehicleID in arena.vehicles else None
+        if arenaVehicle is None:
             return
+        if vehicleID in self._spotted_cache:
+            if not arenaVehicle['isAlive']:
+                self._spotted_cache[vehicleID] = 'dead'
+                return
+            if spotted:
+                self._spotted_cache[vehicleID] = 'spotted'
+                return
+            self._spotted_cache[vehicleID] = 'lost'
+        return
 
     def vehiclesInfo(self):
         for vInfo in self.sessionProvider.getArenaDP().getVehiclesInfoIterator():
@@ -152,8 +147,6 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
                     if entry == entry2:
                         self.arenaVehiclesPlugin(vehicleID, isInAoI)
                         break
-        except StandardError:
-            traceback.print_exc()
         finally:
             return result
 
@@ -165,5 +158,3 @@ try:
     statistic_mod = Analytics(config.ID, config.version)
 except ImportError:
     logWarning(config.ID, 'Battle Flash API not found.')
-except StandardError:
-    logWarning(config.ID,'Battle Flash API not found.')

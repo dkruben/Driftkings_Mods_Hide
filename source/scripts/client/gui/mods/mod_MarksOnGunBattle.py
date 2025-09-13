@@ -18,7 +18,6 @@ from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 from gui import InputHandler, g_guiResetters
 from gui.Scaleform.daapi.view.lobby.profile.ProfileUtils import ProfileUtils
 from gui.battle_control.controllers import feedback_events
-from gui.impl.lobby.crew.widget.crew_widget import CrewWidget
 from gui.shared.gui_items.dossier.achievements.mark_on_gun import MarkOnGunAchievement
 from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore
@@ -1201,11 +1200,25 @@ config = ConfigInterface()
 worker = Worker()
 statistic_mod = Analytics(config.ID, config.version)
 
+try:
+    from gui.impl.lobby.hangar.presenters.crew_presenter import CrewPresenter
 
-@override(CrewWidget, '_CrewWidget__updateWidgetModel')
-def new_CrewWidget(func, *args):
-    worker.getCurrentHangarData()
-    return func(*args)
+    @override(CrewPresenter, '_CrewPresenter__updateCrewModel')
+    def new_CrewWidget(func, *args):
+        worker.getCurrentHangarData()
+        return func(*args)
+except (ImportError, AttributeError):
+    pass
+
+# try:
+#    from gui.impl.lobby.crew.widget.crew_widget import CrewWidget
+
+#    @override(CrewWidget, '_CrewWidget__updateCrewModel')
+#    def new_updateCrewModel(func, *args):
+#        worker.getCurrentHangarData()
+#        return func(*args)
+# except (ImportError, AttributeError):
+#    pass
 
 
 @override(PlayerAvatar, 'onBattleEvents')
