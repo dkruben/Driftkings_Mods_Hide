@@ -6,7 +6,7 @@ import Keys
 import VehicleGunRotator
 import gun_rotation_shared
 from Avatar import PlayerAvatar, MOVEMENT_FLAGS
-from AvatarInputHandler.siege_mode_player_notifications import SoundNotifications
+from AvatarInputHandler.player_notifications.siege_mode.sound_notifications import SoundNotifications
 from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
@@ -18,7 +18,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.3 (%(file_compile_date)s)'
+        self.version = '1.7.5 (%(file_compile_date)s)'
         self.author = '(orig by spoter, reven86), re-coded by Driftkings'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],

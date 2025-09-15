@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="..\marksInTechtree.swf" />
+    <movie path="..\MarksInTechtree.swf" />
     <movie fps="25" />
     <movie width="25" />
     <movie height="25" />

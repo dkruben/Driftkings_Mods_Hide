@@ -73,8 +73,8 @@ config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
 
 
-if not hasattr(BigWorld, 'MoEHangarHTML'):
-    BigWorld.MoEHangarHTML = None
+# if not hasattr(BigWorld, 'MoEHangarHTML'):
+#    BigWorld.MoEHangarHTML = None
 
 
 class MarksInTechTree(object):
@@ -259,51 +259,36 @@ def new_makeHeaderVO(func, *args):
 
 
 @override(NationObjDumper, '_getVehicleData')
-def new_getVehicleData(func, *args):
+def new__getExtraInfo(func, *args):
     result = func(*args)
     if config.data['enabled'] and config.data['showInTechTree']:
-        try:
-            dossier = None
-            if len(args) > 2:
-                item = args[2]
+        dossier = None
+        if len(args) > 2:
+            item = args[2]
+            dossier = g_currentVehicle.itemsCache.items.getVehicleDossier(item.intCD)
+        else:
+            try:
+                # noinspection PyProtectedMember
+                item = args[1]._RealNode__item
                 dossier = g_currentVehicle.itemsCache.items.getVehicleDossier(item.intCD)
-            else:
-                try:
-                    # noinspection PyProtectedMember
-                    item = args[1]._RealNode__item
-                    dossier = g_currentVehicle.itemsCache.items.getVehicleDossier(item.intCD)
-                except Exception:
-                    pass
-            if dossier:
-                percent = ''
-                mark_of_gun = dossier.getTotalStats().getAchievement(MARK_ON_GUN_RECORD)
-                mark_of_gun_value = mark_of_gun.getValue()
-                if mark_of_gun_value < 0 or mark_of_gun_value >= len(g_marks.marks_mog):
-                    mark_of_gun_value = 0
-                mark_of_gun_stars = '%s ' % g_marks.marks_mog[mark_of_gun_value]
-                color = ['#F8F400', '#60FF00', '#02C9B3', '#D042F3']
-                try:
-                    percents = float(dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0)
-                except (ValueError, ZeroDivisionError, TypeError):
-                    percents = 0
-                if config.data['showInTechTreeMarkOfGunPercent'] and percents:
-                    percent = '%.2f' % percents if percents < 100 else '100.0'
-                    percent = '%s%%' % percent.rjust(5)
-                mastery = dossier.getTotalStats().getAchievement(MARK_OF_MASTERY_RECORD)
-                mastery_value = mastery.getValue()
-                if config.data['showInTechTreeMastery'] and mastery_value and mastery_value < 5:
-                    mark_of_gun_stars = '<img src="%s" width="16" height="16" vspace="-16"/></img>' % mastery.getSmallIcon().replace('../', '')
-                x = str(config.data['techTreeX'])
-                y = str(config.data['techTreeY'])
-                height = str(config.data['techTreeHeight'])
-                width = str(config.data['techTreeWidth'])
-                color_index = min(mark_of_gun_value, len(color) - 1)
-                if color_index < 0:
-                    color_index = 0
-                percent_text = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (mark_of_gun_stars, color[color_index], percent, x, y, height, width)
-                result['nameString'] += percent_text
-        except Exception as e:
-            logError(config.ID, "error in new_getVehicleData:", e)
+            except StandardError:
+                pass
+        if dossier:
+            percent = ''
+            mark_of_gun = dossier.getTotalStats().getAchievement(MARK_ON_GUN_RECORD)
+            mark_of_gun_value = mark_of_gun.getValue()
+            mark_of_gun_stars = '%s ' % g_marks.marks_mog[mark_of_gun.getValue()]
+            color = ['#F8F400', '#60FF00', '#02C9B3', '#D042F3']
+            percents = float(dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0)
+            if config.data['showInTechTreeMarkOfGunPercent'] and percents:
+                percent = '%.2f' % percents if percents < 100 else '100.0'
+                percent = '%s%%' % percent.rjust(5)
+            mastery = dossier.getTotalStats().getAchievement(MARK_OF_MASTERY_RECORD)
+            mastery_value = mastery.getValue()
+            if config.data['showInTechTreeMastery'] and mastery_value and mastery_value < 5:
+                mark_of_gun_stars = '<img src="%s" width="16" height="16" vspace="-16"/></img>' % mastery.getSmallIcon().replace('../', '')
+            percent_text = '||%s<font color="%s">%s</font>||%s||%s||%s||%s' % (mark_of_gun_stars, color[mark_of_gun_value], percent, config.data['techTreeX'], config.data['techTreeY'], config.data['techTreeHeight'], config.data['techTreeWidth'])
+            result['nameString'] += percent_text
     return result
 
 
