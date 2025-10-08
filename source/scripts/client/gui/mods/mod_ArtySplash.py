@@ -1,8 +1,8 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import BigWorld
 import Keys
 import Math
-import VehicleGunRotator
+from VehicleGunRotator import VehicleGunRotator
 from Avatar import PlayerAvatar
 from AvatarInputHandler.aih_global_binding import CTRL_MODE_NAME
 from gui import InputHandler
@@ -110,7 +110,7 @@ class ArtyBall(object):
             self.modelSplash.model.visible = False
             self.modelDot.model.visible = False
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
-            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 4294967295L, BigWorld.player().spaceID) # old
+            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 0xFFFFFFFF, BigWorld.player().spaceID)
             self.modelSplash.model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
@@ -121,7 +121,7 @@ class ArtyBall(object):
         self.modelSplashKeyPressed = False
         self.modelDotKeyPressed = False
         if self.modelSplash is not None:
-            if self.modelSplashCircle.attached:
+            if self.modelSplashCircle is not None and self.modelSplashCircle.attached:
                 self.modelSplash.model.root.detach(self.modelSplashCircle)
             self.modelSplash.clear()
         if self.modelDot is not None:
@@ -154,9 +154,8 @@ class ArtyBall(object):
         if not config.data['showModeArty'] and self.player.inputHandler.ctrlModeName in [CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.ARTY]:
             self.hideVisible()
             return
-
         if self.modelSplash is not None and self.modelSplash.model:
-            if not self.scaleSplash or self.scaleSplash != shell.type.explosionRadius:
+            if self.scaleSplash is None or self.scaleSplash != shell.type.explosionRadius:
                 self.scaleSplash = shell.type.explosionRadius
                 self.modelSplash.model.scale = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
             if not self.modelSplashKeyPressed:
@@ -215,7 +214,7 @@ def new_destroyGUI(func, *args):
     artySplash.stopBattle()
 
 
-@override(VehicleGunRotator.VehicleGunRotator, '_VehicleGunRotator__updateGunMarker')
+@override(VehicleGunRotator, '_VehicleGunRotator__updateGunMarker')
 def new_updateMarkerPos(func, *args):
     func(*args)
     artySplash.working()

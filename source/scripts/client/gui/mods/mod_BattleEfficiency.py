@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import math
 import re
 from collections import namedtuple
@@ -244,7 +244,7 @@ class EfficiencyCalculator(object):
         XWN8 = calculateXvmScale('xwn8', WN8)
         return WN8, XWN8
 
-    @safe_execution((0, 0))
+    @safe_execution(defaultReturn=(0, 0))
     def calculate_efficiency(self, damage, frags, spotted, capture, defence):
         damage = int(damage or 0)
         frags = int(frags or 0)
@@ -301,7 +301,9 @@ class BattleEfficiency(object):
     @safe_execution()
     def updateFormatString(self):
         player = getPlayer()
-        if not player or not player.arena or player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+        if not player or not player.arena:
+            return
+        if player.arena.bonusType in EXCLUDED_BONUS_TYPES:
             return
         macro_data = {}
         for key, value in self._stats.iteritems():
@@ -351,7 +353,13 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
     if ribbonType not in (BATTLE_EFFICIENCY_TYPES.DETECTION, BATTLE_EFFICIENCY_TYPES.DESTRUCTION, BATTLE_EFFICIENCY_TYPES.DEFENCE, BATTLE_EFFICIENCY_TYPES.CAPTURE):
         return
     if ribbonType == BATTLE_EFFICIENCY_TYPES.DETECTION:
-        g_battleEfficiency.stats['spotted'] += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
+        if len(leftFieldStr.strip()) == 0:
+            g_battleEfficiency.stats['spotted'] += 1
+        elif len(leftFieldStr) > 1:
+            try:
+                g_battleEfficiency.stats['spotted'] += int(leftFieldStr[1:])
+            except (ValueError, IndexError):
+                g_battleEfficiency.stats['spotted'] += 1
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DESTRUCTION:
         g_battleEfficiency.stats['frags'] += 1
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DEFENCE:
@@ -412,12 +420,12 @@ def new_setDataS(func, self, data):
         dataIDs = get_data_ids(offset)
         damageDealt = _normalizeString(statValues[dataIDs.damageDealt]['value'])
         spotted = _normalizeString(statValues[dataIDs.spotted]['value'])
-        kills = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
-        kills = kills[1]
+        kills_split = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
+        kills = kills_split[1] if len(kills_split) > 1 else kills_split[0] if kills_split else '0'
         defAndCap_key = 'defAndCap_' + stunStatus
         defAndCap = _normalizeString(statValues[getattr(dataIDs, defAndCap_key)]['value']).split('/')
-        capture = defAndCap[0]
-        defence = defAndCap[1]
+        capture = defAndCap[0] if len(defAndCap) > 0 else '0'
+        defence = defAndCap[1] if len(defAndCap) > 1 else '0'
         result = g_calculator.calc(int(damageDealt), int(spotted), int(kills), int(defence), int(capture), isWin)
         wn8, xwn8, eff, xeff, xte, dmg, diff = result
         macro_data = {

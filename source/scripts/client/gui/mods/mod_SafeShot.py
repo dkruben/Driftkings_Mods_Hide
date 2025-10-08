@@ -1,9 +1,8 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import Keys
 from Avatar import PlayerAvatar
 from gui import InputHandler
 from gui.Scaleform.daapi.view.battle.classic.stats_exchange import FragsCollectableStats
-from messenger import MessengerEntry
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getTarget, callback, serverTime, checkKeys, calculate_version, sendPanelMessage, sendChatMessage
 
@@ -97,7 +96,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 sendPanelMessage(self.data['clientMessages']['wasteShotBlockedMessage'], 'Yellow')
                 return False
         elif hasattr(getTarget().publicInfo, 'team'):
-            if self.data['teamShotBlock'] and (getPlayer().team is getTarget().publicInfo.team) and getTarget().isAlive():
+            if self.data['teamShotBlock'] and (getPlayer().team == getTarget().publicInfo.team) and getTarget().isAlive():
                 if not (self.data['teamKillerShotUnblock'] and getPlayer().guiSessionProvider.getArenaDP().isTeamKiller(getTarget().id)):
                     sendChatMessage(self.data['chatMessages'].replace('{name}', getTarget().publicInfo.name).replace('{vehicle}', getTarget().typeDescriptor.type.shortUserString), 1, 2)
                     sendPanelMessage(self.data['clientMessages']['teamShotBlockedMessage'], 'Yellow')

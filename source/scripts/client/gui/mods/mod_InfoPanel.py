@@ -10,7 +10,6 @@ from gui import InputHandler
 from gui import g_guiResetters
 from gui.shared.utils.TimeInterval import TimeInterval
 from helpers import dependency
-from messenger import MessengerEntry
 from nations import NAMES
 from skeletons.account_helpers.settings_core import ISettingsCore
 from gambiter import g_guiFlash
@@ -36,7 +35,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.9.5 (%(file_compile_date)s)'
+        self.version = '2.0.0 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -401,10 +400,10 @@ class DataConstants(object):
             'shell_type_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else self.l10n(self._gunShots[0].shell.kind.lower()),
             'shell_type_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else self.l10n(self._gunShots[1].shell.kind.lower()),
             'shell_type_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else self.l10n(self._gunShots[2].shell.kind.lower()),
-            'shell_speed_1': lambda : None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % round(self._gunShots[0].speed * 1.25),
-            'shell_speed_2': lambda : None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % round(self._gunShots[1].speed * 1.25),
-            'shell_speed_3': lambda : None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % round(self._gunShots[2].speed * 1.25),
-            'shell_distance_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._gunShots[0].maxDistance,
+            'shell_speed_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % round(self._gunShots[0].speed * 1.25),
+            'shell_speed_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % round(self._gunShots[1].speed * 1.25),
+            'shell_speed_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % round(self._gunShots[2].speed * 1.25),
+            'shell_distance_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" %self._gunShots[0].maxDistance,
             'shell_distance_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._gunShots[1].maxDistance,
             'shell_distance_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._gunShots[2].maxDistance
         })
@@ -435,7 +434,8 @@ class DataConstants(object):
             return self._cachedResults['gun_dpm']
         if not self._typeDescriptor:
             return None
-        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
+        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * \
+               self._typeDescriptor.gun.clip[1]
         shell = self._typeDescriptor.gun.shots[0].shell
         damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
         result = '%d' % round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0)
@@ -706,8 +706,12 @@ class InfoPanel(DataConstants):
     def keyPressed(self, event):
         if not config.data['enabled']:
             return
+        # Check if we're in battle by checking if getPlayer() returns a PlayerAvatar
+        player = getPlayer()
+        if not hasattr(player, 'getVehicleAttached'):
+            return
         if checkKeys(config.data['altKey']) and event.isKeyDown():
-            self.onUpdateVehicle(getPlayer().getVehicleAttached())
+            self.onUpdateVehicle(player.getVehicleAttached())
             self.hotKeyDown = True
         elif not checkKeys(config.data['altKey']) and event.isKeyDown():
             self.hotKeyDown = False
@@ -725,7 +729,11 @@ class InfoPanel(DataConstants):
             g_flash.setVisible(False)
 
     def onUpdateBlur(self):
-        if self.hotKeyDown or getPlayer().getVehicleAttached() is None:
+        # Check if we're in battle by checking if getPlayer() returns a PlayerAvatar
+        player = getPlayer()
+        if not hasattr(player, 'getVehicleAttached'):
+            return
+        if self.hotKeyDown or player.getVehicleAttached() is None:
             return
         if self.timer is not None and self.timer.isStarted():
             self.timer.stop()
@@ -734,7 +742,10 @@ class InfoPanel(DataConstants):
         self.timer.start()
 
     def onUpdateVehicle(self, vehicle):
+        # Check if we're in battle by checking if getPlayer() returns a PlayerAvatar
         player = getPlayer()
+        if not hasattr(player, 'getVehicleAttached'):
+            return
         if self.hotKeyDown:
             return
         playerVehicle = player.getVehicleAttached()
@@ -759,7 +770,7 @@ def new__targetBlur(func, self, prevEntity):
 
 
 @override(PlayerAvatar, 'targetFocus')
-def new_targetFocus(func, self, entity):
+def new__targetFocus(func, self, entity):
     func(self, entity)
     if not (config.data['enabled'] and g_mod.isConditions(entity)):
         return
@@ -767,14 +778,14 @@ def new_targetFocus(func, self, entity):
 
 
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
-def new_startGUI(func, *args):
+def new__startGUI(func, *args):
     func(*args)
     InputHandler.g_instance.onKeyDown += g_mod.keyPressed
     g_flash.startBattle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
-def new_destroyGUI(func, *args):
+def new__destroyGUI(func, *args):
     func(*args)
     if not config.data['enabled']:
         return

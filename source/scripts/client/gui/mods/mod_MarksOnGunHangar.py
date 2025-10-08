@@ -949,12 +949,16 @@ def htmlHangarBuilder():
     self = BigWorld.MoEHangarHTML
     if self.flashObject:
         self.flashObject.vehicleStatus.vehicleName.width = 250
-        self.flashObject.vehicleStatus.vehicleName.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="LEFT"><FONT FACE="$FieldFont" SIZE="16" COLOR="#FEFEEC" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeStart
+        self.flashObject.vehicleStatus.vehicleName.htmlText = '<TEXTFORMAT INDENT="0" LEFTMARGIN="0" RIGHTMARGIN="0" LEADING="1"><P ALIGN="RIGHT"><FONT FACE="$FieldFont" SIZE="16" COLOR="#FEFEEC" KERNING="0">%s</FONT></P></TEXTFORMAT>' % self.moeStart
 
 
-@override(AmmunitionPanel, 'as_updateVehicleStatusS')
-def new__updateVehicleStatusS(func, self, data):
-    result = func(self, data)
+# @override(AmmunitionPanel, 'as_updateVehicleStatusS')
+# def new__updateVehicleStatusS(func, self, data):
+# Need Test
+@override(AmmunitionPanel, 'update')
+def __update(func, self, *args):
+    # result = func(self, data)
+    result = func(self, *args)
     vehicle = g_currentVehicle.item
     targetData = g_currentVehicle.getDossier()
     damageRating = targetData.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0
@@ -989,7 +993,8 @@ def new__updateVehicleStatusS(func, self, data):
         moeStart = text_styles.promoSubTitle(config.i18n['UI_HangarStatsStart'].format(**data))
         moeEnd = text_styles.stats(config.i18n['UI_HangarStatsEnd'].format(**data))
     oldData = '<b>%s     %s</b>' % (text_styles.promoSubTitle(vehicle.shortUserName), moeStart)
-    self.moeStart = oldData
+    self.as_updateVehicleStatusS(oldData)
+    # self.moeStart = oldData
     self.moeEnd = moeEnd
     BigWorld.MoEHangarHTML = self
     BigWorld.callback(0.1, htmlHangarBuilder)

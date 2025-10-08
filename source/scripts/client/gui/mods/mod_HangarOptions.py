@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import datetime
 import locale
 
@@ -50,7 +50,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.5.5 (%(file_compile_date)s)'
+        self.version = '3.6.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -234,6 +234,7 @@ def new__setInitDataS(func, self, data):
     return func(self, data)
 
 
+
 # hide button counters in lobby header
 @override(LobbyHeader, '__setCounter')
 def new__buttonCounterS(func, *args, **kwargs):
@@ -282,12 +283,12 @@ def new__getPromoCount(func, self):
 # disable field mail tips
 @override(PromoController, '__tryToShowTeaser')
 def _tryToShowTeaser(func, *args):
-    return None if config.data['enabled'] and config.data['fieldMail'] else func(*args)
+    return None if config.data['enabled'] and not config.data['fieldMail'] else func(*args)
 
 
 @override(PromoController, '__needToGetTeasersInfo')
 def _needToGetTeasersInfo(func, *args):
-    return False if config.data['enabled'] and config.data['fieldMail']  else func(*args)
+    return False if config.data['enabled'] and not config.data['fieldMail'] else func(*args)
 
 
 # hide ranked battle results window
@@ -301,7 +302,7 @@ def new__populate(func, self):
 # hide display session statistics button
 @override(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
 def new__updateSessionStatsBtn(func, self):
-    if not config.data.get('enabled', True) and not config.data.get('showButton', True):
+    if config.data.get('enabled', True) and not config.data.get('showButton', True):
         self.as_setSessionStatsButtonVisibleS(False)
         self._MessengerBar__onSessionStatsBtnOnlyOnceHintHidden(True)
         return
@@ -311,7 +312,7 @@ def new__updateSessionStatsBtn(func, self):
 # hide display the counter of spent battles on the button
 @override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
 def new__updateBattleCount(func, self):
-    if not config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
+    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
         return
     func(self)
 
@@ -449,14 +450,19 @@ def new__construct(func, self):
             if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
                 icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
                 template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
-                result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
-        return result
+                # Check if result has the expected structure before trying to modify it
+                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'data' in result[0] and isinstance(result[0]['data'], dict):
+                    result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
+    return result
 
 
 @override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
 def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
-    if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
-        return unlockStats.getVehTotalXP(nodeCD)
+    try:
+        if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
+            return unlockStats.getVehTotalXP(nodeCD)
+    except Exception:
+        logError(config.ID, '_TechTreeDataProvider_getAllVehiclePossibleXP')
     return func(self, nodeCD, unlockStats)
 
 

@@ -12,7 +12,7 @@ from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, calculate_version, logWarning, getPlayer, getEntity
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, calculate_version, logWarning, logError, getPlayer, getEntity
 
 
 class PlayersPanelController(DriftkingsConfigInterface):
@@ -25,6 +25,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         self.displayed = True
         self.macro = {}
         super(PlayersPanelController, self).__init__()
+        # Initialize overrides after init to ensure self is properly initialized
         override(PlayerAvatar, '_PlayerAvatar__destroyGUI', self.new__destroyGUI)
         override(PlayerAvatar, '_PlayerAvatar__startGUI', self.new__startGUI)
         override(ArenaVehiclesPlugin, '_setInAoI', self.new__setInAoI)
@@ -57,7 +58,8 @@ class PlayersPanelController(DriftkingsConfigInterface):
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
-            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])],
+            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in
+                                                       ('always', 'toggle', 'holding')])],
             'column2': [self.tb.createHotKey('toggleKey')]
         }
 
@@ -74,7 +76,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
             vehicle = getPlayer().arena.vehicles.get(vehicleID)
             if vehicle is not None and vehicle['vehicleType'] is not None:
                 return vehicle['vehicleType'].maxHealth
-            return 0  # Changed from empty string to 0 to avoid conversion errors
+            return 0
 
     def hasOwnProperty(self):
         self.data['textFields'].update(self.loadDataJson().get('textFields', {}))
@@ -98,13 +100,11 @@ class PlayersPanelController(DriftkingsConfigInterface):
         panelSide = 'left' if player.team == team else 'right'
         currentHP = self.__hpCache[vehicleID]['current']
         maxHP = self.__hpCache[vehicleID]['max']
-        # Ensure currentHP is a number, not a string
         if isinstance(currentHP, str) and currentHP == '':
             currentHP = 0
         for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
             barWidth = currentHP
             if 'width' in fieldData[panelSide]:
-                # Make sure we're working with numeric values
                 try:
                     barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / float(maxHP))) if float(maxHP) > 0 else 0
                 except (ValueError, TypeError, ZeroDivisionError):
@@ -150,7 +150,6 @@ class PlayersPanelController(DriftkingsConfigInterface):
         for vehicleID in self.__hpCache:
             self.setHPField(vehicleID)
 
-    # overrides
     def new__destroyGUI(self, func, *args):
         func(*args)
         self.onEndBattle()
@@ -168,7 +167,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
                     if vehicleID in g_config.vCache:
                         break
                     self.updateHealth(vehicleID)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
@@ -179,7 +178,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
             vehicleID = vehicle.id
             self.validateCache(vehicleID)
             self.updateHealth(vehicleID)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
@@ -188,7 +187,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         result = func(orig, newHealth, oldHealth, attackerID, attackReasonID, *args, **kwargs)
         try:
             self.updateHealth(orig.id, newHealth)
-        except StandardError:
+        except Exception:
             traceback.print_exc()
         finally:
             return result
@@ -202,10 +201,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
 g_config = None
 try:
     from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-
     g_config = PlayersPanelController()
     statistic_mod = Analytics(g_config.ID, g_config.version)
 except ImportError:
-    logWarning(g_config.ID, 'Battle Flash API not found.')
-except StandardError:
-    traceback.print_exc()
+    logWarning("[PlayersPanelHP]:", 'Battle Flash API not found.')

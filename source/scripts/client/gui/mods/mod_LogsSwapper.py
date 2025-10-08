@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import _LogViewComponent, DamageLogPanel
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 
@@ -81,4 +81,4 @@ class WGLogs(object):
 g_logs = WGLogs()
 
 
-DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog = (reversed(g_logs.BASE_WG_LOGS) if config.data['logSwapper'] else g_logs.BASE_WG_LOGS)
+DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog = (tuple(reversed(g_logs.BASE_WG_LOGS)) if config.data['logSwapper'] else g_logs.BASE_WG_LOGS)

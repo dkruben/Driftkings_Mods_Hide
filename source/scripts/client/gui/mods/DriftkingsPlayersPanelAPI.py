@@ -1,5 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import copy
+import sys
+import traceback
 
 import BigWorld
 import Event
@@ -15,8 +17,9 @@ from gui.Scaleform.genConsts.BATTLE_VIEW_ALIASES import BATTLE_VIEW_ALIASES
 from gui.shared import events, g_eventBus, EVENT_BUS_SCOPE
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import override
+from DriftkingsCore import override, logError, logWarning
 
+__all__ = ('g_driftkingsPlayersPanels',)
 
 
 class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
@@ -73,16 +76,24 @@ class PlayersPanelAPI(object):
         self.componentUI = None
         self.onUIReady = Event.Event()
         self.updateMode = Event.Event()
-        override(PlayersPanel, 'setInitialMode', self.setInitialMode)
-        override(PlayersPanel, 'setLargeMode', self.setInitialMode)
-        override(PlayersPanel, '_handleNextMode', self.setPanelMode)
-        override(PlayersPanel, '_PlayersPanel__handleShowExtendedInfo', self.setPanelMode)
-        override(PlayersPanelMeta, 'as_setPanelModeS', self.setPanelMode)
-        override(PlayersPanel, 'as_setPanelModeS', self.setPanelMode)
-        override(PlayersPanel, 'tryToSetPanelModeByMouse', self.setPanelMode)
-        override(PlayersPanelMeta, 'tryToSetPanelModeByMouse', self.setPanelMode)
-        override(BattleStatisticsDataController, 'updateVehiclesInfo', self.updateVehicles)
-        override(BattleStatisticsDataController, 'updateVehiclesStats', self.updateVehicles)
+
+        # Add safe override function with better error handling
+        try:
+            # Apply overrides one by one with error handling
+            self.apply_override(PlayersPanel, 'setInitialMode', self.setInitialMode)
+            self.apply_override(PlayersPanel, 'setLargeMode', self.setLargeMode)
+            self.apply_override(PlayersPanel, '_handleNextMode', self.handleNextMode)
+            self.apply_override(PlayersPanel, '_PlayersPanel__handleShowExtendedInfo', self.handleShowExtendedInfo)
+            self.apply_override(PlayersPanelMeta, 'as_setPanelModeS', self.setPanelMode)
+            self.apply_override(PlayersPanel, 'as_setPanelModeS', self.setPanelMode)
+            self.apply_override(PlayersPanel, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
+            self.apply_override(PlayersPanelMeta, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
+            self.apply_override(BattleStatisticsDataController, 'updateVehiclesInfo', self.updateVehicles)
+            self.apply_override(BattleStatisticsDataController, 'updateVehiclesStats', self.updateVehicles)
+        except Exception as e:
+            logError('[DriftkingsPlayersPanelAPI]', 'Error in applying overrides: {}'.format(str(e)))
+            traceback.print_exc()
+
         self.config = {
             'child': 'vehicleTF',
             'holder': 'vehicleIcon',
@@ -113,6 +124,17 @@ class PlayersPanelAPI(object):
             }
         }
 
+    def apply_override(self, cls, method_name, new_method):
+        """Safely apply an override with error handling"""
+        try:
+            if not isinstance(method_name, str):
+                logWarning('[DriftkingsPlayersPanelAPI]', 'Method name is not a string: {}'.format(method_name))
+                method_name = str(method_name)
+            override(cls, method_name, new_method)
+        except Exception as e:
+            logError('[DriftkingsPlayersPanelAPI]', 'Failed to override {}.{}: {}'.format(cls.__name__, method_name, str(e)))
+            traceback.print_exc()
+
     def smartUpdate(self, old_setting, new_setting):
         changed = False
         for k in old_setting:
@@ -120,8 +142,10 @@ class PlayersPanelAPI(object):
             if isinstance(v, dict):
                 changed |= self.smartUpdate(old_setting[k], v)
             elif v is not None:
-                if isinstance(v, unicode):
+                if sys.version_info[0] == 2 and isinstance(v, unicode):
                     v = v.encode('utf-8')
+                elif sys.version_info[0] == 3 and isinstance(v, str):
+                    v = v.encode('utf-8').decode('utf-8')
                 changed |= old_setting[k] != v
                 old_setting[k] = v
         return changed
@@ -133,6 +157,26 @@ class PlayersPanelAPI(object):
 
     def setInitialMode(self, func, orig):
         func(orig)
+        if self.impl:
+            self.updateMode()
+
+    def setLargeMode(self, func, orig):
+        func(orig)
+        if self.impl:
+            self.updateMode()
+
+    def handleNextMode(self, func, orig, event):
+        func(orig, event)
+        if self.impl:
+            self.updateMode()
+
+    def handleShowExtendedInfo(self, func, orig, event):
+        func(orig, event)
+        if self.impl:
+            self.updateMode()
+
+    def tryToSetPanelModeByMouse(self, func, orig, mode):
+        func(orig, mode)
         if self.impl:
             self.updateMode()
 
@@ -162,7 +206,8 @@ class PlayersPanelAPI(object):
     def update(self, linkage, data):
         if not self.componentUI:
             return None
-        if 'text' in data:
+        if 'text' in data and data['text']:
+            # Replace problematic font references
             data['text'] = data['text'].replace('$IMELanguageBar', '$FieldFont')
         return self.componentUI.as_updateS(linkage, data)
 
@@ -190,16 +235,37 @@ class PlayersPanelAPI(object):
     def onComponentRegistered(self, event):
         if event.alias != BATTLE_VIEW_ALIASES.PLAYERS_PANEL:
             return
-        arena_visitor = BigWorld.player().guiSessionProvider.arenaVisitor.gui
-        if arena_visitor.isEpicRandomBattle() or arena_visitor.isBattleRoyale():
-            return
-        self.impl = True
-        app = ServicesLocator.appLoader.getDefBattleApp()
-        app.loadView(SFViewLoadParams('DriftkingsPlayersPanelUI', 'DriftkingsPlayersPanelUI'), {})
+        try:
+            player = BigWorld.player()
+            if not player or not hasattr(player, 'guiSessionProvider'):
+                return
+            gui_session = player.guiSessionProvider
+            if not gui_session or not hasattr(gui_session, 'arenaVisitor'):
+                return
+            arena_visitor = gui_session.arenaVisitor.gui
+            if not arena_visitor:
+                return
+            if arena_visitor.isEpicRandomBattle() or arena_visitor.isBattleRoyale():
+                return
+            self.impl = True
+            app = ServicesLocator.appLoader.getDefBattleApp()
+            if app:
+                app.loadView(SFViewLoadParams('DriftkingsPlayersPanelUI', 'DriftkingsPlayersPanelUI'), {})
+        except (AttributeError, TypeError) as e:
+            logError('[DriftkingsPlayersPanelAPI]', 'Error in onComponentRegistered: {}'.format(str(e)))
+            self.impl = False
 
 
 if not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
-    g_driftkingsPlayersPanels = PlayersPanelAPI()
-    g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-    g_entitiesFactories.addSettings(ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
-    g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
+    try:
+        g_driftkingsPlayersPanels = PlayersPanelAPI()
+        g_entitiesFactories.addSettings(
+            ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None,
+                         ScopeTemplates.GLOBAL_SCOPE))
+        g_entitiesFactories.addSettings(
+            ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
+        g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED,
+                               g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
+    except Exception as e:
+        logError('[DriftkingsPlayersPanelAPI]', 'Failed to initialize PlayersPanelAPI: {}'.format(str(e)))
+        traceback.print_exc()

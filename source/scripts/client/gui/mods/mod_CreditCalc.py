@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import codecs
 import collections
 import json
@@ -568,7 +568,7 @@ class CreditsCalculator(object):
         self.calc()
 
     def onVehicleKilled(self, targetID, *_):
-        player =getPlayer()
+        player = getPlayer()
         vehicle = player.getVehicleAttached()
         if targetID == vehicle.id:
             self.killed = True
@@ -581,7 +581,7 @@ class CreditsCalculator(object):
                     if deviceState == 'destroyed':
                         if itemName in self.costRepairs:
                             repairs += self.costRepairs[itemName]
-                    if deviceState == 'critical':
+                    elif deviceState == 'critical':
                         if itemName in self.costRepairs:
                             repairs += self.costRepairs[itemName] / 2
             self.repairCost += int(repairs)

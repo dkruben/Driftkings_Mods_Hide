@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import codecs
 import json
 import math
@@ -24,6 +24,14 @@ from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import DriftkingsConfigInterface, ConfigNoInterface, Analytics, override, getPlayer, logWarning, logError, logInfo
 
+try:
+    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
+except ImportError:
+    g_driftkingsPlayersPanels = None
+    logWarning('RatingPlayersInBattle', 'Battle Flash API not found.')
+except StandardError:
+    g_driftkingsPlayersPanels = None
+    logWarning('RatingPlayersInBattle', 'Battle Flash API not found.')
 
 _FLAVOR = 'wg'
 HOST = 'https://static.modxvm.com/'
@@ -48,7 +56,7 @@ class ConfigInterface(ConfigNoInterface, DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.5 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -435,8 +443,7 @@ class Statistics(object):
                     dataInfo[dbID] = cachedData['info']
                     if dbID not in dataTanks and cachedData['tanks'] is not None:
                         dataTanks[dbID] = cachedData['tanks']
-            if self.loadStat and dbID in dataInfo and dbID in dataTanks and dataInfo[dbID] is not None and dataTanks[
-                dbID] is not None:
+            if self.loadStat and dbID in dataInfo and dbID in dataTanks and dataInfo[dbID] is not None and dataTanks[dbID] is not None:
                 battles = dataInfo[dbID]['statistics']['all']['battles']
                 if battles >= config.internal_conf['performance']['minBattlesToShow']:
                     wins = dataInfo[dbID]['statistics']['all']['wins']
@@ -586,15 +593,17 @@ class PlayersPanels(CallbackDelayer):
         self.panels = dict()
         self.container = False
         g_stats.reset()
-        g_driftkingsPlayersPanels.updateMode -= self.updateMode
+        if g_driftkingsPlayersPanels:
+            g_driftkingsPlayersPanels.updateMode -= self.updateMode
         self.clearCallbacks()
 
     def new__startGUI(self, func, *args, **kwargs):
         func(*args, **kwargs)
         if not config.data['enabled']:
             return
-        g_driftkingsPlayersPanels.updateMode += self.updateMode
-        self.delayCallback(0, self.playersPanel)
+        if g_driftkingsPlayersPanels:
+            g_driftkingsPlayersPanels.updateMode += self.updateMode
+            self.delayCallback(0, self.playersPanel)
 
     def updateMode(self):
         self.delayCallback(0.1, self.playersPanel)
@@ -642,9 +651,3 @@ g_statR = StatRating()
 g_calRating = CalculatorRating()
 g_stats = Statistics()
 g_panels = PlayersPanels()
-try:
-    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-except ImportError:
-    logWarning(config.ID, 'Battle Flash API not found.')
-except StandardError:
-    logWarning(config.ID, 'Battle Flash API not found.')

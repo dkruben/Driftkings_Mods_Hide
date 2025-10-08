@@ -215,17 +215,16 @@ class Register(object):
             appLoader.onGUISpaceLeft += self.onGUISpaceLeft
         except Exception:
             pass
-        g_currentVehicle.onChanged -= self.onChanged
 
     def onGUISpaceEntered(self, spaceID):
         if spaceID == GuiGlobalSpaceID.LOBBY:
             g_crew.init()
             g_currentVehicle.onChanged += self.onChanged
 
-    @staticmethod
-    def onGUISpaceLeft(spaceID):
+    def onGUISpaceLeft(self, spaceID):
         if spaceID == GuiGlobalSpaceID.LOBBY:
             g_crew.invalidate()
+            g_currentVehicle.onChanged -= self.onChanged
 
     @staticmethod
     @logException

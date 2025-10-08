@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from collections import defaultdict, namedtuple
 
 from AvatarInputHandler.gun_marker_ctrl import _CrosshairShotResults, computePiercingPowerAtDist
@@ -121,10 +121,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged += self.onCameraChanged
         g_events.onArmorChanged += self.onArmorChanged
         g_events.onMarkerColorChanged += self.onMarkerColorChanged
-        prebattleCtrl = self.sessionProvider.dynamic.prebattleSetup
-        if prebattleCtrl is not None:
-            prebattleCtrl.onVehicleChanged += self.__updateCurrVehicleInfo
-            prebattleCtrl.onBattleStarted += self.__updateCurrVehicleInfo
 
     def _dispose(self):
         ctrl = self.sessionProvider.shared.crosshair
@@ -135,10 +131,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
             handler.onCameraChanged -= self.onCameraChanged
         g_events.onArmorChanged -= self.onArmorChanged
         g_events.onMarkerColorChanged -= self.onMarkerColorChanged
-        prebattleCtrl = self.sessionProvider.dynamic.prebattleSetup
-        if prebattleCtrl is not None:
-            prebattleCtrl.onVehicleChanged -= self.__updateCurrVehicleInfo
-            prebattleCtrl.onBattleStarted -= self.__updateCurrVehicleInfo
         super(ArmorCalculator, self)._dispose()
 
     def onMarkerColorChanged(self, color):
@@ -151,9 +143,9 @@ class ArmorCalculator(ArmorCalculatorMeta):
             self.as_armorCalculatorS('')
 
     def onArmorChanged(self, data):
-        if data[1] is None:
+        if data is None:
             return self.as_armorCalculatorS('')
-        armor, piercingPower, caliber, ricochet, noDamage = data[1:]
+        armor, piercingPower, caliber, ricochet, noDamage = data
         self.calcMacro['ricochet'] = config.i18n['UI_ricochet'] if ricochet else ''
         self.calcMacro['noDamage'] = config.i18n['UI_noDamage'] if noDamage else ''
         self.calcMacro['countedArmor'] = armor
@@ -161,15 +153,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.calcMacro['piercingReserve'] = piercingPower - armor
         self.calcMacro['caliber'] = caliber
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
-
-    def __updateCurrVehicleInfo(self, vehicle=None):
-        ctrl = self.sessionProvider.dynamic.prebattleSetup
-        if ctrl is None:
-            return
-        if vehicle is None:
-            vehicle = ctrl.getCurrentGUIVehicle()
-        if vehicle is not None and not avatar_getter.isObserver():
-            Randomizer._updateRandomization(vehicle)
 
 
 class ArmorCalculatorAllies(object):
@@ -196,8 +179,7 @@ class ArmorCalculatorAllies(object):
         if shot.shell.kind in FULL_PP_RANGE:
             full_piercing_power = shot.piercingPower[0] * piercingMultiplier
         else:
-            full_piercing_power = _CrosshairShotResults._computePiercingPowerAtDist(
-                shot.piercingPower, distance, shot.maxDistance, piercingMultiplier)
+            full_piercing_power = _CrosshairShotResults._computePiercingPowerAtDist(shot.piercingPower, distance, shot.maxDistance, piercingMultiplier)
         is_modern = cls.isModernMechanics(shell)
         armor, piercing_power, ricochet, no_damage = cls.computeArmor(c_details, shell, full_piercing_power, is_modern)
         if no_damage or ricochet:
@@ -388,16 +370,16 @@ class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
         self.__data = None
         self.__resolver = _ShotResultAll if config.data['enabled'] and config.data['displayOnAllies'] else _ShotResult
 
-    def __onGunMarkerStateChanged(self, markerType, gunMarkerState, supportMarkersInfo):
+    def __onGunMarkerStateChanged(self, markerType, gunMarkerState, _):
         if not self.__isEnabled:
             self.sessionProvider.shared.armorFlashlight.hide()
             return
         self.sessionProvider.shared.armorFlashlight.updateVisibilityState(markerType, gunMarkerState.position, gunMarkerState.direction, gunMarkerState.collData, gunMarkerState.size)
-        shot_result, data = self.__resolver._getShotResult(gunMarkerState, self.__piercingMultiplier, self.__player)
-        if shot_result in self.__colors:
-            color = self.__colors[shot_result]
-            if self.__cache[markerType] != shot_result and self._parentObj.setGunMarkerColor(markerType, color):
-                self.__cache[markerType] = shot_result
+        shotResult, data = self.__resolver._getShotResult(gunMarkerState, self.__piercingMultiplier, self.__player)
+        if shotResult in self.__colors:
+            color = self.__colors[shotResult]
+            if self.__cache[markerType] != shotResult and self._parentObj.setGunMarkerColor(markerType, color):
+                self.__cache[markerType] = shotResult
                 g_events.onMarkerColorChanged(color)
             if self.__data != data:
                 self.__data = data
@@ -441,8 +423,8 @@ class Randomizer(object):
             for name, descr in descrArgs:
                 if name == KPI.Name.DAMAGE_AND_PIERCING_DISTRIBUTION_LOWER_BOUND:
                     percent = cls.PIERCING_DISTRIBUTION_BOUND[skill_name] = round(descr.value, 4)
-                    logDebug(config.ID, cls.RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG, skill_name, percent)
-                break
+                    logDebug(config.ID, True, cls.RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG, skill_name, percent)
+                    break
         return percent
 
     @classmethod
@@ -452,7 +434,7 @@ class Randomizer(object):
             return 0
         level_increase, bonuses = tman.crewLevelIncrease
         result = (skill.level + level_increase) * tman.skillsEfficiency * cls.getBaseSkillPercent(skill_name)
-        logDebug(config.ID, cls.RND_SKILL_DIFF_DEBUG, skill_name, skill.level, level_increase, result)
+        logDebug(config.ID, True, cls.RND_SKILL_DIFF_DEBUG, skill_name, skill.level, level_increase, result)
         return result
 
     @classmethod
@@ -466,13 +448,13 @@ class Randomizer(object):
                 for skill_name in tman.getPossibleSkills().intersection(data):
                     data[skill_name].append(cls.getCurrentSkillEfficiency(tman, skill_name))
             for skill_name, value in data.items():
-                if value:
-                    percent = sum(value) / len(value)
+                if value and len(value) > 0:
+                    percent = sum(value) / float(len(value))
                     randomization_min += percent
                     if skill_name == cls.GUNNER_ARMORER:
                         randomization_max -= percent
         _ShotResult.RANDOMIZATION = MinMax(round(randomization_min, 4), round(randomization_max, 4))
-        logDebug(config.ID, cls.RND_MIN_MAX_DEBUG, _ShotResult.RANDOMIZATION, vehicle.userName)
+        logDebug(config.ID, True, cls.RND_MIN_MAX_DEBUG, _ShotResult.RANDOMIZATION, vehicle.userName)
 
 
 @override(plugins, 'createPlugins')
@@ -491,3 +473,6 @@ def init():
 
 def fini():
     g_events.onVehicleChangedDelayed -= Randomizer._updateRandomization
+
+
+init()

@@ -1,7 +1,6 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import random
 from functools import partial
-from threading import Thread
 
 import BattleReplay
 import Keys
@@ -187,7 +186,7 @@ class Repair(object):
         self.items['repairkit'][1] = 1531
 
     def checkBattleStarted(self):
-        if hasattr(self.player, 'arena') and self.player.arena.period is 3:
+        if hasattr(self.player, 'arena') and self.player.arena and self.player.arena.period == 3:
             for equipment_tag in self.items:
                 self.items[equipment_tag][2] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
                 self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
@@ -264,12 +263,16 @@ class Repair(object):
             callback(1.0, sound.play)
 
     def extinguishFire(self):
+        if self.ctrl is None:
+            return
         if self.ctrl.vehicleState.getStateValue(VEHICLE_VIEW_STATE.FIRE):
             equipment_tag = 'extinguisher'
             if self.items[equipment_tag][2]:
                 self.useItemManual(equipment_tag)
 
     def removeStun(self):
+        if self.ctrl is None:
+            return
         if self.ctrl.vehicleState.getStateValue(VEHICLE_VIEW_STATE.STUN):
             equipment_tag = 'medkit'
             if self.items[equipment_tag][2]:
@@ -278,6 +281,8 @@ class Repair(object):
                 self.useItemGold(equipment_tag)
 
     def repair(self, equipment_tag):
+        if self.ctrl is None or self.player is None:
+            return
         specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)][equipment_tag]
         if config.data['useGoldKits'] and self.items[equipment_tag][3]:
             equipment = self.items[equipment_tag][3]
@@ -345,7 +350,7 @@ class Repair(object):
         equipment_tag = 'repairkit'
         for intCD, equipment in self.ctrl.equipments.iterEquipmentsByTag(equipment_tag):
             if equipment.isReady and equipment.isAvailableToUse:
-                devices = [name for name, state in equipment.getEntitiesIterator() if state and state in DEVICE_STATE_DESTROYED]
+                devices = [name for name, state in equipment.getEntitiesIterator() if state and state == DEVICE_STATE_DESTROYED]
                 for name in devices:
                     if name in self.chassis:
                         self.useItem(equipment_tag, name)
@@ -398,6 +403,4 @@ class Repair(object):
             self.stopBattle()
 
 
-g_repairExtended = Thread(target=Repair, name='mod_RepairExtended')
-g_repairExtended.daemon = True
-g_repairExtended.start()
+g_repairExtended = Repair()

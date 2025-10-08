@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import locale
 import math
 import traceback
@@ -7,14 +7,13 @@ from functools import partial
 from string import printable
 from time import strftime
 
-import BigWorld
 import CommandMapping
 import messenger.gui.Scaleform.view.battle.messenger_view as messenger_view
 from Avatar import PlayerAvatar
 from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
-# from comp7.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
+from comp7_core.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
 from gambiter import g_guiFlash
 from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
@@ -44,7 +43,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.6.5 (%(file_compile_date)s)'
+        self.version = '2.7.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -201,12 +200,15 @@ def new_startGUI(func, *args):
 # disable battle hints
 @override(BattleHintPanel, '_initPlugins')
 def _initPlugins(func, self, *args, **kwargs):
-    if not config.data['enabled'] and not config.data['hideHint']:
-        func(self, *args, **kwargs)
-    elif self._plugins is not None:
-        self._plugins.stop()
-        self._plugins.fini()
-        self._plugins = None
+    if not config.data['enabled']:
+        return func(self, *args, **kwargs)
+    if config.data.get('hideHint', False):
+        if self._plugins is not None:
+            self._plugins.stop()
+            self._plugins.fini()
+            self._plugins = None
+        return
+    return func(self, *args, **kwargs)
 
 
 # disable commander voices
@@ -221,7 +223,9 @@ def new_setSoundMode(func, *args, **kwargs):
 # disable dogTag
 @override(_ClientArenaVisitor, 'hasDogTag')
 def new_hasDogTag(func, *args, **kwargs):
-    return False if config.data['enabled'] and config.data['showPostmortemDogTag'] else func(*args, **kwargs)
+    if config.data['enabled'] and not config.data.get('showPostmortemDogTag', True):
+        return False
+    return func(*args, **kwargs)
 
 
 # disable battle hints
@@ -257,15 +261,16 @@ def new_setQuestsInfoS(func, self, data, _):
 # disable battle artillery_stun_effect sound
 @override(TimersPanel, '__playStunSoundIfNeed')
 def new_playStunSoundIfNeed(func, *args, **kwargs):
-    if not config.data['enabled'] and not config.data['stunSound']:
-        return func(*args, **kwargs)
+    if config.data['enabled'] and config.data.get('stunSound', False):
+        return None
+    return func(*args, **kwargs)
 
 
-# @override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
-# def new_onVehicleStateUpdated(func, self, state, value):
-#    if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
-#        return
-#    return func(self, state, value)
+@override(_EquipmentZoneSoundPlayer, '_onVehicleStateUpdated')
+def new_onVehicleStateUpdated(func, self, state, value):
+    if state == VEHICLE_VIEW_STATE.STUN and config.data['stunSound']:
+        return
+    return func(self, state, value)
 
 
 # mute battle bases
@@ -298,8 +303,9 @@ def new_getBorderColor(func, self, colorBlind):
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new_destroyGUI(func, *args):
     func(*args)
-    if not config.data['enabled'] and not config.data['inBattle']:
+    if not config.data['enabled'] or not config.data['inBattle']:
         return
+    battle_clock.stop()
     config.isLobby = False
 
 
@@ -332,7 +338,7 @@ def onReload(avatar):
     macro['pos'] = square_position.getSquarePosition()
     message = config.data['loadTxt'] % macro
     if len(message) > 0:
-         avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
+        avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
     else:
         avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
 
@@ -436,7 +442,7 @@ def changeValue(vehicle, value):
 
 
 def onVehicleChanged(vehicle):
-    if not config.data['enabled'] and not config.data['directivesOnlyFromStorage']:
+    if not config.data['enabled'] or not config.data['directivesOnlyFromStorage']:
         return
     if vehicle is None or vehicle.isLocked or vehicle.isInBattle:
         return
