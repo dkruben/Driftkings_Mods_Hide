@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import locale
 import math
 import traceback
@@ -47,16 +47,16 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
-            'clipLoad': True,
+            # 'clipLoad': True,
             'color': 'FF002A',
             'directivesOnlyFromStorage': False,
             'disableSoundCommander': False,
-            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'>%H:%M:%S</p></font>',
+            'format': '<font face=\'$FieldFont\' size=\'16\' color=\'#FFFFFF\'>%H:%M:%S</font>',
             'hideBadges': False,
             'hideBattlePrestige': False,
             'hideClanName': False,
             'inBattle': True,
-            'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
+            # 'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
             'maxChatLines': 6,
             'muteTeamBaseSound': False,
             'postmortemTips': True,
@@ -73,8 +73,8 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            'UI_setting_clipLoad_text': 'ReLoad Status',
-            'UI_setting_clipLoad_tooltip': 'Clip Load Time Massage',
+            # 'UI_setting_clipLoad_text': 'ReLoad Status',
+            # 'UI_setting_clipLoad_tooltip': 'Clip Load Time Massage',
             'UI_setting_color_text': '<font color=\'#%(color)s\'>Current color: #%(color)s</font>',
             'UI_setting_color_tooltip': 'This color will be applied to all Maps',
             'UI_setting_colorCheck_text': 'Choose Map Border Color:',
@@ -90,8 +90,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_hideClanName_tooltip': 'Remove clan name in players panel.',
             'UI_setting_inBattle_text': 'Clock In Battle',
             'UI_setting_inBattle_tooltip': 'Show clock in battle',
-            'UI_setting_loadTxt_text': 'Text Format',
-            'UI_setting_loadTxt_tooltip': 'Use macros to edit the message\n (macros: \'{load}\' - \'{pos}\')',
+            # 'UI_setting_loadTxt_text': 'Text Format',
+            # 'UI_setting_loadTxt_tooltip': 'Use macros to edit the message\n (macros: \'{load}\' - \'{pos}\')',
             'UI_setting_maxChatLines_text': 'Max Chat Lines',
             'UI_setting_maxChatLines_tooltip': 'Limit the number of battle chat lines.',
             'UI_setting_muteTeamBaseSound_text': 'Mute Team Base Sound',
@@ -144,9 +144,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('disableSoundCommander'),
                 self.tb.createControl('directivesOnlyFromStorage'),
                 self.tb.createControl('showFriends'),
-                self.tb.createControl('clipLoad'),
+                # self.tb.createControl('clipLoad'),
                 self.tb.createControl('hideHint'),
-                self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
+                # self.tb.createControl('loadTxt', self.tb.types.TextInput, 300)
             ]
         }
 
@@ -332,29 +332,29 @@ def new_VehicleTypeInfoVO_update(func, self, *args, **kwargs):
 
 
 # Battle Messages
-def onReload(avatar):
-    macro = defaultdict(lambda: 'Macros not found')
-    macro['load'] = str(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft()))
-    macro['pos'] = square_position.getSquarePosition()
-    message = config.data['loadTxt'] % macro
-    if len(message) > 0:
-        avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
-    else:
-        avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
+# def onReload(avatar):
+#    macro = defaultdict(lambda: 'Macros not found')
+#    macro['load'] = str(math.ceil(avatar.guiSessionProvider.shared.ammo.getGunReloadingState().getTimeLeft()))
+#    macro['pos'] = square_position.getSquarePosition()
+#    message = config.data['loadTxt'] % macro
+#    if len(message) > 0:
+#        avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
+#    else:
+#        avatar.guiSessionProvider.shared.chatCommands.handleChatCommand(BATTLE_CHAT_COMMAND_NAMES.RELOADINGGUN)
 
 
-@override(PlayerAvatar, 'handleKey')
-def new__handleKey(func, self, isDown, key, mods):
-    if config.data['enabled'] and config.data['clipLoad']:
-        try:
-            if CommandMapping.g_instance.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
-                self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
-                callback(0.5, partial(onReload, self))
-                return True
-        except Exception as e:
-            logError(config.ID, 'Error in handleKey {}', e)
-            traceback.print_exc()
-    func(self, isDown, key, mods)
+# @override(PlayerAvatar, 'handleKey')
+# def new__handleKey(func, self, isDown, key, mods):
+#    if config.data['enabled'] and config.data['clipLoad']:
+#        try:
+#            if CommandMapping.g_instance.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
+#                self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
+#                callback(0.5, partial(onReload, self))
+#                return True
+#        except Exception as e:
+#            logError(config.ID, 'Error in handleKey {}', e)
+#            traceback.print_exc()
+#    return func(self, isDown, key, mods)
 
 
 # hide badges
@@ -468,3 +468,10 @@ g_events.onVehicleChangedDelayed += onVehicleChanged
 
 def fini():
     g_events.onVehicleChangedDelayed -= onVehicleChanged
+
+
+# 2025-10-16 18:20:45.689: ERROR: Main: [BattleOptions] Error in handleKey 'AmmoReplayRecorder' object has no attribute 'reloadPartialClip'
+# 2025-10-16 18:20:45.689: ERROR: Main: Traceback (most recent call last):
+# 2025-10-16 18:20:45.689: ERROR: Main:   File "scripts/client/gui/mods/mod_BattleOptions.py", line 351, in new__handleKey
+# 2025-10-16 18:20:45.690: ERROR: Main: AttributeError: 'AmmoReplayRecorder' object has no attribute 'reloadPartialClip'
+# 2025-10-16 18:20:59.218: ERROR: Main: [ERROR] (scripts/client/CustomEffect.py, 751): Node HP_Track_Exhaus_2 is not found

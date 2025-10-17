@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
-import os
 import math
+import os
 
-import BigWorld
 import GUI
 import ResMgr
-from Vehicle import Vehicle
 from Avatar import PlayerAvatar
+from Vehicle import Vehicle
+from constants import ARENA_BONUS_TYPE
 from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.view.battle.shared.ribbons_aggregator import RibbonsAggregator
 from gui.battle_control.arena_info import vos_collections
 from gui.battle_control.battle_constants import FEEDBACK_EVENT_ID
 from helpers.CallbackDelayer import CallbackDelayer
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logError, calculate_version, getPlayer
 
 
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -190,6 +190,9 @@ class MainGun(object):
         return '{:,}'.format(int(value)).replace(',', ' ')
 
     def updateMainGun(self):
+        player = getPlayer()
+        if not player or not player.arena or player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+            return
         macros = {
             'mainGun': 0,
             'mainGunIcon': config.data['mainGun']['mainGunIcon'],
@@ -230,7 +233,7 @@ class SysClass(object):
         self._health = [0, 0, 0, 0]
 
     def battleLoading(self):
-        player = BigWorld.player()
+        player = getPlayer()
         self.guiType = player.arena.guiType
         self.playerID = player.playerVehicleID
         self.enemyTeam = player.guiSessionProvider.getArenaDP().getEnemyTeams()[0]
@@ -245,14 +248,14 @@ class SysClass(object):
         self.__init__()
         mainGuns.__init__()
         optimization.destroy()
-        player = BigWorld.player()
+        player = getPlayer()
         player.onVehicleEnterWorld -= self._onEnterWorld
         player.arena.onVehicleKilled -= self._onVehicleKilled
         player.arena.onVehicleAdded -= self._onVehicleUpdate
         player.arena.onVehicleUpdated -= self._onVehicleUpdate
 
     def tanklistsCreate(self):
-        collection = vos_collections.VehiclesInfoCollection().iterator(BigWorld.player().guiSessionProvider.getArenaDP())
+        collection = vos_collections.VehiclesInfoCollection().iterator(getPlayer().guiSessionProvider.getArenaDP())
         for vInfoVO in collection:
             maxHealth = vInfoVO.vehicleType.maxHealth
             if not vInfoVO or not maxHealth or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
@@ -261,7 +264,7 @@ class SysClass(object):
                 return None
             health = maxHealth if vInfoVO.isAlive() else 0
             self.vehicles.setdefault(vInfoVO.vehicleID, [health, maxHealth, vInfoVO.team, vInfoVO.vehicleType.classTag])
-            if vInfoVO.team == BigWorld.player().team:
+            if vInfoVO.team == getPlayer().team:
                 self._health[1] += health
                 self._health[3] += health
             else:
@@ -275,9 +278,9 @@ class SysClass(object):
     def updateHealthPoints(self, damage, team):
         self.health[team][0] -= damage
         health = self.health[team][0]
-        self._health[1 if team == BigWorld.player().team else 0] -= damage
-        if self._health[1 if team == BigWorld.player().team else 0] <= 0:
-            self._health[1 if team == BigWorld.player().team else 0] = 0
+        self._health[1 if team == getPlayer().team else 0] -= damage
+        if self._health[1 if team == getPlayer().team else 0] <= 0:
+            self._health[1 if team == getPlayer().team else 0] = 0
         if mainGuns.showMainGun and config.data['mainGun']['dynamic'] and team == self.enemyTeam:
             if health and mainGuns.totals[2] and mainGuns.totals[1] and health < mainGuns.totals[1]:
                 mainGuns.totals[2] = False
@@ -303,7 +306,7 @@ class SysClass(object):
             mainGuns.updateMainGun()
 
     def _onVehicleUpdate(self, tid):
-        vInfoVO = BigWorld.player().guiSessionProvider.getArenaDP().getVehicleInfo(tid)
+        vInfoVO = getPlayer().guiSessionProvider.getArenaDP().getVehicleInfo(tid)
         maxHealth = vInfoVO.vehicleType.maxHealth
         if not vInfoVO or not maxHealth or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
             return
@@ -311,7 +314,7 @@ class SysClass(object):
             return None
         health = maxHealth if vInfoVO.isAlive() else 0
         self.vehicles.setdefault(tid, [health, maxHealth, vInfoVO.team, vInfoVO.vehicleType.classTag])
-        if vInfoVO.team == BigWorld.player().team:
+        if vInfoVO.team == getPlayer().team:
             self._health[1] += health
         else:
             self._health[0] += health

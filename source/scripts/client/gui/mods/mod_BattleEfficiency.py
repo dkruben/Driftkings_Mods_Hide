@@ -57,7 +57,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'position': {'x': 125, 'y': 36},
             'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
             'battleResultsWindow': True,
-            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} - {battleType}    WN8:<font color=\'{c:wn8}\'>{wn8}</font>|=|EFF:<font color=\'{c:eff}\'>{eff}</font>|=|Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
+            'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} | {battleType} | WN8:<font color=\'{c:wn8}\'>{wn8}</font> | EFF:<font color=\'{c:eff}\'>{eff}</font> | Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
         }
         self.i18n = {
             'UI_description': self.ID,
@@ -162,7 +162,6 @@ statistic_mod = Analytics(config.ID, config.version)
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
-
     g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
@@ -172,13 +171,7 @@ except Exception as e:
     logError(config.ID, '{}', e)
 
 
-def set_text(text):
-    text_style = config.data['textStyle']
-    styled_text = '<font size=\'%s\' color=\'%s\' face=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['color'], text_style['font'], text_style['align'], text)
-    return styled_text
-
-
-def get_data_ids(offset):
+def getDataIds(offset):
     if not offset:
         return data_ids
     else:
@@ -301,9 +294,7 @@ class BattleEfficiency(object):
     @safe_execution()
     def updateFormatString(self):
         player = getPlayer()
-        if not player or not player.arena:
-            return
-        if player.arena.bonusType in EXCLUDED_BONUS_TYPES:
+        if not player or not player.arena or player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
             return
         macro_data = {}
         for key, value in self._stats.iteritems():
@@ -353,13 +344,7 @@ def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs
     if ribbonType not in (BATTLE_EFFICIENCY_TYPES.DETECTION, BATTLE_EFFICIENCY_TYPES.DESTRUCTION, BATTLE_EFFICIENCY_TYPES.DEFENCE, BATTLE_EFFICIENCY_TYPES.CAPTURE):
         return
     if ribbonType == BATTLE_EFFICIENCY_TYPES.DETECTION:
-        if len(leftFieldStr.strip()) == 0:
-            g_battleEfficiency.stats['spotted'] += 1
-        elif len(leftFieldStr) > 1:
-            try:
-                g_battleEfficiency.stats['spotted'] += int(leftFieldStr[1:])
-            except (ValueError, IndexError):
-                g_battleEfficiency.stats['spotted'] += 1
+        g_battleEfficiency.stats['spotted'] += 1 if (len(leftFieldStr.strip()) == 0) else int(leftFieldStr[1:])
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DESTRUCTION:
         g_battleEfficiency.stats['frags'] += 1
     elif ribbonType == BATTLE_EFFICIENCY_TYPES.DEFENCE:
@@ -389,7 +374,6 @@ def new_destroyGUI(func, *args):
 
 
 @override(BattleResultsWindow, 'as_setDataS')
-@safe_execution()
 def new_setDataS(func, self, data):
     if not config.data['enabled'] or not config.data['battleResultsWindow']:
         return func(self, data)
@@ -397,10 +381,10 @@ def new_setDataS(func, self, data):
     def _normalizeString(s):
         return re.sub('<.*?>', '', s.replace('\xc2\xa0', '').replace('.', '').replace(',', ''))
 
-    def _splitArenaStr(s):
-        _s = s.replace(u'\xa0\u2014', '-').replace(u'\u2013', '-')
-        _s = _s.split('-')
-        return _s if (len(_s) == 2) else (s, '')
+    # def _splitArenaStr(s):
+    #    _s = s.replace(u'\xa0\u2014', '-').replace(u'\u2013', '-')
+    #    _s = _s.split('-')
+    #    return _s if (len(_s) == 2) else (s, '')
     try:
         common = data['common']
         if common['bonusType'] in EXCLUDED_BONUS_TYPES:
@@ -410,22 +394,23 @@ def new_setDataS(func, self, data):
         statValues = data['personal']['statValues'][0]
         stunStatus = 'vehWStun' if (len(statValues) > (DEF_RESULTS_LEN + offset)) else 'vehWOStun'
         isWin = common['resultShortStr'] == 'win'
-        arenaStr = _splitArenaStr(common['arenaStr'])
+        # arenaStr = _splitArenaStr(common['arenaStr'])
+        arenaStr = common['arenaStr']
         mapName = arenaStr[0].strip()
         battleType = arenaStr[1].strip()
         for playerDict in teamDict:
             if playerDict['isSelf']:
                 g_calculator.registerVInfoData(playerDict['vehicleCD'])
                 break
-        dataIDs = get_data_ids(offset)
+        dataIDs = getDataIds(offset)
         damageDealt = _normalizeString(statValues[dataIDs.damageDealt]['value'])
         spotted = _normalizeString(statValues[dataIDs.spotted]['value'])
-        kills_split = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
-        kills = kills_split[1] if len(kills_split) > 1 else kills_split[0] if kills_split else '0'
+        kills = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
+        kills = kills[1]
         defAndCap_key = 'defAndCap_' + stunStatus
         defAndCap = _normalizeString(statValues[getattr(dataIDs, defAndCap_key)]['value']).split('/')
-        capture = defAndCap[0] if len(defAndCap) > 0 else '0'
-        defence = defAndCap[1] if len(defAndCap) > 1 else '0'
+        capture = defAndCap[0]
+        defence = defAndCap[1]
         result = g_calculator.calc(int(damageDealt), int(spotted), int(kills), int(defence), int(capture), isWin)
         wn8, xwn8, eff, xeff, xte, dmg, diff = result
         macro_data = {

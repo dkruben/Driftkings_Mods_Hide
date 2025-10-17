@@ -24,14 +24,6 @@ from skeletons.gui.battle_session import IBattleSessionProvider
 
 from DriftkingsCore import DriftkingsConfigInterface, ConfigNoInterface, Analytics, override, getPlayer, logWarning, logError, logInfo
 
-try:
-    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
-except ImportError:
-    g_driftkingsPlayersPanels = None
-    logWarning('RatingPlayersInBattle', 'Battle Flash API not found.')
-except StandardError:
-    g_driftkingsPlayersPanels = None
-    logWarning('RatingPlayersInBattle', 'Battle Flash API not found.')
 
 _FLAVOR = 'wg'
 HOST = 'https://static.modxvm.com/'
@@ -547,12 +539,14 @@ class Statistics(object):
         if not thresholds:
             return config.data['colorRating']['not_available']
         for threshold in thresholds:
-            if value < threshold['value']:
-                colorKey = threshold['color'].split(':')[1] if ':' in threshold['color'] else threshold['color']
+            if value < threshold.get('value', 0):
+                color = threshold.get('color', '')
+                colorKey = color.split(':')[1] if ':' in color else color
                 return config.data['colorRating'].get(colorKey, '#FFFFFF')
         if thresholds:
             lastThreshold = thresholds[-1]
-            colorKey = lastThreshold['color'].split(':')[1] if ':' in lastThreshold['color'] else lastThreshold['color']
+            color = lastThreshold.get('color', '')
+            colorKey = color.split(':')[1] if ':' in color else color
             return config.data['colorRating'].get(colorKey, '#FFFFFF')
         return config.data['colorRating']['not_available']
 
@@ -642,12 +636,17 @@ class PlayersPanels(CallbackDelayer):
                 item.vehicleTF.htmlText = config.data['playersPanel']['vehicleName'][team].format(**playerInfo)
         return 1
 
-
-config = ConfigInterface()
-statistic_mod = Analytics(config.ID, config.version)
-g_event = Events()
-g_scale = ScaleRating()
-g_statR = StatRating()
-g_calRating = CalculatorRating()
-g_stats = Statistics()
-g_panels = PlayersPanels()
+config = None
+try:
+    from DriftkingsPlayersPanelAPI import g_driftkingsPlayersPanels
+    config = ConfigInterface()
+    statistic_mod = Analytics(config.ID, config.version)
+    g_event = Events()
+    g_scale = ScaleRating()
+    g_statR = StatRating()
+    g_calRating = CalculatorRating()
+    g_stats = Statistics()
+    g_panels = PlayersPanels()
+except ImportError:
+    g_driftkingsPlayersPanels = None
+    logWarning('RatingPlayersInBattle', 'Battle Flash API not found.')

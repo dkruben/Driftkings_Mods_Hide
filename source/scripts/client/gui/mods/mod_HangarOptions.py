@@ -55,7 +55,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.data = {
             'enabled': True,
             'autoLogin': True,
-            'showXpToUnlockVeh': False,
+            # 'showXpToUnlockVeh': False,
             'showReferralButton': False,
             'showGeneralChatButton': True,
             'showPromoPremVehicle': False,
@@ -84,7 +84,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'clock': True,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
-                'position': {'x': -5.0, 'y': 49.0},
+                'position': {'x': -40.0, 'y': 55.0},
                 'width': 210,
                 'height': 50,
                 'shadow': {'distance': 0, 'angle': 0, 'strength': 0.5, 'quality': 3},
@@ -102,7 +102,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showButtonCounters_text': 'Button Counters',
             'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_hideBtnCounters_text': 'Disable tooltips',
-            'UI_setting_hideBtnCounters_tooltip': (''.join(''.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>')) + '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' + ''.join(''.join('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'))),
+            'UI_setting_hideBtnCounters_tooltip': ('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
+                                      '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
+                                      '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
             'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
             'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
             'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
@@ -141,8 +143,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_allowExchangeXPInTechTree_tooltip': 'Enable XP to gold exchange in tech tree',
             'UI_setting_allowChannelButtonBlinking_text': 'Allow Channel Button Blinking',
             'UI_setting_allowChannelButtonBlinking_tooltip': 'Allow messenger bar channel (clan or private chat) button blinking.',
-            'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
-            'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
+            # 'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
+            # 'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
             'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
             'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
             'UI_setting_showEventTournamentWidget_text': 'Event Tournament Widget',
@@ -163,7 +165,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('clock'),
                 self.tb.createControl('allowExchangeXPInTechTree'),
                 self.tb.createControl('allowChannelButtonBlinking'),
-                self.tb.createControl('showXpToUnlockVeh'),
+                # self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
                 self.tb.createControl('showGeneralChatButton'),
@@ -234,12 +236,12 @@ def new__setInitDataS(func, self, data):
     return func(self, data)
 
 
-
 # hide button counters in lobby header
 @override(LobbyHeader, '__setCounter')
-def new__buttonCounterS(func, *args, **kwargs):
-    if config.data.get('enabled', True) and not config.data.get('hideBtnCounters', True):
-        return func(*args, **kwargs)
+def new__setCounter(func, *args, **kwargs):
+    if not config.data.get('enabled', True) or config.data.get('hideBtnCounters', False):
+        return None
+    return func(*args, **kwargs)
 
 
 # hide shared chat button
@@ -280,10 +282,11 @@ def new__getPromoCount(func, self):
         return 0
     return func(self)
 
+
 # disable field mail tips
 @override(PromoController, '__tryToShowTeaser')
-def _tryToShowTeaser(func, *args):
-    return None if config.data['enabled'] and not config.data['fieldMail'] else func(*args)
+def new__tryToShowTeaser(func, *args):
+    return None if config.data.get('enabled', True) and not config.data.get('fieldMail', True) else func(*args)
 
 
 @override(PromoController, '__needToGetTeasersInfo')
@@ -437,23 +440,23 @@ def new__LoginViewPopulate(func, self):
 
 
 # Show Xp To Unlock Veh.
-@override(tooltips.StatusBlockConstructor, 'construct')
-def new__construct(func, self):
-    result = func(self)
-    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
-        techTreeNode = self.configuration.node
-        vehicle = self.vehicle
-        isUnlocked = vehicle.isUnlocked
-        parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
-        if parentCD is not None:
-            isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
-            if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
-                icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
-                template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
-                # Check if result has the expected structure before trying to modify it
-                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'data' in result[0] and isinstance(result[0]['data'], dict):
-                    result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
-    return result
+#@override(tooltips.StatusBlockConstructor, 'construct')
+# def new__construct(func, self):
+#    result = func(self)
+#    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
+#        techTreeNode = self.configuration.node
+#        vehicle = self.vehicle
+#        isUnlocked = vehicle.isUnlocked
+#        parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
+#        if parentCD is not None:
+#            isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
+#            if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
+#                icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
+#                template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
+#                # Check if result has the expected structure before trying to modify it
+#                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'data' in result[0] and isinstance(result[0]['data'], dict):
+#                    result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
+#    return result
 
 
 @override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
@@ -519,7 +522,7 @@ def new__removeListeners(func, self):
 def new__addChannel(func, self, channel, lazy=False, isNotified=False):
     if config.data.get('enabled', True) and not config.data.get('allowChannelButtonBlinking', True):
         isNotified = False
-    func(self, channel, lazy, isNotified)
+    return func(self, channel, lazy, isNotified)
 
 
 @override(ChannelsCarouselHandler, '_ChannelsCarouselHandler__setItemField')
@@ -616,7 +619,4 @@ try:
     g_flash = Flash(config.ID)
 except ImportError as e:
     logError(config.ID, 'Missing required module: {}', e)
-    g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
-except Exception as e:
-    logError(config.ID, 'Error initializing Flash: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None

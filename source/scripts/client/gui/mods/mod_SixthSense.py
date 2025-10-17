@@ -71,7 +71,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_defaultIcon_text': 'Default Icon',
             'UI_setting_defaultIcon_tooltip': 'Use embedded image.',
             'UI_setting_lampShowTime_text': 'Lamp Show Time',
-            'UI_setting_lampShowTime_tooltip': 'Choose value to hide icon (default 2 sec.)',
+            'UI_setting_lampShowTime_tooltip': '<b>How long does the target remain visible?</b><br>After being spotted, the tank remains visible even " "without direct line of sight. Standard — ~10 seconds, may vary from 7 to 13 depending on crew, " "equipment, and directives.',
             'UI_setting_playTickSound_text': 'Play Tick Sound',
             'UI_setting_playTickSound_tooltip': 'Play tick sound.',
             'UI_setting_defaultIconName_text': 'Default Icon Name',

@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import copy
 import sys
 import traceback
@@ -23,18 +23,19 @@ __all__ = ('g_driftkingsPlayersPanels',)
 
 
 class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
+
     @staticmethod
     def logInfo(name, message, *args):
-        print('%s: %s %s' % (name, message, args))
+        print '%s: %s %s' % (name, message, args)
 
+    # noinspection PyProtectedMember
     def _populate(self):
-        # noinspection PyProtectedMember
         super(DriftkingsPlayersPanelMeta, self)._populate()
         g_driftkingsPlayersPanels._populate(self)
 
+    # noinspection PyProtectedMember
     def _dispose(self):
         g_driftkingsPlayersPanels._dispose(self)
-        # noinspection PyProtectedMember
         super(DriftkingsPlayersPanelMeta, self)._dispose()
 
     def flashLogS(self, *args):
@@ -70,28 +71,26 @@ class DriftkingsPlayersPanelMeta(BaseDAAPIComponent):
 
 
 class PlayersPanelAPI(object):
+
     def __init__(self):
         self.impl = False
         self.viewLoad = False
         self.componentUI = None
         self.onUIReady = Event.Event()
         self.updateMode = Event.Event()
-
-        # Add safe override function with better error handling
         try:
-            # Apply overrides one by one with error handling
-            self.apply_override(PlayersPanel, 'setInitialMode', self.setInitialMode)
-            self.apply_override(PlayersPanel, 'setLargeMode', self.setLargeMode)
-            self.apply_override(PlayersPanel, '_handleNextMode', self.handleNextMode)
-            self.apply_override(PlayersPanel, '_PlayersPanel__handleShowExtendedInfo', self.handleShowExtendedInfo)
-            self.apply_override(PlayersPanelMeta, 'as_setPanelModeS', self.setPanelMode)
-            self.apply_override(PlayersPanel, 'as_setPanelModeS', self.setPanelMode)
-            self.apply_override(PlayersPanel, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
-            self.apply_override(PlayersPanelMeta, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
-            self.apply_override(BattleStatisticsDataController, 'updateVehiclesInfo', self.updateVehicles)
-            self.apply_override(BattleStatisticsDataController, 'updateVehiclesStats', self.updateVehicles)
-        except Exception as e:
-            logError('[DriftkingsPlayersPanelAPI]', 'Error in applying overrides: {}'.format(str(e)))
+            self.applyOverride(PlayersPanel, 'setInitialMode', self.setInitialMode)
+            self.applyOverride(PlayersPanel, 'setLargeMode', self.setLargeMode)
+            self.applyOverride(PlayersPanel, '_handleNextMode', self.handleNextMode)
+            self.applyOverride(PlayersPanel, '_PlayersPanel__handleShowExtendedInfo', self.handleShowExtendedInfo)
+            self.applyOverride(PlayersPanelMeta, 'as_setPanelModeS', self.setPanelMode)
+            self.applyOverride(PlayersPanel, 'as_setPanelModeS', self.setPanelMode)
+            self.applyOverride(PlayersPanel, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
+            self.applyOverride(PlayersPanelMeta, 'tryToSetPanelModeByMouse', self.tryToSetPanelModeByMouse)
+            self.applyOverride(BattleStatisticsDataController, 'updateVehiclesInfo', self.updateVehicles)
+            self.applyOverride(BattleStatisticsDataController, 'updateVehiclesStats', self.updateVehicles)
+        except Exception as err:
+            logError('[DriftkingsPlayersPanelAPI]:', 'Error in applying overrides: {}'.format(str(err)))
             traceback.print_exc()
 
         self.config = {
@@ -115,7 +114,7 @@ class PlayersPanelAPI(object):
             'shadow': {
                 'distance': 0,
                 'angle': 0,
-                'color': "#000000",
+                'color': '#000000',
                 'alpha': 90,
                 'blurX': 2,
                 'blurY': 2,
@@ -124,15 +123,25 @@ class PlayersPanelAPI(object):
             }
         }
 
-    def apply_override(self, cls, method_name, new_method):
-        """Safely apply an override with error handling"""
+    @staticmethod
+    def applyOverride(cls, methodName, newMethod):
         try:
-            if not isinstance(method_name, str):
-                logWarning('[DriftkingsPlayersPanelAPI]', 'Method name is not a string: {}'.format(method_name))
-                method_name = str(method_name)
-            override(cls, method_name, new_method)
-        except Exception as e:
-            logError('[DriftkingsPlayersPanelAPI]', 'Failed to override {}.{}: {}'.format(cls.__name__, method_name, str(e)))
+            if not isinstance(methodName, str) and not (sys.version_info[0] == 2 and isinstance(methodName, unicode)):
+                logWarning('[DriftkingsPlayersPanelAPI]:', 'Method name is not a string: {}'.format(repr(methodName)))
+                if methodName is None:
+                    logError('[DriftkingsPlayersPanelAPI]:', 'Cannot override with None method name')
+                    return
+                try:
+                    methodName = str(methodName)
+                except:
+                    logError('[DriftkingsPlayersPanelAPI]:', 'Failed to convert method name to string: {}'.format(repr(methodName)))
+                    return
+            if not hasattr(cls, methodName):
+                logWarning('[DriftkingsPlayersPanelAPI]:', 'Method {} not found in class {}'.format(methodName, cls.__name__))
+                return
+            override(cls, methodName, newMethod)
+        except Exception as err:
+            logError('[DriftkingsPlayersPanelAPI]:', 'Failed to override {}.{}: {}'.format(cls.__name__, methodName, str(err)))
             traceback.print_exc()
 
     def smartUpdate(self, old_setting, new_setting):
@@ -141,7 +150,7 @@ class PlayersPanelAPI(object):
             v = new_setting.get(k)
             if isinstance(v, dict):
                 changed |= self.smartUpdate(old_setting[k], v)
-            elif v is not None:
+            if v is not None:
                 if sys.version_info[0] == 2 and isinstance(v, unicode):
                     v = v.encode('utf-8')
                 elif sys.version_info[0] == 3 and isinstance(v, str):
@@ -198,18 +207,19 @@ class PlayersPanelAPI(object):
     def create(self, linkage, config=None):
         if not self.componentUI:
             return None
-        conf = copy.deepcopy(self.config)
-        if config:
-            self.smartUpdate(conf, config)
-        return self.componentUI.as_createS(linkage, conf)
+        else:
+            conf = copy.deepcopy(self.config)
+            if config:
+                self.smartUpdate(conf, config)
+            return self.componentUI.as_createS(linkage, conf)
 
     def update(self, linkage, data):
         if not self.componentUI:
             return None
-        if 'text' in data and data['text']:
-            # Replace problematic font references
-            data['text'] = data['text'].replace('$IMELanguageBar', '$FieldFont')
-        return self.componentUI.as_updateS(linkage, data)
+        else:
+            if 'text' in data and data['text']:
+                data['text'] = data['text'].replace('$IMELanguageBar', '$FieldFont')
+            return self.componentUI.as_updateS(linkage, data)
 
     def delete(self, linkage):
         return self.componentUI.as_deleteS(linkage) if self.componentUI else None
@@ -251,21 +261,17 @@ class PlayersPanelAPI(object):
             app = ServicesLocator.appLoader.getDefBattleApp()
             if app:
                 app.loadView(SFViewLoadParams('DriftkingsPlayersPanelUI', 'DriftkingsPlayersPanelUI'), {})
-        except (AttributeError, TypeError) as e:
-            logError('[DriftkingsPlayersPanelAPI]', 'Error in onComponentRegistered: {}'.format(str(e)))
+        except (AttributeError, TypeError) as err:
+            logError('[DriftkingsPlayersPanelAPI]', 'Error in onComponentRegistered: {}'.format(str(err)))
             self.impl = False
 
 
 if not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
     try:
         g_driftkingsPlayersPanels = PlayersPanelAPI()
-        g_entitiesFactories.addSettings(
-            ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None,
-                         ScopeTemplates.GLOBAL_SCOPE))
-        g_entitiesFactories.addSettings(
-            ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
-        g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED,
-                               g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
+        g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+        g_entitiesFactories.addSettings(ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))
+        g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, g_driftkingsPlayersPanels.onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
     except Exception as e:
         logError('[DriftkingsPlayersPanelAPI]', 'Failed to initialize PlayersPanelAPI: {}'.format(str(e)))
         traceback.print_exc()
