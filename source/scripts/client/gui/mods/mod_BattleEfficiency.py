@@ -2,7 +2,6 @@
 import math
 import re
 from collections import namedtuple
-from functools import wraps
 
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
@@ -29,20 +28,6 @@ DataIDs = namedtuple('DataIDs', ('damageDealt', 'spotted', 'kills', 'defAndCap_v
 data_ids = DataIDs(3, 11, 12, 14, 17)
 
 
-def safe_execution(defaultReturn=None, logException=True):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except Exception as err:
-                if logException:
-                    logError('%(mod_ID)s', "In {}: {}", func.__name__, err)
-                return defaultReturn
-        return wrapper
-    return decorator
-
-
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
@@ -55,7 +40,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'textStyle': {'font': '$TitleFont', 'color': '#FFFFFF', 'size': 16, 'align': 'center'},
             'textLock': False,
             'position': {'x': 125, 'y': 36},
-            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
+            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2,
+                           'blurY': 2, 'strength': 2, 'quality': 4},
             'battleResultsWindow': True,
             'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} | {battleType} | WN8:<font color=\'{c:wn8}\'>{wn8}</font> | EFF:<font color=\'{c:eff}\'>{eff}</font> | Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
         }
@@ -148,10 +134,10 @@ class Flash(object):
             return
         config.onApplySettings({'position': data})
 
-    @safe_execution()
     def addText(self, text):
         text_style = config.data['textStyle']
-        formatted_text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
+        formatted_text = '<font size=\'%s\' face=\'%s\' color=\'%s\'><p align=\'%s\'>%s</p></font>' % (
+            text_style['size'], text_style['font'], text_style['color'], text_style['align'], text)
         self.createBox()
         g_guiFlash.updateComponent(self.ID, {'text': formatted_text})
 
@@ -162,6 +148,7 @@ statistic_mod = Analytics(config.ID, config.version)
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
+
     g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
@@ -179,27 +166,27 @@ def getDataIds(offset):
 
 
 class EfficiencyCalculator(object):
-    avgTier = 5
 
     def __init__(self):
+        self.avgTier = 5
         self.expectedValues = {}
         self.vehCD = None
         self.vInfoOK = False
 
     def stopBattle(self):
-        self.__init__()
+        self.expectedValues = {}
+        self.vehCD = None
+        self.vInfoOK = False
 
-    @safe_execution()
     def registerVInfoData(self, veh_cd):
         if not veh_cd:
             return
         self.vehCD = veh_cd
         v_info_data = getVehicleInfoData(veh_cd)
-        for item in ('wn8expDamage', 'wn8expSpot', 'wn8expFrag', 'wn8expDef', 'wn8expWinRate'):
-            self.expectedValues[item] = v_info_data.get(item, None)
+        expected_keys = ('wn8expDamage', 'wn8expSpot', 'wn8expFrag', 'wn8expDef', 'wn8expWinRate')
+        self.expectedValues = {item: v_info_data.get(item, None) for item in expected_keys}
         self.vInfoOK = None not in self.expectedValues.values()
 
-    @safe_execution(defaultReturn=(0, 0, 0, 0, 0, 0, 0))
     def calc(self, damage, spotted, frags, defence, capture, isWin=False):
         if not self.vInfoOK:
             return 0, 0, 0, 0, 0, 0, 0
@@ -216,7 +203,6 @@ class EfficiencyCalculator(object):
         XTE = self.calculate_XTE(damage, frags)
         return WN8, XWN8, EFF, XEFF, XTE, DMG, DIFF
 
-    @safe_execution(defaultReturn=(0, 0, 0, 0, 0))
     def calculate_ratios(self, damage, spotted, frags, defence, isWin):
         rDAMAGE = float(damage) / max(1.0, float(self.expectedValues['wn8expDamage']))
         rSPOT = float(spotted) / max(1.0, float(self.expectedValues['wn8expSpot']))
@@ -226,29 +212,22 @@ class EfficiencyCalculator(object):
         return rDAMAGE, rSPOT, rFRAG, rDEF, rWIN
 
     @staticmethod
-    @safe_execution(defaultReturn=(0, 0))
     def calculate_wN8(rDAMAGE, rSPOT, rFRAG, rDEF, rWIN):
         rWINc = max(0.0, (rWIN - 0.71) / (1 - 0.71))
         rDAMAGEc = max(0.0, (rDAMAGE - 0.22) / (1 - 0.22))
         rSPOTc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rSPOT - 0.38) / (1 - 0.38))))
         rFRAGc = max(0.0, min(rDAMAGEc + 0.2, max(0.0, (rFRAG - 0.12) / (1 - 0.12))))
         rDEFc = max(0.0, min(rDAMAGEc + 0.1, max(0.0, (rDEF - 0.10) / (1 - 0.10))))
+
         WN8 = int(980 * rDAMAGEc + 210 * rDAMAGEc * rFRAGc + 155 * rFRAGc * rSPOTc + 75 * rDEFc * rFRAGc + 145 * min(1.8, rWINc))
         XWN8 = calculateXvmScale('xwn8', WN8)
         return WN8, XWN8
 
-    @safe_execution(defaultReturn=(0, 0))
     def calculate_efficiency(self, damage, frags, spotted, capture, defence):
-        damage = int(damage or 0)
-        frags = int(frags or 0)
-        spotted = int(spotted or 0)
-        capture = int(capture or 0)
-        defence = int(defence or 0)
         EFF = int(max(0, int(damage * (10.0 / (self.avgTier + 2)) * (0.23 + 2 * self.avgTier / 100.0) + frags * 250 + spotted * 150 + math.log(capture + 1, 1.732) * 150 + defence * 150)))
         XEFF = calculateXvmScale('xeff', EFF)
         return EFF, XEFF
 
-    @safe_execution(defaultReturn=0)
     def calculate_XTE(self, damage, frags):
         return calculateXTE(self.vehCD, damage, frags) if self.vehCD is not None else 0
 
@@ -269,7 +248,6 @@ class BattleEfficiency(object):
     def colors(self):
         return self._colors
 
-    @safe_execution()
     def update_stat(self, key, value):
         if key in self._stats and value is not None:
             try:
@@ -278,12 +256,10 @@ class BattleEfficiency(object):
                 self._stats[key] = 0
 
     @staticmethod
-    @safe_execution(defaultReturn='#FFFFFF')
     def read_colors(rating_color, rating_value):
         colors = color_tables[config.data['colorRatting']].get('colors')
         return getColor(colors, rating_color, rating_value)
 
-    @safe_execution()
     def startBattle(self):
         if not config.data['enabled'] or g_flash is None:
             return
@@ -291,10 +267,9 @@ class BattleEfficiency(object):
         self._stats.update(dict(zip(['wn8', 'xwn8', 'eff', 'xeff', 'xte', 'dmg', 'diff'], result)))
         self.updateFormatString()
 
-    @safe_execution()
     def updateFormatString(self):
         player = getPlayer()
-        if not player or not player.arena or player.arena.bonusType != ARENA_BONUS_TYPE.REGULAR:
+        if not player or not player.arena or player.arena.bonusType != SUPPORTED_BONUS_TYPES:
             return
         macro_data = {}
         for key, value in self._stats.iteritems():
@@ -336,7 +311,6 @@ def new_suspend(func, self):
 
 
 @override(BattleRibbonsPanel, '_BattleRibbonsPanel__addRibbon')
-@safe_execution()
 def new_addRibbon(func, self, ribbonID, ribbonType='', leftFieldStr='', **kwargs):
     func(self, ribbonID, ribbonType, leftFieldStr, **kwargs)
     if not config.data['enabled']:
@@ -381,23 +355,24 @@ def new_setDataS(func, self, data):
     def _normalizeString(s):
         return re.sub('<.*?>', '', s.replace('\xc2\xa0', '').replace('.', '').replace(',', ''))
 
-    # def _splitArenaStr(s):
-    #    _s = s.replace(u'\xa0\u2014', '-').replace(u'\u2013', '-')
-    #    _s = _s.split('-')
-    #    return _s if (len(_s) == 2) else (s, '')
+    def _splitArenaStr(s):
+        _s = s.replace(u'\xa0\u2014', '-').replace(u'\u2013', '-')
+        _s = _s.split('-')
+        return _s if (len(_s) == 2) else (s, '')
+
     try:
         common = data['common']
         if common['bonusType'] in EXCLUDED_BONUS_TYPES:
             return func(self, data)
-        offset = RANKED_OFFSET if common['bonusType'] == ARENA_BONUS_TYPE.RANKED else 0
+        offset = 0 if common['bonusType'] != ARENA_BONUS_TYPE.RANKED else RANKED_OFFSET
         teamDict = data['team1']
         statValues = data['personal']['statValues'][0]
         stunStatus = 'vehWStun' if (len(statValues) > (DEF_RESULTS_LEN + offset)) else 'vehWOStun'
         isWin = common['resultShortStr'] == 'win'
-        # arenaStr = _splitArenaStr(common['arenaStr'])
-        arenaStr = common['arenaStr']
+        arenaStr = _splitArenaStr(common['arenaStr'])
         mapName = arenaStr[0].strip()
         battleType = arenaStr[1].strip()
+
         for playerDict in teamDict:
             if playerDict['isSelf']:
                 g_calculator.registerVInfoData(playerDict['vehicleCD'])
@@ -405,12 +380,17 @@ def new_setDataS(func, self, data):
         dataIDs = getDataIds(offset)
         damageDealt = _normalizeString(statValues[dataIDs.damageDealt]['value'])
         spotted = _normalizeString(statValues[dataIDs.spotted]['value'])
-        kills = _normalizeString(statValues[dataIDs.kills]['value']).split('/')
-        kills = kills[1]
-        defAndCap_key = 'defAndCap_' + stunStatus
-        defAndCap = _normalizeString(statValues[getattr(dataIDs, defAndCap_key)]['value']).split('/')
-        capture = defAndCap[0]
-        defence = defAndCap[1]
+        # Fix for kills parsing - safely handle the split operation
+        kills_str = _normalizeString(statValues[dataIDs.kills]['value'])
+        kills_parts = kills_str.split('/')
+        kills = kills_parts[1] if len(kills_parts) > 1 else kills_str
+        # Get the correct index for defAndCap based on stun status
+        idx = dataIDs.defAndCap_vehWStun if stunStatus == 'vehWStun' else dataIDs.defAndCap_vehWOStun
+        _str = _normalizeString(statValues[idx]['value'])
+        # Safely handle the split operation for defAndCap
+        parts = _str.split('/')
+        capture = parts[0] if len(parts) > 0 else '0'
+        defence = parts[1] if len(parts) > 1 else '0'
         result = g_calculator.calc(int(damageDealt), int(spotted), int(kills), int(defence), int(capture), isWin)
         wn8, xwn8, eff, xeff, xte, dmg, diff = result
         macro_data = {
@@ -433,8 +413,7 @@ def new_setDataS(func, self, data):
         }
         msg = replaceMacros(config.data['battleResultsFormat'], macro_data)
         data['common']['arenaStr'] = msg
-    except Exception as err:
-        logError(config.ID, "Battle results: {}", err)
+    except:
         data['common']['arenaStr'] += '  <font color="#FE0E00">Efficiency Error!</font>'
     g_calculator.stopBattle()
     return func(self, data)

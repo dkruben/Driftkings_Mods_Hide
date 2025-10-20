@@ -1,9 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 import locale
-import math
-import traceback
-from collections import defaultdict
-from functools import partial
+# import math
+# import traceback
+# from collections import defaultdict
+# from functools import partial
 from string import printable
 from time import strftime
 
@@ -468,10 +468,3 @@ g_events.onVehicleChangedDelayed += onVehicleChanged
 
 def fini():
     g_events.onVehicleChangedDelayed -= onVehicleChanged
-
-
-# 2025-10-16 18:20:45.689: ERROR: Main: [BattleOptions] Error in handleKey 'AmmoReplayRecorder' object has no attribute 'reloadPartialClip'
-# 2025-10-16 18:20:45.689: ERROR: Main: Traceback (most recent call last):
-# 2025-10-16 18:20:45.689: ERROR: Main:   File "scripts/client/gui/mods/mod_BattleOptions.py", line 351, in new__handleKey
-# 2025-10-16 18:20:45.690: ERROR: Main: AttributeError: 'AmmoReplayRecorder' object has no attribute 'reloadPartialClip'
-# 2025-10-16 18:20:59.218: ERROR: Main: [ERROR] (scripts/client/CustomEffect.py, 751): Node HP_Track_Exhaus_2 is not found
