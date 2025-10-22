@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import math
 import traceback
 
@@ -35,7 +35,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.5 (%(file_compile_date)s)'
+        self.version = '1.9.0 (%(file_compile_date)s)'
         self.author = 'Re-Coded by DriftKing\'s'
         self.defaultKeys = {'toggleKey': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {'enabled': True, 'textFields': {}, 'mode': 0, 'toggleKey': self.defaultKeys['toggleKey']}
@@ -58,8 +58,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
-            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in
-                                                       ('always', 'toggle', 'holding')])],
+            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in('always', 'toggle', 'holding')])],
             'column2': [self.tb.createHotKey('toggleKey')]
         }
 
@@ -91,7 +90,8 @@ class PlayersPanelController(DriftkingsConfigInterface):
             collection = vos_collections.VehiclesInfoCollection().iterator(self.sessionProvider.getArenaDP())
             for vInfoVO in collection:
                 vehicleID = vInfoVO.vehicleID
-                self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': vInfoVO.vehicleType.maxHealth}
+                self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID),
+                                             'max': vInfoVO.vehicleType.maxHealth}
                 self.setHPField(vehicleID)
 
     def setHPField(self, vehicleID):
@@ -100,13 +100,21 @@ class PlayersPanelController(DriftkingsConfigInterface):
         panelSide = 'left' if player.team == team else 'right'
         currentHP = self.__hpCache[vehicleID]['current']
         maxHP = self.__hpCache[vehicleID]['max']
-        if isinstance(currentHP, str) and currentHP == '':
+        # Fix: Ensure currentHP is numeric
+        if currentHP is None or currentHP == '':
             currentHP = 0
+        # Convert to int if needed
+        if isinstance(currentHP, str):
+            try:
+                currentHP = int(currentHP)
+            except (ValueError, TypeError):
+                currentHP = 0
         for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
             barWidth = currentHP
             if 'width' in fieldData[panelSide]:
                 try:
-                    barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / float(maxHP))) if float(maxHP) > 0 else 0
+                    barWidth = math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / float(maxHP))) if float(
+                        maxHP) > 0 else 0
                 except (ValueError, TypeError, ZeroDivisionError):
                     barWidth = 0
             if g_driftkingsPlayersPanels.viewLoad:
@@ -136,6 +144,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
                 self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else self.__hpCache[vehicleID]['max']
             self.setHPField(vehicleID)
 
+
     def validateCache(self, vehicleID):
         if vehicleID not in self.__vCache:
             self.__vCache.add(vehicleID)
@@ -164,13 +173,14 @@ class PlayersPanelController(DriftkingsConfigInterface):
         try:
             for vehicleID, entry2 in orig._entries.iteritems():
                 if entry == entry2 and isInAoI:
-                    if vehicleID in g_config.vCache:
+                    if vehicleID in self.__vCache:
                         break
                     self.updateHealth(vehicleID)
         except Exception:
             traceback.print_exc()
         finally:
             return result
+
 
     def new__onAppearanceReady(self, func, orig, vehicle, *args, **kwargs):
         result = func(orig, vehicle, *args, **kwargs)
@@ -204,4 +214,4 @@ try:
     g_config = PlayersPanelController()
     statistic_mod = Analytics(g_config.ID, g_config.version)
 except ImportError:
-    logWarning("[PlayersPanelHP]:", 'Battle Flash API not found.')
+    logWarning("PlayersPanelHP", 'Battle Flash API not found.')
