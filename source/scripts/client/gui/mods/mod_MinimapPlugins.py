@@ -6,7 +6,7 @@ from constants import VISIBILITY
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.minimap import plugins
 from gui.Scaleform.daapi.view.battle.shared.minimap.component import MinimapComponent
-from gui.Scaleform.daapi.view.battle.shared.minimap.settings import CIRCLE_TYPE, CIRCLE_STYLE, VIEW_RANGE_CIRCLES_AS3_DESCR
+from gui.Scaleform.daapi.view.battle.shared.minimap.settings import CIRCLE_TYPE, VIEW_RANGE_CIRCLES_AS3_DESCR
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
 from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
@@ -33,7 +33,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.5 (%(file_compile_date)s)'
+        self.version = '1.3.0 (%(file_compile_date)s)'  # Updated version number
         self.author = '_DKRuben__EU'
         self.defaultKeys = {'button': [Keys.KEY_LCONTROL]}
         self.data = {
@@ -43,13 +43,17 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showNames': True,
             'viewRadius': True,
             'zoomFactor': 1.1,
+            'zoomFactorMax': 2.0,  # New setting for maximum zoom level
             'button': self.defaultKeys['button'],
             'alpha': 90,
             'changeColorCircles': True,
             'colorDrawCircle': '2B28D1',
             'colorMaxViewCircle': 'E02810',
             'colorMinSpottingCircle': '35DE46',
-            'colorViewCircle': 'FF7FFF'
+            'colorViewCircle': 'FF7FFF',
+            'showLastPositions': True,  # New setting for showing last known positions
+            'lastPositionDuration': 30,  # New setting for how long to show last positions (seconds)
+            'showVehicleTypes': True,  # New setting for showing vehicle types on minimap
         }
 
         self.i18n = {
@@ -65,6 +69,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_viewRadius_tooltip': 'Remove the limitation of the circle of vision 445m',
             'UI_setting_button_text': 'Zoom Button',
             'UI_setting_button_tooltip': 'Hot key for zoom.',
+            'UI_setting_zoomFactorMax_text': 'Maximum Zoom Factor',
+            'UI_setting_zoomFactorMax_tooltip': 'Maximum zoom level for the minimap (1.0-3.0)',
             'UI_setting_changeColorCircles_text': 'Change Color Circles',
             'UI_setting_changeColorCircles_tooltip': 'When enabled, you can change the color of the circles on the minimap.',
             'UI_setting_colorDrawCircleCheck_text': 'Draw Range Circle',
@@ -79,6 +85,12 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_colorViewCircleCheck_text': 'View Range Circle',
             'UI_setting_colorViewCircle_text': 'Default: <font color=\'#%(colorViewCircle)s\'></font>',
             'UI_setting_colorViewCircle_tooltip': '',
+            'UI_setting_showLastPositions_text': 'Show Last Known Positions',
+            'UI_setting_showLastPositions_tooltip': 'Display the last known positions of enemy vehicles',
+            'UI_setting_lastPositionDuration_text': 'Last Position Duration',
+            'UI_setting_lastPositionDuration_tooltip': 'How long to show last known positions (in seconds)',
+            'UI_setting_showVehicleTypes_text': 'Show Vehicle Types',
+            'UI_setting_showVehicleTypes_tooltip': 'Display vehicle type icons on the minimap'
         }
         super(ConfigInterface, self).init()
 
@@ -104,14 +116,18 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showNames'),
                 self.tb.createHotKey('button'),
                 self.tb.createControl('viewRadius'),
-                self.tb.createControl('yaw')
+                self.tb.createControl('yaw'),
+                self.tb.createControl('showLastPositions'),
+                self.tb.createSlider('lastPositionDuration', 10, 60, 5, '{{value}}.s')
             ],
             'column2': [
                 self.tb.createControl('changeColorCircles'),
                 xColorDrawRange,
                 xColorMaxRange,
                 xColorMinSpottingRange,
-                xColorViewRange
+                xColorViewRange,
+                self.tb.createControl('showVehicleTypes'),
+                self.tb.createSlider('zoomFactorMax', 1.0, 3.0, 0.1, '{{value}}.Px/Py')
             ]
         }
 
@@ -122,6 +138,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def onHotkeyPressed(self, event):
         if not self.data['enabled']:
             return
+        # Handle regular zoom button
         isDown = checkKeys(self.data['button'])
         if isDown != self.minimapZoom:
             self.minimapZoom = isDown
@@ -146,6 +163,8 @@ analytics = Analytics(config.ID, config.version)
 class MinimapCentredView(DriftkingsView):
     def __init__(self):
         super(MinimapCentredView, self).__init__(config.ID)
+        self._zoomToggled = False
+        self._currentZoomLevel = 1.0
 
     def _populate(self):
         # noinspection PyProtectedMember
@@ -159,7 +178,9 @@ class MinimapCentredView(DriftkingsView):
 
     def onAltKey(self, pressed):
         if config.notEpicBattle and not xvmInstalled:
-            self.flashObject.as_minimapCentered(pressed, config.data['zoomFactor'])
+            zoomFactor = config.data['zoomFactor'] if pressed else 1.0
+            self._currentZoomLevel = min(zoomFactor, config.data['zoomFactorMax'])
+            self.flashObject.as_minimapCentered(pressed, self._currentZoomLevel)
 
 
 class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
@@ -184,7 +205,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.DRAW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.DRAW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_DRAW_CIRCLE, hexToDecimal(config.data['colorDrawCircle']), config.data['alpha'], 565.0)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_DRAW_CIRCLE,hexToDecimal(config.data['colorDrawCircle']), config.data['alpha'], 565.0)
             return super(PersonalEntriesPlugin, self).__addDrawRangeCircle()
 
     def __addMaxViewRangeCircle(self):
@@ -192,7 +213,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.MAX_VIEW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MAX_VIEW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_VIEW_CIRCLE, hexToDecimal(config.data['colorMaxViewCircle']), config.data['alpha'], VISIBILITY.MAX_RADIUS)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_VIEW_CIRCLE,hexToDecimal(config.data['colorMaxViewCircle']), config.data['alpha'], VISIBILITY.MAX_RADIUS)
             return super(PersonalEntriesPlugin, self).__addMaxViewRangeCircle()
 
     def __addMinSpottingRangeCircle(self):
@@ -200,7 +221,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.MIN_SPOTTING_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MIN_SPOTTING_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MIN_SPOTTING_CIRCLE, hexToDecimal(config.data['colorMinSpottingCircle']), config.data['alpha'], VISIBILITY.MIN_RADIUS)
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MIN_SPOTTING_CIRCLE,hexToDecimal(config.data['colorMinSpottingCircle']), config.data['alpha'], VISIBILITY.MIN_RADIUS)
             return super(PersonalEntriesPlugin, self).__addMinSpottingRangeCircle()
 
     def __addViewRangeCircle(self):
@@ -208,20 +229,36 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
             if self.__circlesVisibilityState & CIRCLE_TYPE.VIEW_RANGE:
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.VIEW_RANGE
-            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_DYN_CIRCLE, hexToDecimal(config.data['colorViewCircle']), config.data['alpha'], self._getViewRangeRadius())
+            self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_DYN_CIRCLE,hexToDecimal(config.data['colorViewCircle']), config.data['alpha'], self._getViewRangeRadius())
             return super(PersonalEntriesPlugin, self).__addViewRangeCircle()
 
 
 class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
-
     def __init__(self, *args, **kwargs):
         super(ArenaVehiclesPlugin, self).__init__(*args, **kwargs)
         self.__showDestroyEntries = config.data['showNames']
         self.__isDestroyImmediately = config.data['permanentMinimapDeath']
+        self.__showVehicleTypes = config.data['showVehicleTypes']
+        self.__lastPositions = {}
+        self.__lastPositionTimers = {}
+
+    def start(self):
+        super(ArenaVehiclesPlugin, self).start()
+        if config.data['enabled'] and config.data['showLastPositions']:
+            g_events.onMinimapClicked += self.onMinimapClicked
+
+    def stop(self):
+        if config.data['enabled'] and config.data['showLastPositions']:
+            g_events.onMinimapClicked -= self.onMinimapClicked
+        super(ArenaVehiclesPlugin, self).stop()
 
     def _showVehicle(self, vehicleID, location):
         entry = self._entries[vehicleID]
         if entry.isAlive():
+            # Store last position for enemy vehicles
+            if config.data['showLastPositions'] and entry.getTeam() != self._playerTeam:
+                self.__lastPositions[vehicleID] = location
+                self.__lastPositionTimers[vehicleID] = config.data['lastPositionDuration']
             # noinspection PyProtectedMember
             super(ArenaVehiclesPlugin, self)._showVehicle(vehicleID, location)
 
@@ -245,6 +282,33 @@ class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
             return ''
         # noinspection PyProtectedMember
         return super(ArenaVehiclesPlugin, self)._getDisplayedName(vInfo)
+
+    def updateLastPositions(self, deltaTime):
+        if not config.data['showLastPositions']:
+            return
+        for vehicleID in list(self.__lastPositionTimers.keys()):
+            self.__lastPositionTimers[vehicleID] -= deltaTime
+            if self.__lastPositionTimers[vehicleID] <= 0:
+                del self.__lastPositionTimers[vehicleID]
+                del self.__lastPositions[vehicleID]
+            else:
+                opacity = min(100, int(self.__lastPositionTimers[vehicleID] / config.data['lastPositionDuration'] * 100))
+                location = self.__lastPositions[vehicleID]
+                self._invoke(vehicleID, 'setLastPosition', location[0], location[1], opacity)
+
+    def onMinimapClicked(self, x, y):
+        pass
+
+
+# Add the new event handlers to the g_events object
+def init_events():
+    if not hasattr(g_events, 'onToggleZoom'):
+        g_events.onToggleZoom = set()
+    if not hasattr(g_events, 'onMinimapClicked'):
+        g_events.onMinimapClicked = set()
+
+
+init_events()
 
 
 @override(MinimapComponent, '_setupPlugins')

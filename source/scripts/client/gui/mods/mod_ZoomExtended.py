@@ -14,13 +14,18 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, isRep
 
 
 class ConfigsInterface(DriftkingsConfigInterface):
+    DEFAULT_ZOOM_STEPS = [4.0, 6.0, 8.0, 12.0, 16.0, 25.0, 30.0]
+    MIN_ZOOM = 2.0
+    MAX_DISTANCE = 700.0
+    SMALL_CALIBER_THRESHOLD = 60
+
     def __init__(self):
         self.settingsCache = {'dynamicZoom': False, 'zoomXMeters': 20, 'stepsOnly': False}
         super(ConfigsInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.1.0 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -34,7 +39,7 @@ class ConfigsInterface(DriftkingsConfigInterface):
             'dynamicZoom': {'enabled': False, 'stepsOnly': False},
             'zoomSteps': {
                 'enabled': True,
-                'steps': [4.0, 6.0, 8.0, 12.0, 16.0, 25.0, 30.0]
+                'steps': self.DEFAULT_ZOOM_STEPS[:]
             }
         }
         self.i18n = {
@@ -81,16 +86,15 @@ analytics = Analytics(config.ID, config.version)
 
 @override(SniperCamera, '_readConfigs')
 def new__readConfigs(func, self, data):
-    self._baseCfg.clear()
-    self._userCfg.clear()
-    self._cfg.clear()
+    for cfg in (self._baseCfg, self._userCfg, self._cfg):
+        cfg.clear()
     func(self, data)
     if not config.data['enabled'] or isReplay():
         return
     if config.data['noSniperDynamic'] and self.isCameraDynamic():
         self.enableDynamicCamera(False)
     if config.data['zoomSteps']['enabled']:
-        steps = [step for step in config.data['zoomSteps']['steps'] if step >= 2.0]
+        steps = [step for step in config.data['zoomSteps']['steps'] if step >= config.MIN_ZOOM]
         if len(steps) > 3:
             steps.sort()
             for cfg in (self._cfg, self._userCfg, self._baseCfg):
@@ -109,12 +113,11 @@ def new__setSystemValue(func, self, value):
 
 
 def getZoom(distance, steps):
-    zoom = math.floor(distance / 20)
+    zoom_factor = config.settingsCache['zoomXMeters']
+    zoom = math.floor(distance / zoom_factor)
     if config.settingsCache['stepsOnly']:
         zoom = min(steps, key=lambda value: abs(value - zoom))
-    if zoom < 2.0:
-        return 2.0
-    return zoom
+    return max(zoom, config.MIN_ZOOM)
 
 
 @override(SniperCamera, 'enable')
@@ -122,8 +125,11 @@ def new__enable(func, self, targetPos, saveZoom):
     if config.settingsCache['dynamicZoom']:
         saveZoom = True
         ownPosition = getOwnVehiclePosition()
-        distance = (targetPos - ownPosition).length if ownPosition is not None else 0
-        if distance > 700.0:
+        if ownPosition is not None:
+            distance = (targetPos - ownPosition).length
+            if distance > config.MAX_DISTANCE:
+                distance = 0
+        else:
             distance = 0
         self._cfg['zoom'] = getZoom(distance, self._cfg['zooms'])
     return func(self, targetPos, saveZoom)
@@ -137,6 +143,7 @@ class ChangeCameraModeAfterShoot(TriggersManager.ITriggerListener):
         self.subscribed = False
         self.avatar = None
         self.__trigger_type = TriggersManager.TRIGGER_TYPE.PLAYER_DISCRETE_SHOOT
+        self.updateSettings()
 
     def updateSettings(self):
         enabled = config.data['disableCamAfterShot'] and config.data['enabled']
@@ -167,23 +174,24 @@ class ChangeCameraModeAfterShoot(TriggersManager.ITriggerListener):
         if self.avatar is None:
             return
         input_handler = self.avatar.inputHandler
-        if self.avatar.inputHandler is not None and input_handler.ctrlModeName == CTRL_MODE_NAME.SNIPER:
-            v_desc = self.avatar.getVehicleDescriptor()
-            caliber_skip = v_desc.shot.shell.caliber <= 60
-            if caliber_skip or self.skip_clip and 'clip' in v_desc.gun.tags:
-                return
-            aiming_system = input_handler.ctrl.camera.aimingSystem
-            input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE, prevModeName=input_handler.ctrlModeName, preferredPos=aiming_system.getDesiredShotPoint(), turretYaw=aiming_system.turretYaw, gunPitch=aiming_system.gunPitch, aimingMode=input_handler.ctrl._aimingMode, closesDist = False, curVehicleID = self.avatar.playerVehicleID)
+        if input_handler is None or input_handler.ctrlModeName != CTRL_MODE_NAME.SNIPER:
+            return
+        v_desc = self.avatar.getVehicleDescriptor()
+        caliber_skip = v_desc.shot.shell.caliber <= config.SMALL_CALIBER_THRESHOLD
+        if caliber_skip or (self.skip_clip and 'clip' in v_desc.gun.tags):
+            return
+        aiming_system = input_handler.ctrl.camera.aimingSystem
+        input_handler.onControlModeChanged(CTRL_MODE_NAME.ARCADE, prevModeName=input_handler.ctrlModeName, preferredPos=aiming_system.getDesiredShotPoint(), turretYaw=aiming_system.turretYaw, gunPitch=aiming_system.gunPitch, aimingMode=input_handler.ctrl._aimingMode, closesDist=False, curVehicleID=self.avatar.playerVehicleID)
 
 
-ChangeCameraModeAfterShoot()
+camera_mode_changer = ChangeCameraModeAfterShoot()
 
 
-# EFFECTS
 @override(SniperControlMode, '__setupBinoculars')
 def new__setupBinoculars(func, self, optDevices):
-    if config.data['noBinoculars']:
+    if not config.data['noBinoculars']:
         return func(self, optDevices)
+    return func(self, optDevices)
 
 
 @override(ModelBoundEffects, 'addNewToNode')

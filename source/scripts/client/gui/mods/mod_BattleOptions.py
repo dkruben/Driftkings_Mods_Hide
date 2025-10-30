@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import locale
 import math
-import traceback
 from collections import defaultdict
 from functools import partial
 from string import printable
@@ -14,9 +13,8 @@ from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from comp7_core.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
+from gui.Scaleform.daapi.view.battle.shared.hint_panel import BattleHintPanel
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
 from gui.Scaleform.daapi.view.battle.shared.page import SharedPage
 from gui.Scaleform.daapi.view.battle.shared.stats_exchange import BattleStatisticsDataController
@@ -32,10 +30,11 @@ from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
 from messenger.storage import storage_getter
-from gui.Scaleform.daapi.view.battle.shared.hint_panel import BattleHintPanel
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, logError, square_position, isReplay, calculate_version, callback
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 
 _cache = set()
 
@@ -43,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.7.5 (%(file_compile_date)s)'
+        self.version = '2.8.0 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -67,7 +66,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'stunSound': False,
             'showPlayerSatisfactionWidget': False,
             'addEnemyName': True,
-            'hideHint': True,
+            'hideHint': True
         }
 
         self.i18n = {
@@ -113,7 +112,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_addEnemyName_text': 'Add Enemy Name',
             'UI_setting_addEnemyName_tooltip': 'Adds the name of the enemy vehicle to the damage log.',
             'UI_setting_hideHint_text': 'Hide Hint',
-            'UI_setting_hideHint_tooltip': 'Disable battle hint.',
+            'UI_setting_hideHint_tooltip': 'Disable battle hint.'
         }
         super(ConfigInterface, self).init()
 
@@ -121,6 +120,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         colorLabel = self.tb.createControl('color', self.tb.types.ColorChoice)
         colorLabel['text'] = self.tb.getLabel('colorCheck')
         colorLabel['tooltip'] %= {'color': self.data['color']}
+
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
@@ -348,17 +348,12 @@ def onReload(avatar):
 @override(PlayerAvatar, 'handleKey')
 def new__handleKey(func, self, isDown, key, mods):
     if config.data['enabled'] and config.data['clipLoad']:
-        try:
-            cmdMap = CommandMapping.g_instance
-            if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
-                if hasattr(self.guiSessionProvider.shared.ammo, 'reloadPartialClip'):
-                    self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
-                    callback(0.5, partial(onReload, self))
-        except Exception as e:
-            logError(config.ID, 'Error in handleKey: {}', str(e))
-            traceback.print_exc()
+        cmdMap = CommandMapping.g_instance
+        if cmdMap.isFired(CommandMapping.CMD_RELOAD_PARTIAL_CLIP, key) and isDown and self.isVehicleAlive:
+            if hasattr(self.guiSessionProvider.shared.ammo, 'reloadPartialClip'):
+                self.guiSessionProvider.shared.ammo.reloadPartialClip(self)
+                callback(0.5, partial(onReload, self))
     return func(self, isDown, key, mods)
-
 
 
 # hide badges
@@ -410,53 +405,54 @@ def new_showRateSatisfactionCmp(func, self, value, reusable):
 def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
     if not config.data['enabled'] or not config.data['addEnemyName']:
         return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
-    try:
-        player = getPlayer()
-        arena = player.arena
-        attackerName = 'Unknown'
-        for vID, vData in arena.vehicles.items():
-            if vData['vehicleType'].type.shortUserString == vehicleName:
-                attackerName = vData['name']
-                break
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
-    except Exception:
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+    player = getPlayer()
+    arena = player.arena
+    attackerName = 'Unknown'
+    for vID, vData in arena.vehicles.items():
+        if vData['vehicleType'].type.shortUserString == vehicleName:
+            attackerName = vData['name']
+            break
+    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
 
 
 @override(DamageLogPanel, '_addToBottomLog')
 def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
     if not config.data['enabled'] or not config.data['addEnemyName']:
         return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
-    try:
-        player = getPlayer()
-        arena = player.arena
-        attackerName = 'Unknown'
-        for vID, vData in arena.vehicles.items():
-            if vData['vehicleType'].type.shortUserString == vehicleName:
-                attackerName = vData['name']
-                break
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
-    except Exception:
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+    player = getPlayer()
+    arena = player.arena
+    attackerName = 'Unknown'
+    for vID, vData in arena.vehicles.items():
+        if vData['vehicleType'].type.shortUserString == vehicleName:
+            attackerName = vData['name']
+            break
+    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
 
 
+# Vehicle Boosters
 @adisp_process
 def changeValue(vehicle, value):
     yield VehicleAutoBattleBoosterEquipProcessor(vehicle, value).request()
 
 
+def isSpecialVehicle(vehicle):
+    flags = ('isOnlyForFunRandomBattles', 'isOnlyForBattleRoyaleBattles', 'isOnlyForMapsTrainingBattles', 'isOnlyForClanWarsBattles', 'isOnlyForComp7Battles', 'isOnlyForEventBattles', 'isOnlyForEpicBattles')
+    return any(getattr(vehicle, f, False) for f in flags)
+
+
 def onVehicleChanged(vehicle):
     if not config.data['enabled'] or not config.data['directivesOnlyFromStorage']:
         return
-    if vehicle is None or vehicle.isLocked or vehicle.isInBattle:
+    if vehicle is None or vehicle.isLocked or isSpecialVehicle(vehicle):
         return
     if not hasattr(vehicle, 'battleBoosters') or vehicle.battleBoosters is None:
+        logInfo('No battle boosters available for this vehicle: {}', vehicle.userName)
         return
-    is_auto = vehicle.isAutoBattleBoosterEquip()
+    isAuto = vehicle.isAutoBattleBoosterEquip()
     boosters = vehicle.battleBoosters.installed.getItems()
     for battleBooster in boosters:
         value = battleBooster.inventoryCount > 0
-        if value != is_auto:
+        if value != isAuto:
             changeValue(vehicle, value)
             logInfo(config.ID, 'VehicleAutoBattleBoosterEquipProcessor: value={} vehicle={}, booster={}', value, vehicle.userName, battleBooster.userName)
 
@@ -470,5 +466,7 @@ def onGuiCacheSyncCompleted(_):
 g_playerEvents.onGuiCacheSyncCompleted += onGuiCacheSyncCompleted
 g_events.onVehicleChangedDelayed += onVehicleChanged
 
+
 def fini():
     g_events.onVehicleChangedDelayed -= onVehicleChanged
+    battle_clock.stop()

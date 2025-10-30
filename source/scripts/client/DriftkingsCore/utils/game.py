@@ -52,7 +52,7 @@ def sendPanelMessage(text='', colour='Green', panel='Player'):
         - 'Player': The player's message panel.
         - 'Vehicle': The vehicle's message panel.
         - 'VehicleError': The vehicle error message panel.
-    The colour can be one of the following:
+    The color can be one of the following:
         - 'Red': Red color.
         - 'Purple': Purple color.
         - 'Green': Green color.

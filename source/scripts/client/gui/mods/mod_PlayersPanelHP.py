@@ -12,7 +12,7 @@ from gui.Scaleform.daapi.view.meta.PlayersPanelMeta import PlayersPanelMeta
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, calculate_version, logWarning, logError, getPlayer, getEntity
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, calculate_version, logWarning, getPlayer, getEntity
 
 
 class PlayersPanelController(DriftkingsConfigInterface):
@@ -214,4 +214,4 @@ try:
     g_config = PlayersPanelController()
     statistic_mod = Analytics(g_config.ID, g_config.version)
 except ImportError:
-    logWarning("PlayersPanelHP", 'Battle Flash API not found.')
+    logWarning('[PlayersPanelHP]:', 'Battle Flash API not found.')

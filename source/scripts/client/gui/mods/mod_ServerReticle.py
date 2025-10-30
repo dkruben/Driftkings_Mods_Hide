@@ -3,12 +3,10 @@ import math
 
 import BigWorld
 import GUI
-import Keys
 from Avatar import PlayerAvatar
 from AvatarInputHandler import AvatarInputHandler
 from VehicleGunRotator import VehicleGunRotator
 from aih_constants import CTRL_MODE_NAME
-from debug_utils import LOG_WARNING
 from gui import g_guiResetters
 from helpers import dependency
 from skeletons.account_helpers.settings_core import ISettingsCore

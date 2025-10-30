@@ -2,7 +2,7 @@
 import datetime
 import locale
 
-import gui.shared.tooltips.vehicle as tooltips
+# import gui.shared.tooltips.vehicle as tooltips
 from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
 from account_helpers.settings_core.settings_constants import GAME
@@ -21,7 +21,7 @@ from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataPro
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
 from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
-from gui.Scaleform.locale.STORAGE import STORAGE
+# from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.game_control.achievements_earning_controller import EarningAnimationCommand
@@ -30,17 +30,19 @@ from gui.impl.gen import R
 from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
 from gui.promo.hangar_teaser_widget import TeaserViewer
 from gui.shared.personality import ServicesLocator
-from gui.shared.tooltips import getUnlockPrice
-from helpers import dependency, i18n
+# from gui.shared.tooltips import getUnlockPrice
+from helpers import dependency # , i18n
 from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.tankStructure import ModelStates
+from gui.impl.lobby.battle_pass.battle_pass_entry_point_view import BattlePassEntryPointComponent
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod
 from DriftkingsInject import g_events, CyclicTimerEvent
+
 
 class ConfigInterface(DriftkingsConfigInterface):
     def __init__(self):
@@ -50,7 +52,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.6.0 (%(file_compile_date)s)'
+        self.version = '3.7.0 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -82,7 +84,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'hideBtnCounters': False,
             'fieldMail': True,
             'clock': True,
+            'showBattlePassWidget': True,
+            'customClockFormat': False,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
+            'customClockText': '<font face=\'$FieldFont\' color=\'#FF9900\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'panel': {
                 'position': {'x': -40.0, 'y': 55.0},
                 'width': 210,
@@ -99,12 +104,15 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_autoLogin_tooltip': 'Automatically log into the game',
             'UI_setting_clock_text': 'Clock Display',
             'UI_setting_clock_tooltip': 'Show clock in login screen and hangar',
+            'UI_setting_customClockFormat_text': 'Custom Clock Format',
+            'UI_setting_customClockFormat_tooltip': 'Use custom color and format for the clock display',
             'UI_setting_showButtonCounters_text': 'Button Counters',
             'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_hideBtnCounters_text': 'Disable tooltips',
-            'UI_setting_hideBtnCounters_tooltip': ('<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
-                                      '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
-                                      '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
+            'UI_setting_hideBtnCounters_tooltip': (
+                        '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
+                        '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
+                        '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
             'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
             'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
             'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
@@ -153,6 +161,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showAchievementPopups_tooltip': 'Show/hide Achievement Popups.',
             'UI_setting_fieldMail_text': 'Field Mail',
             'UI_setting_fieldMail_tooltip': 'Show/hide Field Mail.',
+            'UI_setting_showBattlePassWidget_text': 'Battle Pass Widget',
+            'UI_setting_showBattlePassWidget_tooltip': 'Show/hide Battle Pass widget in hangar.'
         }
         super(ConfigInterface, self).init()
 
@@ -163,6 +173,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'column1': [
                 self.tb.createControl('autoLogin'),
                 self.tb.createControl('clock'),
+                self.tb.createControl('customClockFormat'),
                 self.tb.createControl('allowExchangeXPInTechTree'),
                 self.tb.createControl('allowChannelButtonBlinking'),
                 # self.tb.createControl('showXpToUnlockVeh'),
@@ -173,7 +184,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('lootBoxesWidget'),
                 self.tb.createControl('showDailyQuestWidget'),
                 self.tb.createControl('showEventBanner'),
-                self.tb.createControl('showProgressiveDecalsWindow')
+                self.tb.createControl('showProgressiveDecalsWindow'),
+                self.tb.createControl('showBattlePassWidget')
             ],
             'column2': [
                 self.tb.createControl('showPromoPremVehicle'),
@@ -193,15 +205,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             ]
         }
 
-    def onApplySettings(self, settings):
-        super(ConfigInterface, self).onApplySettings(settings)
-        if self.data['enabled']:
-            ServicesLocator.settingsCore.onSettingsChanged({GAME.CAROUSEL_TYPE: None, GAME.DOUBLE_CAROUSEL_TYPE: None})
-
     def getPremiumLabelText(self, time_delta):
         delta = float(getTimeDeltaFromNow(makeLocalServerTime(time_delta)))
         if delta > ONE_DAY:
-            template = '<b><font color=\'#FAFAFA\'>%(days)d {0}. %(hours)02d:%(min)02d:%(sec)02d</font></b>'.format(backport.text(R.strings.menu.header.account.premium.days()).replace('.', ''))
+            template = '<b><font color=\'#FAFAFA\'>%(days)d {0}. %(hours)02d:%(min)02d:%(sec)02d</font></b>'.format(
+                backport.text(R.strings.menu.header.account.premium.days()).replace('.', ''))
         else:
             template = '<b><font color=\'#FAFAFA\'>%(hours)d {0}. %(min)02d:%(sec)02d</font></b>'.format(backport.text(R.strings.menu.header.account.premium.hours()).replace('.', ''))
         self.macros['days'], delta = divmod(delta, ONE_DAY)
@@ -231,7 +239,8 @@ def new__changeVehicle(func, *args, **kwargs):
 # hide referral program button
 @override(MessengerBarMeta, 'as_setInitDataS')
 def new__setInitDataS(func, self, data):
-    if config.data.get('enabled', True) and not config.data.get('showReferralButton', True) and ('isReferralEnabled' in data):
+    if config.data.get('enabled', True) and not config.data.get('showReferralButton', True) and (
+            'isReferralEnabled' in data):
         data['isReferralEnabled'] = False
     return func(self, data)
 
@@ -370,9 +379,10 @@ LOBBY_HEADER_BUTTON_TO_CONFIG = {
 
 @override(LobbyHeader, 'as_setHeaderButtonsS')
 def new__setHeaderButtonsS(func, self, buttons):
-    for button, key in LOBBY_HEADER_BUTTON_TO_CONFIG.iteritems():
-        if config.data.get('enabled', True) and not config.data.get('%s' % key, True) and button in buttons:
-            buttons.remove(button)
+    if config.data.get('enabled', True):
+        for button, key in LOBBY_HEADER_BUTTON_TO_CONFIG.iteritems():
+            if not config.data.get('%s' % key, True) and button in buttons:
+                buttons.remove(button)
     return func(self, buttons)
 
 
@@ -440,7 +450,7 @@ def new__LoginViewPopulate(func, self):
 
 
 # Show Xp To Unlock Veh.
-#@override(tooltips.StatusBlockConstructor, 'construct')
+# @override(tooltips.StatusBlockConstructor, 'construct')
 # def new__construct(func, self):
 #    result = func(self)
 #    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
@@ -501,6 +511,15 @@ def new__makeInjectView(func, self):
     return func(self)
 
 
+# Hide Battle Pass Widget
+@override(BattlePassEntryPointComponent, '_makeInjectView')
+def new__makeBPInjectView(func, self):
+    if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
+        self.destroy()
+        return
+    return func(self)
+
+
 # PremiumTime
 @override(LobbyHeader, 'as_setPremiumParamsS')
 def new__startCallback(func, self, data):
@@ -554,17 +573,7 @@ class Flash(object):
         self.timerEvent.stop()
 
     def setup(self):
-        panel_config = {
-            'x': config.data['panel']['position']['x'],
-            'y': config.data['panel']['position']['y'],
-            'width': config.data['panel']['width'],
-            'height': config.data['panel']['height'],
-            'alignX': config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT),
-            'alignY': config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP),
-            'drag': False,
-            'border': False,
-            'limit': False
-        }
+        panel_config = {'x': config.data['panel']['position']['x'], 'y': config.data['panel']['position']['y'], 'width': config.data['panel']['width'], 'height': config.data['panel']['height'], 'alignX': config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT), 'alignY': config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP), 'drag': False, 'border': False, 'limit': False}
         g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, panel_config, battle=False, lobby=True)
         self.setShadow()
 
@@ -604,7 +613,10 @@ class Flash(object):
         encoding = 'utf-8' if locale.getpreferredencoding() in ('cp65001', 'UTF-8') else locale.getpreferredencoding()
         current_time = datetime.datetime.now()
         weekday_capitalized = current_time.strftime('%A').capitalize()
-        format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
+        if config.data.get('customClockFormat', False):
+            format_with_capital = config.data['customClockText'].replace('%A', weekday_capitalized)
+        else:
+            format_with_capital = config.data['text'].replace('%A', weekday_capitalized)
         current_time_str = current_time.strftime(format_with_capital)
         formatted_time = current_time_str.decode(encoding) if isinstance(current_time_str, str) else current_time_str
         g_guiFlash.updateComponent(self.ID, {'text': formatted_time})

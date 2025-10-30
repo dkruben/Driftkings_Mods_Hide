@@ -6,6 +6,7 @@ from io import open
 import BigWorld
 from CurrentVehicle import g_currentVehicle
 from external_strings_utils import unicode_from_utf8
+from gui.shared.utils.requesters import REQ_CRITERIA
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.cyberSport.VehicleSelectorPopup import VehicleSelectorPopup
 from gui.shared.gui_items.processors.tankman import TankmanReturn, TankmanUnload
@@ -20,7 +21,7 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callb
 def getCachePath():
     path = os.path.join(os.path.normpath(os.path.dirname(unicode_from_utf8(BigWorld.wg_getPreferencesFilePath())[1])), 'Driftkings')
     if not os.path.exists(path):
-            os.makedirs(path)
+        os.makedirs(path)
     return path
 
 
@@ -66,18 +67,33 @@ def updateIgnoredVehicles(vehicles):
     return writeJsonFile(path, {'vehicles': sorted(vehicles)})
 
 
+def removeIgnoredVehicle(vehicle_id):
+    vehicles_set = ignored_vehicles.copy()
+    if str(vehicle_id) in vehicles_set:
+        vehicles_set.remove(str(vehicle_id))
+        return writeJsonFile(os.path.join(getCachePath(), 'auto_prev_crew.json'), {'vehicles': sorted(vehicles_set)})
+    return False
+
+
+def clearIgnoredVehicles():
+    return writeJsonFile(os.path.join(getCachePath(), 'auto_prev_crew.json'), {'vehicles': []})
+
+
 ignored_vehicles = openIgnoredVehicles()
 
 
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'  # Updated version
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'crewAutoReturn': False,
-            'crewReturnByDefault': False
+            'crewReturnByDefault': False,
+            'autoReturnDelay': 1.5,  # New configurable delay
+            'showNotifications': True,  # New option to toggle notifications
+            'excludePremiumVehicles': False  # New option to exclude premium vehicles
         }
         self.i18n = {
             'UI_description': 'Crew Settings',
@@ -86,6 +102,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_crewAutoReturn_tooltip': 'Automatically return crew to their vehicle',
             'UI_setting_crewReturnByDefault_text': 'Crew Return By Default',
             'UI_setting_crewReturnByDefault_tooltip': 'Return crew by default when switching vehicles',
+            'UI_setting_autoReturnDelay_text': 'Auto Return Delay (seconds)',
+            'UI_setting_autoReturnDelay_tooltip': 'Delay before automatically returning crew',
+            'UI_setting_showNotifications_text': 'Show Notifications',
+            'UI_setting_showNotifications_tooltip': 'Show system notifications when crew is returned',
+            'UI_setting_excludePremiumVehicles_text': 'Exclude Premium Vehicles',
+            'UI_setting_excludePremiumVehicles_tooltip': 'Do not auto-return crew for premium vehicles',
+            'UI_message_crewReturned': 'Crew has been returned to vehicle',
+            'UI_message_crewNotAvailable': 'Crew is not available for return'
         }
         super(ConfigInterface, self).init()
 
@@ -95,9 +119,13 @@ class ConfigInterface(DriftkingsConfigInterface):
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createControl('crewAutoReturn'),
-                self.tb.createControl('crewReturnByDefault')
+                self.tb.createControl('crewReturnByDefault'),
+                self.tb.createSlider('autoReturnDelay', 0.5, 5.0, 0.5),
+                self.tb.createControl('showNotifications')
             ],
-            'column2': []
+            'column2': [
+                self.tb.createControl('excludePremiumVehicles')
+            ]
         }
 
 
@@ -111,6 +139,7 @@ class Crew(object):
     def __init__(self):
         self.intCD = None
         self.__callbackID = None
+        self.last_operation_time = 0
 
     def init(self):
         if g_currentVehicle.isPresent():
@@ -128,7 +157,7 @@ class Crew(object):
         if not g_currentVehicle.isPresent():
             return
         result = yield TankmanReturn(g_currentVehicle.item).request()
-        if result and result.userMsg and print_message:
+        if result and result.userMsg and print_message and config.data['showNotifications']:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
 
     @decorators.adisp_process('crewReturning')
@@ -141,7 +170,7 @@ class Crew(object):
         if not g_currentVehicle.isPresent():
             return
         result = yield TankmanUnload(g_currentVehicle.item.invID).request()
-        if result and result.userMsg:
+        if result and result.userMsg and config.data['showNotifications']:
             SystemMessages.pushI18nMessage(result.userMsg, type=result.sysMsgType)
 
     def handleVehicleChange(self):
@@ -155,8 +184,10 @@ class Crew(object):
                 return
             vehicle = g_currentVehicle.item
             intCD = vehicle.intCD
+            if config.data['excludePremiumVehicles'] and vehicle.isPremium:
+                return
             if intCD != self.intCD:
-                self.__callbackID = callback(1.5, self.returnCrew)
+                self.__callbackID = callback(config.data['autoReturnDelay'], self.returnCrew)
                 self.intCD = intCD
 
     @logException
@@ -167,6 +198,8 @@ class Crew(object):
             cd = int(items[0])
             vehicle = self.itemsCache.items.getItemByCD(cd)
             if vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
+                if config.data['excludePremiumVehicles'] and vehicle.isPremium:
+                    return
                 vehicle_id = str(vehicle.invID)
                 if updateIgnoredVehicles(vehicle_id):
                     self.processReturnCrewForVehicleSelectorPopup(vehicle)
@@ -193,8 +226,43 @@ class Crew(object):
         if not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull():
             return
         if not self.isLastCrewAvailable():
+            if config.data['showNotifications']:
+                SystemMessages.pushMessage(config.i18n['UI_message_crewNotAvailable'], type=SystemMessages.SM_TYPE.Warning)
             return
         self.processReturnCrew()
+
+    def toggleAutoReturnForCurrentVehicle(self):
+        if not g_currentVehicle.isPresent():
+            return False
+        vehicle_id = str(g_currentVehicle.item.invID)
+        if vehicle_id in ignored_vehicles:
+            removeIgnoredVehicle(vehicle_id)
+            if config.data['showNotifications']:
+                SystemMessages.pushMessage('Auto-return enabled for this vehicle', type=SystemMessages.SM_TYPE.Information)
+            return True
+        else:
+            updateIgnoredVehicles(vehicle_id)
+            if config.data['showNotifications']:
+                SystemMessages.pushMessage("Auto-return disabled for this vehicle", type=SystemMessages.SM_TYPE.Information)
+            return False
+
+    def getCrewInfo(self):
+        if not g_currentVehicle.isPresent():
+            return None
+        vehicle = g_currentVehicle.item
+        crew_info = {'vehicle_name': vehicle.userName, 'crew_complete': vehicle.isCrewFull(), 'crew_members': []}
+        for slotIdx, tankman in vehicle.crew:
+            if tankman is not None:
+                crew_info['crew_members'].append({'name': tankman.fullUserName, 'role': tankman.roleUserName, 'level': tankman.level, 'skills': [skill.userName for skill in tankman.skills]})
+            else:
+                crew_info['crew_members'].append(None)
+        return crew_info
+
+    def returnAllCrews(self):
+        vehicles = self.itemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY)
+        for vehicle in vehicles.values():
+            if not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
+                self.processReturnCrewForVehicleSelectorPopup(vehicle)
 
 
 g_crew = Crew()
