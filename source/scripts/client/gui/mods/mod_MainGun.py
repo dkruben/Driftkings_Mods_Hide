@@ -19,7 +19,7 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logEr
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.0 (%(file_compile_date)s)'
+        self.version = '1.2.1 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -70,6 +70,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'column2': []
         }
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if g_flash is not None:
+            g_flash.onApplySettings()
+
 
 class FlashController(object):
     def __init__(self, ID):
@@ -83,7 +88,7 @@ class FlashController(object):
         config.onApplySettings({'textPosition': data})
 
     def onApplySettings(self):
-        g_guiFlash.updateComponent(self.ID, dict( config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
+        g_guiFlash.updateComponent(self.ID, dict(config.data['textPosition'], drag=not config.data['textLock'], border=not config.data['textLock']))
 
     def setup(self):
         bgPath = config.data['background']['image']
@@ -110,6 +115,7 @@ class FlashController(object):
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
         g_guiFlash.deleteComponent(self.ID + '.text')
         g_guiFlash.deleteComponent(self.ID + '.image')
+        g_guiFlash.deleteComponent(self.ID)
 
     def addText(self, text):
         if not config.data['enabled']:
@@ -131,8 +137,9 @@ try:
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
     logError(config.ID, 'gambiter.GUIFlash not found. Text viewing disabled.')
-except StandardError:
+except Exception as error:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+    logError(config.ID, '{}', error)
 
 
 class Optimization(CallbackDelayer):
@@ -154,13 +161,16 @@ class MainGun(object):
         return '{mainGun}' in config.data['format'] and (True if scl.guiType in [ARENA_GUI_TYPE.RANDOM, ARENA_GUI_TYPE.EPIC_RANDOM] else False)
 
     def battleLoading(self):
-        if self.showMainGun and scl.health[scl.enemyTeam][1]:
+        enemy_health = scl.health.get(scl.enemyTeam)
+        if self.showMainGun and enemy_health and enemy_health[1]:
             self.totals[0] = max(1000, int(math.ceil(scl.health[scl.enemyTeam][1] * 0.2)))
         self.updateMainGun()
 
-    def playersDamage(self, attackerID, damage, targetTeam, attakerTeam):
+    def playersDamage(self, attackerID, damage, targetTeam, attackerTeam):
+        if attackerID is None or damage <= 0:
+            return
         p_damage = self.players_damage.setdefault(attackerID, [0, False])
-        if targetTeam == attakerTeam:
+        if targetTeam == attackerTeam:
             p_damage[1] = True
         else:
             p_damage[0] += damage
@@ -179,7 +189,7 @@ class MainGun(object):
         for event in events:
             eventType = event.getType()
             extra = event.getExtra()
-            if eventType == FEEDBACK_EVENT_ID.PLAYER_DAMAGED_HP_ENEMY:
+            if eventType == FEEDBACK_EVENT_ID.PLAYER_DAMAGED_HP_ENEMY and extra is not None:
                 damage = extra.getDamage()
                 self.totals[4] += damage
                 if config.data['mainGun']['dynamic']:
@@ -212,12 +222,12 @@ class MainGun(object):
             elif not self.totals[2] and dynamic:
                 macros['mainGun'] = ''
             else:
-                macros['mainGun'] = self.recipes('%d' % self.totals[int(dynamic)])
+                macros['mainGun'] = self.recipes(self.totals[int(dynamic)])
             macros['mainGunDoneIcon'] = config.data['mainGun']['mainGunDoneIcon'] if mainGunAchived else ''
             macros['mainGunFailureIcon'] = config.data['mainGun']['mainGunFailureIcon'] if not self.totals[2] and dynamic else ''
         self.mainGunText = config.data['mainGun']['format'].format(**macros)
         if g_flash is not None:
-            g_flash.addText(config.data['format'].format(mainGun=mainGuns.mainGunText))
+            g_flash.addText(config.data['format'].format(mainGun=self.mainGunText))
             optimization.stopCallback(self.updateMainGun)
         else:
             optimization.delayCallback(0.2, self.updateMainGun)
@@ -234,9 +244,15 @@ class SysClass(object):
 
     def battleLoading(self):
         player = getPlayer()
+        if not player or not player.arena:
+            return
+        arena_dp = player.guiSessionProvider.getArenaDP()
+        enemy_teams = arena_dp.getEnemyTeams() if arena_dp else ()
+        if not enemy_teams:
+            return
         self.guiType = player.arena.guiType
         self.playerID = player.playerVehicleID
-        self.enemyTeam = player.guiSessionProvider.getArenaDP().getEnemyTeams()[0]
+        self.enemyTeam = enemy_teams[0]
         player.onVehicleEnterWorld += self._onEnterWorld
         player.arena.onVehicleKilled += self._onVehicleKilled
         player.arena.onVehicleAdded += self._onVehicleUpdate
@@ -245,23 +261,28 @@ class SysClass(object):
         mainGuns.battleLoading()
 
     def destroyBattle(self):
+        player = getPlayer()
+        if player is not None:
+            if hasattr(player, 'onVehicleEnterWorld'):
+                player.onVehicleEnterWorld -= self._onEnterWorld
+            if getattr(player, 'arena', None) is not None:
+                player.arena.onVehicleKilled -= self._onVehicleKilled
+                player.arena.onVehicleAdded -= self._onVehicleUpdate
+                player.arena.onVehicleUpdated -= self._onVehicleUpdate
+        optimization.stopCallback(mainGuns.updateMainGun)
         self.__init__()
         mainGuns.__init__()
-        optimization.destroy()
-        player = getPlayer()
-        player.onVehicleEnterWorld -= self._onEnterWorld
-        player.arena.onVehicleKilled -= self._onVehicleKilled
-        player.arena.onVehicleAdded -= self._onVehicleUpdate
-        player.arena.onVehicleUpdated -= self._onVehicleUpdate
 
     def tanklistsCreate(self):
         collection = vos_collections.VehiclesInfoCollection().iterator(getPlayer().guiSessionProvider.getArenaDP())
         for vInfoVO in collection:
+            if not vInfoVO or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
+                continue
             maxHealth = vInfoVO.vehicleType.maxHealth
-            if not vInfoVO or not maxHealth or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
+            if not maxHealth:
                 continue
             if vInfoVO.vehicleID in self.vehicles:
-                return None
+                continue
             health = maxHealth if vInfoVO.isAlive() else 0
             self.vehicles.setdefault(vInfoVO.vehicleID, [health, maxHealth, vInfoVO.team, vInfoVO.vehicleType.classTag])
             if vInfoVO.team == getPlayer().team:
@@ -276,11 +297,16 @@ class SysClass(object):
             hDic[1] += maxHealth
 
     def updateHealthPoints(self, damage, team):
+        if damage <= 0 or team not in self.health:
+            return
         self.health[team][0] -= damage
+        if self.health[team][0] < 0:
+            self.health[team][0] = 0
         health = self.health[team][0]
-        self._health[1 if team == getPlayer().team else 0] -= damage
-        if self._health[1 if team == getPlayer().team else 0] <= 0:
-            self._health[1 if team == getPlayer().team else 0] = 0
+        index = 1 if team == getPlayer().team else 0
+        self._health[index] -= damage
+        if self._health[index] <= 0:
+            self._health[index] = 0
         if mainGuns.showMainGun and config.data['mainGun']['dynamic'] and team == self.enemyTeam:
             if health and mainGuns.totals[2] and mainGuns.totals[1] and health < mainGuns.totals[1]:
                 mainGuns.totals[2] = False
@@ -291,10 +317,13 @@ class SysClass(object):
             target = self.vehicles.get(vehicle.id)
             attacker = self.vehicles.get(attackerID)
             if target and target[0] > 0:
+                newHealth = max(0, newHealth)
                 damage = target[0] - newHealth
+                if damage <= 0:
+                    return
                 target[0] = newHealth
                 self.updateHealthPoints(damage, target[2])
-                mainGuns.playersDamage(attackerID, damage, target[2], attacker[2])
+                mainGuns.playersDamage(attackerID, damage, target[2], attacker[2] if attacker else None)
 
     def _onVehicleKilled(self, targetID, *_, **__):
         target = self.vehicles.get(targetID)
@@ -307,8 +336,10 @@ class SysClass(object):
 
     def _onVehicleUpdate(self, tid):
         vInfoVO = getPlayer().guiSessionProvider.getArenaDP().getVehicleInfo(tid)
+        if not vInfoVO or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
+            return
         maxHealth = vInfoVO.vehicleType.maxHealth
-        if not vInfoVO or not maxHealth or not vInfoVO.vehicleType or not vInfoVO.vehicleType.classTag:
+        if not maxHealth:
             return
         if tid in self.vehicles:
             return None
@@ -326,7 +357,7 @@ class SysClass(object):
         target = self.vehicles.get(vehicle.id)
         newHealth = max(0, vehicle.health)
         if target and target[0] != newHealth and vehicle.isAlive():
-            self.updateHealthPoints(target[0] - newHealth, target[2])
+            self.updateHealthPoints(max(target[0] - newHealth, 0), target[2])
             target[0] = newHealth
 
 

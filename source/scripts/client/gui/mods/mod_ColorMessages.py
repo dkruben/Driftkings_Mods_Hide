@@ -8,11 +8,20 @@ from messenger.doc_loaders.html_templates import _MessageTemplate
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override
 
+_COLOR_MASKS = {
+    'header': ('E9E2BF',),
+    'xp': ('C8C8B5', 'C9C9B6'),
+    'credits': ('C5CFCF', 'D6D7D4'),
+    'damage': ('FF8080',),
+    'free_xp': ('FFC363', 'FFC364', 'FFDD99'),
+    'medals': ('FFD700', 'D6D7D4', 'C9C9B6', 'FFDD99')
+}
+
 
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.1 (%(file_compile_date)s)'
         self.author = 'by Polyacov_Yury, updated by Driftkings'
         self.data = {
             'enabled': True,
@@ -74,11 +83,17 @@ analytics = Analytics(g_config.ID, g_config.version)
 def new__format(func, self, ctx, *a, **k):
     orig_message = self.source['message']
     try:
-        only = (ctx or {}).pop('color_messages_only', ())
-        for color_type, mask in (('header', 'E9E2BF'), ('xp', 'C8C8B5'), ('credits', 'C5CFCF'), ('damage', 'FF8080'), ('free_xp', 'FFC363'), ('medals', 'FFD700'),):
+        if ctx:
+            ctx = ctx.copy()
+        else:
+            ctx = {}
+        only = ctx.pop('color_messages_only', ())
+        for color_type, masks in _COLOR_MASKS.iteritems():
             if only and color_type not in only:
                 continue
-            self.source['message'] = self.source['message'].replace(mask, g_config.data['color_%s' % color_type])
+            color = g_config.data['color_%s' % color_type]
+            for mask in masks:
+                self.source['message'] = self.source['message'].replace(mask, color)
         return func(self, ctx, *a, **k)
     finally:
         self.source['message'] = orig_message

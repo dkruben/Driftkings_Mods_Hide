@@ -20,7 +20,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.1 (%(file_compile_date)s)'
+        self.version = '1.2.2 (%(file_compile_date)s)'
         self.author = 'orig. by spoter, reworked by Driftkings'
         self.data = {
             'enabled': True,
@@ -163,6 +163,19 @@ class MarksInTechTree(object):
             return 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
     @staticmethod
+    def build_tech_tree_name_string(vehicle_name, mark_of_gun_stars, percent, mastery_html):
+        return '||'.join((
+            vehicle_name,
+            mark_of_gun_stars,
+            percent,
+            str(config.data['techTreeX']),
+            str(config.data['techTreeY']),
+            str(config.data['techTreeHeight']),
+            str(config.data['techTreeWidth']),
+            mastery_html
+        ))
+
+    @staticmethod
     def htmlHangarBuilder():
         try:
             self = BigWorld.MoEHangarHTML
@@ -239,15 +252,11 @@ def new_getVehicleData(func, *args):
     if config.data['enabled'] and config.data['showInTechTree']:
         dossier = None
         try:
-            # More robust way to get vehicle data from different argument patterns
             item = None
             if len(args) > 2 and hasattr(args[2], 'intCD'):
-                # Direct item reference
                 item = args[2]
             elif len(args) > 1:
-                # Node reference
                 node = args[1]
-                # Try multiple ways to get the item
                 if hasattr(node, '_RealNode__item'):
                     item = node._RealNode__item
                 elif hasattr(node, 'item'):
@@ -256,7 +265,6 @@ def new_getVehicleData(func, *args):
                     itemCD = node.getNodeCD()
                     if hasattr(g_currentVehicle, 'itemsCache') and g_currentVehicle.itemsCache:
                         item = g_currentVehicle.itemsCache.items.getItemByCD(itemCD)
-            # Get dossier if we have a valid item
             if item and hasattr(item, 'intCD'):
                 if hasattr(g_currentVehicle, 'itemsCache') and g_currentVehicle.itemsCache:
                     dossier = g_currentVehicle.itemsCache.items.getVehicleDossier(item.intCD)
@@ -265,25 +273,20 @@ def new_getVehicleData(func, *args):
             return result
         if dossier:
             try:
-                # Get marks of excellence data
                 mark_of_gun = dossier.getTotalStats().getAchievement(MARK_ON_GUN_RECORD)
                 mark_of_gun_value = mark_of_gun.getValue()
                 if mark_of_gun_value >= len(g_marks.marks_mog):
                     mark_of_gun_value = 0
-                # Initialize mark display
                 mark_of_gun_stars = g_marks.marks_mog[mark_of_gun_value]
-                # Get damage rating percentage
                 percents = 0.0
                 try:
                     percents = float(dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'damageRating') / 100.0)
                 except:
                     pass
-                # Format percentage display if enabled
                 percent = ''
                 if config.data['showInTechTreeMarkOfGunPercent'] and percents:
                     percent = '%.2f' % percents if percents < 100 else '100.0'
                     percent = '%s%%' % percent.rjust(5)
-                # Handle mastery badges
                 mastery_html = ''
                 if config.data['showInTechTreeMastery']:
                     try:
@@ -296,14 +299,9 @@ def new_getVehicleData(func, *args):
                             mastery_html = '<img src="%s" width="16" height="16" vspace="-2" />' % icon_path
                     except:
                         pass
-                # Format the data for ActionScript
-                # Format: vehicleName||markStars||percent||xPos||yPos||height||width||mastery
                 if 'nameString' in result:
                     vehicle_name = result['nameString'].split('||')[0] if '||' in result['nameString'] else result['nameString']
-                    # Ensure clean separation
-                    if not result['nameString'].endswith('||'):
-                        result['nameString'] += '||'
-                    result['nameString'] += '%s||%s||%s||%s||%s||%s||%s||%s' % (vehicle_name, mark_of_gun_stars, percent,config.data['techTreeX'], config.data['techTreeY'],config.data['techTreeHeight'], config.data['techTreeWidth'], mastery_html)
+                    result['nameString'] = g_marks.build_tech_tree_name_string(vehicle_name, mark_of_gun_stars, percent, mastery_html)
             except Exception as e:
                 print("Error in tech tree display:", e)
                 import traceback
@@ -314,4 +312,3 @@ def new_getVehicleData(func, *args):
 @override(LobbyEntry, '_getRequiredLibraries')
 def new__getRequiredLibraries(func, *args):
     return func(*args) + ['marksInTechTree.swf', ]
-

@@ -12,6 +12,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.isEventBattle = False
         self.deadDict = {}
         self.isKeyPressed = True
+        self._battleStarted = False
         # overrides methods
         override(FragsCollectableStats, 'addVehicleStatusUpdate', self.new__addVehicleStatusUpdate)
         override(PlayerAvatar, 'shoot', self.new__shoot)
@@ -23,7 +24,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.0 (%(file_compile_date)s)'
+        self.version = '1.8.1 (%(file_compile_date)s)'
         self.defaultKeys = {'disableKey': [Keys.KEY_Q]}
         self.data = {
             'enabled': True,
@@ -56,7 +57,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_deadShotBlockTimeOut_text': 'Dead Shot Block TimeOut',
             'UI_setting_deadShotBlockTimeOut_tooltip': 'Time in seconds to block shots after vehicle destruction',
             'UI_setting_chatMessages_text': 'Format Message',
-            'UI_setting_chatMessages_tooltip': 'Custom message format when blocking team shots. Use %(name)s and %(vehicle)s as placeholders',
+            'UI_setting_chatMessages_tooltip': 'Custom message format when blocking team shots. Use {name} and {vehicle} as placeholders',
             'UI_setting_disableKey_text': 'Disable Key',
             'UI_setting_disableKey_tooltip': 'Hotkey to temporarily enable/disable the mod',
             'UI_setting_triggerMessage_text': 'Disable Message',
@@ -89,35 +90,44 @@ class ConfigInterface(DriftkingsConfigInterface):
         }
 
     def isShotAllowed(self):
-        if not (self.data['enabled'] and not self.isEventBattle):
+        if not (self.data['enabled'] and self.isKeyPressed and not self.isEventBattle):
             return True
-        if getTarget() is None:
+        target = getTarget()
+        player = getPlayer()
+        if target is None or player is None:
             if self.data['wasteShotBlock']:
                 sendPanelMessage(self.data['clientMessages']['wasteShotBlockedMessage'], 'Yellow')
                 return False
-        elif hasattr(getTarget().publicInfo, 'team'):
-            if self.data['teamShotBlock'] and (getPlayer().team == getTarget().publicInfo.team) and getTarget().isAlive():
-                if not (self.data['teamKillerShotUnblock'] and getPlayer().guiSessionProvider.getArenaDP().isTeamKiller(getTarget().id)):
-                    sendChatMessage(self.data['chatMessages'].replace('{name}', getTarget().publicInfo.name).replace('{vehicle}', getTarget().typeDescriptor.type.shortUserString), 1, 2)
+        elif hasattr(target.publicInfo, 'team'):
+            if self.data['teamShotBlock'] and (player.team == target.publicInfo.team) and target.isAlive():
+                if not (self.data['teamKillerShotUnblock'] and player.guiSessionProvider.getArenaDP().isTeamKiller(target.id)):
+                    sendChatMessage(self.data['chatMessages'].replace('{name}', target.publicInfo.name).replace('{vehicle}', target.typeDescriptor.type.shortUserString), 1, 2)
                     sendPanelMessage(self.data['clientMessages']['teamShotBlockedMessage'], 'Yellow')
                     return False
-            elif self.data['deadShotBlock'] and (not getTarget().isAlive()) and ((self.data['deadShotBlockTimeOut'] == 0) or ((serverTime() - self.deadDict.get(getTarget().id, 0)) < self.data['deadShotBlockTimeOut'])):
+            elif self.data['deadShotBlock'] and (not target.isAlive()) and ((self.data['deadShotBlockTimeOut'] == 0) or ((serverTime() - self.deadDict.get(target.id, 0)) < self.data['deadShotBlockTimeOut'])):
                 sendPanelMessage(self.data['clientMessages']['deadShotBlockedMessage'], 'Yellow')
                 return False
         return True
 
     def start_battle(self):
+        if self._battleStarted:
+            return
+        self._battleStarted = True
+        self.isKeyPressed = True
         InputHandler.g_instance.onKeyDown += self.keyPressed
 
     def endBattle(self):
+        if not self._battleStarted:
+            return
+        self._battleStarted = False
         InputHandler.g_instance.onKeyDown -= self.keyPressed
 
     def keyPressed(self, event):
         if not self.data['enabled']:
             return
         if checkKeys(self.data['disableKey']) and event.isKeyDown():
+            self.isKeyPressed = not self.isKeyPressed
             if self.data['triggerMessage']:
-                self.isKeyPressed = not self.isKeyPressed
                 sendPanelMessage(self.i18n['UI_triggerText_enabled'] if self.isKeyPressed else self.i18n['UI_triggerText_disabled'], 'Green' if self.isKeyPressed else 'Red')
 
     def new__addVehicleStatusUpdate(self, func, orig, vInfoVO):
@@ -142,12 +152,11 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.start_battle()
         support.start_battle()
 
-
     def new__destroyGUI(self, func, orig, *args):
         func(orig, *args)
         self.endBattle()
         self.isEventBattle = False
-        self.isKeyPressed = False
+        self.isKeyPressed = True
         self.deadDict.clear()
 
 

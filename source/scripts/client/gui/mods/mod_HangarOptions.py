@@ -1,63 +1,77 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import datetime
 import locale
 
-# import gui.shared.tooltips.vehicle as tooltips
-from CurrentVehicle import g_currentVehicle
+import gui.shared.tooltips.vehicle as tooltips
 from HeroTank import HeroTank
-from account_helpers.settings_core.settings_constants import GAME
-from comp7.gui.impl.lobby.tournaments_widget import TournamentsWidgetComponent
+from gui.Scaleform.daapi.view.lobby.hangar.hangar_header import HangarHeader
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
-from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
-from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
-from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
-from gui.Scaleform.daapi.view.lobby.messengerBar.NotificationListButton import NotificationListButton
-from gui.Scaleform.daapi.view.lobby.messengerBar.messenger_bar import MessengerBar
-from gui.Scaleform.daapi.view.lobby.messengerBar.session_stats_button import SessionStatsButton
 from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechnique
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
 from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
-from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
-# from gui.Scaleform.locale.STORAGE import STORAGE
+from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.game_control.achievements_earning_controller import EarningAnimationCommand
-from gui.impl import backport
-from gui.impl.gen import R
-from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
 from gui.promo.hangar_teaser_widget import TeaserViewer
-from gui.shared.personality import ServicesLocator
-# from gui.shared.tooltips import getUnlockPrice
-from helpers import dependency # , i18n
-from helpers.time_utils import getTimeDeltaFromNow, makeLocalServerTime, ONE_DAY, ONE_HOUR, ONE_MINUTE
+from gui.shared.tooltips import getUnlockPrice
+from helpers import dependency, i18n
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
 from messenger.gui.Scaleform.lobby_entry import LobbyEntry
 from notification.NotificationListView import NotificationListView
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.tankStructure import ModelStates
-from gui.impl.lobby.battle_pass.battle_pass_entry_point_view import BattlePassEntryPointComponent
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod
-from DriftkingsInject import g_events, CyclicTimerEvent
+try:
+    from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
+except ImportError:
+    MessengerBarMeta = None
+# try:
+#    from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
+# except ImportError:
+#    from gui.impl.lobby.page.lobby_header import LobbyHeader
+try:
+    from gui.Scaleform.daapi.view.lobby.messengerBar.NotificationListButton import NotificationListButton
+except ImportError:
+    NotificationListButton = None
+try:
+    from gui.Scaleform.daapi.view.lobby.messengerBar.messenger_bar import MessengerBar
+except ImportError:
+    MessengerBar = None
+# try:
+#    from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
+# except ImportError:
+#    LootBoxSystemEntryPoint = None
+
+# from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
+# from gui.Scaleform.daapi.view.lobby.messengerBar.session_stats_button import SessionStatsButton
+# try:
+#    from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
+# except ImportError:
+#    BaseQuestsWidgetComponent = None
+
+# try:
+#    from gui.impl.lobby.hangar.presenters.user_missions_presenter import UserMissionsPresenter
+# except ImportError:
+#    UserMissionsPresenter = None
+
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod, find_attr_name
+from DriftkingsInject import CyclicTimerEvent
 
 
 class ConfigInterface(DriftkingsConfigInterface):
-    def __init__(self):
-        self.callback = None
-        self.macros = {}
-        super(ConfigInterface, self).__init__()
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.7.0 (%(file_compile_date)s)'
+        self.version = '3.7.5 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'autoLogin': True,
-            # 'showXpToUnlockVeh': False,
+            'showXpToUnlockVeh': False,
             'showReferralButton': False,
             'showGeneralChatButton': True,
             'showPromoPremVehicle': False,
@@ -73,18 +87,19 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showHangarPrestigeWidget': False,
             'showProfilePrestigeWidget': True,
             'showWotPlusButton': False,
-            'showEventTournamentWidget': True,
             'showBuyPremiumButton': True,
             'showPremiumShopButton': True,
             'showButtonCounters': True,
             'allowExchangeXPInTechTree': True,
             'allowChannelButtonBlinking': True,
-            'premiumTime': False,
             'lootBoxesWidget': False,
             'hideBtnCounters': False,
             'fieldMail': True,
             'clock': True,
             'showBattlePassWidget': True,
+            'showPersonalMissionsButton': True,
+            'showClanButton': True,
+            'showBattlePassButton': True,
             'customClockFormat': False,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'customClockText': '<font face=\'$FieldFont\' color=\'#FF9900\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
@@ -110,17 +125,15 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showButtonCounters_tooltip': 'Show/hide notification counters on buttons',
             'UI_setting_hideBtnCounters_text': 'Disable tooltips',
             'UI_setting_hideBtnCounters_tooltip': (
-                        '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
-                        '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
-                        '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
+                    '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
+                    '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
+                    '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
             'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
             'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
             'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
             'UI_setting_showBuyPremiumButton_tooltip': 'Show/hide premium account purchase button',
             'UI_setting_showPremiumShopButton_text': 'Premium Shop',
             'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
-            'UI_setting_premiumTime_text': 'Premium Time Display',
-            'UI_setting_premiumTime_tooltip': 'Show detailed premium account time remaining',
             'UI_setting_showReferralButton_text': 'Referral Program Button',
             'UI_setting_showReferralButton_tooltip': 'Show/hide the Referral Program button',
             'UI_setting_showGeneralChatButton_text': 'General Chat',
@@ -151,18 +164,22 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_allowExchangeXPInTechTree_tooltip': 'Enable XP to gold exchange in tech tree',
             'UI_setting_allowChannelButtonBlinking_text': 'Allow Channel Button Blinking',
             'UI_setting_allowChannelButtonBlinking_tooltip': 'Allow messenger bar channel (clan or private chat) button blinking.',
-            # 'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
-            # 'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
+            'UI_setting_showXpToUnlockVeh_text': 'Vehicle XP Requirements',
+            'UI_setting_showXpToUnlockVeh_tooltip': 'Show required XP to unlock vehicles',
             'UI_setting_lootBoxesWidget_text': 'Lootbox Widget',
             'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
-            'UI_setting_showEventTournamentWidget_text': 'Event Tournament Widget',
-            'UI_setting_showEventTournamentWidget_tooltip': 'Show/hide event tournaments widget in hangar.',
             'UI_setting_showAchievementPopups_text': 'Achievement Popups',
             'UI_setting_showAchievementPopups_tooltip': 'Show/hide Achievement Popups.',
             'UI_setting_fieldMail_text': 'Field Mail',
             'UI_setting_fieldMail_tooltip': 'Show/hide Field Mail.',
             'UI_setting_showBattlePassWidget_text': 'Battle Pass Widget',
-            'UI_setting_showBattlePassWidget_tooltip': 'Show/hide Battle Pass widget in hangar.'
+            'UI_setting_showBattlePassWidget_tooltip': 'Show/hide Battle Pass widget in hangar.',
+            'UI_setting_showPersonalMissionsButton_text': 'Personal Missions Button',
+            'UI_setting_showPersonalMissionsButton_tooltip': 'Show/hide Personal Missions button in header.',
+            'UI_setting_showClanButton_text': 'Clan Button',
+            'UI_setting_showClanButton_tooltip': 'Show/hide Clan button in header.',
+            'UI_setting_showBattlePassButton_text': 'Battle Pass Button',
+            'UI_setting_showBattlePassButton_tooltip': 'Show/hide Battle Pass button in header.',
         }
         super(ConfigInterface, self).init()
 
@@ -176,7 +193,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('customClockFormat'),
                 self.tb.createControl('allowExchangeXPInTechTree'),
                 self.tb.createControl('allowChannelButtonBlinking'),
-                # self.tb.createControl('showXpToUnlockVeh'),
+                self.tb.createControl('showXpToUnlockVeh'),
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
                 self.tb.createControl('showGeneralChatButton'),
@@ -199,45 +216,49 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('showHangarPrestigeWidget'),
                 self.tb.createControl('showProfilePrestigeWidget'),
                 self.tb.createControl('showReferralButton'),
-                self.tb.createControl('showEventTournamentWidget'),
                 self.tb.createControl('showAchievementPopups'),
-                self.tb.createControl('fieldMail')
+                self.tb.createControl('fieldMail'),
+                self.tb.createControl('showPersonalMissionsButton'),
+                self.tb.createControl('showClanButton'),
+                self.tb.createControl('showBattlePassButton')
             ]
         }
-
-    def getPremiumLabelText(self, time_delta):
-        delta = float(getTimeDeltaFromNow(makeLocalServerTime(time_delta)))
-        if delta > ONE_DAY:
-            template = '<b><font color=\'#FAFAFA\'>%(days)d {0}. %(hours)02d:%(min)02d:%(sec)02d</font></b>'.format(
-                backport.text(R.strings.menu.header.account.premium.days()).replace('.', ''))
-        else:
-            template = '<b><font color=\'#FAFAFA\'>%(hours)d {0}. %(min)02d:%(sec)02d</font></b>'.format(backport.text(R.strings.menu.header.account.premium.hours()).replace('.', ''))
-        self.macros['days'], delta = divmod(delta, ONE_DAY)
-        self.macros['hours'], delta = divmod(delta, ONE_HOUR)
-        self.macros['min'], self.macros['sec'] = divmod(delta, ONE_MINUTE)
-        return template % self.macros
-
-    def stopCallback(self):
-        if self.callback is not None:
-            cancelCallback(self.callback)
-            self.callback = None
 
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
 
 
-# update vehicle
-@override(Hangar, '__onCurrentVehicleChanged')
-@override(Hangar, '__updateAll')
-def new__changeVehicle(func, *args, **kwargs):
-    func(*args, **kwargs)
-    g_events.onVehicleChanged()
-    callback(1.0, g_events.onVehicleChangedDelayed, g_currentVehicle.item)
+def _iteritems(mapping):
+    return mapping.iteritems() if hasattr(mapping, 'iteritems') else mapping.items()
+
+
+def _override_if_available(target, prop):
+    if target is None:
+        return lambda handler: handler
+    return override(target, prop)
+
+
+# def _buildLobbyHeaderButtonConfig():
+#    buttons = getattr(LobbyHeader, 'BUTTONS', None)
+#    if buttons is None:
+#        return {}
+#    result = {}
+#    for button_name, config_key in (
+#            ('WOT_PLUS', 'showWotPlusButton'),
+#            ('PREM', 'showBuyPremiumButton'),
+#            ('PREMSHOP', 'showPremiumShopButton'),
+#            ('PERSONAL_MISSIONS', 'showPersonalMissionsButton'),
+#            ('CLAN', 'showClanButton'),
+#            ('BATTLE_PASS', 'showBattlePassButton')):
+#        button_id = getattr(buttons, button_name, None)
+#        if button_id is not None:
+#            result[button_id] = config_key
+#    return result
 
 
 # hide referral program button
-@override(MessengerBarMeta, 'as_setInitDataS')
+@_override_if_available(MessengerBarMeta, 'as_setInitDataS')
 def new__setInitDataS(func, self, data):
     if config.data.get('enabled', True) and not config.data.get('showReferralButton', True) and (
             'isReferralEnabled' in data):
@@ -246,11 +267,11 @@ def new__setInitDataS(func, self, data):
 
 
 # hide button counters in lobby header
-@override(LobbyHeader, '__setCounter')
-def new__setCounter(func, *args, **kwargs):
-    if not config.data.get('enabled', True) or config.data.get('hideBtnCounters', False):
-        return None
-    return func(*args, **kwargs)
+# @override(LobbyHeader, '__setCounter')
+# def new__setCounter(func, *args, **kwargs):
+#    if not config.data.get('enabled', True) or config.data.get('hideBtnCounters', False):
+#        return None
+#    return func(*args, **kwargs)
 
 
 # hide shared chat button
@@ -299,7 +320,7 @@ def new__tryToShowTeaser(func, *args):
 
 
 @override(PromoController, '__needToGetTeasersInfo')
-def _needToGetTeasersInfo(func, *args):
+def new__needToGetTeasersInfo(func, *args):
     return False if config.data['enabled'] and not config.data['fieldMail'] else func(*args)
 
 
@@ -312,7 +333,7 @@ def new__populate(func, self):
 
 
 # hide display session statistics button
-@override(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
+@_override_if_available(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
 def new__updateSessionStatsBtn(func, self):
     if config.data.get('enabled', True) and not config.data.get('showButton', True):
         self.as_setSessionStatsButtonVisibleS(False)
@@ -322,19 +343,34 @@ def new__updateSessionStatsBtn(func, self):
 
 
 # hide display the counter of spent battles on the button
-@override(SessionStatsButton, '_SessionStatsButton__updateBatteleCount')
-def new__updateBattleCount(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
-        return
-    func(self)
+# def new__updateBattleCount(func, self):
+#    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
+#        return
+#    func(self)
+
+
+# _register_override(SessionStatsButton, ('_SessionStatsButton__updateBatteleCount', '_SessionStatsButton__updateBattleCount'), new__updateBattleCount)
 
 
 # hide display widget with daily quests
-@override(BaseQuestsWidgetComponent, '_shouldHide')
-def new__shouldHide(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
-        return True
-    return func(self)
+# if BaseQuestsWidgetComponent is not None:
+#    @override(BaseQuestsWidgetComponent, '_shouldHide')
+#    def new__shouldHide(func, self):
+#        if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
+#            return True
+#        return func(self)
+
+
+# def new__updateMissions(func, self, vm):
+#    if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
+#        self._addChild(self._WIDGET_ALIAS.Quests(), False)
+#        vm.setAreMissionsActive(False)
+#        return
+#    return func(self, vm)
+
+
+# if UserMissionsPresenter is not None:
+#    _register_override(UserMissionsPresenter, '_updateMissions', new__updateMissions)
 
 
 # hide display pop-up window when receiving progressive decals
@@ -346,11 +382,13 @@ def new__showAward(func, self, ctx):
 
 
 # hide display banner of various events in the hangar
-@override(EventEntryPointsContainer, '_EventEntryPointsContainer__updateEntries')
-def new__updateEntries(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
-        return self.as_updateEntriesS([])
-    func(self)
+# def new__updateEntries(func, self):
+#    if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
+#        return self.as_updateEntriesS([])
+#    func(self)
+
+
+# _register_override(EventEntryPointsContainer, ('_EventEntryPointsContainer__updateEntries', 'updateEntries'), new__updateEntries)
 
 
 # hide prestige (elite levels) system widget in the hangar
@@ -370,28 +408,26 @@ def new__setPrestigeVisibleS(func, self, value):
 
 
 # hide premium account, shop and WoT Plus buttons
-LOBBY_HEADER_BUTTON_TO_CONFIG = {
-    LobbyHeader.BUTTONS.WOT_PLUS: 'showWotPlusButton',
-    LobbyHeader.BUTTONS.PREM: 'showBuyPremiumButton',
-    LobbyHeader.BUTTONS.PREMSHOP: 'showPremiumShopButton'
-}
+# LOBBY_HEADER_BUTTON_TO_CONFIG = _buildLobbyHeaderButtonConfig()
 
 
-@override(LobbyHeader, 'as_setHeaderButtonsS')
-def new__setHeaderButtonsS(func, self, buttons):
-    if config.data.get('enabled', True):
-        for button, key in LOBBY_HEADER_BUTTON_TO_CONFIG.iteritems():
-            if not config.data.get('%s' % key, True) and button in buttons:
-                buttons.remove(button)
-    return func(self, buttons)
+# @override(LobbyHeader, 'as_setHeaderButtonsS')
+# def new__setHeaderButtonsS(func, self, buttons):
+#    if config.data.get('enabled', True) and LOBBY_HEADER_BUTTON_TO_CONFIG:
+#        for button, key in _iteritems(LOBBY_HEADER_BUTTON_TO_CONFIG):
+#            if config.data.get(key, True):
+#                continue
+#            while button in buttons:
+#                buttons.remove(button)
+#    return func(self, buttons)
 
 
 # hide button counters in lobbyHeader
-@override(LobbyHeader, '_LobbyHeader__setCounter')
-def new__setCounter(func, self, alias, counter=None):
-    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
-        return
-    return func(self, alias, counter)
+# @override(LobbyHeader, '_LobbyHeader__setCounter')
+# def new__setCounter(func, self, alias, counter=None):
+#    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
+#        return
+#    return func(self, alias, counter)
 
 
 # hide button counters on customization button
@@ -403,7 +439,7 @@ def new__setCustomizationBtnCounterS(func, self, value):
 
 
 # hide counter on service channel button
-@override(NotificationListButton, '_NotificationListButton__setState')
+@_override_if_available(NotificationListButton, '_NotificationListButton__setState')
 def new__setState(func, self, count):
     if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         return
@@ -421,10 +457,10 @@ def new__updateCounters(func, self):
 # hide achievement popups
 @override(EarningAnimationCommand, 'execute')
 def new__execute(base, self):
-    if config.data.get('enabled', True) and config.data.get('showAchievementPopups', True):
-        base(self)
+    if config.data.get('enabled', True) and not config.data.get('showAchievementPopups', True):
+        self.release()
         return
-    self.release()
+    base(self)
 
 
 # Auto-Login
@@ -445,28 +481,28 @@ autoLogin = AutoLoginHandler()
 @override(LoginView, '_populate')
 def new__LoginViewPopulate(func, self):
     func(self)
-    if not isReplay() and not self.loginManager.wgcAvailable:
+    if not isReplay() and not getattr(self.loginManager, 'wgcAvailable', False):
         autoLogin.auto_login(self)
 
 
 # Show Xp To Unlock Veh.
-# @override(tooltips.StatusBlockConstructor, 'construct')
-# def new__construct(func, self):
-#    result = func(self)
-#    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
-#        techTreeNode = self.configuration.node
-#        vehicle = self.vehicle
-#        isUnlocked = vehicle.isUnlocked
-#        parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
-#        if parentCD is not None:
-#            isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
-#            if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
-#                icon = '<img src=\'{}\' vspace=\'{}\''.format(RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
-#                template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
-#                # Check if result has the expected structure before trying to modify it
-#                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'data' in result[0] and isinstance(result[0]['data'], dict):
-#                    result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
-#    return result
+@override(tooltips.StatusBlockConstructor, 'construct')
+def new__construct(func, self):
+    result = func(self)
+    if result and config.data['enabled'] and config.data['showXpToUnlockVeh']:
+        techTreeNode = self.configuration.node
+        vehicle = self.vehicle
+        isUnlocked = vehicle.isUnlocked
+        parentCD = int(techTreeNode.unlockProps.parentID) if techTreeNode is not None else None
+        if parentCD is not None:
+            isAvailable, cost, need, defCost, discount = getUnlockPrice(vehicle.intCD, parentCD, vehicle.level)
+            if isAvailable and not isUnlocked and need > 0 and techTreeNode is not None:
+                icon = '<img src=\'{}\' vspace=\'{}\'>'.format(
+                    RES_ICONS.MAPS_ICONS_LIBRARY_XPCOSTICON_1.replace('..', 'img://gui'), -3)
+                template = '<font face=\'$TitleFont\' size=\'14\'><font color=\'#ff2717\'>{}</font> {}</font> {}'
+                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'data' in result[0] and isinstance(result[0]['data'], dict):
+                    result[0]['data']['text'] = template.format(i18n.makeString(STORAGE.BLUEPRINTS_CARD_CONVERTREQUIRED), need, icon)
+    return result
 
 
 @override(_TechTreeDataProvider, 'getAllVehiclePossibleXP')
@@ -474,17 +510,17 @@ def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     try:
         if config.data.get('enabled', True) and not config.data.get('allowExchangeXPInTechTree', True):
             return unlockStats.getVehTotalXP(nodeCD)
-    except Exception:
-        logError(config.ID, '_TechTreeDataProvider_getAllVehiclePossibleXP')
+    except Exception as err:
+        logError(config.ID, '_TechTreeDataProvider_getAllVehiclePossibleXP', str(err))
     return func(self, nodeCD, unlockStats)
 
 
 # hide lootBoxes widget in tank carousel in hangar
-@overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')
-def new__getIsActive(func, state):
-    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
-        return False
-    return func(state)
+# @overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')
+# def new__getIsActive(func, state):
+#    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
+#        return False
+#    return func(state)
 
 
 @override(Hangar, 'as_updateCarouselEventEntryStateS')
@@ -494,45 +530,18 @@ def new__updateCarouselEventEntryStateS(func, self, isVisible):
     return func(self, isVisible)
 
 
-# hide lootBoxes widget in hangar
-@override(Hangar, 'as_setEventTournamentBannerVisibleS')
-def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
-    if config.data.get('enabled', True) and not config.data.get('showEventTournamentWidget', True):
-        visible = False
-    return func(self, alias, visible)
-
-
-# Destroy widget if hidden
-@override(TournamentsWidgetComponent, '_makeInjectView')
-def new__makeInjectView(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showEventTournamentWidget', True):
-        self.destroy()
-        return
-    return func(self)
-
-
 # Hide Battle Pass Widget
-@override(BattlePassEntryPointComponent, '_makeInjectView')
-def new__makeBPInjectView(func, self):
+@override(HangarHeader, '_HangarHeader__getBPWidget')
+def new__getBPWidget(func, self):
     if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
-        self.destroy()
-        return
+        return ''
     return func(self)
 
 
-# PremiumTime
-@override(LobbyHeader, 'as_setPremiumParamsS')
-def new__startCallback(func, self, data):
-    config.stopCallback()
-    if config.data['enabled'] and config.data['premiumTime'] and self.itemsCache.items.stats.isPremium:
-        config.callback = callback(1.0, new__startCallback, func, self, data)
-        data['doLabel'] = config.getPremiumLabelText(self.itemsCache.items.stats.activePremiumExpiryTime)
-    func(self, data)
-
-
-@override(LobbyHeader, '_removeListeners')
-def new__removeListeners(func, self):
-    config.stopCallback()
+@override(HangarHeader, '_HangarHeader__updateBattlePassSmallWidget')
+def new__updateBattlePassSmallWidget(func, self):
+    if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
+        return
     return func(self)
 
 
@@ -573,7 +582,12 @@ class Flash(object):
         self.timerEvent.stop()
 
     def setup(self):
-        panel_config = {'x': config.data['panel']['position']['x'], 'y': config.data['panel']['position']['y'], 'width': config.data['panel']['width'], 'height': config.data['panel']['height'], 'alignX': config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT), 'alignY': config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP), 'drag': False, 'border': False, 'limit': False}
+        panel_config = {
+            'x': config.data['panel']['position']['x'], 'y': config.data['panel']['position']['y'],
+            'width': config.data['panel']['width'], 'height': config.data['panel']['height'],
+            'alignX': config.data['panel'].get('alignX', COMPONENT_ALIGN.RIGHT),
+            'alignY': config.data['panel'].get('alignY', COMPONENT_ALIGN.TOP),
+            'drag': False, 'border': False, 'limit': False}
         g_guiFlash.createComponent(self.ID, COMPONENT_TYPE.LABEL, panel_config, battle=False, lobby=True)
         self.setShadow()
 

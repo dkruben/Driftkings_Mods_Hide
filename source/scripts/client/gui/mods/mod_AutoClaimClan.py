@@ -36,7 +36,7 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU_'
         self.data = {
             'enabled': True,
@@ -64,7 +64,7 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
     def onCreate(self):
         self.__hangarSpace.onSpaceCreate -= self.onCreate
         self.updateCache()
-        if self.__enabled and g_clanCache.isInClan and self.__cachedQuestsData and self.__cachedProgressData and self.__cachedSettingsData:
+        if self.__enabled and g_clanCache.isInClan and self.__cachedQuestsData is not None and self.__cachedProgressData is not None and self.__cachedSettingsData is not None:
             self.parseQuests(self.__cachedQuestsData)
             self.parseProgression(self.__cachedProgressData)
 
@@ -111,11 +111,15 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
 
     @staticmethod
     def isMaximumLevelPurchased(data):
+        if not getattr(data, 'points', None):
+            return False
         maximum_level = data.points.get(str(max(map(int, data.points.keys()))), None)
         return maximum_level and maximum_level.status == PointStatus.PURCHASED
 
     def parseProgression(self, data):
-        if not self.__cachedSettingsData.enabled or data is None:
+        if data is None or self.__cachedSettingsData is None or not self.__cachedSettingsData.enabled:
+            return
+        if not getattr(data, 'points', None):
             return
         maximum_level_purchased = self.isMaximumLevelPurchased(data)
         available_levels = [int(stateID) for stateID, stageProgress in data.points.items() if stageProgress.status == PointStatus.AVAILABLE and (int(stateID) not in SKIP_LEVELS or maximum_level_purchased)]
@@ -138,6 +142,8 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
                 self.parseProgression(data)
         elif dataName == DataNames.PROGRESSION_SETTINGS:
             self.__cachedSettingsData = data
+            if self.__enabled and g_clanCache.isInClan and self.__cachedProgressData is not None:
+                self.parseProgression(self.__cachedProgressData)
 
 
 # Create global instance

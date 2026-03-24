@@ -3,7 +3,7 @@ import BigWorld
 from Account import PlayerAccount
 from Avatar import PlayerAvatar
 from gui.Scaleform.daapi.view.battle.shared.messages.fading_messages import FadingMessages
-from helpers.EdgeDetectColorController import g_instance, _OVERLAY_TARGET_INDEXES
+from helpers import EdgeDetectColorController
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer
 
@@ -14,13 +14,14 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.isTeamKill = False
         super(ConfigInterface, self).__init__()
         override(FadingMessages, '_populate', self.new_populate)
-        override(g_instance, '_EdgeDetectColorController__changeColor', self.new__changeColor)
+        override(EdgeDetectColorController.EdgeDetectColorController, '_EdgeDetectColorController__changeColor', self.new__changeColor)
         override(PlayerAvatar, 'onEnterWorld', self.new__onEnterWorld)
         override(PlayerAvatar, 'targetFocus', self.new__targetFocus)
+        override(PlayerAvatar, 'targetBlur', self.new__targetBlur)
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.0 (%(file_compile_date)s)'
+        self.version = '1.4.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': False,
@@ -91,14 +92,21 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     @staticmethod
     def to_html_color(value):
-        return '#{}'.format(value[2:]) if value[:2] == '0x' else value
+        if not value:
+            return None
+        value = value.strip()
+        if value[:2].lower() == '0x':
+            value = value[2:]
+        elif value[:1] == '#':
+            value = value[1:]
+        return value.upper()
 
     @staticmethod
     def color_vector(color, default):
         try:
-            color = '#{}{}'.format(color[-6:], 'FF')
+            color = '{}FF'.format(ConfigInterface.to_html_color(color)[-6:])
             return tuple(int(color[i:i + 2], 16) / 255.0 for i in (0, 2, 4, 6))
-        except ValueError:
+        except (TypeError, ValueError):
             return default
 
     def new_populate(self, func, orig):
@@ -118,9 +126,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             return
         cType = 'colorBlind' if diff['isColorBlind'] else 'common'
         isHangar = isinstance(getPlayer(), PlayerAccount)
-        colors = g_instance._EdgeDetectColorController__colors[cType]
+        colors = base._EdgeDetectColorController__colors[cType]
         if self.isSquad:
-            friend = self.color_vector(config.data.get('squadmanAlive', 'FFB964'), colors['friend'])
+            friend = self.color_vector(config.data.get('squadManAlive', 'FFB964'), colors['friend'])
             enemy = self.color_vector(config.data.get('enemyAlive', '2C9AFF'), colors['enemy'])
         elif self.isTeamKill:
             currentColor = config.data.get('teamKillerAlive', '00EAFF')
@@ -134,7 +142,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         for c in colorsSet:
             BigWorld.wgSetEdgeDetectEdgeColor(i, c)
             i += 1
-        for target, idx in _OVERLAY_TARGET_INDEXES.iteritems():
+        for target, idx in EdgeDetectColorController._OVERLAY_TARGET_INDEXES.iteritems():
             BigWorld.wgSetEdgeDetectSolidColors(idx, *colors['overlaySolidColors'][target]['packed'])
             BigWorld.wgSetEdgeDetectPatternColors(idx, *colors['overlayPatternColors'][target]['packed'])
 
@@ -142,7 +150,8 @@ class ConfigInterface(DriftkingsConfigInterface):
         func(orig, prereqs)
         self.isSquad = False
         self.isTeamKill = False
-        g_instance.updateColors()
+        if EdgeDetectColorController.g_instance is not None:
+            EdgeDetectColorController.g_instance.updateColors()
 
     def new__targetFocus(self, func, orig, entity):
         func(orig, entity)
@@ -153,7 +162,18 @@ class ConfigInterface(DriftkingsConfigInterface):
             self.isSquad = getArenaDP.isSquadMan(vID=entity.id)
             self.isTeamKill = getArenaDP.isTeamKiller(vID=entity.id)
             if (prevIsSquad != self.isSquad) or (prevIsTeamKill != self.isTeamKill):
-                g_instance.updateColors()
+                if EdgeDetectColorController.g_instance is not None:
+                    EdgeDetectColorController.g_instance.updateColors()
+
+    def new__targetBlur(self, func, orig, prevEntity):
+        prevIsSquad = self.isSquad
+        prevIsTeamKill = self.isTeamKill
+        func(orig, prevEntity)
+        self.isSquad = False
+        self.isTeamKill = False
+        if ((prevIsSquad or prevIsTeamKill) and
+                EdgeDetectColorController.g_instance is not None):
+            EdgeDetectColorController.g_instance.updateColors()
 
 
 config = ConfigInterface()

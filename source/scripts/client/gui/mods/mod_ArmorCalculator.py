@@ -43,7 +43,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.3.1 (%(file_compile_date)s)'
+        self.version = '1.3.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -100,6 +100,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
+_isInitialized = False
 
 
 class ArmorCalculator(ArmorCalculatorMeta):
@@ -470,7 +471,7 @@ class Randomizer(object):
                         if skill_name == cls.GUNNER_ARMORER:
                             randomization_max -= percent
             except (AttributeError, TypeError):
-                pass  # Use default randomization values if there's an error
+                pass
 
         _ShotResult.RANDOMIZATION = MinMax(round(randomization_min, 4), round(randomization_max, 4))
         logDebug(config.ID, True, cls.RND_MIN_MAX_DEBUG, _ShotResult.RANDOMIZATION, vehicle.userName)
@@ -485,15 +486,22 @@ def createPlugins(func, *args):
 
 
 def init():
+    global _isInitialized
+    if _isInitialized:
+        return
     g_events.onVehicleChangedDelayed += Randomizer._updateRandomization
-    g_entitiesFactories.addSettings(
-        ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-    g_entitiesFactories.addSettings(
-        ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+    if g_entitiesFactories.getSettings(AS_INJECTOR) is None:
+        g_entitiesFactories.addSettings(
+            ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+    if g_entitiesFactories.getSettings(AS_BATTLE) is None:
+        g_entitiesFactories.addSettings(
+            ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+    _isInitialized = True
 
 
 def fini():
+    global _isInitialized
+    if not _isInitialized:
+        return
     g_events.onVehicleChangedDelayed -= Randomizer._updateRandomization
-
-
-init()
+    _isInitialized = False

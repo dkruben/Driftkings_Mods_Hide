@@ -66,13 +66,10 @@ package
             super.validateData();
             var mark:String = String(this.nameTF.text);
             var markTF:Array = mark.split("||");
-            // Check for the expected format with 8 elements (vehicle name + 7 data fields)
-            if(markTF.length == 8)
+            var payloadOffset:int = markTF.length - 7;
+            if(payloadOffset >= 1)
             {
-                // Set the vehicle name text
                 this.nameTF.text = markTF[0];
-
-                // Handle mark text field (marks + percentage)
                 if(!this._markTF)
                 {
                     this._markTF = new TextField();
@@ -82,26 +79,22 @@ package
                     this._markTF.filters = [new DropShadowFilter(0,90,0,0.72,3,3,2,2)];
                     this.addChild(this._markTF);
                 }
-                // Combine marks and percentage
-                var combinedText:String = String(markTF[1]);
-                if(markTF[2] && markTF[2].length > 0)
+                var combinedText:String = String(markTF[payloadOffset]);
+                if(markTF[payloadOffset + 1] && markTF[payloadOffset + 1].length > 0)
                 {
-                    combinedText += " " + String(markTF[2]);
+                    combinedText += " " + String(markTF[payloadOffset + 1]);
                 }
                 this._cachedText = combinedText;
-                // Parse position and size
-                this._markPosX = int(markTF[3]);
-                this._markPosY = int(markTF[4]);
-                this._markHeight = int(markTF[5]);
-                this._markWidth = int(markTF[6]);
-                // Apply mark field properties
+                this._markPosX = int(markTF[payloadOffset + 2]);
+                this._markPosY = int(markTF[payloadOffset + 3]);
+                this._markHeight = int(markTF[payloadOffset + 4]);
+                this._markWidth = int(markTF[payloadOffset + 5]);
                 this._markTF.x = this._markPosX;
                 this._markTF.y = this._markPosY;
                 this._markTF.height = this._markHeight;
                 this._markTF.width = this._markWidth;
                 this._markTF.htmlText = this._cachedText;
-                // Handle mastery text field
-                if(markTF[7] && markTF[7].length > 0)
+                if(markTF[payloadOffset + 6] && markTF[payloadOffset + 6].length > 0)
                 {
                     if(!this._masteryTF)
                     {
@@ -112,13 +105,11 @@ package
                         this._masteryTF.filters = [new DropShadowFilter(0,90,0,0.72,3,3,2,2)];
                         this.addChild(this._masteryTF);
                     }
-                    this._masteryCachedText = String(markTF[7]);
-                    // Set mastery field position and size
+                    this._masteryCachedText = String(markTF[payloadOffset + 6]);
                     this._masteryX = 0;
                     this._masteryY = -26;
                     this._masteryH = 26;
                     this._masteryW = 128;
-                    // Apply mastery field properties
                     this._masteryTF.x = this._masteryX;
                     this._masteryTF.y = this._masteryY;
                     this._masteryTF.height = this._masteryH;
@@ -127,7 +118,6 @@ package
                 }
                 else
                 {
-                    // Hide mastery field if no data
                     if(this._masteryTF)
                     {
                         this._masteryTF.htmlText = "";
@@ -137,14 +127,20 @@ package
             }
             else if(markTF.length != 1)
             {
-            // Log an error if the array doesn't have the expected format
-            DebugUtils.LOG_ERROR("validateData: Array length is " + markTF.length + " should be 8!");
+                DebugUtils.LOG_ERROR("validateData: Array length is " + markTF.length + " should be 8 or 9!");
             }
             else
             {
-                // Clear cached text if we only have a single element
                 this._masteryCachedText = "";
                 this._cachedText = "";
+                if(this._markTF)
+                {
+                    this._markTF.htmlText = "";
+                }
+                if(this._masteryTF)
+                {
+                    this._masteryTF.htmlText = "";
+                }
             }
         }
 

@@ -74,13 +74,25 @@ package driftkings.views.battle
 			this.loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, this.imageLoaded);
 			this.loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, this.onLoadError);
 			this.loader = null;
-			this.hideAnimation.stop();
-			this.hideAnimation2.stop();
-			this.showAnimation.stop();
+			if (this.hideAnimation)
+			{
+				this.hideAnimation.stop();
+			}
+			if (this.hideAnimation2)
+			{
+				this.hideAnimation2.stop();
+			}
+			if (this.showAnimation)
+			{
+				this.showAnimation.stop();
+			}
 			this.hideAnimation = null;
 			this.hideAnimation2 = null;
 			this.showAnimation = null;
-			this._container.removeChildren();
+			if (this._container)
+			{
+				this._container.removeChildren();
+			}
 			this.timer = null;
 			this._container = null;
 			App.utils.data.cleanupDynamicObject(this.params);
@@ -141,12 +153,19 @@ package driftkings.views.battle
 
 		public function as_show(seconds:Number):void
 		{
-			if (this.hideAnimation.isPlaying)
+			if (!this._container || !this._image)
+			{
+				return;
+			}
+			if (this.hideAnimation && this.hideAnimation.isPlaying)
 			{
 				this.hideAnimation.stop();
 				this.hideAnimation.rewind();
-				this.hideAnimation2.stop();
-				this.hideAnimation2.rewind();
+				if (this.hideAnimation2)
+				{
+					this.hideAnimation2.stop();
+					this.hideAnimation2.rewind();
+				}
 			}
 			if (seconds)
 			{
@@ -193,7 +212,7 @@ package driftkings.views.battle
 		public function as_hide():void
 		{
 			this.clearTimers();
-			if (this.is_visible)
+			if (this.is_visible && this.hideAnimation && this.hideAnimation2)
 			{
 				this.hideAnimation.start();
 				this.hideAnimation2.start();

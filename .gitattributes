@@ -1,0 +1,4 @@
+*.mtimes* text eol=lf
+build_tools/hooks/* text eol=lf
+*.py text eol=lf
+*.cmd text eol=crlf

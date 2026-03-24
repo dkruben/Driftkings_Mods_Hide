@@ -13,6 +13,12 @@ GENERATOR = {
     BATTLE_EVENT_TYPE.TRACK_ASSIST: ['UI_setting_AssistTrack_text', 'messageColorAssistTrack', 'AssistTrack'],
     BATTLE_EVENT_TYPE.STUN_ASSIST: ['UI_setting_AssistStun_text', 'messageColorAssistStun', 'AssistStun']
 }
+SUPPORTED_EVENTS = (
+    BATTLE_EVENT_TYPE.SPOTTED,
+    BATTLE_EVENT_TYPE.RADIO_ASSIST,
+    BATTLE_EVENT_TYPE.TRACK_ASSIST,
+    BATTLE_EVENT_TYPE.STUN_ASSIST
+)
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -23,7 +29,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.8.5 (%(file_compile_date)s)'
+        self.version = '1.8.6 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.data = {
             'enabled': True,
@@ -141,6 +147,15 @@ class ConfigInterface(DriftkingsConfigInterface):
             'damage': ''
         }
 
+    @staticmethod
+    def _getFullTargetLabel(targetInfo):
+        parts = []
+        if targetInfo.playerName:
+            parts.append(targetInfo.playerName)
+        if targetInfo.vehicleName:
+            parts.append(targetInfo.vehicleName)
+        return ' - '.join(parts)
+
     def sound(self, assist_type):
         soundID = self.data[SOUND_LIST[assist_type]]
         getPlayer().soundNotifications.play(soundID)
@@ -148,26 +163,31 @@ class ConfigInterface(DriftkingsConfigInterface):
     def textGenerator(self, event):
         textKey, colorKey, macrosKey = GENERATOR[event]
         formatted_text = self.data[macrosKey].format(**self.format_str)
-        message = (self.i18n[textKey], formatted_text)
+        message = '%s %s' % (self.i18n[textKey], formatted_text) if formatted_text else self.i18n[textKey]
         color = self.data[colorKey]
         return message, color
 
     def postMessage(self, events):
         if not self.data['enabled']:
             return
-        g_sessionProvider = getPlayer().guiSessionProvider
-        self.format_recreate()
+        player = getPlayer()
+        guiSessionProvider = player.guiSessionProvider
+        if guiSessionProvider.shared.vehicleState.getControllingVehicleID() != player.playerVehicleID:
+            return
         for data in events:
             feedbackEvent = feedback_events.PlayerFeedbackEvent.fromDict(data)
-            eventID = feedbackEvent.getBattleEventType()
-            if eventID not in [BATTLE_EVENT_TYPE.SPOTTED, BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST]:
+            if feedbackEvent is None:
                 continue
+            eventID = feedbackEvent.getBattleEventType()
+            if eventID not in SUPPORTED_EVENTS:
+                continue
+            self.format_recreate()
             vehicleID = feedbackEvent.getTargetID()
-            vehicleInfo = g_sessionProvider.getArenaDP().getVehicleInfo(vehicleID)
+            vehicleInfo = guiSessionProvider.getArenaDP().getVehicleInfo(vehicleID)
             if not vehicleInfo:
                 continue
             icon = '<img src=\'img://%s\' width=\'%s\' height=\'%s\' />' % (vehicleInfo.vehicleType.iconPath.replace('..', 'gui'), self.data['iconSizeX'], self.data['iconSizeY'])
-            targetInfo = g_sessionProvider.getCtx().getPlayerFullNameParts(vID=vehicleID)
+            targetInfo = guiSessionProvider.getCtx().getPlayerFullNameParts(vID=vehicleID)
             if self.check_macros('{icons}'):
                 self.format_str['icons'] += icon
             if self.check_macros('{names}'):
@@ -179,7 +199,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             if self.check_macros('{icons_vehicles}'):
                 self.format_str['icons_vehicles'] += '%s[<b>%s</b>]' % (icon, targetInfo.vehicleName) if targetInfo.vehicleName else icon
             if self.check_macros('{full}'):
-                self.format_str['full'] += '%s[<b>%s</b>]' % (icon, targetInfo) if targetInfo else icon
+                fullLabel = self._getFullTargetLabel(targetInfo)
+                self.format_str['full'] += '%s[<b>%s</b>]' % (icon, fullLabel) if fullLabel else icon
             if self.check_macros('{damage}'):
                 extra = _createEfficiencyInfoFromFeedbackEvent(feedbackEvent)
                 if extra and extra.getType() in _AGGREGATED_DAMAGE_EFFICIENCY_TYPES:

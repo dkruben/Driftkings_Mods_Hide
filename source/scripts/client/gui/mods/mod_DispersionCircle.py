@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import AvatarInputHandler
 import BattleReplay
+import BigWorld
 import Math
 import VehicleGunRotator
 import aih_constants
@@ -8,29 +9,29 @@ from account_helpers.settings_core.settings_constants import GRAPHICS, SPGAim
 from aih_constants import CTRL_MODE_NAME, GUN_MARKER_FLAG, GUN_MARKER_TYPE
 from constants import AIMING_MODE, ARENA_PERIOD, SERVER_TICK_LENGTH
 from gui.Scaleform.daapi.view.battle.shared import SharedPage
-from gui.Scaleform.daapi.view.battle.shared.crosshair import CrosshairPanelContainer, gm_factory, settings
+from gui.Scaleform.daapi.view.battle.shared.crosshair import CrosshairPanelContainer, gm_factory
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_components import DefaultGunMarkerComponent, SPGGunMarkerComponent
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_components import GunMarkersComponents
 from gui.Scaleform.daapi.view.battle.shared.crosshair.gm_factory import _GunMarkersFactory
 from gui.Scaleform.daapi.view.battle.shared.crosshair.plugins import _SETTINGS_KEYS, _SETTINGS_VIEWS, _SETTINGS_KEY_TO_VIEW_ID
-from gui.Scaleform.daapi.view.external_components import ExternalFlashSettings
-from gui.Scaleform.genConsts.BATTLE_VIEW_ALIASES import BATTLE_VIEW_ALIASES
 from gui.Scaleform.genConsts.GUN_MARKER_VIEW_CONSTANTS import GUN_MARKER_VIEW_CONSTANTS
 from gui.Scaleform.locale.SETTINGS import SETTINGS
 from gui.battle_control.battle_constants import CROSSHAIR_VIEW_ID
-from gui.shared.utils.plugins import PluginsCollection
 from helpers import dependency
 from helpers import i18n
 from skeletons.account_helpers.settings_core import ISettingsCache, ISettingsCore
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version, logWarning, getPlayer, serverTime
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version, logWarning, getPlayer
 
 DEFAULT_GUN_MARKER_LINKAGES = gm_factory._GUN_MARKER_LINKAGES
+DEFAULT_GUN_MARKER_MIN_SIZE = aih_constants.GUN_MARKER_MIN_SIZE
 
 CUSTOM_ARCADE_GUN_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.ARCADE_GUN_MARKER_NAME + '-SERVER'
 CUSTOM_SNIPER_GUN_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.SNIPER_GUN_MARKER_NAME + '-SERVER'
 CUSTOM_DUAL_GUN_ARCADE_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.DUAL_GUN_ARCADE_MARKER_NAME + '-SERVER'
 CUSTOM_DUAL_GUN_SNIPER_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.DUAL_GUN_SNIPER_MARKER_NAME + '-SERVER'
+CUSTOM_TWIN_GUN_ARCADE_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.TWIN_GUN_ARCADE_MARKER_NAME + '-SERVER'
+CUSTOM_TWIN_GUN_SNIPER_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.TWIN_GUN_SNIPER_MARKER_NAME + '-SERVER'
 CUSTOM_SPG_MARKER_NAME = GUN_MARKER_VIEW_CONSTANTS.SPG_GUN_MARKER_NAME + '-SERVER'
 
 CUSTOM_GUN_MARKER_LINKAGES = {
@@ -38,6 +39,8 @@ CUSTOM_GUN_MARKER_LINKAGES = {
    CUSTOM_SNIPER_GUN_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.GUN_MARKER_LINKAGE,
    CUSTOM_DUAL_GUN_ARCADE_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.DUAL_GUN_ARCADE_MARKER_LINKAGE,
    CUSTOM_DUAL_GUN_SNIPER_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.DUAL_GUN_SNIPER_MARKER_LINKAGE,
+   CUSTOM_TWIN_GUN_ARCADE_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.TWIN_GUN_MARKER_LINKAGE,
+   CUSTOM_TWIN_GUN_SNIPER_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.TWIN_GUN_MARKER_LINKAGE,
    CUSTOM_SPG_MARKER_NAME: GUN_MARKER_VIEW_CONSTANTS.GUN_MARKER_SPG_LINKAGE
 }
 
@@ -81,7 +84,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -136,8 +139,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def onApplySettings(self, settings):
         super(ConfigInterface, self).onApplySettings(settings)
-        if self.data['enabled']:
-            aih_constants.GUN_MARKER_MIN_SIZE = aih_constants.GUN_MARKER_MIN_SIZE
+        if not self.data['enabled']:
+            aih_constants.GUN_MARKER_MIN_SIZE = DEFAULT_GUN_MARKER_MIN_SIZE
             self.reticleScaleFactor = 1
             self.data['showClientAndServerReticle'] = False
         else:
@@ -162,17 +165,7 @@ analytics = Analytics(config.ID, config.version)
 
 class CustomCrosshairContainer(CrosshairPanelContainer):
     def __init__(self, createMarkers, overrideMarkers, customSettings, enableSpgStrategicReticle):
-        super(CrosshairPanelContainer, self).__init__(ExternalFlashSettings(BATTLE_VIEW_ALIASES.CROSSHAIR_PANEL, settings.CROSSHAIR_CONTAINER_SWF, settings.CROSSHAIR_ROOT_PATH, settings.CROSSHAIR_INIT_CALLBACK))
-        self._CrosshairPanelContainer__plugins = PluginsCollection(self)
-        self._CrosshairPanelContainer__plugins.addPlugins(self._getPlugins())
-        self._CrosshairPanelContainer__gunMarkers = None
-        self._CrosshairPanelContainer__viewID = CROSSHAIR_VIEW_ID.UNDEFINED
-        self._CrosshairPanelContainer__zoomFactor = 0.0
-        self._CrosshairPanelContainer__scale = 1.0
-        self._CrosshairPanelContainer__distance = 0
-        self._CrosshairPanelContainer__hasAmmo = True
-        self._CrosshairPanelContainer__callbackDelayer = None
-        self._CrosshairPanelContainer__isFaded = False
+        super(CustomCrosshairContainer, self).__init__()
         self.createMarkers = createMarkers
         self.overrideMarkers = overrideMarkers
         self.customSettings = customSettings
@@ -237,6 +230,8 @@ class _CustomServerControlMarkersFactory(_GunMarkersFactory):
             markers = self._createSPGMarkers(enableSpgStrategicReticle)
         elif self._vehicleInfo.isDualGunVehicle():
             markers = self._createDualGunMarkers()
+        elif self._vehicleInfo.isTwinGunVehicle():
+            markers = self._createTwinGunMarkers()
         else:
             markers = self._createDefaultMarkers()
         return markers
@@ -250,6 +245,11 @@ class _CustomServerControlMarkersFactory(_GunMarkersFactory):
         return (
          self._createArcadeMarker(CUSTOM_ARCADE_GUN_MARKER_NAME),
          self._createSniperMarker(CUSTOM_SNIPER_GUN_MARKER_NAME))
+
+    def _createTwinGunMarkers(self):
+        return (
+         self._createArcadeMarker(CUSTOM_TWIN_GUN_ARCADE_MARKER_NAME),
+         self._createSniperMarker(CUSTOM_TWIN_GUN_SNIPER_MARKER_NAME))
 
     def _createSPGMarkers(self, enableSpgStrategicReticle):
         if enableSpgStrategicReticle:
@@ -282,25 +282,33 @@ def GetCustomServerCrosshair(customSettings, enableSpgStrategicReticle):
     return CustomCrosshairContainer(_createComponents, _overrideComponents, customSettings, enableSpgStrategicReticle)
 
 
+def _scaleGunMarkerInfo(gunMarkerInfo):
+    if gunMarkerInfo is None or config.reticleScaleFactor == 1:
+        return gunMarkerInfo
+    return gunMarkerInfo._replace(
+        size=gunMarkerInfo.size / config.reticleScaleFactor,
+        dualAccSize=gunMarkerInfo.dualAccSize / config.reticleScaleFactor)
+
+
 @override(AvatarInputHandler.AvatarInputHandler, 'updateClientGunMarker')
-def new_AvatarInputHandler_updateClientGunMarker(_, self, pos, direction, size, sizeOffset, relaxTime, collData):
+def new_AvatarInputHandler_updateClientGunMarker(_, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
     if self.ctrlModeName in (CTRL_MODE_NAME.ARCADE, CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.SNIPER):
-        size /= config.reticleScaleFactor
-    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.CLIENT, pos, direction, size, sizeOffset, relaxTime, collData)
+        gunMarkerInfo = _scaleGunMarkerInfo(gunMarkerInfo)
+    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.CLIENT, gunMarkerInfo, supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler.AvatarInputHandler, 'updateServerGunMarker')
-def new_AvatarInputHandler_updateServerGunMarker(_, self, pos, direction, size, sizeOffset, relaxTime, collData):
+def new_AvatarInputHandler_updateServerGunMarker(_, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
     if self.ctrlModeName in (CTRL_MODE_NAME.ARCADE, CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.SNIPER):
-        size /= config.reticleScaleFactor
-    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.SERVER, pos, direction, size, sizeOffset, relaxTime, collData)
+        gunMarkerInfo = _scaleGunMarkerInfo(gunMarkerInfo)
+    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.SERVER, gunMarkerInfo, supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler.AvatarInputHandler, 'updateDualAccGunMarker')
-def new_AvatarInputHandler_updateDualAccGunMarker(func, self, pos, direction, size, sizeOffset, relaxTime, collData):
+def new_AvatarInputHandler_updateDualAccGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
     if self.ctrlModeName in (CTRL_MODE_NAME.ARCADE, CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.SNIPER):
-        size /= config.reticleScaleFactor
-    func(self, pos, direction, size, sizeOffset, relaxTime, collData)
+        gunMarkerInfo = _scaleGunMarkerInfo(gunMarkerInfo)
+    func(self, gunMarkerInfo, supportMarkersInfo, relaxTime)
 
 
 @override(SharedPage, '__init__')
@@ -325,7 +333,7 @@ def ensureServerAimingIsEnabled():
 
 def enableServerAiming():
     settingsCore = dependency.instance(ISettingsCore)
-    if settingsCore.getSetting('useServerAim') is 0:
+    if settingsCore.getSetting('useServerAim') == 0:
         settingsCore.isChangesConfirmed = True
         settingsCore.applySettings({'useServerAim': True})
         confirmators = settingsCore.applyStorages(True)
@@ -388,7 +396,7 @@ def new_VehicleGunRotator_clientMode_setter(func, self, value):
         if not self._VehicleGunRotator__isStarted:
             return
         if self.clientMode:
-            self._VehicleGunRotator__time = serverTime()
+            self._VehicleGunRotator__time = BigWorld.time()
             self.stopTrackingOnServer()
     else:
         func.fset(self, value)
@@ -414,10 +422,14 @@ def new_VehicleGunRotator_setShotPosition(func, self, vehicleID, shotPos, shotVe
                     shotDir.normalise()
                     if shotDir.dot(dirToTarget) > 0.0:
                         return
-            markerPosition = self._VehicleGunRotator__getGunMarkerPosition(shotPos, shotVec, dispersionAngles)
-            mPos, mDir, mSize, _, mSizeOffset, collData = markerPosition
+            gunMarkerInfo = self._VehicleGunRotator__getGunMarkerInfo(
+                shotPos,
+                shotVec,
+                dispersionAngles,
+                self._VehicleGunRotator__gunIndex)
+            supportMarkersInfo = self._VehicleGunRotator__getSupportMarkersInfo()
             if self.clientMode and self.showServerMarker:
-                self._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, SERVER_TICK_LENGTH, collData)
+                self._avatar.inputHandler.updateServerGunMarker(gunMarkerInfo, supportMarkersInfo, SERVER_TICK_LENGTH)
             return
     else:
         func(self, vehicleID, shotPos, shotVec, dispersionAngle, forceValueRefresh)
@@ -429,9 +441,13 @@ def new_VehicleGunRotator_updateRotationAndGunMarker(func, self, shotPoint, time
     func(self, shotPoint, timeDiff)
     if config.data['showClientAndServerReticle'] and not self.clientMode:
         shotPos, shotVec = self.getCurShotPosition()
-        markerPosition = self._VehicleGunRotator__getGunMarkerPosition(shotPos, shotVec, self._VehicleGunRotator__dispersionAngles)
-        mPos, mDir, mSize, _, mSizeOffset, collData = markerPosition
+        gunMarkerInfo = self._VehicleGunRotator__getGunMarkerInfo(
+            shotPos,
+            shotVec,
+            self._VehicleGunRotator__dispersionAngles,
+            self._VehicleGunRotator__gunIndex)
+        supportMarkersInfo = self._VehicleGunRotator__getSupportMarkersInfo()
         relaxTime = 0.001
         if not (BattleReplay.g_replayCtrl.isPlaying and BattleReplay.g_replayCtrl.isUpdateGunOnTimeWarp):
             relaxTime = self._VehicleGunRotator__ROTATION_TICK_LENGTH
-        self._avatar.inputHandler.updateServerGunMarker(mPos, mDir, mSize, mSizeOffset, relaxTime, collData)
+        self._avatar.inputHandler.updateServerGunMarker(gunMarkerInfo, supportMarkersInfo, relaxTime)

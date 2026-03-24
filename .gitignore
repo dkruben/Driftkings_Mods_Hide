@@ -63,6 +63,13 @@ Thumbs.db
 *.bak
 *.tmp
 
+# Installer generated artifacts
+installer/DriftkingsInstaller/bin/
+installer/DriftkingsInstaller/obj/
+installer/DriftkingsInstaller/Payload/archives/
+installer/DriftkingsInstaller/Payload/payload_manifest.json
+installer/DriftkingsInstaller/Assets/*.png
+
 
 source/scripts/client/gui/mods/test_1.py
 *.bnk

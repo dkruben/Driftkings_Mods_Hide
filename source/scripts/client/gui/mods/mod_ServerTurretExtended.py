@@ -5,7 +5,7 @@ import CommandMapping
 import Keys
 import VehicleGunRotator
 import gun_rotation_shared
-from Avatar import PlayerAvatar, MOVEMENT_FLAGS
+from Avatar import PlayerAvatar, MOVEMENT_FLAGS, _CRUISE_CONTROL_MODE
 from AvatarInputHandler.player_notifications.siege_mode.sound_notifications import SoundNotifications
 from constants import VEHICLE_SETTING, VEHICLE_SIEGE_STATE
 from gui import InputHandler
@@ -18,7 +18,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.5 (%(file_compile_date)s)'
+        self.version = '1.7.6 (%(file_compile_date)s)'
         self.author = '(orig by spoter, reven86), re-coded by Driftkings'
         self.defaultKeys = {
             'buttonAutoMode': [Keys.KEY_R, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -111,6 +111,10 @@ class MovementControl(object):
         self.callback = callback(0.1, self.onCallback)
 
     @staticmethod
+    def getStatusText(enabled):
+        return config.i18n['UI_battle_ON'] if enabled else config.i18n['UI_battle_OFF']
+
+    @staticmethod
     def keyPressed(event):
         if not config.data['enabled']:
             return
@@ -119,11 +123,11 @@ class MovementControl(object):
             return
         if checkKeys(config.data['buttonMaxMode']) and event.isKeyDown():
             config.data['maxWheelMode'] = not config.data['maxWheelMode']
-            message = '%s: %s' % (config.i18n['UI_setting_maxWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['maxWheelMode'] else config.i18n['UI_AutoMode_off'])
+            message = '%s: %s' % (config.i18n['UI_setting_maxWheelMode_text'], MovementControl.getStatusText(config.data['maxWheelMode']))
             sendPanelMessage(message, 'Green' if config.data['maxWheelMode'] else 'Red')
         if checkKeys(config.data['buttonAutoMode']) and event.isKeyDown():
             config.data['autoActivateWheelMode'] = not config.data['autoActivateWheelMode']
-            message = '%s: %s' % (config.i18n['UI_setting_autoActivateWheelMode_text'], config.i18n['UI_AutoMode_on'] if config.data['autoActivateWheelMode'] else config.i18n[ 'UI_AutoMode_off'])
+            message = '%s: %s' % (config.i18n['UI_setting_autoActivateWheelMode_text'], MovementControl.getStatusText(config.data['autoActivateWheelMode']))
             sendPanelMessage(message, 'Green' if config.data['autoActivateWheelMode'] else 'Red')
 
     # noinspection PyProtectedMember
@@ -174,12 +178,14 @@ class MovementControl(object):
 
     @staticmethod
     def fixSiegeModeCruiseControl():
+        if not config.data['fixWheelCruiseControl']:
+            return False
         player = getPlayer()
         vehicle = player.getVehicleAttached()
         result = vehicle and vehicle.isAlive() and vehicle.isWheeledTech and vehicle.typeDescriptor.hasSiegeMode
-        if result:
+        if result and vehicle.appearance and vehicle.appearance.engineAudition:
             sound_state_change = vehicle.typeDescriptor.type.siegeModeParams['soundStateChange']
-            vehicle.appearance.engineAudition.setSiegeSoundEvents(sound_state_change.isEngine, sound_state_change.npcOn, sound_state_change.npcOff)
+            vehicle.appearance.engineAudition.setSiegeSoundEvents(sound_state_change.isEngine, sound_state_change.on, sound_state_change.off)
         return result
 
 
@@ -231,11 +237,15 @@ def new__destroyGUI(func, *args):
 
 @override(PlayerAvatar, 'updateSiegeStateStatus')
 def new__updateSiegeStateStatus(func, self, vehicleID, status, timeLeft):
-    if not movement_control.fixSiegeModeCruiseControl():
+    if not config.data['enabled'] or not movement_control.fixSiegeModeCruiseControl():
         return func(self, vehicleID, status, timeLeft)
     typeDescr = self._PlayerAvatar__updateVehicleStatus(vehicleID)
-    if not typeDescr or not self.vehicle or vehicleID != self.vehicle.id:
+    if not typeDescr:
         return
+    if status in VEHICLE_SIEGE_STATE.SWITCHING:
+        if typeDescr.type.shouldStopEngineOnSiegeSwitch and not typeDescr.type.hasAutoSiegeMode:
+            self._PlayerAvatar__cruiseControlMode = _CRUISE_CONTROL_MODE.NONE
+        self._PlayerAvatar__updateCruiseControlPanel()
     self.guiSessionProvider.invalidateVehicleState(VEHICLE_VIEW_STATE.SIEGE_MODE, (status, timeLeft))
     self._PlayerAvatar__onSiegeStateUpdated(vehicleID, status, timeLeft)
 

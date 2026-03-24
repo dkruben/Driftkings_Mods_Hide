@@ -4,8 +4,36 @@ import os
 import subprocess
 import sys
 
+try:
+    text_type = unicode
+except NameError:
+    text_type = str
+
+
+def to_unicode(value):
+    if isinstance(value, text_type):
+        return value
+    for encoding in ('utf-8', sys.getfilesystemencoding() or 'utf-8', 'cp1252', 'cp1251'):
+        try:
+            return value.decode(encoding)
+        except (UnicodeDecodeError, AttributeError):
+            continue
+    return value.decode('utf-8', 'replace')
+
+
+def to_fs_path(path):
+    if isinstance(path, text_type):
+        return path.encode(sys.getfilesystemencoding() or 'utf-8')
+    return path
+
+
+def git_lines(*args):
+    output = subprocess.check_output(['git'] + list(args))
+    return [to_unicode(line).strip() for line in output.splitlines() if line.strip()]
+
 
 def change_date(timestamp, filename):
+    filename = to_fs_path(filename)
     stat = os.stat(filename)
     os.utime(filename, (stat.st_atime, timestamp))
 
@@ -42,25 +70,25 @@ def parse_file(path):
 
 
 def update_data(path, data, rec):
+    path = to_unicode(path)
     rem = path
-    filesList = subprocess.check_output(['git', 'ls-files', path + '/']).split('\n')
+    files_list = git_lines('ls-files', path + '/')
     rem = rem if not rem or rem.endswith('/') else rem + '/'
-    for act_path in data.keys():
+    for act_path in list(data.keys()):
         x = rem + act_path
-        if not os.path.isfile(x.encode('cp1251')):
+        if not os.path.isfile(to_fs_path(x)):
             data.pop(act_path)
-    for x in filesList:
-        x = x.strip().strip('"').decode('string-escape').decode('utf8')
+    for x in files_list:
         if x and '.mtimes' not in x:
             act_path = x if not rem or not x.startswith(rem) else x.split(rem, 1)[1]
             if rec or '/' not in act_path:
-                x = x.encode('cp1251')
-                if os.path.isfile(x):
-                    data[act_path] = int(os.stat(x).st_mtime)
+                fs_path = to_fs_path(x)
+                if os.path.isfile(fs_path):
+                    data[act_path] = int(os.stat(fs_path).st_mtime)
 
 
 def write(path, data):
-    with codecs.open(path, 'w', 'utf-8-sig') as f:
+    with codecs.open(path, 'wb', 'utf-8-sig') as f:
         for filename in sorted(data):
             if filename:
                 f.write('%s|%s\n' % (data[filename], filename))
@@ -92,9 +120,9 @@ def main():
     mode = opts[0][0].strip('-')
     if mode == 'r':
         print 'Restoring modification dates'
-        for path in subprocess.check_output(['git', 'ls-files', '*.mtimes*']).split('\n'):
+        for path in git_lines('ls-files', '*.mtimes*'):
             data = parse_file(path)
-            for filename in data.keys():
+            for filename in list(data.keys()):
                 f_path = os.path.join(os.path.dirname(path), filename)
                 if os.path.isfile(f_path):
                     change_date(data[filename], f_path)
@@ -105,7 +133,7 @@ def main():
                 write(path, data)
     elif mode in 'as':
         print 'Saving modification dates'
-        for path in subprocess.check_output(['git', 'ls-files', '*.mtimes*']).split('\n'):
+        for path in git_lines('ls-files', '*.mtimes*'):
             if not path:
                 return
             data = mode == 's' and parse_file(path) or {}

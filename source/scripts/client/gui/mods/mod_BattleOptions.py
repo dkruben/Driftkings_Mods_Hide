@@ -42,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.8.0 (%(file_compile_date)s)'
+        self.version = '2.8.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -55,7 +55,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'hideBattlePrestige': False,
             'hideClanName': False,
             'inBattle': True,
-            'loadTxt': 'Reloading at %(pos)s, for %(load)s seconds.',
+            'loadTxt': 'Reloading at {pos}, for {load} seconds.',
             'maxChatLines': 6,
             'muteTeamBaseSound': False,
             'postmortemTips': True,
@@ -248,7 +248,7 @@ def new_setPostmortemTipsVisibleS(func, self, value):
 
 @override(SharedPage, '_switchToPostmortem')
 def new_switchToPostmortem(func, *args):
-    if config.data['enabled'] and config.data['postmortemTips']:
+    if not config.data['enabled'] or config.data['postmortemTips']:
         func(*args)
 
 
@@ -276,7 +276,7 @@ def new_onVehicleStateUpdated(func, self, state, value):
 # mute battle bases
 @override(BattleTeamsBasesController, '__playCaptureSound')
 def new_muteCaptureSound(func, *args):
-    if config.data['enabled'] and not config.data['muteTeamBaseSound']:
+    if not config.data['enabled'] or not config.data['muteTeamBaseSound']:
         return func(*args)
 
 
@@ -309,7 +309,7 @@ def new_destroyGUI(func, *args):
     config.isLobby = False
 
 
-# is friends
+# Friends
 def showFriends():
     return config.data['enabled'] and config.data['showFriends'] and not isReplay()
 
@@ -338,7 +338,14 @@ def onReload(avatar):
     if reloadingState:
         macro['load'] = str(math.ceil(reloadingState.getTimeLeft()))
         macro['pos'] = square_position.getSquarePosition()
-    message = config.data['loadTxt'].format(**macro)
+    template = config.data['loadTxt']
+    try:
+        message = template.format(**macro)
+    except (IndexError, KeyError, ValueError):
+        try:
+            message = template % macro
+        except (TypeError, ValueError, KeyError):
+            message = template
     if len(message) > 0:
         avatar.guiSessionProvider.shared.chatCommands.proto.arenaChat.broadcast(message, 0)
     else:
@@ -395,9 +402,31 @@ def new__makeSettingsVO(func, self):
 # PlayerSatisfactionWidget/ShowRateSatisfactionCmp
 @override(ShowRateSatisfactionCmp, '_convert')
 def new_showRateSatisfactionCmp(func, self, value, reusable):
-    if not config.data.get('showPlayerSatisfactionWidget', True):
+    if config.data['enabled'] and not config.data.get('showPlayerSatisfactionWidget', True):
         return False
     return func(self, value, reusable)
+
+
+def _iterVehicleNames(vehicleType):
+    if vehicleType is None:
+        return
+    typeDescr = getattr(vehicleType, 'type', vehicleType)
+    for attr in ('shortUserString', 'shortNameWithPrefix', 'shortName', 'userString'):
+        name = getattr(typeDescr, attr, None)
+        if name:
+            yield name
+
+
+def _getAttackerName(vehicleName):
+    player = getPlayer()
+    arena = getattr(player, 'arena', None)
+    if arena is None:
+        return 'Unknown'
+    for _, vData in arena.vehicles.items():
+        for candidate in _iterVehicleNames(vData.get('vehicleType')):
+            if candidate == vehicleName:
+                return vData.get('name', 'Unknown')
+    return 'Unknown'
 
 
 # add enemy name to damage log
@@ -405,13 +434,7 @@ def new_showRateSatisfactionCmp(func, self, value, reusable):
 def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
     if not config.data['enabled'] or not config.data['addEnemyName']:
         return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
-    player = getPlayer()
-    arena = player.arena
-    attackerName = 'Unknown'
-    for vID, vData in arena.vehicles.items():
-        if vData['vehicleType'].type.shortUserString == vehicleName:
-            attackerName = vData['name']
-            break
+    attackerName = _getAttackerName(vehicleName)
     return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
 
 
@@ -419,13 +442,7 @@ def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleNa
 def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
     if not config.data['enabled'] or not config.data['addEnemyName']:
         return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
-    player = getPlayer()
-    arena = player.arena
-    attackerName = 'Unknown'
-    for vID, vData in arena.vehicles.items():
-        if vData['vehicleType'].type.shortUserString == vehicleName:
-            attackerName = vData['name']
-            break
+    attackerName = _getAttackerName(vehicleName)
     return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
 
 

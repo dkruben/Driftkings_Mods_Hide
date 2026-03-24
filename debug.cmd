@@ -1,4 +1,3 @@
 @echo off
-popd
-start /wait build_tools\debug.cmd
-exit
+call build_tools\run_build.cmd debug
+exit /b %ERRORLEVEL%

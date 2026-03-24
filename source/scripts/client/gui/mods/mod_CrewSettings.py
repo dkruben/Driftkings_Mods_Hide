@@ -59,23 +59,29 @@ def openIgnoredVehicles():
 
 
 def updateIgnoredVehicles(vehicles):
+    global ignored_vehicles
     path = os.path.join(getCachePath(), 'auto_prev_crew.json')
     if isinstance(vehicles, (str, unicode)):
         vehicles_set = ignored_vehicles.copy()
         vehicles_set.add(vehicles)
         vehicles = vehicles_set
-    return writeJsonFile(path, {'vehicles': sorted(vehicles)})
+    ignored_vehicles = set(str(vehicle_id) for vehicle_id in vehicles)
+    return writeJsonFile(path, {'vehicles': sorted(ignored_vehicles)})
 
 
 def removeIgnoredVehicle(vehicle_id):
+    global ignored_vehicles
     vehicles_set = ignored_vehicles.copy()
     if str(vehicle_id) in vehicles_set:
         vehicles_set.remove(str(vehicle_id))
+        ignored_vehicles = vehicles_set
         return writeJsonFile(os.path.join(getCachePath(), 'auto_prev_crew.json'), {'vehicles': sorted(vehicles_set)})
     return False
 
 
 def clearIgnoredVehicles():
+    global ignored_vehicles
+    ignored_vehicles = set()
     return writeJsonFile(os.path.join(getCachePath(), 'auto_prev_crew.json'), {'vehicles': []})
 
 
@@ -85,7 +91,7 @@ ignored_vehicles = openIgnoredVehicles()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.0 (%(file_compile_date)s)'  # Updated version
+        self.version = '1.2.1 (%(file_compile_date)s)'  # Updated version
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -139,6 +145,7 @@ class Crew(object):
     def __init__(self):
         self.intCD = None
         self.__callbackID = None
+        self.__skipNextAutoReturnInvID = None
         self.last_operation_time = 0
 
     def init(self):
@@ -148,6 +155,7 @@ class Crew(object):
 
     def invalidate(self):
         self.intCD = None
+        self.__skipNextAutoReturnInvID = None
         if self.__callbackID is not None:
             cancelCallback(self.__callbackID)
             self.__callbackID = None
@@ -186,6 +194,13 @@ class Crew(object):
             intCD = vehicle.intCD
             if config.data['excludePremiumVehicles'] and vehicle.isPremium:
                 return
+            if self.__skipNextAutoReturnInvID == vehicle.invID:
+                self.__skipNextAutoReturnInvID = None
+                self.intCD = intCD
+                return
+            if str(vehicle.invID) in ignored_vehicles:
+                self.intCD = intCD
+                return
             if intCD != self.intCD:
                 self.__callbackID = callback(config.data['autoReturnDelay'], self.returnCrew)
                 self.intCD = intCD
@@ -200,9 +215,8 @@ class Crew(object):
             if vehicle and vehicle.isInInventory and not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
                 if config.data['excludePremiumVehicles'] and vehicle.isPremium:
                     return
-                vehicle_id = str(vehicle.invID)
-                if updateIgnoredVehicles(vehicle_id):
-                    self.processReturnCrewForVehicleSelectorPopup(vehicle)
+                self.__skipNextAutoReturnInvID = vehicle.invID
+                self.processReturnCrewForVehicleSelectorPopup(vehicle)
 
     def isLastCrewAvailable(self):
         if not g_currentVehicle.isPresent():
@@ -224,6 +238,8 @@ class Crew(object):
         if not g_currentVehicle.isPresent():
             return
         if not g_currentVehicle.isInHangar() or g_currentVehicle.isInBattle() or g_currentVehicle.isLocked() or g_currentVehicle.isCrewFull():
+            return
+        if str(g_currentVehicle.item.invID) in ignored_vehicles:
             return
         if not self.isLastCrewAvailable():
             if config.data['showNotifications']:
@@ -250,7 +266,7 @@ class Crew(object):
         if not g_currentVehicle.isPresent():
             return None
         vehicle = g_currentVehicle.item
-        crew_info = {'vehicle_name': vehicle.userName, 'crew_complete': vehicle.isCrewFull(), 'crew_members': []}
+        crew_info = {'vehicle_name': vehicle.userName, 'crew_complete': vehicle.isCrewFull, 'crew_members': []}
         for slotIdx, tankman in vehicle.crew:
             if tankman is not None:
                 crew_info['crew_members'].append({'name': tankman.fullUserName, 'role': tankman.roleUserName, 'level': tankman.level, 'skills': [skill.userName for skill in tankman.skills]})
@@ -261,6 +277,10 @@ class Crew(object):
     def returnAllCrews(self):
         vehicles = self.itemsCache.items.getVehicles(REQ_CRITERIA.INVENTORY)
         for vehicle in vehicles.values():
+            if str(vehicle.invID) in ignored_vehicles:
+                continue
+            if config.data['excludePremiumVehicles'] and vehicle.isPremium:
+                continue
             if not (vehicle.isCrewFull or vehicle.isInBattle or vehicle.isLocked):
                 self.processReturnCrewForVehicleSelectorPopup(vehicle)
 

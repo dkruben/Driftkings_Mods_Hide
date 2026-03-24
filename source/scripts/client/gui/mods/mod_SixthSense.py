@@ -44,7 +44,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.6.5 (%(file_compile_date)s)'
+        self.version = '1.6.6 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'defaultIcon': True,
@@ -209,6 +209,7 @@ class SixthSense(SixthSenseMeta):
         if config.data['playTickSound']:
             self.__soundID = self._arenaVisitor.type.getCountdownTimerSound()
         g_playerEvents.onRoundFinished += self._onRoundFinished
+        g_playerEvents.onObservedByEnemy += self._onObservedByEnemy
         ctrl = self.sessionProvider.shared.vehicleState
         if ctrl is not None:
             ctrl.onVehicleStateUpdated += self._onVehicleStateUpdated
@@ -224,6 +225,7 @@ class SixthSense(SixthSenseMeta):
         self.__sounds.clear()
         self.__soundID = None
         g_playerEvents.onRoundFinished -= self._onRoundFinished
+        g_playerEvents.onObservedByEnemy -= self._onObservedByEnemy
         ctrl = self.sessionProvider.shared.vehicleState
         if ctrl is not None:
             ctrl.onVehicleStateUpdated -= self._onVehicleStateUpdated
@@ -241,29 +243,29 @@ class SixthSense(SixthSenseMeta):
             message = self.getNewRandomMessage()
         return message
 
-    def _onVehicleStateUpdated(self, state, value):
-        if state == VEHICLE_VIEW_STATE.OBSERVED_BY_ENEMY:
-            if value.get('isObserved', False):
-                detection_type = value.get("detectionType", 0)
-                self.__last_detection_type = detection_type
-                if hasattr(self, 'isComp7Battle') and self.isComp7Battle:
-                    if detection_type == self.__radar:
-                        time = 2
-                    else:
-                        time = 4
-                        if config.data['userSound'] and not config.data['playTickSound']:
-                            g_instance.playSound2D(config.data['sixthSenseSound'])
-                else:
-                    time = config.data['lampShowTime']
-                    if config.data['userSound'] and not config.data['playTickSound']:
-                        g_instance.playSound2D(config.data['sixthSenseSound'])
-                    if self.radio_installed:
-                        time -= 1.5
-                self.__message = self.getNewRandomMessage()
-                self.as_showS(time)
+    def _onObservedByEnemy(self, detection_type, is_observed):
+        if not is_observed:
+            self.as_hideS()
+            return
+        self.__last_detection_type = detection_type
+        if hasattr(self, 'isComp7Battle') and self.isComp7Battle:
+            if detection_type == self.__radar:
+                time = 2
             else:
-                self.as_hideS()
-        elif state in _STATES_TO_HIDE:
+                time = 4
+                if config.data['userSound'] and not config.data['playTickSound']:
+                    g_instance.playSound2D(config.data['sixthSenseSound'])
+        else:
+            time = config.data['lampShowTime']
+            if config.data['userSound'] and not config.data['playTickSound']:
+                g_instance.playSound2D(config.data['sixthSenseSound'])
+            if self.radio_installed:
+                time -= 1.5
+        self.__message = self.getNewRandomMessage()
+        self.as_showS(time)
+
+    def _onVehicleStateUpdated(self, state, value):
+        if state in _STATES_TO_HIDE:
             self.as_hideS()
 
     def _onRoundFinished(self, *_):
@@ -281,9 +283,11 @@ g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS
 g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, SixthSense, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
 
 
-@override(SixthSenseIndicator, '_show')
-def new__show(func, self):
-    func(self)
+@override(SixthSenseIndicator, '_sixthSenseToggle')
+def new__show(func, self, isVisible, force):
+    func(self, isVisible, force)
+    if not isVisible:
+        return
     player = getPlayer()
     if player and player.isVehicleAlive:
         if config.data['enabled']:
@@ -296,5 +300,6 @@ def new__show(func, self):
 @override(SixthSenseIndicator, '_populate')
 def new_populate(func, self):
     func(self)
-    if config.data['enabled'] and (config.data['userIcon'] or config.data['defaultIcon'] is not None):
+    if config.data['enabled'] and (config.data['userIcon'] or config.data['defaultIcon']):
         self.flashObject.visible = False
+

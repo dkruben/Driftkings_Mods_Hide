@@ -21,7 +21,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.1.0 (%(file_compile_date)s)'
+        self.version = '2.1.1 (%(file_compile_date)s)'
         self.author = ' (orig by spoter, refactored by DriftKings)'
         self.defaultKeys = {'buttonRepair': [Keys.KEY_SPACE], 'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
@@ -127,6 +127,7 @@ class Repair(object):
         self.player = None
         self.ctrl = None
         self.consumablesPanel = None
+        self.battleStarted = False
         self.items = {
             'extinguisher': [251, 251, None, None],
             'medkit': [763, 1019, None, None],
@@ -158,7 +159,12 @@ class Repair(object):
 
     def startBattle(self):
         self.player = getPlayer()
+        if self.player is None or not hasattr(self.player, 'guiSessionProvider'):
+            return
         self.ctrl = self.player.guiSessionProvider.shared
+        if self.ctrl is None or self.battleStarted or InputHandler.g_instance is None:
+            return
+        self.battleStarted = True
         #
         InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
         InputHandler.g_instance.onKeyUp += self.onHotkeyPressed
@@ -171,21 +177,28 @@ class Repair(object):
         self.checkBattleStarted()
 
     def stopBattle(self):
-        InputHandler.g_instance.onKeyDown -= self.onHotkeyPressed
-        InputHandler.g_instance.onKeyUp -= self.onHotkeyPressed
+        if self.battleStarted and InputHandler.g_instance is not None:
+            InputHandler.g_instance.onKeyDown -= self.onHotkeyPressed
+            InputHandler.g_instance.onKeyUp -= self.onHotkeyPressed
         # auto use
-        if self.ctrl.vehicleState is not None:
+        if self.ctrl is not None and self.ctrl.vehicleState is not None:
             self.ctrl.vehicleState.onVehicleStateUpdated -= self.autoUse
         # update equipments
-        if self.ctrl.equipments is not None:
+        if self.ctrl is not None and self.ctrl.equipments is not None:
             self.ctrl.equipments.onEquipmentUpdated -= self.onEquipmentUpdated
         #
+        self.battleStarted = False
         for equipment_tag in self.items:
             self.items[equipment_tag][2] = None
             self.items[equipment_tag][3] = None
         self.items['repairkit'][1] = 1531
+        self.player = None
+        self.ctrl = None
+        self.consumablesPanel = None
 
     def checkBattleStarted(self):
+        if self.ctrl is None or self.player is None:
+            return
         if hasattr(self.player, 'arena') and self.player.arena and self.player.arena.period == 3:
             for equipment_tag in self.items:
                 self.items[equipment_tag][2] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
@@ -198,14 +211,7 @@ class Repair(object):
             callback(0.1, self.checkBattleStarted)
 
     def useItem(self, equipment_tag, item=None):
-        if not config.data['enabled']:
-            return
-        if BattleReplay.g_replayCtrl.isPlaying:
-            return
-        if self.ctrl is None:
-            return
-        self_vehicle = self.player.getVehicleAttached()
-        if self_vehicle is None:
+        if not self._canUseConsumable():
             return
         sound = False
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
@@ -225,16 +231,7 @@ class Repair(object):
             callback(1.0, sound.play)
 
     def useItemManual(self, equipment_tag, item=None):
-        if not config.data['enabled']:
-            return
-        if BattleReplay.g_replayCtrl.isPlaying:
-            return
-        if self.ctrl is None:
-            return
-        self_vehicle = self.player.getVehicleAttached()
-        if self_vehicle is None:
-            return
-        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
+        if not self._canUseConsumable(requireControl=True):
             return
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
@@ -244,16 +241,7 @@ class Repair(object):
             callback(1.0, sound.play)
 
     def useItemGold(self, equipment_tag):
-        if not config.data['enabled']:
-            return
-        if BattleReplay.g_replayCtrl.isPlaying:
-            return
-        if self.ctrl is None:
-            return
-        self_vehicle = self.player.getVehicleAttached()
-        if self_vehicle is None:
-            return
-        if self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
+        if not self._canUseConsumable(requireControl=True):
             return
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
@@ -283,7 +271,7 @@ class Repair(object):
     def repair(self, equipment_tag):
         if self.ctrl is None or self.player is None:
             return
-        specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)][equipment_tag]
+        specific = self._getRepairPriority(equipment_tag)
         if config.data['useGoldKits'] and self.items[equipment_tag][3]:
             equipment = self.items[equipment_tag][3]
             if equipment is not None:
@@ -366,7 +354,7 @@ class Repair(object):
     def autoUse(self, state, value):
         if not config.data['autoRepair']:
             return
-        if self.ctrl is None:
+        if self.ctrl is None or self.player is None:
             return
         time = random.uniform(config.data['timerMin'], config.data['timerMax'])
         if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
@@ -376,13 +364,10 @@ class Repair(object):
         if state == VEHICLE_VIEW_STATE.DEVICES:
             deviceName, deviceState, actualState = value
             if deviceState in DEVICE_STATE_AS_DAMAGE:
-                if deviceName in self.complex_item:
-                    itemName = self.complex_item[deviceName]
-                else:
-                    itemName = deviceName
-                equipmentTag = 'medkit' if deviceName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
+                itemName = self.complex_item.get(deviceName, deviceName)
+                equipmentTag = 'medkit' if itemName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
                 # noinspection PyTypeChecker
-                specific = config.data['repairPriority'][Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)][equipmentTag]
+                specific = self._getRepairPriority(equipmentTag)
                 if itemName in specific:
                     if config.data['healCrew'] and equipmentTag == 'medkit':
                         callback(time, partial(self.useItem, 'medkit', deviceName))
@@ -392,6 +377,26 @@ class Repair(object):
 
         if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN:
             callback(time, partial(self.useItem, 'medkit'))
+
+    def _canUseConsumable(self, requireControl=False):
+        if not config.data['enabled']:
+            return False
+        if BattleReplay.g_replayCtrl.isPlaying:
+            return False
+        if self.ctrl is None or self.player is None or self.consumablesPanel is None:
+            return False
+        self_vehicle = self.player.getVehicleAttached()
+        if self_vehicle is None:
+            return False
+        if requireControl and self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
+            return False
+        return True
+
+    def _getRepairPriority(self, equipment_tag):
+        vehicle_class = Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)
+        priorities = config.data['repairPriority']
+        class_priorities = priorities.get(vehicle_class, priorities['AllAvailableVariables'])
+        return class_priorities[equipment_tag]
 
     def __onComponentRegistered(self, event):
         if event.alias == BATTLE_VIEW_ALIASES.CONSUMABLES_PANEL:

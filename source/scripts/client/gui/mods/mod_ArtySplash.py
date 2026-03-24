@@ -21,7 +21,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.0 (%(file_compile_date)s)'
+        self.version = '1.5.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.defaultKeys = {
             'buttonShowDot': [Keys.KEY_C, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -95,6 +95,21 @@ class ArtyBall(object):
         self.scaleSplash = None
         self.player = None
 
+    def _getVehicleDescriptor(self):
+        if self.player is None or not hasattr(self.player, 'getVehicleDescriptor'):
+            return None
+        return self.player.getVehicleDescriptor()
+
+    def _getMarkerPosition(self):
+        gunRotator = getattr(self.player, 'gunRotator', None)
+        markerInfo = getattr(gunRotator, 'markerInfo', None)
+        if not markerInfo:
+            return None
+        try:
+            return markerInfo[0]
+        except (IndexError, TypeError):
+            return None
+
     def startBattle(self):
         InputHandler.g_instance.onKeyDown += self.injectButton
         if config.data['enabled']:
@@ -105,12 +120,15 @@ class ArtyBall(object):
             self.modelSplash = StaticWorldObjectMarker3D({'path': config.data['modelPathSplash']}, (0, 0, 0))
             self.modelDot = StaticWorldObjectMarker3D({'path': config.data['modelPathDot']}, (0, 0, 0))
             self.modelDot.model.scale = (0.1, 0.1, 0.1)
-            if Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags) == VEHICLE_CLASS_NAME.SPG:
+            vehicleTypeDescriptor = getattr(self.player, 'vehicleTypeDescriptor', None)
+            if vehicleTypeDescriptor is not None and Vehicle.getVehicleClassTag(vehicleTypeDescriptor.type.tags) == VEHICLE_CLASS_NAME.SPG:
                 self.modelDot.model.scale = (0.5, 0.5, 0.5)
             self.modelSplash.model.visible = False
             self.modelDot.model.visible = False
             self.modelSplashCircle = BigWorld.PyTerrainSelectedArea()
-            self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 0xFFFFFFFF, BigWorld.player().spaceID)
+            player = BigWorld.player()
+            if player is not None:
+                self.modelSplashCircle.setup('content/Interface/CheckPoint/CheckPoint_yellow_black.model', Math.Vector2(2.0, 2.0), 0.5, 0xFFFFFFFF, player.spaceID)
             self.modelSplash.model.root.attach(self.modelSplashCircle)
             self.modelSplashCircle.enableAccurateCollision(False)
 
@@ -130,6 +148,7 @@ class ArtyBall(object):
         self.modelDot = None
         self.scaleSplash = None
         self.modelSplashCircle = None
+        self.player = None
 
     def working(self):
         if not config.data['enabled'] or self.player is None:
@@ -138,20 +157,40 @@ class ArtyBall(object):
         if not hasattr(self.player, 'vehicleTypeDescriptor') or not hasattr(self.player, 'gunRotator'):
             self.hideVisible()
             return
-        if Vehicle.getVehicleClassTag(self.player.getVehicleDescriptor().type.tags) != VEHICLE_CLASS_NAME.SPG:
+        vehicleDescriptor = self._getVehicleDescriptor()
+        if vehicleDescriptor is None:
             self.hideVisible()
             return
-        shell = self.player.getVehicleDescriptor().shot.shell
+        if Vehicle.getVehicleClassTag(vehicleDescriptor.type.tags) != VEHICLE_CLASS_NAME.SPG:
+            self.hideVisible()
+            return
+        shell = getattr(getattr(vehicleDescriptor, 'shot', None), 'shell', None)
+        if shell is None:
+            self.hideVisible()
+            return
         if 'HIGH_EXPLOSIVE' not in shell.kind:
             self.hideVisible()
             return
-        if not config.data['showModeArcade'] and self.player.inputHandler.ctrlModeName == CTRL_MODE_NAME.ARCADE:
+        inputHandler = getattr(self.player, 'inputHandler', None)
+        ctrlModeName = getattr(inputHandler, 'ctrlModeName', None)
+        if ctrlModeName is None:
             self.hideVisible()
             return
-        if not config.data['showModeSniper'] and self.player.inputHandler.ctrlModeName == CTRL_MODE_NAME.SNIPER:
+        if not config.data['showModeArcade'] and ctrlModeName == CTRL_MODE_NAME.ARCADE:
             self.hideVisible()
             return
-        if not config.data['showModeArty'] and self.player.inputHandler.ctrlModeName in [CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.ARTY]:
+        if not config.data['showModeSniper'] and ctrlModeName == CTRL_MODE_NAME.SNIPER:
+            self.hideVisible()
+            return
+        artyModes = [CTRL_MODE_NAME.STRATEGIC]
+        artyMode = getattr(CTRL_MODE_NAME, 'ARTY', None)
+        if artyMode is not None:
+            artyModes.append(artyMode)
+        if not config.data['showModeArty'] and ctrlModeName in artyModes:
+            self.hideVisible()
+            return
+        markerPosition = self._getMarkerPosition()
+        if markerPosition is None:
             self.hideVisible()
             return
         if self.modelSplash is not None and self.modelSplash.model:
@@ -160,12 +199,13 @@ class ArtyBall(object):
                 self.modelSplash.model.scale = (self.scaleSplash, self.scaleSplash, self.scaleSplash)
             if not self.modelSplashKeyPressed:
                 self.modelSplashVisible = config.data['showSplashOnDefault']
-            self.modelSplash.model.position = self.player.gunRotator.markerInfo[0]
-            self.modelSplashCircle.updateHeights()
+            self.modelSplash.model.position = markerPosition
+            if self.modelSplashCircle is not None:
+                self.modelSplashCircle.updateHeights()
         if self.modelDot is not None and self.modelDot.model:
             if not self.modelDotKeyPressed:
                 self.modelDotVisible = config.data['showDotOnDefault']
-            self.modelDot.model.position = self.player.gunRotator.markerInfo[0]
+            self.modelDot.model.position = markerPosition
         self.setVisible()
 
     def setVisible(self):

@@ -20,13 +20,13 @@ from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getT
 COMPARE_MACROS = ['compareDelim', 'compareColor']
 ROMAN_LEVELS = ('I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII')
 PRESET_TEMPLATES = {
-    'default': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | HP: {{vehicle_max_health}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | Shell: {{shell_damage_1}}dmg</font>",
-    'minimal': "<font face='$FieldFont' size='16' color='#FFFFFF'><b>{{vehicle_name}} ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}}s | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m</font>",
-    'detailed': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}} | Aim: {{gun_aiming_time}}s</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}/{{invis_move}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | Turret: {{armor_turret_front}}/{{armor_turret_side}}/{{armor_turret_back}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | HP: {{vehicle_max_health}} | Power: {{engine_power_density}}hp/t</font>\n<font color='#CCCCCC'>Shell: {{shell_name_1}} {{shell_damage_1}}dmg | Pen: {{shell_power_1}}mm</font>",
-    'full': "<font face='$FieldFont' size='16' color='#FFFFFF'><font color='#FF557F'><tab>Tank: {{vehicle_name}}</font>\n<tab>Reload: <font color='#17EB17'>{{gun_reload_equip}}sec.</font>\n<img src='img://gui/maps/icons/vehicle/{{icon_system_name}}.png'>\n<textformat tabstops='[65]'>Weight: <font color='#FF3C38'>{{vehicle_weight}} ton.</font><tab>View: <font color='#002AFF'>{{vision_radius}} mt.</font></textformat>\n<textformat tabstops='[65,105,145]'>Cassis:<tab>{{armor_hull_front}}<tab>{{armor_hull_side}}<tab>{{armor_hull_back}}</textformat>\n<textformat tabstops='[65,105,145]'>Torret:<tab>{{armor_turret_front}}<tab>{{armor_turret_side}}<tab>{{armor_turret_back}}</textformat>\n<textformat tabstops='[65,105,145]'>Shell Type:<tab><font color='#FF7F00'>{{shell_type_1}}</font><tab><font color='#FFD400'>{{shell_type_2}}</font><tab><font color='#FFAA55'>{{shell_type_3}}</font></textformat>\n<textformat tabstops='[65,105,145]'>Piercing:<tab>{{shell_power_1}}<tab>{{shell_power_2}}<tab>{{shell_power_3}}</textformat>\n<textformat tabstops='[65,105,145]'>Av. Dmg:<tab>{{shell_damage_1}}<tab>{{shell_damage_2}}<tab>{{shell_damage_3}}</textformat></font>",
+    'default': "<textformat leading='4'><font face='$TitleFont' size='19' color='#F8E6B0'><b>{{vehicle_name}}</b></font> <font face='$FieldFont' size='13' color='#93B9D9'>{{vehicle_type}} {{rlevel}}</font>\n<font face='$FieldFont' size='14' color='#B9C6D2'>Reload</font> <font face='$TitleFont' size='14' color='#55D6FF'><b>{{gun_reload_equip}}s</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#B9C6D2'>DPM</font> <font face='$TitleFont' size='14' color='#9BE071'><b>{{gun_dpm_equip}}</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#B9C6D2'>View</font> <font face='$TitleFont' size='14' color='#E8F3FF'><b>{{vision_radius}}m</b></font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>Armor</font> <font color='#FF9C8F'>{{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>HP</font> <font color='#FFD36A'>{{vehicle_max_health}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Speed</font> <font color='#F3F6FA'>{{speed_forward}} km/h</font>\n<font face='$FieldFont' size='13' color='#8FA0AE'>Shell</font> <font color='#E1E6EC'>{{shell_name_1}}</font> <font color='#FFD36A'>{{shell_damage_1}} dmg</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#8FA0AE'>Pen</font> <font color='#FFB878'>{{shell_power_1}} mm</font></textformat>",
+    'minimal': "<textformat leading='3'><font face='$TitleFont' size='18' color='#F6E0A5'><b>{{vehicle_name}}</b></font> <font face='$FieldFont' size='13' color='#90B8D6'>{{vehicle_type}} {{rlevel}}</font>\n<font face='$FieldFont' size='13' color='#B8C4CE'>Reload</font> <font color='#55D6FF'>{{gun_reload_equip}}s</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#B8C4CE'>DPM</font> <font color='#9BE071'>{{gun_dpm_equip}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#B8C4CE'>View</font> <font color='#E8F3FF'>{{vision_radius}}m</font></textformat>",
+    'detailed': "<textformat leading='4'><font face='$TitleFont' size='19' color='#F8E6B0'><b>{{vehicle_name}}</b></font> <font face='$FieldFont' size='13' color='#93B9D9'>{{vehicle_type}} {{rlevel}}</font>\n<font face='$FieldFont' size='14' color='#B9C6D2'>Reload</font> <font color='#55D6FF'><b>{{gun_reload_equip}}s</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#B9C6D2'>DPM</font> <font color='#9BE071'><b>{{gun_dpm_equip}}</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#B9C6D2'>Aim</font> <font color='#D9E7F2'>{{gun_aiming_time}}s</font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>View</font> <font color='#E8F3FF'>{{vision_radius}}m</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Camo</font> <font color='#9CE5A4'>{{invis_stand}} / {{invis_move}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Gun Arc</font> <font color='#D7DEE5'>{{angle_pitch_down}} / {{angle_pitch_up}}</font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>Hull</font> <font color='#FF9C8F'>{{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Turret</font> <font color='#FFB3A8'>{{armor_turret_front}}/{{armor_turret_side}}/{{armor_turret_back}}</font>\n<font face='$FieldFont' size='13' color='#8FA0AE'>HP</font> <font color='#FFD36A'>{{vehicle_max_health}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#8FA0AE'>Power</font> <font color='#F4F6F8'>{{engine_power_density}} hp/t</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#8FA0AE'>Shell</font> <font color='#E1E6EC'>{{shell_name_1}}</font> <font color='#FFB878'>{{shell_power_1}} mm</font> <font color='#FFD36A'>{{shell_damage_1}} dmg</font></textformat>",
+    'full': "<textformat leading='4'><font face='$TitleFont' size='20' color='#F8E6B0'><b>{{vehicle_name}}</b></font> <font face='$FieldFont' size='13' color='#93B9D9'>{{vehicle_type}} {{rlevel}}</font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>Reload</font> <font color='#55D6FF'><b>{{gun_reload_equip}}s</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Clip</font> <font color='#DDE5EC'>{{gun_clip}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Aim</font> <font color='#D9E7F2'>{{gun_aiming_time}}s</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Accuracy</font> <font color='#E8F3FF'>{{gun_accuracy}}</font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>View</font> <font color='#E8F3FF'>{{vision_radius}}m</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Weight</font> <font color='#DDE5EC'>{{vehicle_weight}} t</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Power</font> <font color='#F4F6F8'>{{engine_power_density}} hp/t</font>\n<font face='$FieldFont' size='13' color='#A7B4BF'>Hull</font> <font color='#FF9C8F'>{{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#A7B4BF'>Turret</font> <font color='#FFB3A8'>{{armor_turret_front}}/{{armor_turret_side}}/{{armor_turret_back}}</font>\n<font face='$FieldFont' size='13' color='#8FA0AE'>Ammo 1</font> <font color='#E1E6EC'>{{shell_type_1}}</font> <font color='#FFB878'>{{shell_power_1}} mm</font> <font color='#FFD36A'>{{shell_damage_1}} dmg</font>\n<font face='$FieldFont' size='13' color='#8FA0AE'>Ammo 2</font> <font color='#E1E6EC'>{{shell_type_2}}</font> <font color='#FFB878'>{{shell_power_2}} mm</font> <font color='#FFD36A'>{{shell_damage_2}} dmg</font>\n<font face='$FieldFont' size='13' color='#8FA0AE'>Ammo 3</font> <font color='#E1E6EC'>{{shell_type_3}}</font> <font color='#FFB878'>{{shell_power_3}} mm</font> <font color='#FFD36A'>{{shell_damage_3}} dmg</font></textformat>",
     'kmp': "<font face='$FieldFont' size='16' color='#FFFFFF'><b>{{vehicle_name}}\n~{{gun_reload_equip}} sec. | {{shell_power_1}} / {{shell_damage_1}}\nView: {{vision_radius}} mt.\n<font color='{{compareColor({{vehicle_weight}}, {{pl_vehicle_weight}})}}'>{{vehicle_weight}} ton. {{compareDelim({{vehicle_weight}}, {{pl_vehicle_weight}})}} {{pl_vehicle_weight}} ton.</font></font>",
     'ndo': "<font face='$FieldFont' size='16' color='#FFFFFF'><textformat tabstops='[5,150,214]'><font size='0'>.</font><tab><font color='#FF9900'>{{vehicle_name}}</font>\nReload:  {{gun_reload_equip}} sec</textformat></b><textformat tabstops='[5,54,150,214,246,279]'><font size='0'>.</font><tab>\nView:  {{vision_radius}} mt\nShell Type:  {{shell_type_1}}  {{shell_type_2}}  {{shell_type_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nTorret:  {{armor_turret_front}}  {{armor_turret_side}}  {{armor_turret_back}}\nAv. Damage:  {{shell_damage_1}}  {{shell_damage_2}}  {{shell_damage_3}}</textformat></b><textformat tabstops='[5,54,80,105,150,214,246,279]'><font size='0'>.</font>\nChassis:  {{armor_hull_front}}  {{armor_hull_side}}  {{armor_hull_back}}\nPiercing:  {{shell_power_1}}  {{shell_power_2}}  {{shell_power_3}}</textformat></font>",
-    'driftkings': "<font face='$FieldFont' size='16' color='#FFFFFF'><b><font color='#FFA500'>{{vehicle_name}}</font> ({{vehicle_type}} {{level}})</b></font>\n<font color='#14AFF1'>Reload: {{gun_reload}} sec | DPM: {{gun_dpm_equip}}</font>\n<font color='#96CC29'>View: {{vision_radius}}m | Camo: {{invis_stand}}</font>\n<font color='#FF9999'>Armor: {{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}} | HP: {{vehicle_max_health}}</font>\n<font color='#FFCC00'>Speed: {{speed_forward}}km/h | Power: {{engine_power_density}}hp/t | Turn: {{chassis_rotation_speed}}°/s</font>\n<font color='#CCCCCC'>Shell: {{shell_name_1}} {{shell_damage_1}}dmg | Pen: {{shell_power_1}}mm</font>"
+    'driftkings': "<textformat leading='4'><font face='$TitleFont' size='20' color='#FFC56C'><b>{{vehicle_name}}</b></font> <font face='$FieldFont' size='13' color='#A2C2DD'>{{vehicle_type}} {{rlevel}}</font>\n<font face='$FieldFont' size='14' color='#BED0DD'>Reload</font> <font color='#39D2FF'><b>{{gun_reload_equip}}s</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#BED0DD'>DPM</font> <font color='#9BE071'><b>{{gun_dpm_equip}}</b></font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='14' color='#BED0DD'>Aim</font> <font color='#DDE7F0'>{{gun_aiming_time}}s</font>\n<font face='$FieldFont' size='13' color='#9FB2C0'>View</font> <font color='#E8F3FF'>{{vision_radius}}m</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#9FB2C0'>Camo</font> <font color='#9CE5A4'>{{invis_stand}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#9FB2C0'>Turn</font> <font color='#F3F6FA'>{{chassis_rotation_speed}} deg/s</font>\n<font face='$FieldFont' size='13' color='#9FB2C0'>Armor</font> <font color='#FF9C8F'>{{armor_hull_front}}/{{armor_hull_side}}/{{armor_hull_back}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#9FB2C0'>HP</font> <font color='#FFD36A'>{{vehicle_max_health}}</font> <font color='#5D6C79'>|</font> <font face='$FieldFont' size='13' color='#9FB2C0'>Power</font> <font color='#F4F6F8'>{{engine_power_density}} hp/t</font>\n<font face='$FieldFont' size='13' color='#8395A4'>Shell</font> <font color='#E1E6EC'>{{shell_name_1}}</font> <font color='#FFB878'>{{shell_power_1}} mm</font> <font color='#FFD36A'>{{shell_damage_1}} dmg</font></textformat>"
 }
 TEMPLATE_INDEX_TO_KEY = {0: 'default', 1: 'minimal', 2: 'detailed', 3: 'full', 4: 'kmp', 5: 'ndo', 6: 'driftkings'}
 
@@ -35,7 +35,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.0.0 (%(file_compile_date)s)'
+        self.version = '2.0.1 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {
@@ -52,9 +52,9 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showFor': 0,
             'textLock': False,
             'textPosition': {'x': 700.0, 'y': 300.0, 'alignX': 'center', 'alignY': 'center'},
-            'textShadow': {'alpha': 0.8, 'angle': 90, 'blurX': 5, 'blurY': 5, 'color': '#000000', 'distance': 1, 'quality': 2, 'strength': 2},
+            'textShadow': {'alpha': 0.92, 'angle': 90, 'blurX': 6, 'blurY': 6, 'color': '#000000', 'distance': 1, 'quality': 2, 'strength': 2},
             'backgroundEnabled': True,
-            'backgroundAlpha': 0.7,
+            'backgroundAlpha': 0.78,
             'version': calculate_version(self.version)
         }
         self.i18n = {
@@ -120,6 +120,10 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def onApplySettings(self, settings):
         super(ConfigInterface, self).onApplySettings(settings)
+        if 'g_mod' in globals():
+            g_mod.textFormats = g_mod.getText() if self.data['enabled'] else None
+        if 'g_flash' in globals() and g_flash is not None:
+            g_flash.applyConfig()
 
 
 class Flash(object):
@@ -136,8 +140,7 @@ class Flash(object):
         COMPONENT_EVENT.UPDATED += self.__updatePosition
         if g_guiFlash is not None and COMPONENT_TYPE is not None:
             self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
-            self.updateObject(COMPONENT_TYPE.LABEL, {'background': config.data['backgroundEnabled']})
-            self.updateObject(COMPONENT_TYPE.LABEL, {'alpha': config.data['backgroundAlpha']})
+            self.applyConfig()
         g_guiResetters.add(self.screenResize)
 
     def stopBattle(self):
@@ -180,7 +183,7 @@ class Flash(object):
                 'border': not config.data['textLock'],
                 'alignX': 'center',
                 'alignY': 'center',
-                'visible': True,
+                'visible': False,
                 'text': '',
                 'shadow': {
                     'distance': config.data['textShadow']['distance'],
@@ -199,6 +202,21 @@ class Flash(object):
                 self.data[COMPONENT_TYPE.LABEL][key] = value
         return self.data
 
+    def applyConfig(self):
+        if g_guiFlash is None or COMPONENT_TYPE is None or COMPONENT_TYPE.LABEL not in self.name:
+            return
+        shadow = dict(config.data['textShadow'])
+        label_data = dict(config.data['textPosition'])
+        label_data.update({
+            'drag': not config.data['textLock'],
+            'border': not config.data['textLock'],
+            'background': config.data['backgroundEnabled'],
+            'alpha': config.data['backgroundAlpha'],
+            'shadow': shadow
+        })
+        self.data[COMPONENT_TYPE.LABEL].update(label_data)
+        self.updateObject(COMPONENT_TYPE.LABEL, label_data)
+
     def addText(self, text=''):
         self.updateObject(COMPONENT_TYPE.LABEL, {'text': text})
 
@@ -209,21 +227,12 @@ class Flash(object):
     @staticmethod
     def screenFix(screen, value, align=1):
         if align == 1:
-            if value > screen:
-                return float(max(0, screen))
-            if value < 0:
-                return 0.0
-        elif align == -1:
-            if value < -screen:
-                return min(0, -screen)
-            if value > 0:
-                return 0.0
-        elif align == 0:
+            return float(max(0.0, min(value, screen)))
+        if align == -1:
+            return float(min(0.0, max(value, -screen)))
+        if align == 0:
             scr = screen / 2.0
-            if value < scr:
-                return float(scr)
-            if value > -scr:
-                return float(-scr)
+            return float(max(-scr, min(value, scr)))
         return value
 
     def screenResize(self):
@@ -290,6 +299,64 @@ class DataConstants(object):
         self._typeDescriptor = None
         self._gunShots = None
         self._cachedResults = {}
+
+    @staticmethod
+    def _get_shell_damage(shell):
+        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
+        return damage[0]
+
+    def _getPlayerTypeDescriptor(self):
+        return self._playerVehicle.typeDescriptor if self._playerVehicle is not None else None
+
+    def _get_gun_dpm_for_descriptor(self, typeDescriptor, cache_key):
+        if cache_key in self._cachedResults:
+            return self._cachedResults[cache_key]
+        if not typeDescriptor:
+            return None
+        reload_time = typeDescriptor.gun.reloadTime + (typeDescriptor.gun.clip[0] - 1) * typeDescriptor.gun.clip[1]
+        shell = typeDescriptor.gun.shots[0].shell
+        result = '%d' % round(typeDescriptor.gun.clip[0] / reload_time * 60 * self._get_shell_damage(shell), 0)
+        self._cachedResults[cache_key] = result
+        return result
+
+    def _get_gun_reload_equip_for_descriptor(self, typeDescriptor, cache_key, eq1=1, eq2=1, eq3=1, eq4=1):
+        if cache_key in self._cachedResults:
+            return self._cachedResults[cache_key]
+        if not typeDescriptor:
+            return None
+        reload_orig = typeDescriptor.gun.reloadTime
+        rammer = 0.9 if typeDescriptor.gun.clip[0] == 1 and eq1 == 1 else 1
+        if eq2 == 1 and eq3 == 1 and eq4 == 1:
+            crew = 1.32
+        elif eq2 == 1 and eq3 == 1 and eq4 == 0:
+            crew = 1.27
+        elif eq2 == 1 and eq3 == 0 and eq4 == 1:
+            crew = 1.21
+        elif eq2 == 1 and eq3 == 0 and eq4 == 0:
+            crew = 1.16
+        elif eq2 == 0 and eq3 == 1 and eq4 == 1:
+            crew = 1.27
+        elif eq2 == 0 and eq3 == 1 and eq4 == 0:
+            crew = 1.21
+        elif eq2 == 0 and eq3 == 0 and eq4 == 1:
+            crew = 1.16
+        else:
+            crew = 1.1
+        result = '%.2f' % round(reload_orig / (0.57 + 0.43 * crew) * rammer, 2)
+        self._cachedResults[cache_key] = result
+        return result
+
+    def _get_gun_dpm_equip_for_descriptor(self, typeDescriptor, cache_key, eq1=1, eq2=1, eq3=1, eq4=1):
+        if cache_key in self._cachedResults:
+            return self._cachedResults[cache_key]
+        if not typeDescriptor:
+            return None
+        reload_equip = float(self._get_gun_reload_equip_for_descriptor(typeDescriptor, cache_key + '_reload', eq1, eq2, eq3, eq4))
+        reload_time = reload_equip + (typeDescriptor.gun.clip[0] - 1) * typeDescriptor.gun.clip[1]
+        shell = typeDescriptor.gun.shots[0].shell
+        result = '%d' % round(typeDescriptor.gun.clip[0] / reload_time * 60 * self._get_shell_damage(shell), 0)
+        self._cachedResults[cache_key] = result
+        return result
 
     @staticmethod
     def l10n(text):
@@ -388,12 +455,12 @@ class DataConstants(object):
     def _generateShellHandlers(self):
         handlers = {}
         handlers.update({
-            'shell_name_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%s" % self._gunShots[0].shell.userString,
-            'shell_name_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%s" % self._gunShots[1].shell.userString,
+            'shell_name_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%s" % self._gunShots[0].shell.userString,
+            'shell_name_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%s" % self._gunShots[1].shell.userString,
             'shell_name_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%s" % self._gunShots[2].shell.userString,
-            'shell_damage_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % (self._gunShots[0].shell.armorDamage[0] if hasattr(self._gunShots[0].shell, 'armorDamage') else self._gunShots[0].shell.damage[0]),
-            'shell_damage_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % (self._gunShots[1].shell.armorDamage[0] if hasattr(self._gunShots[1].shell, 'armorDamage') else self._gunShots[1].shell.damage[0]),
-            'shell_damage_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % (self._gunShots[2].shell.armorDamage[0] if hasattr(self._gunShots[2].shell, 'armorDamage') else self._gunShots[2].shell.damage[0]),
+            'shell_damage_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % self._get_shell_damage(self._gunShots[0].shell),
+            'shell_damage_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % self._get_shell_damage(self._gunShots[1].shell),
+            'shell_damage_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._get_shell_damage(self._gunShots[2].shell),
             'shell_power_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % (self._gunShots[0].piercingPower[0]),
             'shell_power_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % (self._gunShots[1].piercingPower[0]),
             'shell_power_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % (self._gunShots[2].piercingPower[0]),
@@ -403,8 +470,8 @@ class DataConstants(object):
             'shell_speed_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % round(self._gunShots[0].speed * 1.25),
             'shell_speed_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % round(self._gunShots[1].speed * 1.25),
             'shell_speed_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % round(self._gunShots[2].speed * 1.25),
-            'shell_distance_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" %self._gunShots[0].maxDistance,
-            'shell_distance_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._gunShots[1].maxDistance,
+            'shell_distance_1': lambda: None if (not self._gunShots) or (len(self._gunShots) < 1) else "%d" % self._gunShots[0].maxDistance,
+            'shell_distance_2': lambda: None if (not self._gunShots) or (len(self._gunShots) < 2) else "%d" % self._gunShots[1].maxDistance,
             'shell_distance_3': lambda: None if (not self._gunShots) or (len(self._gunShots) < 3) else "%d" % self._gunShots[2].maxDistance
         })
         return handlers
@@ -430,59 +497,15 @@ class DataConstants(object):
         return None
 
     def _get_gun_dpm(self):
-        if 'gun_dpm' in self._cachedResults:
-            return self._cachedResults['gun_dpm']
-        if not self._typeDescriptor:
-            return None
-        time = self._typeDescriptor.gun.reloadTime + (self._typeDescriptor.gun.clip[0] - 1) * \
-               self._typeDescriptor.gun.clip[1]
-        shell = self._typeDescriptor.gun.shots[0].shell
-        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-        result = '%d' % round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0)
-        self._cachedResults['gun_dpm'] = result
-        return result
+        return self._get_gun_dpm_for_descriptor(self._typeDescriptor, 'gun_dpm')
 
     def _get_gun_reload_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         cache_key = 'gun_reload_equip_%s_%s_%s_%s' % (eq1, eq2, eq3, eq4)
-        if cache_key in self._cachedResults:
-            return self._cachedResults[cache_key]
-        if not self._typeDescriptor:
-            return None
-        reload_orig = self._typeDescriptor.gun.reloadTime
-        rammer = 0.9 if self._typeDescriptor.gun.clip[0] == 1 and eq1 == 1 else 1
-        if eq2 == 1 and eq3 == 1 and eq4 == 1:
-            crew = 1.32
-        elif eq2 == 1 and eq3 == 1 and eq4 == 0:
-            crew = 1.27
-        elif eq2 == 1 and eq3 == 0 and eq4 == 1:
-            crew = 1.21
-        elif eq2 == 1 and eq3 == 0 and eq4 == 0:
-            crew = 1.16
-        elif eq2 == 0 and eq3 == 1 and eq4 == 1:
-            crew = 1.27
-        elif eq2 == 0 and eq3 == 1 and eq4 == 0:
-            crew = 1.21
-        elif eq2 == 0 and eq3 == 0 and eq4 == 1:
-            crew = 1.16
-        else:
-            crew = 1.1
-        result = '%.2f' % round(reload_orig / (0.57 + 0.43 * crew) * rammer, 2)
-        self._cachedResults[cache_key] = result
-        return result
+        return self._get_gun_reload_equip_for_descriptor(self._typeDescriptor, cache_key, eq1, eq2, eq3, eq4)
 
     def _get_gun_dpm_equip(self, eq1=1, eq2=1, eq3=1, eq4=1):
         cache_key = 'gun_dpm_equip_%s_%s_%s_%s' % (eq1, eq2, eq3, eq4)
-        if cache_key in self._cachedResults:
-            return self._cachedResults[cache_key]
-        if not self._typeDescriptor:
-            return None
-        reloadEquip = float(self._get_gun_reload_equip(eq1, eq2, eq3, eq4))
-        time = reloadEquip + (self._typeDescriptor.gun.clip[0] - 1) * self._typeDescriptor.gun.clip[1]
-        shell = self._typeDescriptor.gun.shots[0].shell
-        damage = shell.armorDamage if hasattr(shell, 'armorDamage') else shell.damage
-        result = '%d' % round(self._typeDescriptor.gun.clip[0] / time * 60 * damage[0], 0)
-        self._cachedResults[cache_key] = result
-        return result
+        return self._get_gun_dpm_equip_for_descriptor(self._typeDescriptor, cache_key, eq1, eq2, eq3, eq4)
 
     def _get_engine_power_density(self):
         if 'engine_power_density' in self._cachedResults:
@@ -536,47 +559,37 @@ class DataConstants(object):
         return None
 
     def _get_pl_vehicle_weight(self):
-        if not self._playerVehicle:
+        typeDescriptor = self._getPlayerTypeDescriptor()
+        if not typeDescriptor:
             return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        result = '%.1f' % round(self._typeDescriptor.physics['weight'] / 1000, 1) if self._typeDescriptor else None
-        return result
+        return '%.1f' % round(typeDescriptor.physics['weight'] / 1000, 1)
 
     def _get_pl_gun_reload(self):
-        if not self._playerVehicle:
+        typeDescriptor = self._getPlayerTypeDescriptor()
+        if not typeDescriptor:
             return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return '%.2f' % self._typeDescriptor.gun.reloadTime if self._typeDescriptor else None
+        return '%.2f' % typeDescriptor.gun.reloadTime
 
     def _get_pl_gun_reload_equip(self):
-        if not self._playerVehicle:
-            return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return self._get_gun_reload_equip()
+        return self._get_gun_reload_equip_for_descriptor(self._getPlayerTypeDescriptor(), 'pl_gun_reload_equip')
 
     def _get_pl_gun_dpm(self):
-        if not self._playerVehicle:
-            return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return self._get_gun_dpm()
+        return self._get_gun_dpm_for_descriptor(self._getPlayerTypeDescriptor(), 'pl_gun_dpm')
 
     def _get_pl_gun_dpm_equip(self):
-        if not self._playerVehicle:
-            return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return self._get_gun_dpm_equip()
+        return self._get_gun_dpm_equip_for_descriptor(self._getPlayerTypeDescriptor(), 'pl_gun_dpm_equip')
 
     def _get_pl_vision_radius(self):
-        if not self._playerVehicle:
+        typeDescriptor = self._getPlayerTypeDescriptor()
+        if not typeDescriptor:
             return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return '%d' % self._typeDescriptor.turret.circularVisionRadius if self._typeDescriptor else None
+        return '%d' % typeDescriptor.turret.circularVisionRadius
 
     def _get_pl_gun_aiming_time(self):
-        if not self._playerVehicle:
+        typeDescriptor = self._getPlayerTypeDescriptor()
+        if not typeDescriptor:
             return None
-        self._typeDescriptor = self._playerVehicle.typeDescriptor
-        return '%.1f' % self._typeDescriptor.gun.aimingTime if self._typeDescriptor else None
+        return '%.1f' % typeDescriptor.gun.aimingTime
 
     def __getattr__(self, name):
         if name in self._macroHandlers:
@@ -690,30 +703,36 @@ class InfoPanel(DataConstants):
     def replaceCompareMacros(textFormat, compareMacros):
         for macro in compareMacros:
             macroPattern = macro + '('
-            if macroPattern in textFormat:
+            while macroPattern in textFormat:
                 startIndex = textFormat.find(macroPattern)
                 endIndex = textFormat.find(')', startIndex + len(macroPattern)) + 1
+                if endIndex <= 0:
+                    break
                 reader = textFormat[startIndex:endIndex]
                 func = reader.split('(')[0]
                 args = reader[reader.find('(') + 1:reader.find(')')].split(',')
                 if len(args) == 2:
                     arg1, arg2 = args[0].strip(), args[1].strip()
-                    g_comparator.setData(arg1, arg2)
-                    funcRes = getattr(g_comparator, func)
-                    textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes))
+                    try:
+                        g_comparator.setData(arg1, arg2)
+                        funcRes = getattr(g_comparator, func)
+                    except (TypeError, ValueError):
+                        funcRes = ''
+                    textFormat = textFormat.replace('{{' + reader + '}}', str(funcRes), 1)
+                else:
+                    break
         return textFormat
 
     def keyPressed(self, event):
         if not config.data['enabled']:
             return
-        # Check if we're in battle by checking if getPlayer() returns a PlayerAvatar
         player = getPlayer()
         if not hasattr(player, 'getVehicleAttached'):
             return
         if checkKeys(config.data['altKey']) and event.isKeyDown():
-            self.onUpdateVehicle(player.getVehicleAttached())
             self.hotKeyDown = True
-        elif not checkKeys(config.data['altKey']) and event.isKeyDown():
+            self.onUpdateVehicle(player.getVehicleAttached(), ignoreHotKey=True)
+        elif self.hotKeyDown and event.isKeyUp() and not checkKeys(config.data['altKey']):
             self.hotKeyDown = False
             target = getTarget()
             if self.isConditions(target):
@@ -741,12 +760,11 @@ class InfoPanel(DataConstants):
         self.timer = TimeInterval(config.data['delay'], self, 'hide')
         self.timer.start()
 
-    def onUpdateVehicle(self, vehicle):
-        # Check if we're in battle by checking if getPlayer() returns a PlayerAvatar
+    def onUpdateVehicle(self, vehicle, ignoreHotKey=False):
         player = getPlayer()
         if not hasattr(player, 'getVehicleAttached'):
             return
-        if self.hotKeyDown:
+        if self.hotKeyDown and not ignoreHotKey:
             return
         playerVehicle = player.getVehicleAttached()
         if playerVehicle is not None and g_flash:
@@ -781,6 +799,7 @@ def new__targetFocus(func, self, entity):
 def new__startGUI(func, *args):
     func(*args)
     InputHandler.g_instance.onKeyDown += g_mod.keyPressed
+    InputHandler.g_instance.onKeyUp += g_mod.keyPressed
     g_flash.startBattle()
 
 
@@ -792,5 +811,6 @@ def new__destroyGUI(func, *args):
     if not getPlayer().arena.bonusType == ARENA_BONUS_TYPE.REGULAR:
         return
     InputHandler.g_instance.onKeyDown -= g_mod.keyPressed
+    InputHandler.g_instance.onKeyUp -= g_mod.keyPressed
     g_mod.reset()
     g_flash.stopBattle()

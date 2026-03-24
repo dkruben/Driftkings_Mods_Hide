@@ -31,7 +31,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.5 (%(file_compile_date)s)'
+        self.version = '1.1.6 (%(file_compile_date)s)'
         self.author = 'orig. Spoter, Re-Worked by: DriftKing\'s'
         self.data = {
             'enabled': True,
@@ -117,15 +117,13 @@ class ConfigInterface(DriftkingsConfigInterface):
         andConditions = []
         dot = i18n.makeString(QUESTS.QUEST_CONDITION_DOT)
         for cond in conditions:
-            for x in ('text', 'title'):
-                if hasattr(cond, x):
-                    text = getattr(cond, x)
-                    text = re.sub('<.*?>', '', text)
-                    text = dot + ' ' + text
-                    if cond.isInOrGroup:
-                        orConditions.append(text)
-                    andConditions.append(text)
-                    continue
+            text = getattr(cond, 'text', None) or getattr(cond, 'title', None)
+            if text:
+                text = re.sub('<.*?>', '', text)
+                text = dot + ' ' + text
+                if cond.isInOrGroup:
+                    orConditions.append(text)
+                andConditions.append(text)
 
         andResult = '\n'.join(andConditions)
         orResult = ('\n%s\n' % i18n.makeString(QUESTS.QUEST_CONDITION_OR)).join(orConditions)
@@ -149,8 +147,12 @@ class ConfigInterface(DriftkingsConfigInterface):
     def getQuest(self, branch):
         data = []
         quests = self.eventsCache.getPersonalMissions()
+        operations = quests.getOperationsForBranch(branch)
         for quest in quests.getSelectedQuestsForBranch(branch).values():
-            if vehicleRequirementsCheck(quest, (g_currentVehicle.item.intCD,), self.itemsCache.items.getItemByCD):
+            operation = operations.get(quest.getOperationID())
+            if operation is None:
+                continue
+            if vehicleRequirementsCheck(quest, operation, (g_currentVehicle.item.intCD,), self.itemsCache.items.getItemByCD):
                 if self.data['showQuestTitle']:
                     level = quest.getVehMinLevel()
                     formatData = {
@@ -281,12 +283,13 @@ class ConfigInterface(DriftkingsConfigInterface):
         data = []
         text = texts.splitlines()
         format_key = 'quest-%s-condition' % conditionType
-        for word in text:
-            op = textwrap.wrap('%s' % word, 44, break_long_words=False)
-            for sight in op:
-                if not op.index(sight) and not text.index(word):
+        for line_index, word in enumerate(text):
+            wrapped = textwrap.wrap('%s' % word, 44, break_long_words=False) or ['']
+            for sight_index, sight in enumerate(wrapped):
+                if sight_index == 0 and line_index == 0:
                     data.extend(self.pack(self.i18n['UI_text_%s_condition_extra' % conditionType], self.i18n['UI_text_%s_condition' % conditionType].format(**{format_key: sight}), tooltip=texts))
-                data.extend(self.pack('', self.i18n['UI_text_%s_condition' % conditionType].format(**{format_key: sight}), tooltip=texts))
+                else:
+                    data.extend(self.pack('', self.i18n['UI_text_%s_condition' % conditionType].format(**{format_key: sight}), tooltip=texts))
         return data
 
     def getNumber(self, number):
@@ -329,7 +332,13 @@ class ConfigInterface(DriftkingsConfigInterface):
         }]
 
     def getAvgXP(self):
-        avgXP = self.itemsCache.items.getVehicleDossier(g_currentVehicle.item.intCD).getRandomStats().getAvgXP()
+        dossier = self.itemsCache.items.getVehicleDossier(g_currentVehicle.item.intCD)
+        if dossier is None:
+            return 0
+        randomStats = dossier.getRandomStats()
+        if randomStats is None:
+            return 0
+        avgXP = randomStats.getAvgXP()
         return 0 if avgXP is None else avgXP
 
     @staticmethod
@@ -347,9 +356,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                     vehicle = vehicles[compactDescr]
                     if vehicle and not vehicle.isUnlocked:
                         isAvailable, cost, need, fullCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD, vehicle.level)
-                        researchVehicles[compactDescr] = {'exp': fullCost, 'battles': 1, 'vehicle': vehicle, 'discount': fullCost - cost}
+                        researchVehicles[compactDescr] = {'exp': fullCost, 'battles': 1, 'vehicle': vehicle, 'discount': discount}
                         eliteNeedXP += fullCost
-                        eliteDiscountXP += fullCost - cost
+                        eliteDiscountXP += discount
                         isEliteReady = True
                         for research in unlocks[2:]:  # Start from index 2 since we already processed index 1
                             isAvailable, cost, need, fullCost, discount = getUnlockPrice(research, g_currentVehicle.item.intCD, vehicle.level)
@@ -360,7 +369,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                     isAvailable, cost, need, defCost, discount = getUnlockPrice(compactDescr, g_currentVehicle.item.intCD)
                     if not isAvailable:
                         modulesNeedXP += cost
-                        eliteNeedXP += cost
+                        eliteNeedXP += defCost
+                        eliteDiscountXP += discount
                         isEliteReady = True
                         isModulesReady = True
         return modulesNeedXP, eliteNeedXP, eliteDiscountXP, researchVehicles, isEliteReady, isModulesReady

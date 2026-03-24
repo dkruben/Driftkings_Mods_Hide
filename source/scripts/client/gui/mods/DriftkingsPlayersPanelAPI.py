@@ -74,6 +74,8 @@ class PlayersPanelAPI(object):
         self.impl = False
         self.viewLoad = False
         self.componentUI = None
+        self._configs = {}
+        self._pendingUpdates = {}
         self.onUIReady = Event.Event()
         self.updateMode = Event.Event()
         override(PlayersPanel, 'setInitialMode', self.setInitialMode)
@@ -167,6 +169,10 @@ class PlayersPanelAPI(object):
     def _populate(self, orig):
         self.viewLoad = True
         self.componentUI = orig
+        for linkage, config in self._configs.iteritems():
+            self.componentUI.as_createS(linkage, copy.deepcopy(config))
+        for linkage, data in self._pendingUpdates.iteritems():
+            self.componentUI.as_updateS(linkage, data.copy() if isinstance(data, dict) else data)
         self.onUIReady(self, 'DriftkingsPlayersPanelUI', orig)
 
     def _dispose(self, _):
@@ -175,21 +181,26 @@ class PlayersPanelAPI(object):
         self.componentUI = None
 
     def create(self, linkage, config=None):
-        if not self.componentUI:
-            return None
         conf = copy.deepcopy(self.config)
         if config:
             self.smartUpdate(conf, config)
+        self._configs[linkage] = copy.deepcopy(conf)
+        if not self.componentUI:
+            return None
         return self.componentUI.as_createS(linkage, conf)
 
     def update(self, linkage, data):
-        if not self.componentUI:
-            return None
         if isinstance(data, dict) and 'text' in data and isinstance(data.get('text'), (str, unicode if sys.version_info[0] == 2 else str)):
             data['text'] = data['text'].replace('$IMELanguageBar', '$FieldFont')
+        if linkage in self._configs:
+            self._pendingUpdates[linkage] = data.copy() if isinstance(data, dict) else data
+        if not self.componentUI:
+            return None
         return self.componentUI.as_updateS(linkage, data)
 
     def delete(self, linkage):
+        self._configs.pop(linkage, None)
+        self._pendingUpdates.pop(linkage, None)
         return self.componentUI.as_deleteS(linkage) if self.componentUI else None
 
     def shadowListItem(self, shadow):
@@ -234,7 +245,9 @@ class PlayersPanelAPI(object):
             self.impl = False
 
 
-if not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
+g_driftkingsPlayersPanels = globals().get('g_driftkingsPlayersPanels')
+
+if g_driftkingsPlayersPanels is None and not g_entitiesFactories.getSettings('DriftkingsPlayersPanelUI'):
     g_driftkingsPlayersPanels = PlayersPanelAPI()
     g_entitiesFactories.addSettings(ViewSettings('DriftkingsPlayersPanelUI', View, 'DriftkingsPlayersPanelAPI.swf', WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
     g_entitiesFactories.addSettings(ComponentSettings('DriftkingsPlayersPanelAPI', DriftkingsPlayersPanelMeta, ScopeTemplates.DEFAULT_SCOPE))

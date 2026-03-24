@@ -1,9 +1,13 @@
 #!/bin/bash
 cp build_tools/hooks/* .git/hooks/
+py -3 build_tools/bump_versions.py
+if [ $? -ne 0 ]; then
+    exit 1
+fi
 git rev-parse -q --verify MERGE_HEAD > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     py -2 build_tools/mtimestore.py -s
-    git add '*.mtimes*'
+    git add -- '*.mtimes*'
 else
     py -2 build_tools/mtimestore.py -r
 fi
