@@ -18,7 +18,6 @@ from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import override, logError
 
-
 __all__ = ('g_driftkingsPlayersPanels',)
 
 

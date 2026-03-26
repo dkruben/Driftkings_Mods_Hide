@@ -1,14 +1,19 @@
-﻿{
-    "defaultIcon": true,
-    "defaultIconName": 0,
-    "delay": 4,
+{
     "enabled": true,
-    "helpMessage": true,
+    "defaultIcon": true,
+    "userIcon": "mods/configs/Driftkings/SixthSense/SixthSenseIcon.png",
     "lampShowTime": 10,
     "playTickSound": false,
+    "userSound": true,
+    "defaultIconName": 0,
     "sixthSenseSound": "SixthSense_06",
+    "showTimer": true,
+    "showTimerGraphics": true,
+    "showTimerGraphicsColor": "FFFFFF",
+    "showTimerGraphicsRadius": 45,
+    "iconSize": 90,
     "spottedMessage": true,
+    "helpMessage": false,
     "spottedText": "I'm Spotted at %(pos)s!",
-    "userIcon": "mods/configs/Driftkings/SixthSense/SixthSenseIcon.png",
-    "userSound": true
+    "delay": 4
 }

@@ -1,10 +1,11 @@
-﻿{
+{
     "UI_description": "BattleOptions",
+    "UI_version": "2.8.1 (%(file_compile_date)s)",
     "UI_setting_clipLoad_text": "ReLoad Status",
     "UI_setting_clipLoad_tooltip": "Clip Load Time Massage",
-    "UI_setting_colorCheck_text": "Choose Map Border Color:",
     "UI_setting_color_text": "<font color='#%(color)s'>Current color: #%(color)s</font>",
     "UI_setting_color_tooltip": "This color will be applied to all Maps",
+    "UI_setting_colorCheck_text": "Choose Map Border Color:",
     "UI_setting_directivesOnlyFromStorage_text": "Directives Only From Storage",
     "UI_setting_directivesOnlyFromStorage_tooltip": "Disable overriding directives from the storage.",
     "UI_setting_disableSoundCommander_text": "Disable Sound Commander",
@@ -31,11 +32,14 @@
     "UI_setting_showBattleHint_tooltip": "Hide the tips aiming mode changing in strategic mode.",
     "UI_setting_showFriends_text": "Show Friends",
     "UI_setting_showFriends_tooltip": "Show friends in players panel.",
-    "UI_setting_showPlayerSatisfactionWidget_text": "Show Player Satisfaction Widget",
-    "UI_setting_showPlayerSatisfactionWidget_tooltip": "Display battle rating \"player satisfaction\" widget.",
     "UI_setting_showPostmortemDogTag_text": "Show Postmortem DogTag",
     "UI_setting_showPostmortemDogTag_tooltip": "Disable pop-up panel with a dog tag.",
     "UI_setting_stunSound_text": "Stun Sound",
     "UI_setting_stunSound_tooltip": "Disable Stun Sound Effect.",
-    "UI_version": 235
+    "UI_setting_showPlayerSatisfactionWidget_text": "Show Player Satisfaction Widget",
+    "UI_setting_showPlayerSatisfactionWidget_tooltip": "Display battle rating \"player satisfaction\" widget.",
+    "UI_setting_addEnemyName_text": "Add Enemy Name",
+    "UI_setting_addEnemyName_tooltip": "Adds the name of the enemy vehicle to the damage log.",
+    "UI_setting_hideHint_text": "Hide Hint",
+    "UI_setting_hideHint_tooltip": "Disable battle hint."
 }

@@ -1,10 +1,20 @@
-﻿{
-    "UI_description": "DispersionCircle",
-    "UI_setting_dispersionCircleScale_text": "Circle size multiplier 30-100% (0.3-1.0)",
-    "UI_setting_dispersionCircleScale_tooltip": "This parameter affects what the additional summation circle will be in the result.\n If the value is 0.3 (30%), then the circle will be the minimum possible,\n and at 1.0 (100%) - the maximum, i.e. without changes.\nIt is not recommended to set a value lower than 65%.",
-    "UI_setting_replaceOriginalCircle_text": "Replace Original Circle",
-    "UI_setting_replaceOriginalCircle_tooltip": "",
-    "UI_setting_scale_size": "%",
-    "UI_setting_useServerDispersion_text": "Enable server scope (extra lap)",
-    "UI_setting_useServerDispersion_tooltip": "Enabling the feature will create an extra server lapping circle."
+{
+    "UI_description": "Reticle",
+    "UI_version": "1.1.1 (%(file_compile_date)s)",
+    "UI_setting_showClientAndServerReticleBeta_text": "Client and Server Reticle (Beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Show both client and server reticle simultaneously",
+    "UI_setting_showServerSpgStrategicReticle_text": "SPG Strategic Reticle",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Enable server reticle for SPG strategic mode",
+    "UI_setting_gunMarkerMinimumSize_text": "Gun Marker Minimum Size",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Minimum size of the gun marker in pixels",
+    "UI_setting_percentCorrection_text": "Reticle Size Correction",
+    "UI_setting_percentCorrection_tooltip": "Adjust the scale factor of the reticle",
+    "UI_setting_serverReticleAimingCircleShape_text": "Aiming Circle Shape",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Select the shape of the server aiming circle",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Aiming Circle Opacity",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Adjust the opacity of the server aiming circle",
+    "UI_setting_serverReticleGunMarkerShape_text": "Gun Marker Shape",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Select the shape of the server gun marker",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Gun Marker Opacity",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Adjust the opacity of the server gun marker"
 }

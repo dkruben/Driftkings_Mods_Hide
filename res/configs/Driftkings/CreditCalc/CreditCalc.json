@@ -1,0 +1,13 @@
+{
+    "enabled": true,
+    "battle_x": 60,
+    "battle_y": -252,
+    "hangar_x": 325.0,
+    "hangar_y": 505.0,
+    "battleBackground": true,
+    "battleShow": true,
+    "hangarBackground": true,
+    "hangarShow": true,
+    "showDebugInfo": false,
+    "autoSaveCoefficients": true
+}

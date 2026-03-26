@@ -1,0 +1,29 @@
+{
+    "enabled": true,
+    "showInHangar": true,
+    "showInStatistic": true,
+    "textLock": false,
+    "showTooltipTargets": true,
+    "colorRating": 0,
+    "starAnimationWindow": 5.0,
+    "panel": {
+        "x": 215.0,
+        "y": -246.0,
+        "width": 360.0,
+        "height": 188.0,
+        "alignX": "left",
+        "alignY": "bottom"
+    },
+    "card": {
+        "backgroundColor": 1052948,
+        "backgroundAlpha": 0.94,
+        "outlineColor": 2829619,
+        "headerColor": "#C7A86A",
+        "titleColor": "#F5F1E8",
+        "mutedColor": "#8E949F",
+        "lineColor": "#262A31",
+        "accentColor": "#E2C07A",
+        "accentSoftColor": "#3A2B17",
+        "warningColor": "#F3B14B"
+    }
+}

@@ -1,7 +1,7 @@
-﻿{
-    "enabled": true,
-    "max": 400,
-    "min": 10,
-    "scrollSensitivity": 11,
-    "startDeadDist": 60
+{
+    "enabled": false,
+    "max": 160.0,
+    "min": 4.0,
+    "scrollSensitivity": 6.0,
+    "startDeadDist": 20.0
 }

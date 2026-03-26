@@ -1,17 +1,19 @@
-﻿{
-    "activateMessage": true,
-    "chatMessages": "[{name} - {vehicle}], get out of the way!",
-    "clientMessages": {
-        "deadShotBlockedMessage": "Dead shot blocked!",
-        "teamShotBlockedMessage": "Team shot blocked!",
-        "wasteShotBlockedMessage": "Waste shot blocked!"
-    },
+{
+    "enabled": true,
+    "wasteShotBlock": false,
+    "teamShotBlock": true,
+    "teamKillerShotUnblock": false,
     "deadShotBlock": true,
     "deadShotBlockTimeOut": 2,
-    "disableKey": ["KEY_Q"],
-    "enabled": true,
-    "teamKillerShotUnblock": false,
-    "teamShotBlock": true,
+    "disableKey": [
+        "KEY_Q"
+    ],
+    "activateMessage": true,
     "triggerMessage": true,
-    "wasteShotBlock": false
+    "clientMessages": {
+        "wasteShotBlockedMessage": "Waste shot blocked!",
+        "teamShotBlockedMessage": "Team shot blocked!",
+        "deadShotBlockedMessage": "Dead shot blocked!"
+    },
+    "chatMessages": "[{name} - {vehicle}], get out of the way!"
 }

@@ -3,8 +3,8 @@ __MOD_CORE__ = '3.1.0'  # Updated version number
 __CORE_NAME__ = 'Driftkings_Core'
 __MOD_DATE__ = '(%(file_compile_date)s)'
 
-import time
 import sys
+import time
 import traceback
 
 import ResMgr

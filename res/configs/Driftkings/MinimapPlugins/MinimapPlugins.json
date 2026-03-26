@@ -1,15 +1,21 @@
-﻿{
+{
+    "enabled": true,
+    "permanentMinimapDeath": false,
+    "yaw": true,
+    "showNames": true,
+    "viewRadius": true,
+    "zoomFactor": 1.1,
+    "zoomFactorMax": 2.0,
+    "button": [
+        "KEY_LCONTROL"
+    ],
     "alpha": 90,
-    "button": [["KEY_LSHIFT", "KEY_RSHIFT"]],
     "changeColorCircles": true,
     "colorDrawCircle": "2B28D1",
     "colorMaxViewCircle": "E02810",
     "colorMinSpottingCircle": "35DE46",
     "colorViewCircle": "FF7FFF",
-    "enabled": true,
-    "permanentMinimapDeath": false,
-    "showNames": false,
-    "viewRadius": true,
-    "yaw": true,
-    "zoomFactor": 1.1
+    "showLastPositions": true,
+    "lastPositionDuration": 30,
+    "showVehicleTypes": true
 }

@@ -14,14 +14,14 @@ from gui.shared import g_eventBus, events, EVENT_BUS_SCOPE
 from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, getPlayer, callback, calculate_version
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, getPlayer, callback, cancelCallback, calculate_version
 
 
 class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.1.1 (%(file_compile_date)s)'
+        self.version = '2.1.0 (%(file_compile_date)s)'
         self.author = ' (orig by spoter, refactored by DriftKings)'
         self.defaultKeys = {'buttonRepair': [Keys.KEY_SPACE], 'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
@@ -128,6 +128,7 @@ class Repair(object):
         self.ctrl = None
         self.consumablesPanel = None
         self.battleStarted = False
+        self.pendingAutoCallbacks = {}
         self.items = {
             'extinguisher': [251, 251, None, None],
             'medkit': [763, 1019, None, None],
@@ -188,6 +189,7 @@ class Repair(object):
             self.ctrl.equipments.onEquipmentUpdated -= self.onEquipmentUpdated
         #
         self.battleStarted = False
+        self._clearPendingAutoCallbacks()
         for equipment_tag in self.items:
             self.items[equipment_tag][2] = None
             self.items[equipment_tag][3] = None
@@ -213,42 +215,28 @@ class Repair(object):
     def useItem(self, equipment_tag, item=None):
         if not self._canUseConsumable():
             return
-        sound = False
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
-            # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][0], item)
-            sound = True
+            self._activateEquipment(self.items[equipment_tag][0], item)
         else:
             if config.data['useGoldKits']:
                 equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
                 if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
-                    # noinspection PyProtectedMember
-                    self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][1])
-                    sound = True
-        if sound:
-            sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
-            callback(1.0, sound.play)
+                    self._activateEquipment(self.items[equipment_tag][1], item)
 
     def useItemManual(self, equipment_tag, item=None):
         if not self._canUseConsumable(requireControl=True):
             return
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
-            # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][0], item)
-            sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
-            callback(1.0, sound.play)
+            self._activateEquipment(self.items[equipment_tag][0], item)
 
-    def useItemGold(self, equipment_tag):
+    def useItemGold(self, equipment_tag, item=None):
         if not self._canUseConsumable(requireControl=True):
             return
         equipment = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
         if equipment is not None and equipment.isReady and equipment.isAvailableToUse:
-            # noinspection PyProtectedMember
-            self.consumablesPanel._handleEquipmentPressed(self.items[equipment_tag][1])
-            sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
-            callback(1.0, sound.play)
+            self._activateEquipment(self.items[equipment_tag][1], item)
 
     def extinguishFire(self):
         if self.ctrl is None:
@@ -287,7 +275,7 @@ class Repair(object):
                 if len(result) > 1:
                     self.useItemGold(equipment_tag)
                 elif result:
-                    self.useItemManual(equipment_tag, result[0])
+                    self.useItemGold(equipment_tag, result[0])
         elif self.items[equipment_tag][2]:
             equipment = self.items[equipment_tag][2]
             if equipment is not None:
@@ -300,9 +288,7 @@ class Repair(object):
                         itemName = device
                     if itemName in specific:
                         result.append(device)
-                if len(result) > 1:
-                    self.useItemGold(equipment_tag)
-                elif result:
+                if result:
                     self.useItemManual(equipment_tag, result[0])
 
     def repairAll(self):
@@ -354,11 +340,11 @@ class Repair(object):
     def autoUse(self, state, value):
         if not config.data['autoRepair']:
             return
-        if self.ctrl is None or self.player is None:
+        if not self._canUseConsumable(requireControl=True):
             return
         time = random.uniform(config.data['timerMin'], config.data['timerMax'])
         if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
-            callback(time, partial(self.useItem, 'extinguisher'))
+            self._scheduleAutoUse('extinguisher', time)
             time += 0.1
 
         if state == VEHICLE_VIEW_STATE.DEVICES:
@@ -370,20 +356,20 @@ class Repair(object):
                 specific = self._getRepairPriority(equipmentTag)
                 if itemName in specific:
                     if config.data['healCrew'] and equipmentTag == 'medkit':
-                        callback(time, partial(self.useItem, 'medkit', deviceName))
+                        self._scheduleAutoUse('medkit', time, deviceName)
                     if config.data['repairDevices'] and equipmentTag == 'repairkit':
-                        callback(time, partial(self.useItem, 'repairkit', deviceName))
+                        self._scheduleAutoUse('repairkit', time, deviceName)
                         time += 0.1
 
         if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN:
-            callback(time, partial(self.useItem, 'medkit'))
+            self._scheduleAutoUse('medkit', time)
 
     def _canUseConsumable(self, requireControl=False):
         if not config.data['enabled']:
             return False
         if BattleReplay.g_replayCtrl.isPlaying:
             return False
-        if self.ctrl is None or self.player is None or self.consumablesPanel is None:
+        if self.ctrl is None or self.player is None:
             return False
         self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
@@ -391,6 +377,29 @@ class Repair(object):
         if requireControl and self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
             return False
         return True
+
+    def _activateEquipment(self, intCD, item=None):
+        if self.ctrl is None or self.player is None:
+            return False
+        result, error = self.ctrl.equipments.changeSetting(intCD, entityName=item, avatar=self.player)
+        if result:
+            sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
+            callback(1.0, sound.play)
+        return result
+
+    def _scheduleAutoUse(self, equipment_tag, delay, item=None):
+        if equipment_tag in self.pendingAutoCallbacks:
+            cancelCallback(self.pendingAutoCallbacks.pop(equipment_tag))
+        self.pendingAutoCallbacks[equipment_tag] = callback(delay, partial(self._processAutoUse, equipment_tag, item))
+
+    def _processAutoUse(self, equipment_tag, item=None):
+        self.pendingAutoCallbacks.pop(equipment_tag, None)
+        self.useItem(equipment_tag, item)
+
+    def _clearPendingAutoCallbacks(self):
+        for callbackID in self.pendingAutoCallbacks.itervalues():
+            cancelCallback(callbackID)
+        self.pendingAutoCallbacks.clear()
 
     def _getRepairPriority(self, equipment_tag):
         vehicle_class = Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)

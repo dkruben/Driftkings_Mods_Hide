@@ -2,9 +2,9 @@
 import BigWorld
 import Keys
 import Math
-from VehicleGunRotator import VehicleGunRotator
 from Avatar import PlayerAvatar
 from AvatarInputHandler.aih_global_binding import CTRL_MODE_NAME
+from VehicleGunRotator import VehicleGunRotator
 from gui import InputHandler
 from gui.shared.gui_items import Vehicle
 from gui.shared.gui_items.Vehicle import VEHICLE_CLASS_NAME
@@ -21,7 +21,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.5.1 (%(file_compile_date)s)'
+        self.version = '1.5.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.defaultKeys = {
             'buttonShowDot': [Keys.KEY_C, [Keys.KEY_LALT, Keys.KEY_RALT]],

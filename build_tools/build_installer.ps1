@@ -12,7 +12,11 @@ $archivePayloadDir = Join-Path $payloadDir "archives"
 $outputDir = Join-Path $repoRoot "build\installer"
 $publishDir = Join-Path $outputDir "publish"
 $manifestPath = Join-Path $payloadDir "payload_manifest.json"
-$gameVersion = (Get-Content (Join-Path $repoRoot "build_data\GAME_VERSION") -Raw).Trim()
+$buildConfig = Get-Content (Join-Path $repoRoot "build_data\build_config.json") -Raw | ConvertFrom-Json
+$gameVersion = [string]$buildConfig.game_version
+if ([string]::IsNullOrWhiteSpace($gameVersion)) {
+    throw "build_data/build_config.json must define game_version."
+}
 
 New-Item -ItemType Directory -Force -Path $archivePayloadDir | Out-Null
 Get-ChildItem $archivePayloadDir -File -ErrorAction SilentlyContinue | Remove-Item -Force

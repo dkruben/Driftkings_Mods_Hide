@@ -1,45 +1,49 @@
-﻿{
-    "allowChannelButtonBlinking": true,
-    "allowExchangeXPInTechTree": true,
-    "autoLogin": true,
-    "clock": true,
+{
     "enabled": true,
-    "hideBtnCounters": false,
-    "lootBoxesWidget": false,
-    "panel": {
-        "alignX": "right",
-        "alignY": "top",
-        "height": 50,
-        "position": {
-            "x": -10.0,
-            "y": 49.0
-        },
-        "shadow": {
-            "angle": 0,
-            "distance": 0,
-            "quality": 3,
-            "strength": 0.5
-        },
-        "width": 210
-    },
-    "premiumTime": false,
-    "showBattleCount": true,
-    "showButton": true,
-    "showButtonCounters": true,
-    "showBuyPremiumButton": true,
-    "showDailyQuestWidget": false,
-    "showEventBanner": true,
-    "showGeneralChatButton": true,
-    "showHangarPrestigeWidget": false,
-    "showPopUpMessages": false,
-    "showPremiumShopButton": true,
-    "showProfilePrestigeWidget": true,
-    "showProgressiveDecalsWindow": false,
-    "showPromoPremVehicle": true,
-    "showRankedBattleResults": false,
-    "showReferralButton": false,
-    "showUnreadCounter": true,
-    "showWotPlusButton": false,
+    "autoLogin": true,
     "showXpToUnlockVeh": false,
-    "text": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='32'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin='85' leading='-2'>%A\n<font size='15'>%d %b %Y</font></textformat></font>"
+    "showGeneralChatButton": true,
+    "showPromoPremVehicle": false,
+    "showPopUpMessages": false,
+    "showUnreadCounter": true,
+    "showRankedBattleResults": false,
+    "showButton": false,
+    "showAchievementPopups": false,
+    "showAchievementRewardWindow": true,
+    "showBattleCount": true,
+    "showDailyQuestWidget": false,
+    "showProgressiveDecalsWindow": false,
+    "showEventBanner": true,
+    "showEventTournamentWidget": true,
+    "showHangarPrestigeWidget": false,
+    "showProfilePrestigeWidget": true,
+    "showButtonCounters": true,
+    "allowExchangeXPInTechTree": true,
+    "allowChannelButtonBlinking": true,
+    "lootBoxesWidget": false,
+    "hideBtnCounters": false,
+    "fieldMail": true,
+    "clock": true,
+    "showBattlePassWidget": true,
+    "blockVehicleIfLowAmmo": false,
+    "lowAmmoPercentage": 20,
+    "customClockFormat": false,
+    "text": "<font face='$FieldFont' color='#959688'><textformat leading='-38'><font size='32'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin='85' leading='-2'>%A\n<font size='15'>%d %b %Y</font></textformat></font>",
+    "customClockText": "<font face='$FieldFont' color='#FF9900'><textformat leading='-38'><font size='32'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin='85' leading='-2'>%A\n<font size='15'>%d %b %Y</font></textformat></font>",
+    "panel": {
+        "position": {
+            "x": -40.0,
+            "y": 55.0
+        },
+        "width": 210,
+        "height": 50,
+        "shadow": {
+            "distance": 0,
+            "angle": 0,
+            "strength": 0.5,
+            "quality": 3
+        },
+        "alignX": "right",
+        "alignY": "top"
+    }
 }

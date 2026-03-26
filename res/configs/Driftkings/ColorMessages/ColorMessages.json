@@ -1,6 +1,9 @@
-﻿{
-    "color_credits": "a6fd34",
-    "color_header": "00406f",
-    "color_xp": "a6a300",
-    "enabled": true
+{
+    "enabled": true,
+    "color_header": "98FB98",
+    "color_xp": "98FB98",
+    "color_credits": "98FB98",
+    "color_damage": "FF5C5C",
+    "color_free_xp": "FFD700",
+    "color_medals": "D4AF37"
 }

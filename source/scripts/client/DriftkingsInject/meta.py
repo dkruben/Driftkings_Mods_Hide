@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from account_helpers.settings_core.settings_constants import GRAPHICS
+from constants import ARENA_BONUS_TYPE
 from gui.Scaleform.framework.entities.BaseDAAPIComponent import BaseDAAPIComponent
 from gui.Scaleform.framework.entities.DisposableEntity import EntityState
 from helpers import dependency
-from constants import ARENA_BONUS_TYPE
 from skeletons.account_helpers.settings_core import ISettingsCore
 from skeletons.gui.battle_session import IBattleSessionProvider
 

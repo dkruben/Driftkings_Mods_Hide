@@ -13,6 +13,8 @@ from PlayerEvents import g_playerEvents
 from adisp import adisp_process
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from comp7_core.gui.battle_control.controllers.sound_ctrls.comp7_battle_sounds import _EquipmentZoneSoundPlayer
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import DamageLogPanel
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import BattleHintPanel
 from gui.Scaleform.daapi.view.battle.shared.hint_panel import plugins as hint_plugins
@@ -33,8 +35,6 @@ from messenger.storage import storage_getter
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN
 
 _cache = set()
 
@@ -42,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.8.1 (%(file_compile_date)s)'
+        self.version = '2.8.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,

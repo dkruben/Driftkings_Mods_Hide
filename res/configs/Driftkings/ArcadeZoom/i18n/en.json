@@ -1,12 +1,12 @@
-﻿{
+{
     "UI_description": "ArcadeZoom",
-    "UI_setting_max_text": "Max Zoom Out",
-    "UI_setting_max_tooltip": "",
+    "UI_version": "1.1.0 (%(file_compile_date)s)",
     "UI_setting_min_text": "Min Zoom Out",
-    "UI_setting_min_tooltip": "",
+    "UI_setting_min_tooltip": "Minimum camera distance from vehicle",
+    "UI_setting_max_text": "Max Zoom Out",
+    "UI_setting_max_tooltip": "Maximum camera distance from vehicle",
     "UI_setting_scrollSensitivity_text": "Scroll Sensitivity",
-    "UI_setting_scrollSensitivity_tooltip": "",
+    "UI_setting_scrollSensitivity_tooltip": "Adjust mouse wheel zoom sensitivity",
     "UI_setting_startDeadDist_text": "Start Dead Distance",
-    "UI_setting_startDeadDist_tooltip": "",
-    "UI_version": 105
+    "UI_setting_startDeadDist_tooltip": "Initial camera distance in post-mortem mode"
 }

@@ -13,7 +13,7 @@ __AUTHOR__ = 'DriftKings'
 __VERSION__ = "{} {}".format(__MOD_CORE__, __MOD_DATE__)
 
 
-__all__ = ('getVehicleInfoData', 'calculateXvmScale', 'calculateXTDB', 'calculateXTE', 'xvm_stat',)
+__all__ = ('getVehicleInfoData', 'calculateXvmScale', 'calculateXTDB', 'calculateXTE', 'xvm_stat', 'scaleValuesInstance', )
 
 from DriftkingsCore import logInfo, logError, logDebug
 

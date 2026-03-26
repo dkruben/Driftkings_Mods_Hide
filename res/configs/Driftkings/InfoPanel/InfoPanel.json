@@ -1,8 +1,9 @@
-﻿{
+{
+    "enabled": true,
     "aliveOnly": false,
-    "altKey": ["KEY_LALT"],
-    "backgroundAlpha": 0.8,
-    "backgroundEnabled": true,
+    "altKey": [
+        "KEY_LALT"
+    ],
     "compareValues": {
         "equal": {
             "color": "#FFFFFF",
@@ -18,26 +19,26 @@
         }
     },
     "delay": 5,
-    "enabled": true,
-    "showFor": 0,
     "templatePreset": 0,
+    "showFor": 0,
     "textLock": false,
     "textPosition": {
+        "x": 700.0,
+        "y": 300.0,
         "alignX": "center",
-        "alignY": "center",
-        "x": -831.0,
-        "y": 243.0
+        "alignY": "center"
     },
     "textShadow": {
-        "alpha": 0.8,
+        "alpha": 0.92,
         "angle": 90,
-        "blurX": 5,
-        "blurY": 5,
+        "blurX": 6,
+        "blurY": 6,
         "color": "#000000",
         "distance": 1,
-        "enabled": true,
         "quality": 2,
         "strength": 2
     },
-    "version": 180
+    "backgroundEnabled": true,
+    "backgroundAlpha": 0.78,
+    "version": "2.0.1 (%(file_compile_date)s)"
 }

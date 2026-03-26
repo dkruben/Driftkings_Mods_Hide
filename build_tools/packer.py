@@ -12,6 +12,10 @@ from datetime import datetime
 
 folder_ix_all = re.compile(r'mods/[.\d]*( Common Test)?/')
 printed = False
+try:
+    string_types = (basestring,)
+except NameError:
+    string_types = (str,)
 
 
 def get_git_date(path):
@@ -268,6 +272,42 @@ def do_pack(fp, arc_data, mode, v_str, v_date):
         return False
 
 
+def read_version_info(version_file):
+    version_str = None
+    version_date = None
+    try:
+        with open(version_file, 'r') as v_file:
+            raw_content = v_file.read().strip()
+        if not raw_content:
+            print('WARNING: version was empty')
+            return None, None
+        try:
+            parsed = json.loads(raw_content)
+        except ValueError:
+            parsed = raw_content
+
+        if isinstance(parsed, dict):
+            version_str = parsed.get('game_version') or parsed.get('version')
+            if version_str is not None and not isinstance(version_str, string_types):
+                version_str = str(version_str)
+        elif isinstance(parsed, string_types):
+            version_str = parsed.strip()
+        else:
+            version_str = str(parsed).strip()
+
+        if not version_str:
+            print('WARNING: version was empty')
+            version_str = None
+        else:
+            time_str = get_git_date(version_file)
+            version_date = datetime.fromtimestamp(long(time_str) if time_str else long(os.stat(version_file).st_mtime))
+    except IOError:
+        print('WARNING: version file not found: {0}'.format(version_file))
+    except ValueError as e:
+        print('WARNING: invalid version config "{0}": {1}'.format(version_file, e))
+    return version_str, version_date
+
+
 def main():
     import getopt
     try:
@@ -306,18 +346,7 @@ def main():
     version_date = None
 
     if version_file:
-        try:
-            with open(version_file, 'r') as v_file:
-                version_str = v_file.read().strip()
-            if not version_str:
-                print('WARNING: version was empty')
-                version_str = None
-            else:
-                timeStr = get_git_date(version_file)
-                version_date = datetime.fromtimestamp(
-                    long(timeStr) if timeStr else long(os.stat(version_file).st_mtime))
-        except IOError:
-            print('WARNING: version file not found: {0}'.format(version_file))
+        version_str, version_date = read_version_info(version_file)
     else:
         print('WARNING: version file not provided')
 

@@ -1,19 +1,107 @@
-﻿{
-    "autoRepair": true,
-    "buttonChassis": [["KEY_LALT", "KEY_RALT"]],
-    "buttonRepair": ["KEY_SPACE"],
+{
     "enabled": true,
+    "buttonChassis": [
+        [
+            "KEY_LALT",
+            "KEY_RALT"
+        ]
+    ],
+    "buttonRepair": [
+        "KEY_SPACE"
+    ],
+    "autoRepair": true,
+    "removeStun": true,
     "extinguishFire": true,
     "healCrew": true,
-    "removeStun": true,
     "repairDevices": true,
+    "restoreChassis": false,
+    "useGoldKits": true,
+    "timerMin": 0.3,
+    "timerMax": 0.8,
     "repairPriority": {
+        "lightTank": {
+            "medkit": [
+                "driver",
+                "commander",
+                "gunner",
+                "loader"
+            ],
+            "repairkit": [
+                "engine",
+                "ammoBay",
+                "gun",
+                "turretRotator",
+                "fuelTank"
+            ]
+        },
+        "mediumTank": {
+            "medkit": [
+                "loader",
+                "driver",
+                "commander",
+                "gunner"
+            ],
+            "repairkit": [
+                "turretRotator",
+                "engine",
+                "ammoBay",
+                "gun",
+                "fuelTank"
+            ]
+        },
+        "heavyTank": {
+            "medkit": [
+                "commander",
+                "loader",
+                "gunner",
+                "driver"
+            ],
+            "repairkit": [
+                "turretRotator",
+                "ammoBay",
+                "engine",
+                "gun",
+                "fuelTank"
+            ]
+        },
+        "SPG": {
+            "medkit": [
+                "commander",
+                "loader",
+                "gunner",
+                "driver"
+            ],
+            "repairkit": [
+                "ammoBay",
+                "engine",
+                "gun",
+                "turretRotator",
+                "fuelTank"
+            ]
+        },
         "AT-SPG": {
-            "medkit": ["loader", "gunner", "commander", "driver"],
-            "repairkit": ["ammoBay", "gun", "engine", "turretRotator", "fuelTank"]
+            "medkit": [
+                "loader",
+                "gunner",
+                "commander",
+                "driver"
+            ],
+            "repairkit": [
+                "ammoBay",
+                "gun",
+                "engine",
+                "turretRotator",
+                "fuelTank"
+            ]
         },
         "AllAvailableVariables": {
-            "medkit": ["commander", "gunner", "driver", "radioman", "loader"],
+            "medkit": [
+                "commander",
+                "gunner",
+                "driver",
+                "radioman",
+                "loader"
+            ],
             "repairkit": [
                 "engine",
                 "ammoBay",
@@ -25,26 +113,6 @@
                 "fuelTank",
                 "wheel"
             ]
-        },
-        "SPG": {
-            "medkit": ["commander", "loader", "gunner", "driver"],
-            "repairkit": ["ammoBay", "engine", "gun", "turretRotator", "fuelTank"]
-        },
-        "heavyTank": {
-            "medkit": ["commander", "loader", "gunner", "driver"],
-            "repairkit": ["turretRotator", "ammoBay", "engine", "gun", "fuelTank"]
-        },
-        "lightTank": {
-            "medkit": ["driver", "commander", "gunner", "loader"],
-            "repairkit": ["engine", "ammoBay", "gun", "turretRotator", "fuelTank"]
-        },
-        "mediumTank": {
-            "medkit": ["loader", "driver", "commander", "gunner"],
-            "repairkit": ["turretRotator", "engine", "ammoBay", "gun", "fuelTank"]
         }
-    },
-    "restoreChassis": true,
-    "timerMax": 0.9,
-    "timerMin": 0.2,
-    "useGoldKits": true
+    }
 }

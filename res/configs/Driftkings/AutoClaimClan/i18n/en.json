@@ -1,6 +1,6 @@
-﻿{
+{
     "UI_description": "AutoClaimClan",
-    "UI_setting_claimRewards_text": "Claim Rewards",
-    "UI_setting_claimRewards_tooltip": "",
-    "UI_version": 100
+    "UI_version": "1.1.1 (%(file_compile_date)s)",
+    "UI_setting_enabled_text": "Enabled",
+    "UI_setting_enabled_tooltip": "Enable/disable the mod."
 }

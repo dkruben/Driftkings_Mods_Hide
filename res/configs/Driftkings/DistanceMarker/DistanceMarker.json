@@ -1,0 +1,14 @@
+{
+    "enabled": true,
+    "displayMode": 0,
+    "markerTarget": 1,
+    "anchorPosition": 0,
+    "lockPositionOffsets": false,
+    "anchorHorizontalOffset": 24,
+    "anchorVerticalOffset": 16,
+    "decimalPrecision": 0,
+    "textSize": 11,
+    "textColor": "FFFFFF",
+    "textAlpha": 1.0,
+    "drawTextShadow": true
+}

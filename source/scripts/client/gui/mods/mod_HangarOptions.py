@@ -3,20 +3,30 @@ import datetime
 import locale
 
 import gui.shared.tooltips.vehicle as tooltips
+from CurrentVehicle import g_currentVehicle
 from HeroTank import HeroTank
-from gui.Scaleform.daapi.view.lobby.hangar.hangar_header import HangarHeader
 from gui.Scaleform.daapi.view.lobby.hangar.Hangar import Hangar
 from gui.Scaleform.daapi.view.lobby.hangar.ammunition_panel import AmmunitionPanel
+from gui.Scaleform.daapi.view.lobby.hangar.hangar_header import HangarHeader
 from gui.Scaleform.daapi.view.lobby.profile.ProfileTechnique import ProfileTechnique
 from gui.Scaleform.daapi.view.lobby.rankedBattles.ranked_battles_results import RankedBattlesResults
 from gui.Scaleform.daapi.view.lobby.techtree.techtree_dp import _TechTreeDataProvider
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
+from gui.Scaleform.locale.MENU import MENU
 from gui.Scaleform.locale.RES_ICONS import RES_ICONS
 from gui.Scaleform.locale.STORAGE import STORAGE
 from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
-from gui.game_control.achievements_earning_controller import EarningAnimationCommand
+from gui.game_control.achievements_earning_controller import EarningAnimationCommand, RewardScreenCommand
+from gui.impl.lobby.hangar.presenters.user_missions_presenter import UserMissionsPresenter
+from gui.impl.lobby.page.lobby_header import LobbyHeader
+# from gui.impl.lobby.page.referral_program_presenter import ReferralProgramPresenter
+from gui.impl.lobby.page.session_stats_presenter import SessionStatsPresenter
+from gui.prb_control.entities.base.actions_validator import CurrentVehicleActionsValidator
+from gui.prb_control.items import ValidationResult
+from gui.prb_control.settings import PREBATTLE_RESTRICTION
 from gui.promo.hangar_teaser_widget import TeaserViewer
+from gui.shared.gui_items.Vehicle import Vehicle
 from gui.shared.tooltips import getUnlockPrice
 from helpers import dependency, i18n
 from messenger.gui.Scaleform.data.ChannelsCarouselHandler import ChannelsCarouselHandler
@@ -25,40 +35,7 @@ from notification.NotificationListView import NotificationListView
 from skeletons.account_helpers.settings_core import ISettingsCore
 from vehicle_systems.tankStructure import ModelStates
 
-try:
-    from gui.Scaleform.daapi.view.meta.MessengerBarMeta import MessengerBarMeta
-except ImportError:
-    MessengerBarMeta = None
-# try:
-#    from gui.Scaleform.daapi.view.lobby.header.LobbyHeader import LobbyHeader
-# except ImportError:
-#    from gui.impl.lobby.page.lobby_header import LobbyHeader
-try:
-    from gui.Scaleform.daapi.view.lobby.messengerBar.NotificationListButton import NotificationListButton
-except ImportError:
-    NotificationListButton = None
-try:
-    from gui.Scaleform.daapi.view.lobby.messengerBar.messenger_bar import MessengerBar
-except ImportError:
-    MessengerBar = None
-# try:
-#    from gui.impl.lobby.lootbox_system.base.entry_point import LootBoxSystemEntryPoint
-# except ImportError:
-#    LootBoxSystemEntryPoint = None
-
-# from gui.Scaleform.daapi.view.lobby.hangar.entry_points.event_entry_points_container import EventEntryPointsContainer
-# from gui.Scaleform.daapi.view.lobby.messengerBar.session_stats_button import SessionStatsButton
-# try:
-#    from gui.Scaleform.daapi.view.lobby.hangar.daily_quest_widget import BaseQuestsWidgetComponent
-# except ImportError:
-#    BaseQuestsWidgetComponent = None
-
-# try:
-#    from gui.impl.lobby.hangar.presenters.user_missions_presenter import UserMissionsPresenter
-# except ImportError:
-#    UserMissionsPresenter = None
-
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, overrideStaticMethod, find_attr_name
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, overrideMethod, callback, isReplay, logDebug, cancelCallback, calculate_version, logError, find_attr_name
 from DriftkingsInject import CyclicTimerEvent
 
 
@@ -66,13 +43,13 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.7.5 (%(file_compile_date)s)'
+        self.version = '3.7.6 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
             'autoLogin': True,
             'showXpToUnlockVeh': False,
-            'showReferralButton': False,
+            # 'showReferralButton': False,
             'showGeneralChatButton': True,
             'showPromoPremVehicle': False,
             'showPopUpMessages': False,
@@ -80,15 +57,17 @@ class ConfigInterface(DriftkingsConfigInterface):
             'showRankedBattleResults': False,
             'showButton': False,
             'showAchievementPopups': False,
+            'showAchievementRewardWindow': True,
             'showBattleCount': True,
             'showDailyQuestWidget': False,
             'showProgressiveDecalsWindow': False,
             'showEventBanner': True,
+            'showEventTournamentWidget': True,
             'showHangarPrestigeWidget': False,
             'showProfilePrestigeWidget': True,
-            'showWotPlusButton': False,
-            'showBuyPremiumButton': True,
-            'showPremiumShopButton': True,
+            # 'showWotPlusButton': False,
+            # 'showBuyPremiumButton': True,
+            # 'showPremiumShopButton': True,
             'showButtonCounters': True,
             'allowExchangeXPInTechTree': True,
             'allowChannelButtonBlinking': True,
@@ -97,9 +76,11 @@ class ConfigInterface(DriftkingsConfigInterface):
             'fieldMail': True,
             'clock': True,
             'showBattlePassWidget': True,
-            'showPersonalMissionsButton': True,
-            'showClanButton': True,
-            'showBattlePassButton': True,
+            # 'showPersonalMissionsButton': True,
+            # 'showClanButton': True,
+            # 'showBattlePassButton': True,
+            'blockVehicleIfLowAmmo': False,
+            'lowAmmoPercentage': 20,
             'customClockFormat': False,
             'text': '<font face=\'$FieldFont\' color=\'#959688\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
             'customClockText': '<font face=\'$FieldFont\' color=\'#FF9900\'><textformat leading=\'-38\'><font size=\'32\'>\t   %H:%M:%S</font>\n</textformat><textformat rightMargin=\'85\' leading=\'-2\'>%A\n<font size=\'15\'>%d %b %Y</font></textformat></font>',
@@ -128,14 +109,14 @@ class ConfigInterface(DriftkingsConfigInterface):
                     '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>' +
                     '<font color=\'#FF0000\'>To enable/disable you need to restart the game.</font>' +
                     '<img src=\'img://gui/maps/uiKit/dialogs/icons/alert.png\' width=\'16\' height=\'16\'>'),
-            'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
-            'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
-            'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
-            'UI_setting_showBuyPremiumButton_tooltip': 'Show/hide premium account purchase button',
-            'UI_setting_showPremiumShopButton_text': 'Premium Shop',
-            'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
-            'UI_setting_showReferralButton_text': 'Referral Program Button',
-            'UI_setting_showReferralButton_tooltip': 'Show/hide the Referral Program button',
+            # 'UI_setting_showWotPlusButton_text': 'WoT Plus Button',
+            # 'UI_setting_showWotPlusButton_tooltip': 'Show/hide WoT Plus subscription button',
+            # 'UI_setting_showBuyPremiumButton_text': 'Premium Account Button',
+            # 'UI_setting_showBuyPremiumButton_tooltip': 'Show/hide premium account purchase button',
+            # 'UI_setting_showPremiumShopButton_text': 'Premium Shop',
+            # 'UI_setting_showPremiumShopButton_tooltip': 'Show/hide premium shop button',
+            # 'UI_setting_showReferralButton_text': 'Referral Program Button',
+            # 'UI_setting_showReferralButton_tooltip': 'Show/hide the Referral Program button',
             'UI_setting_showGeneralChatButton_text': 'General Chat',
             'UI_setting_showGeneralChatButton_tooltip': 'Show/hide the General Chat button',
             'UI_setting_showPromoPremVehicle_text': 'Premium Vehicle Preview',
@@ -148,6 +129,10 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showRankedBattleResults_tooltip': 'Show/hide ranked battle results window',
             'UI_setting_showButton_text': 'Statistics Button',
             'UI_setting_showButton_tooltip': 'Show/hide the session statistics button',
+            'UI_setting_blockVehicleIfLowAmmo_text': 'Block Battle On Low Ammo',
+            'UI_setting_blockVehicleIfLowAmmo_tooltip': 'Prevent entering battle when the selected vehicle has low ammo.',
+            'UI_setting_lowAmmoPercentage_text': 'Low Ammo Percentage',
+            'UI_setting_lowAmmoPercentage_tooltip': 'Ammo threshold used to mark a vehicle as ready or low on ammo.',
             'UI_setting_showBattleCount_text': 'Battle Counter',
             'UI_setting_showBattleCount_tooltip': 'Show/hide the battle count display',
             'UI_setting_showDailyQuestWidget_text': 'Daily Missions',
@@ -156,6 +141,8 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_showProgressiveDecalsWindow_tooltip': 'Show/hide progressive decal notifications',
             'UI_setting_showEventBanner_text': 'Event Banners',
             'UI_setting_showEventBanner_tooltip': 'Show/hide event banners in hangar',
+            'UI_setting_showEventTournamentWidget_text': 'Tournament Widget',
+            'UI_setting_showEventTournamentWidget_tooltip': 'Show/hide tournament banner widget in hangar.',
             'UI_setting_showHangarPrestigeWidget_text': 'Hangar Prestige Display',
             'UI_setting_showHangarPrestigeWidget_tooltip': 'Show/hide elite level widget in hangar',
             'UI_setting_showProfilePrestigeWidget_text': 'Profile Prestige Display',
@@ -170,20 +157,23 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_lootBoxesWidget_tooltip': 'Show/hide lootbox widget in hangar',
             'UI_setting_showAchievementPopups_text': 'Achievement Popups',
             'UI_setting_showAchievementPopups_tooltip': 'Show/hide Achievement Popups.',
+            'UI_setting_showAchievementRewardWindow_text': 'Achievement Reward Window',
+            'UI_setting_showAchievementRewardWindow_tooltip': 'Show/hide fullscreen achievement reward window.',
             'UI_setting_fieldMail_text': 'Field Mail',
             'UI_setting_fieldMail_tooltip': 'Show/hide Field Mail.',
             'UI_setting_showBattlePassWidget_text': 'Battle Pass Widget',
             'UI_setting_showBattlePassWidget_tooltip': 'Show/hide Battle Pass widget in hangar.',
-            'UI_setting_showPersonalMissionsButton_text': 'Personal Missions Button',
-            'UI_setting_showPersonalMissionsButton_tooltip': 'Show/hide Personal Missions button in header.',
-            'UI_setting_showClanButton_text': 'Clan Button',
-            'UI_setting_showClanButton_tooltip': 'Show/hide Clan button in header.',
-            'UI_setting_showBattlePassButton_text': 'Battle Pass Button',
-            'UI_setting_showBattlePassButton_tooltip': 'Show/hide Battle Pass button in header.',
+            # 'UI_setting_showPersonalMissionsButton_text': 'Personal Missions Button',
+            # 'UI_setting_showPersonalMissionsButton_tooltip': 'Show/hide Personal Missions button in header.',
+            # 'UI_setting_showClanButton_text': 'Clan Button',
+            # 'UI_setting_showClanButton_tooltip': 'Show/hide Clan button in header.',
+            # 'UI_setting_showBattlePassButton_text': 'Battle Pass Button',
+            # 'UI_setting_showBattlePassButton_tooltip': 'Show/hide Battle Pass button in header.',
         }
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
+        create_slider = getattr(self.tb, 'createSlider', None)
         return {
             'modDisplayName': self.i18n['UI_description'],
             'enabled': self.data['enabled'],
@@ -194,6 +184,8 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('allowExchangeXPInTechTree'),
                 self.tb.createControl('allowChannelButtonBlinking'),
                 self.tb.createControl('showXpToUnlockVeh'),
+                self.tb.createControl('blockVehicleIfLowAmmo'),
+                create_slider('lowAmmoPercentage', 0, 100, 1, '{value}%') if callable(create_slider) else self.tb.createStepper('lowAmmoPercentage', 0, 100, 1, manual=True),
                 self.tb.createControl('showBattleCount'),
                 self.tb.createControl('showButton'),
                 self.tb.createControl('showGeneralChatButton'),
@@ -201,28 +193,43 @@ class ConfigInterface(DriftkingsConfigInterface):
                 self.tb.createControl('lootBoxesWidget'),
                 self.tb.createControl('showDailyQuestWidget'),
                 self.tb.createControl('showEventBanner'),
+                self.tb.createControl('showEventTournamentWidget'),
                 self.tb.createControl('showProgressiveDecalsWindow'),
                 self.tb.createControl('showBattlePassWidget')
             ],
             'column2': [
                 self.tb.createControl('showPromoPremVehicle'),
-                self.tb.createControl('showBuyPremiumButton'),
-                self.tb.createControl('showPremiumShopButton'),
-                self.tb.createControl('showWotPlusButton'),
+                # self.tb.createControl('showBuyPremiumButton'),
+                # self.tb.createControl('showPremiumShopButton'),
+                # self.tb.createControl('showWotPlusButton'),
                 self.tb.createControl('showUnreadCounter'),
                 self.tb.createControl('showButtonCounters'),
                 self.tb.createControl('hideBtnCounters'),
                 self.tb.createControl('showRankedBattleResults'),
                 self.tb.createControl('showHangarPrestigeWidget'),
                 self.tb.createControl('showProfilePrestigeWidget'),
-                self.tb.createControl('showReferralButton'),
+                # self.tb.createControl('showReferralButton'),
                 self.tb.createControl('showAchievementPopups'),
+                self.tb.createControl('showAchievementRewardWindow'),
                 self.tb.createControl('fieldMail'),
-                self.tb.createControl('showPersonalMissionsButton'),
-                self.tb.createControl('showClanButton'),
-                self.tb.createControl('showBattlePassButton')
+                # self.tb.createControl('showPersonalMissionsButton'),
+                # self.tb.createControl('showClanButton'),
+                # self.tb.createControl('showBattlePassButton')
             ]
         }
+
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        sync_low_ammo_multiplier = globals().get('_syncLowAmmoMultiplier')
+        if callable(sync_low_ammo_multiplier):
+            sync_low_ammo_multiplier()
+        else:
+            try:
+                Vehicle.NOT_FULL_AMMO_MULTIPLIER = max(0.0, float(self.data.get('lowAmmoPercentage', 20))) / 100.0
+            except Exception as err:
+                logError(self.ID, 'onApplySettings', str(err))
+        # if g_flash is not None:
+        #    g_flash.onApplySettings()
 
 
 config = ConfigInterface()
@@ -233,14 +240,39 @@ def _iteritems(mapping):
     return mapping.iteritems() if hasattr(mapping, 'iteritems') else mapping.items()
 
 
-def _override_if_available(target, prop):
+def _cfg(key, default=None):
+    return config.data.get(key, default)
+
+
+def _isSpecialBattleVehicle(target):
+    for attr_name in ('isOnlyForEventBattles', 'isOnlyForBattleRoyaleBattles'):
+        attr = getattr(target, attr_name, None)
+        try:
+            if attr() if callable(attr) else attr:
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _syncLowAmmoMultiplier():
+    try:
+        Vehicle.NOT_FULL_AMMO_MULTIPLIER = max(0.0, float(_cfg('lowAmmoPercentage', 20))) / 100.0
+    except Exception as err:
+        logError(config.ID, '_syncLowAmmoMultiplier', str(err))
+
+
+def _overrideIfAvailable(target, prop):
     if target is None:
         return lambda handler: handler
-    return override(target, prop)
+    real_prop = prop if hasattr(target, prop) else find_attr_name(target, prop, True)
+    if real_prop is None and not hasattr(target, prop):
+        return lambda handler: handler
+    return override(target, real_prop or prop)
 
 
 # def _buildLobbyHeaderButtonConfig():
-#    buttons = getattr(LobbyHeader, 'BUTTONS', None)
+#    buttons = getattr(LobbyHeader, 'BUTTONS', None) if LobbyHeader is not None else None
 #    if buttons is None:
 #        return {}
 #    result = {}
@@ -257,17 +289,82 @@ def _override_if_available(target, prop):
 #    return result
 
 
+# low ammo => configurable ready threshold
+@overrideMethod(Vehicle, 'isAmmoFull')
+def new_isAmmoFull(base, self):
+    try:
+        if _isSpecialBattleVehicle(self):
+            mult = 0.2
+        else:
+            mult = Vehicle.NOT_FULL_AMMO_MULTIPLIER
+        return sum(shell.count for shell in self.shells.installed.getItems()) >= self.ammoMaxSize * mult
+    except Exception:
+        logError(config.ID, 'Vehicle.isAmmoFull', 'fallback to base')
+        return base(self)
+
+
+# low ammo => vehicle not ready in prebattle
+@override(Vehicle, 'isReadyToPrebattle')
+def new_isReadyToPrebattle(func, self, *args, **kwargs):
+    result = func(self, *args, **kwargs)
+    if _isSpecialBattleVehicle(self):
+        return result
+    try:
+        if _cfg('enabled', True) and _cfg('blockVehicleIfLowAmmo', False) and not self.hasLockMode() and not self.isAmmoFull:
+            return False
+    except Exception as err:
+        logError(config.ID, 'Vehicle.isReadyToPrebattle', str(err))
+    return result
+
+
+# low ammo => vehicle not ready for battle button/property
+@overrideMethod(Vehicle, 'isReadyToFight')
+def new_isReadyToFight(base, self, *args, **kwargs):
+    result = base.fget(self, *args, **kwargs)
+    if _isSpecialBattleVehicle(self):
+        return result
+    try:
+        if _cfg('enabled', True) and _cfg('blockVehicleIfLowAmmo', False) and not self.hasLockMode() and not self.isAmmoFull:
+            return False
+    except Exception as err:
+        logError(config.ID, 'Vehicle.isReadyToFight', str(err))
+    return result
+
+
+# low ammo => disable battle button validator
+@override(CurrentVehicleActionsValidator, '_validate')
+def new_validateCurrentVehicle(func, self):
+    res = func(self)
+    if _isSpecialBattleVehicle(g_currentVehicle):
+        return res
+    if not res or res[0] is True:
+        try:
+            item = getattr(g_currentVehicle, 'item', None)
+            if _cfg('enabled', True) and _cfg('blockVehicleIfLowAmmo', False) and item and not item.isAmmoFull and not g_currentVehicle.isReadyToFight():
+                return ValidationResult(False, PREBATTLE_RESTRICTION.VEHICLE_NOT_READY)
+        except Exception as err:
+            logError(config.ID, 'CurrentVehicleActionsValidator._validate', str(err))
+    return res
+
+
+# low ammo => show carousel text
+@override(i18n, 'makeString')
+def new_makeString(func, key, *args, **kwargs):
+    if key == MENU.TANKCAROUSEL_VEHICLESTATES_AMMONOTFULL:
+        return func(MENU.TANKCAROUSEL_VEHICLESTATES_AMMONOTFULLEVENTS, *args, **kwargs) or func('#dialogs:lowAmmo/title')
+    return func(key, *args, **kwargs)
+
+
 # hide referral program button
-@_override_if_available(MessengerBarMeta, 'as_setInitDataS')
-def new__setInitDataS(func, self, data):
-    if config.data.get('enabled', True) and not config.data.get('showReferralButton', True) and (
-            'isReferralEnabled' in data):
-        data['isReferralEnabled'] = False
-    return func(self, data)
+# @_overrideIfAvailable(ReferralProgramPresenter, '_ReferralProgramPresenter__updateModel')
+# def new__updateReferralProgramModel(func, self, *args):
+#    if config.data.get('enabled', True) and not config.data.get('showReferralButton', True):
+#        return
+#    return func(self, *args)
 
 
 # hide button counters in lobby header
-# @override(LobbyHeader, '__setCounter')
+# @override(HangarHeader, '__setCounter')
 # def new__setCounter(func, *args, **kwargs):
 #    if not config.data.get('enabled', True) or config.data.get('hideBtnCounters', False):
 #        return None
@@ -287,6 +384,13 @@ def new__handleLazyChannelCtlInited(func, self, event):
             ctx.clear()
             return
     return func(self, event)
+
+
+@_overrideIfAvailable(LobbyEntry, '_LobbyEntry__updateCommonChatVisibility')
+def new__updateCommonChatVisibility(func, self, *args, **kwargs):
+    if config.data.get('enabled', True) and not config.data.get('showGeneralChatButton', True):
+        return
+    return func(self, *args, **kwargs)
 
 
 # hide premium vehicle on the background in the hangar
@@ -333,44 +437,28 @@ def new__populate(func, self):
 
 
 # hide display session statistics button
-@_override_if_available(MessengerBar, '_MessengerBar__updateSessionStatsBtn')
-def new__updateSessionStatsBtn(func, self):
+@_overrideIfAvailable(SessionStatsPresenter, '_SessionStatsPresenter__updateSessionStats')
+def new__updateSessionStats(func, self):
     if config.data.get('enabled', True) and not config.data.get('showButton', True):
-        self.as_setSessionStatsButtonVisibleS(False)
-        self._MessengerBar__onSessionStatsBtnOnlyOnceHintHidden(True)
         return
-    func(self)
+    return func(self)
 
 
-# hide display the counter of spent battles on the button
-# def new__updateBattleCount(func, self):
-#    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
-#        return
-#    func(self)
+@_overrideIfAvailable(SessionStatsPresenter, '_SessionStatsPresenter__updateBattleCount')
+def new__updateBattleCountPresenter(func, self, model):
+    if config.data.get('enabled', True) and not config.data.get('showBattleCount', True):
+        model.setBattleCount(0)
+        return
+    return func(self, model)
 
 
-# _register_override(SessionStatsButton, ('_SessionStatsButton__updateBatteleCount', '_SessionStatsButton__updateBattleCount'), new__updateBattleCount)
-
-
-# hide display widget with daily quests
-# if BaseQuestsWidgetComponent is not None:
-#    @override(BaseQuestsWidgetComponent, '_shouldHide')
-#    def new__shouldHide(func, self):
-#        if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
-#            return True
-#        return func(self)
-
-
-# def new__updateMissions(func, self, vm):
-#    if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
-#        self._addChild(self._WIDGET_ALIAS.Quests(), False)
-#        vm.setAreMissionsActive(False)
-#        return
-#    return func(self, vm)
-
-
-# if UserMissionsPresenter is not None:
-#    _register_override(UserMissionsPresenter, '_updateMissions', new__updateMissions)
+@_overrideIfAvailable(UserMissionsPresenter, '_updateMissions')
+def new__updateMissions(func, self, vm):
+    if config.data.get('enabled', True) and not config.data.get('showDailyQuestWidget', True):
+        self._addChild(self._WIDGET_ALIAS.Quests(), False)
+        vm.setAreMissionsActive(False)
+        return
+    return func(self, vm)
 
 
 # hide display pop-up window when receiving progressive decals
@@ -381,14 +469,13 @@ def new__showAward(func, self, ctx):
     func(self, ctx)
 
 
-# hide display banner of various events in the hangar
-# def new__updateEntries(func, self):
-#    if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
-#        return self.as_updateEntriesS([])
-#    func(self)
-
-
-# _register_override(EventEntryPointsContainer, ('_EventEntryPointsContainer__updateEntries', 'updateEntries'), new__updateEntries)
+@_overrideIfAvailable(UserMissionsPresenter, '_updateEntryPoints')
+def new__updateEntryPoints(func, self, vm):
+    if config.data.get('enabled', True) and not config.data.get('showEventBanner', True):
+        self._addChild(self._WIDGET_ALIAS.Events(), False)
+        vm.setIsAnyEntryPointAvailable(False)
+        return
+    return func(self, vm)
 
 
 # hide prestige (elite levels) system widget in the hangar
@@ -407,11 +494,18 @@ def new__setPrestigeVisibleS(func, self, value):
     return func(self, value)
 
 
+@override(Hangar, 'as_setEventTournamentBannerVisibleS')
+def new__setEventTournamentBannerVisibleS(func, self, alias, visible):
+    if config.data.get('enabled', True) and not config.data.get('showEventTournamentWidget', True):
+        visible = False
+    return func(self, alias, visible)
+
+
 # hide premium account, shop and WoT Plus buttons
 # LOBBY_HEADER_BUTTON_TO_CONFIG = _buildLobbyHeaderButtonConfig()
 
 
-# @override(LobbyHeader, 'as_setHeaderButtonsS')
+# @override(HangarHeader, 'as_setHeaderButtonsS')
 # def new__setHeaderButtonsS(func, self, buttons):
 #    if config.data.get('enabled', True) and LOBBY_HEADER_BUTTON_TO_CONFIG:
 #        for button, key in _iteritems(LOBBY_HEADER_BUTTON_TO_CONFIG):
@@ -423,7 +517,7 @@ def new__setPrestigeVisibleS(func, self, value):
 
 
 # hide button counters in lobbyHeader
-# @override(LobbyHeader, '_LobbyHeader__setCounter')
+# @override(HangarHeader, '_LobbyHeader__setCounter')
 # def new__setCounter(func, self, alias, counter=None):
 #    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
 #        return
@@ -436,14 +530,6 @@ def new__setCustomizationBtnCounterS(func, self, value):
     if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
         value = 0
     return func(self, value)
-
-
-# hide counter on service channel button
-@_override_if_available(NotificationListButton, '_NotificationListButton__setState')
-def new__setState(func, self, count):
-    if config.data.get('enabled', True) and not config.data.get('showButtonCounters', True):
-        return
-    return func(self, count)
 
 
 # hide counters in service channel
@@ -461,6 +547,23 @@ def new__execute(base, self):
         self.release()
         return
     base(self)
+
+
+@override(RewardScreenCommand, 'execute')
+def new__rewardScreenExecute(base, self):
+    if config.data.get('enabled', True) and not config.data.get('showAchievementRewardWindow', True):
+        self.release()
+        return
+    return base(self)
+
+
+@_overrideIfAvailable(UserMissionsPresenter, '_updateBattlePass')
+def new__updateBattlePass(func, self, vm):
+    if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
+        self._addChild(self._WIDGET_ALIAS.BattlePass(), False)
+        vm.setIsBattlePassActive(False)
+        return
+    return func(self, vm)
 
 
 # Auto-Login
@@ -513,14 +616,6 @@ def new__getAllVehiclePossibleXP(func, self, nodeCD, unlockStats):
     except Exception as err:
         logError(config.ID, '_TechTreeDataProvider_getAllVehiclePossibleXP', str(err))
     return func(self, nodeCD, unlockStats)
-
-
-# hide lootBoxes widget in tank carousel in hangar
-# @overrideStaticMethod(LootBoxSystemEntryPoint, 'getIsActive')
-# def new__getIsActive(func, state):
-#    if config.data.get('enabled', True) and not config.data.get('lootBoxesWidget', True):
-#        return False
-#    return func(state)
 
 
 @override(Hangar, 'as_updateCarouselEventEntryStateS')
@@ -646,3 +741,6 @@ try:
 except ImportError as e:
     logError(config.ID, 'Missing required module: {}', e)
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
+
+
+_syncLowAmmoMultiplier()

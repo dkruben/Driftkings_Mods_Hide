@@ -1,11 +1,12 @@
-﻿{
-    "dead": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/dead.png' width='22' height='22'>",
+{
     "enabled": true,
-    "lost": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/lost.png' width='22' height='22'>",
+    "text": {
+        "x": -60,
+        "y": 0
+    },
     "neverSeen": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/neverSeen.png' width='22' height='22'>",
     "spotted": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/spotted.png' width='22' height='22'>",
-    "text": {
-        "x": -150,
-        "y": 0
-    }
+    "lost": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/lost.png' width='22' height='22'>",
+    "dead": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/dead.png' width='22' height='22'>",
+    "artillery": "<img src='img://../mods/configs/Driftkings/SpottedStatus/icons/artillery.png' width='22' height='22'>"
 }

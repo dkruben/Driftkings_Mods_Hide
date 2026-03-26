@@ -13,16 +13,16 @@ from CurrentVehicle import g_currentVehicle
 from Vehicle import Vehicle
 from constants import ARENA_BONUS_TYPE
 from dossiers2.ui.achievements import ACHIEVEMENT_BLOCK
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 from gui import InputHandler, g_guiResetters
 from gui.Scaleform.daapi.view.lobby.profile.ProfileUtils import ProfileUtils
 from gui.battle_control.controllers import feedback_events
 from gui.shared.gui_items.dossier.achievements.mark_on_gun import MarkOnGunAchievement
 from helpers import dependency
-from skeletons.account_helpers.settings_core import ISettingsCore
 from helpers import getFullClientVersion
+from skeletons.account_helpers.settings_core import ISettingsCore
 
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage, calculate_version
 
 is_lesta = u'Мир' in getFullClientVersion()
@@ -82,7 +82,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.5 (%(file_compile_date)s)'
+        self.version = '1.6.6 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.defaultKeys = {
             'buttonShow': [Keys.KEY_NUMPAD9, [Keys.KEY_LALT, Keys.KEY_RALT]],

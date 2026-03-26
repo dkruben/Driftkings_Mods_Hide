@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": "1.0.0 (%(file_compile_date)s)",
+    "UI_setting_gunRotationFix_text": "Enable gun rotation fix",
+    "UI_setting_gunRotationFix_tooltip": "Fixes gun rotation being desynced from the server even if using server reticle.\nThis may cause animations to become jerky or stuttery.\nDoesn't work if the \"Enable Server Reticle\" setting is off!",
+    "UI_setting_reticleScaling_text": "Enable reticle scaling",
+    "UI_setting_reticleScaling_tooltip": "Scales the reticle down to its true size according to shot distribution.\nThis leads to the reticle being smaller, but shots may now hit its very edge.",
+    "UI_setting_format_text": "Format",
+    "UI_setting_template_tooltip": "Macros: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Reticle scaling type",
+    "UI_setting_scalingType_tooltip": "Controls how the reticle is scaled.\nLinear scaling is best suited for low-latency stable internet connections.\nInterpolated scaling prevents shots going outside of the reticle on unstable internet,\n while giving an impression of faster aiming time."
+}

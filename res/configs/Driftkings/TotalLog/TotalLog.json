@@ -1,10 +1,16 @@
-﻿{
+{
+    "enabled": true,
+    "separate": "  ",
     "align": "center",
+    "inCenter": true,
+    "alignX": "left",
+    "alignY": "top",
+    "x": 250,
+    "y": 50,
     "avgColor": {
         "brightness": 1.0,
         "saturation": 0.5
     },
-    "enabled": true,
     "icons": {
         "assistIcon": "<img src='img://gui/maps/icons/TotalLog/efficiency/help.png' width='16' height='16' vspace='-4'>",
         "blockedIcon": "<img src='img://gui/maps/icons/TotalLog/efficiency/armor.png' width='16' height='16' vspace='-4'>",
@@ -12,15 +18,11 @@
         "spottedIcon": "<img src='img://gui/maps/icons/TotalLog/efficiency/detection.png' width='16' height='16' vspace='-4'>",
         "stunIcon": "<img src='img://gui/maps/icons/TotalLog/efficiency/stun.png' width='16' height='16' vspace='-4'>"
     },
-    "inCenter": true,
-    "separate": "  ",
     "templateMainDMG": [
         "%(damageIcon)s<font color='%(tankDamageAvgColor)s'>%(playerDamage)s</font>",
         "%(blockedIcon)s<font color='%(tankBlockedAvgColor)s'>%(blockedDamage)s</font>",
         "%(assistIcon)s<font color='%(tankAssistAvgColor)s'>%(assistDamage)s</font>",
         "%(spottedIcon)s%(spottedTanks)s",
         "%(stunIcon)s<font color='%(tankStunAvgColor)s'>%(stun)s</font>"
-    ],
-    "x": -716,
-    "y": 960
+    ]
 }

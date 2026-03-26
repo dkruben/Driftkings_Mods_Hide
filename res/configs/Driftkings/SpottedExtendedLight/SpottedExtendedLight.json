@@ -1,16 +1,16 @@
-﻿{
-    "AssistRadio": "{icons}{vehicles}{damage}",
-    "AssistStun": "{icons}{vehicles}{damage}",
-    "AssistTrack": "{icons}{vehicles}{damage}",
-    "Spotted": "{icons}{vehicles}",
+{
     "enabled": true,
+    "sound": true,
     "iconSizeX": 47,
     "iconSizeY": 16,
-    "messageColorAssistRadio": "28F09C",
-    "messageColorAssistStun": "00FFFF",
-    "messageColorAssistTrack": "00FF00",
-    "messageColorSpotted": "FF69B5",
-    "sound": true,
+    "soundSpotted": "enemy_sighted_for_team",
     "soundAssist": "gun_intuition",
-    "soundSpotted": "enemy_sighted_for_team"
+    "messageColorSpotted": "FF69B5",
+    "messageColorAssistRadio": "28F09C",
+    "messageColorAssistTrack": "00FF00",
+    "messageColorAssistStun": "00FFFF",
+    "Spotted": "{icons}{vehicles}",
+    "AssistRadio": "{icons}{vehicles}{damage}",
+    "AssistTrack": "{icons}{vehicles}{damage}",
+    "AssistStun": "{icons}{vehicles}{damage}"
 }

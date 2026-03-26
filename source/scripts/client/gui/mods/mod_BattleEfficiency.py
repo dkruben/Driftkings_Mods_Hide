@@ -31,7 +31,7 @@ data_ids = DataIDs(3, 11, 12, 14, 17)
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.7.0 %(file_compile_date)s'
+        self.version = '2.7.1 %(file_compile_date)s'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -40,8 +40,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'textStyle': {'font': '$TitleFont', 'color': '#FFFFFF', 'size': 16, 'align': 'center'},
             'textLock': False,
             'position': {'x': 125, 'y': 36},
-            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2,
-                           'blurY': 2, 'strength': 2, 'quality': 4},
+            'textShadow': {'enabled': True, 'distance': 0, 'angle': 90, 'color': '#000000', 'alpha': 0.8, 'blurX': 2, 'blurY': 2, 'strength': 2, 'quality': 4},
             'battleResultsWindow': True,
             'battleResultsFormat': '<textformat leading=\'-2\' tabstops=\'[0, 300]\'>\t<font color=\'#FFFFFF\' size=\'15\'>{mapName} | {battleType} | WN8:<font color=\'{c:wn8}\'>{wn8}</font> | EFF:<font color=\'{c:eff}\'>{eff}</font> | Xte:<font color=\'{c:xte}\'>{xte}</font></font></textformat>'
         }
@@ -148,7 +147,6 @@ statistic_mod = Analytics(config.ID, config.version)
 try:
     from gambiter import g_guiFlash
     from gambiter.flash import COMPONENT_TYPE, COMPONENT_ALIGN, COMPONENT_EVENT
-
     g_flash = Flash(config.ID)
 except ImportError:
     g_guiFlash = COMPONENT_TYPE = COMPONENT_ALIGN = COMPONENT_EVENT = None
@@ -269,13 +267,13 @@ class BattleEfficiency(object):
 
     def updateFormatString(self):
         player = getPlayer()
-        if not player or not player.arena or player.arena.bonusType != SUPPORTED_BONUS_TYPES:
+        if not player or not player.arena or player.arena.bonusType not in SUPPORTED_BONUS_TYPES:
             return
         macro_data = {}
         for key, value in self._stats.iteritems():
             macro_data['{%s}' % key] = str(int(value) if isinstance(value, float) else value)
             if key in self._colors:
-                color_key = 'x' + key if key.startswith('x') else key
+                color_key = 'x' if key.startswith('x') else key
                 color_value = self.read_colors(color_key, value)
                 macro_data['{c:%s}' % key] = str(color_value) if color_value is not None else ''
         format_text = replaceMacros(config.data['format'], macro_data)
@@ -413,7 +411,8 @@ def new_setDataS(func, self, data):
         }
         msg = replaceMacros(config.data['battleResultsFormat'], macro_data)
         data['common']['arenaStr'] = msg
-    except:
+    except Exception as err:
+        logError(config.ID, 'Battle results parsing error: {}', err)
         data['common']['arenaStr'] += '  <font color="#FE0E00">Efficiency Error!</font>'
     g_calculator.stopBattle()
     return func(self, data)

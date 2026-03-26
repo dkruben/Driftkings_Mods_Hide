@@ -1,8 +1,8 @@
-﻿{
+{
     "UI_description": "OwnHealth",
+    "UI_version": "1.0.5 (%(file_compile_date)s)",
     "UI_setting_x_text": "Position X",
     "UI_setting_x_tooltip": "",
     "UI_setting_y_text": "Position Y",
-    "UI_setting_y_tooltip": "",
-    "UI_version": 105
+    "UI_setting_y_tooltip": ""
 }

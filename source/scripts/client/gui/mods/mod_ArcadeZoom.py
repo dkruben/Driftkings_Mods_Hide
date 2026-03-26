@@ -9,7 +9,6 @@ from debug_utils import LOG_CURRENT_EXCEPTION
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, calculate_version, logError
 
-
 MinMax = namedtuple('MinMax', ('min', 'max'))
 
 
@@ -29,7 +28,7 @@ class ConfigsInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.1 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': False,

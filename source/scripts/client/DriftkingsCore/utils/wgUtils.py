@@ -5,16 +5,14 @@ from colorsys import hsv_to_rgb
 from functools import partial
 
 import BigWorld
-import ResMgr
 import Math
+import ResMgr
 from BattleReplay import isPlaying, isLoading
 from constants import ARENA_GUI_TYPE
 from gui.Scaleform.daapi.settings.views import VIEW_ALIAS
 from gui.Scaleform.daapi.view.battle.shared.formatters import normalizeHealth
 from gui.battle_control import avatar_getter
 from gui.shared.utils import getPlayerDatabaseID
-
-from logger import logError
 
 __all__ = ('battle_pages', 'battle_range', 'calculate_version', 'callback', 'cancelCallback', 'checkNamesList',
            'distanceToEntityVehicle', 'getAccountDBID', 'getColor', 'getDistanceTo', 'getEntity', 'getPercent',

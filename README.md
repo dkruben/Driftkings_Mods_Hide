@@ -3,6 +3,7 @@
 ![WOT Version](https://img.shields.io/badge/WOT-2.2.0.1-red.svg)
 [![Python 2.7.18](https://img.shields.io/badge/Python-2.7.18-blue.svg)](https://www.python.org/downloads/release/python-2718/)
 [![PyCharm 2024.3](https://img.shields.io/badge/PyCharm-2024.3-green.svg)](https://www.jetbrains.com/pycharm/)
+[![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-](https://code.visualstudio.com/)
 
 A collection of Driftkings mods for World of Tanks, covering battle UI, hangar improvements, aiming tools, stats, sound customization, and quality-of-life features.
 
@@ -10,7 +11,6 @@ A collection of Driftkings mods for World of Tanks, covering battle UI, hangar i
 - [Overview](#overview)
 - [Installation](#installation)
 - [Active Mods](#active-mods)
-- [Legacy or Inactive Entries](#legacy-or-inactive-entries)
 - [Tech Stack](#tech-stack)
 - [Acknowledgments](#acknowledgments)
 
@@ -36,7 +36,6 @@ This repository contains the source, assets, configs, and build data used to mai
 - **ArtySplash** - Shows HE splash and stun range.
 - **AutoAimOptimize** - Improves auto-aim against targets behind obstacles.
 - **AutoClaimClan** - Automatically claims clan-related rewards.
-- **BanksLoader** - Loads custom audio banks.
 - **BattleEfficiency** - Displays battle efficiency during and after a match.
 - **BattleOptions** - Hides and tweaks multiple battle UI elements.
 - **BattleStat** - Adds extra battle statistics.
@@ -53,7 +52,6 @@ This repository contains the source, assets, configs, and build data used to mai
 - **MainGun** - Displays Main Gun progress in battle.
 - **MarksOnGunBattle** - Shows Marks of Excellence progress in battle.
 - **MarksOnGunHangar** - Shows Marks of Excellence progress in the hangar.
-- **MarksOnGunTechTree** - Shows Marks of Excellence progress in the tech tree.
 - **MinimapPlugins** - Adds names, destroyed vehicles, and extra minimap tools.
 - **OwnHealth** - Displays the player's HP.
 - **PlayersPanelHP** - Shows HP values in the players panel.
@@ -70,18 +68,14 @@ This repository contains the source, assets, configs, and build data used to mai
 - **VehicleExperience** - Shows vehicle, module, and mission experience progress.
 - **ZoomExtended** - Extends zoom up to x30, with a maximum of x45.
 
-## Legacy or Inactive Entries
-- ~~**BattleMessages** - Legacy entry still present in build data.~~
-- ~~**HangarEfficiency** - Present in configs and build data, but not active in the current source tree.~~
-
 ## Tech Stack
 - Python 2.7.18
 - ActionScript 3.0
 - FlashDevelop 5.3.3
 - Adobe Animate CC 2024
 - PyCharm Community Edition 2024.1.3
-- JetBrains AI Assistant
-- MonicaIA
+- JetBrains AI Assistant (Codex 5.3)
+- Monica IA Assistant (Sonnet 4.5)
 
 ## Acknowledgments
 - **Izebrg** (Renat Iliev)

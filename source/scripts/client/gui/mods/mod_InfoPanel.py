@@ -6,14 +6,14 @@ import GUI
 import Keys
 from Avatar import PlayerAvatar
 from constants import ARENA_BONUS_TYPE
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
 from gui import InputHandler
 from gui import g_guiResetters
 from gui.shared.utils.TimeInterval import TimeInterval
 from helpers import dependency
 from nations import NAMES
 from skeletons.account_helpers.settings_core import ISettingsCore
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_TYPE, COMPONENT_EVENT, COMPONENT_ALIGN
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, getPlayer, getTarget, override, calculate_version, checkKeys
 
@@ -35,7 +35,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.0.1 (%(file_compile_date)s)'
+        self.version = '2.0.2 (%(file_compile_date)s)'
         self.author = 'orig. Kotyarko_O, adapted by: _DKRuben_EU'
         self.defaultKeys = {'altKey': [Keys.KEY_LALT]}
         self.data = {

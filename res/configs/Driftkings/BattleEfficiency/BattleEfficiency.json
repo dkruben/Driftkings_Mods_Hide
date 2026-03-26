@@ -1,29 +1,29 @@
-﻿{
-    "battleResultsFormat": "<textformat leading='-2' tabstops='[0, 300]'>\t<font color='#FFFFFF' size='15'>{mapName} - {battleType}    WN8:<font color='{c:wn8}'>{wn8}</font>|=|EFF:<font color='{c:eff}'>{eff}</font>|=|Xte:<font color='{c:xte}'>{xte}</font></font></textformat>",
-    "battleResultsWindow": true,
-    "colorRatting": 0,
+{
     "enabled": true,
+    "colorRatting": 0,
     "format": "WN8: <font color='{c:wn8}'>{wn8}</font> EFF: <font color='{c:eff}'>{eff}</font> DIFF: <font color='{c:diff}'>{diff}</font>",
+    "textStyle": {
+        "font": "$TitleFont",
+        "color": "#FFFFFF",
+        "size": 16,
+        "align": "center"
+    },
+    "textLock": false,
     "position": {
         "x": 125,
         "y": 36
     },
-    "textLock": false,
     "textShadow": {
-        "alpha": 0.8,
+        "enabled": true,
+        "distance": 0,
         "angle": 90,
+        "color": "#000000",
+        "alpha": 0.8,
         "blurX": 2,
         "blurY": 2,
-        "color": "#000000",
-        "distance": 0,
-        "enabled": true,
-        "quality": 4,
-        "strength": 2
+        "strength": 2,
+        "quality": 4
     },
-    "textStyle": {
-        "align": "center",
-        "color": "#FFFFFF",
-        "font": "$TitleFont",
-        "size": 16
-    }
+    "battleResultsWindow": true,
+    "battleResultsFormat": "<textformat leading='-2' tabstops='[0, 300]'>\t<font color='#FFFFFF' size='15'>{mapName} | {battleType} | WN8:<font color='{c:wn8}'>{wn8}</font> | EFF:<font color='{c:eff}'>{eff}</font> | Xte:<font color='{c:xte}'>{xte}</font></font></textformat>"
 }

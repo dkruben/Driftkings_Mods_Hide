@@ -4,8 +4,9 @@ from collections import defaultdict, namedtuple
 from AvatarInputHandler.gun_marker_ctrl import _CrosshairShotResults, computePiercingPowerAtDist
 from DestructibleEntity import DestructibleEntity
 from Vehicle import Vehicle
+from account_helpers.settings_core.settings_constants import GRAPHICS
 from aih_constants import CTRL_MODE_NAME, SHOT_RESULT
-from constants import ARENA_BONUS_TYPE, SHELL_MECHANICS_TYPE, SHELL_TYPES
+from constants import SHELL_MECHANICS_TYPE, SHELL_TYPES
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.crosshair import plugins
 from gui.Scaleform.framework import g_entitiesFactories, ViewSettings, ScopeTemplates
@@ -16,9 +17,6 @@ from gui.battle_control import avatar_getter
 from gui.shared.gui_items import KPI
 from gui.shared.personality import ServicesLocator
 from helpers import dependency
-from items.components import component_constants
-from items.components.component_constants import DEFAULT_PIERCING_POWER_RANDOMIZATION
-from items.components.component_constants import MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
 from items.tankmen import getSkillsConfig
 from skeletons.gui.battle_session import IBattleSessionProvider
 
@@ -31,7 +29,7 @@ AS_SWF = 'ArmorCalculator.swf'
 
 # Constants
 MinMax = namedtuple('MinMax', ('min', 'max'))
-DEFAULT_RANDOMIZATION = MinMax(1.0 - DEFAULT_PIERCING_POWER_RANDOMIZATION, 1.0 + DEFAULT_PIERCING_POWER_RANDOMIZATION)
+DEFAULT_RANDOMIZATION = MinMax(0.75, 1.25)
 UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None, None, None, False, False)
 FULL_PP_RANGE = (SHELL_TYPES.HIGH_EXPLOSIVE, SHELL_TYPES.HOLLOW_CHARGE)
 
@@ -43,7 +41,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.3.2 (%(file_compile_date)s)'
+        self.version = '1.3.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -158,88 +156,6 @@ class ArmorCalculator(ArmorCalculatorMeta):
         self.as_armorCalculatorS(config.data['template'] % self.calcMacro)
 
 
-class ArmorCalculatorAllies(object):
-    @staticmethod
-    def isAlly(entity, player, onAlly):
-        return False if onAlly else entity.publicInfo['team'] == player.team
-
-    @classmethod
-    def getShotResult(cls, hitPoint, collision, direction, piercingMultiplier, onAlly):
-        if collision is None:
-            return UNDEFINED_RESULT
-        entity = collision.entity
-        if not isinstance(entity, (Vehicle, DestructibleEntity)) or not entity.isAlive():
-            return UNDEFINED_RESULT
-        player = getPlayer()
-        if player is None or cls.isAlly(entity, player, onAlly):
-            return UNDEFINED_RESULT
-        c_details = _CrosshairShotResults._getAllCollisionDetails(hitPoint, direction, entity)
-        if c_details is None:
-            return UNDEFINED_RESULT
-        shot = player.getVehicleDescriptor().shot
-        shell = shot.shell
-        distance = player.position.flatDistTo(hitPoint)
-        if shell.kind in FULL_PP_RANGE:
-            full_piercing_power = shot.piercingPower[0] * piercingMultiplier
-        else:
-            full_piercing_power = computePiercingPowerAtDist(shot.piercingPower, distance, shot.maxDistance, piercingMultiplier)
-        is_modern = cls.isModernMechanics(shell)
-        armor, piercing_power, ricochet, no_damage = cls.computeArmor(c_details, shell, full_piercing_power, is_modern)
-        if no_damage or ricochet:
-            shot_result = SHOT_RESULT.NOT_PIERCED
-        else:
-            offset = piercing_power * shell.piercingPowerRandomization
-            if armor < piercing_power - offset:
-                shot_result = SHOT_RESULT.GREAT_PIERCED
-            elif armor > piercing_power + offset:
-                shot_result = SHOT_RESULT.NOT_PIERCED
-            else:
-                shot_result = SHOT_RESULT.LITTLE_PIERCED
-        if is_modern:
-            piercing_power = full_piercing_power
-        return shot_result, armor, piercing_power, shell.caliber, ricochet, no_damage
-
-    @staticmethod
-    def isModernMechanics(shell):
-        return (shell.kind == SHELL_TYPES.HIGH_EXPLOSIVE and shell.type.mechanics == SHELL_MECHANICS_TYPE.MODERN and shell.type.shieldPenetration)
-
-    @staticmethod
-    def computeArmor(c_details, shell, piercing_power, is_modern_he):
-        computed_armor = 0
-        ricochet = False
-        no_damage = True
-        is_jet = False
-        jet_start_dist = 0
-        jet_loss = _CrosshairShotResults._SHELL_EXTRA_DATA[shell.kind].jetLossPPByDist
-        ignoredMaterials = set()
-        for detail in c_details:
-            mat_info = detail.matInfo
-            if mat_info is None or (detail.compName, mat_info.kind) in ignoredMaterials:
-                continue
-            hitAngleCos = detail.hitAngleCos if mat_info.useHitAngle else 1.0
-            computed_armor += _CrosshairShotResults._computePenetrationArmor(shell, hitAngleCos, mat_info)
-            if is_jet:
-                jetDist = detail.dist - jet_start_dist
-                if jetDist > 0:
-                    piercing_power *= 1.0 - jetDist * jet_loss
-            else:
-                ricochet = _CrosshairShotResults._shouldRicochet(shell, hitAngleCos, mat_info)
-            if mat_info.vehicleDamageFactor:
-                no_damage = False
-                break
-            elif is_modern_he:
-                piercing_power -= computed_armor * MODERN_HE_PIERCING_POWER_REDUCTION_FACTOR_FOR_SHIELDS
-            elif jet_loss > 0:
-                is_jet = True
-                jet_start_dist += detail.dist + mat_info.armor * 0.001
-            if mat_info.collideOnceOnly:
-                ignoredMaterials.add((detail.compName, mat_info.kind))
-        return computed_armor, piercing_power, ricochet, no_damage
-
-
-g_mod = ArmorCalculatorAllies()
-
-
 class _ShotResult(_CrosshairShotResults):
     RANDOMIZATION = DEFAULT_RANDOMIZATION
     UNDEFINED_RESULT = (SHOT_RESULT.UNDEFINED, None)
@@ -250,10 +166,6 @@ class _ShotResult(_CrosshairShotResults):
     @classmethod
     def _isDestructibleComponent(cls, entity, componentID):
         return entity.isDestructibleComponent(componentID) if isinstance(entity, DestructibleEntity) else True
-
-    @staticmethod
-    def isAlly(entity, player, onAlly):
-        return False if onAlly else entity.publicInfo['team'] == player.team
 
     @classmethod
     def _getShotResult(cls, gunMarker, multiplier, player):
@@ -270,12 +182,8 @@ class _ShotResult(_CrosshairShotResults):
         if collision_details is None:
             return cls.UNDEFINED_RESULT
         vDesc = player.getVehicleDescriptor()
-        gunInstallationIndex = getattr(gunMarker, 'gunInstallationIndex', 0)
-        try:
-            gunInstallationSlot = vDesc.gunInstallations[gunInstallationIndex]
-            shot = vDesc.shot if gunInstallationSlot.isMainInstallation() else gunInstallationSlot.gun.shots[0]
-        except (IndexError, AttributeError):
-            shot = vDesc.shot
+        gunInstallationSlot = vDesc.gunInstallations[gunMarker.gunInstallationIndex]
+        shot = vDesc.shot if gunInstallationSlot.isMainInstallation() else gunInstallationSlot.gun.shots[0]
         shell = shot.shell
         distance = player.position.flatDistTo(gunMarker.position)
         piercing_power = computePiercingPowerAtDist(shot.piercingPower, distance, shot.maxDistance, multiplier)
@@ -298,16 +206,19 @@ class _ShotResult(_CrosshairShotResults):
 
     @staticmethod
     def _isModernMechanics(shell):
-        return (shell.kind == SHELL_TYPES.HIGH_EXPLOSIVE and shell.type.mechanics == SHELL_MECHANICS_TYPE.MODERN)
+        return shell.kind == SHELL_TYPES.HIGH_EXPLOSIVE and shell.type.mechanics == SHELL_MECHANICS_TYPE.MODERN
 
     @classmethod
-    def _computeArmorDefault(cls, collision_details, shell, piercing_power, entity):
+    def _computeArmorDefault(cls, collision_details, shell, full_piercing_power, entity):
         armor = 0
+        piercing_power = full_piercing_power
         ignored_materials = set()
+        isJet = False
         jet_loss = cls._SHELL_EXTRA_DATA[shell.kind].jetLossPPByDist
-        jet_start_dist = 0
+        jet_start_dist = 0.0
         no_damage = True
         ricochet = False
+
         for detail in collision_details:
             if not cls._isDestructibleComponent(entity, detail.compName):
                 continue
@@ -315,10 +226,10 @@ class _ShotResult(_CrosshairShotResults):
             if not mat_info or (detail.compName, mat_info.kind) in ignored_materials:
                 continue
             hitAngleCos = detail.hitAngleCos if mat_info.useHitAngle else 1.0
-            if jet_start_dist > 0:
+            if isJet:
                 jetDist = detail.dist - jet_start_dist
-                if jetDist > 0:
-                    piercing_power = max(0, piercing_power * (1.0 - jetDist * jet_loss))
+                if jetDist > 0.0:
+                    piercing_power *= 1.0 - jetDist * jet_loss
             else:
                 ricochet = cls._shouldRicochet(shell, hitAngleCos, mat_info)
                 if ricochet:
@@ -327,7 +238,8 @@ class _ShotResult(_CrosshairShotResults):
             if mat_info.vehicleDamageFactor:
                 no_damage = False
                 break
-            if jet_loss > 0:
+            if jet_loss > 0.0:
+                isJet = True
                 jet_start_dist = detail.dist + mat_info.armor * cls.JET_FACTOR
             if mat_info.collideOnceOnly:
                 ignored_materials.add((detail.compName, mat_info.kind))
@@ -339,6 +251,7 @@ class _ShotResult(_CrosshairShotResults):
         armor = 0
         ignored_materials = set()
         no_damage = True
+
         for detail in collision_details:
             if not cls._isDestructibleComponent(entity, detail.compName):
                 continue
@@ -350,7 +263,7 @@ class _ShotResult(_CrosshairShotResults):
             if mat_info.vehicleDamageFactor:
                 no_damage = False
                 break
-            if hasattr(shell.type, 'shieldPenetration') and shell.type.shieldPenetration:
+            if shell.type.shieldPenetration:
                 piercing_power = max(0, piercing_power - armor * cls.PP_REDUCTION_FACTOR)
             if mat_info.collideOnceOnly:
                 ignored_materials.add((detail.compName, mat_info.kind))
@@ -374,21 +287,16 @@ class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
         super(ShotResultIndicatorPlugin, self).__init__(parentObj)
         self.__player = getPlayer()
         self.__data = None
-        self.__resolver = _ShotResultAll if config.data['enabled'] and config.data['displayOnAllies'] else _ShotResult
+        self.__resolver = _ShotResultAll if config.data['displayOnAllies'] else _ShotResult
 
-    def __onGunMarkerStateChanged(self, markerType, gunMarkerState, _):
+    def __onGunMarkerStateChanged(self, markerType, gunMarkerState, supportMarkersInfo):
         if not self.__isEnabled:
-            if hasattr(self.sessionProvider.shared, 'armorFlashlight'):
-                self.sessionProvider.shared.armorFlashlight.hide()
             return
-
-        if hasattr(self.sessionProvider.shared, 'armorFlashlight'):
-            self.sessionProvider.shared.armorFlashlight.updateVisibilityState(markerType, gunMarkerState.position, gunMarkerState.direction, gunMarkerState.collData, gunMarkerState.size)
-        shotResult, data = self.__resolver._getShotResult(gunMarkerState, self.__piercingMultiplier, self.__player)
-        if shotResult in self.__colors:
-            color = self.__colors[shotResult]
-            if self.__cache[markerType] != shotResult and self._parentObj.setGunMarkerColor(markerType, color):
-                self.__cache[markerType] = shotResult
+        shot_result, data = self.__resolver._getShotResult(gunMarkerState, self.__piercingMultiplier, self.__player)
+        if shot_result in self.__colors:
+            color = self.__colors[shot_result]
+            if self.__cache[markerType] != shot_result and self._parentObj.setGunMarkerColor(markerType, color):
+                self.__cache[markerType] = shot_result
                 g_events.onMarkerColorChanged(color)
             if self.__data != data:
                 self.__data = data
@@ -416,67 +324,6 @@ class ShotResultIndicatorPlugin(plugins.ShotResultIndicatorPlugin):
             Randomizer._updateRandomization(vehicle)
 
 
-class Randomizer(object):
-    GUNNER_ARMORER = 'gunner_armorer'
-    LOADER_AMMUNITION_IMPROVE = 'loader_ammunitionImprove'
-    RND_MIN_MAX_DEBUG = 'PIERCING_POWER_RANDOMIZATION: {}, vehicle: {}'
-    RND_SKILL_DIFF_DEBUG = 'PIERCING_POWER_RANDOMIZATION: skill_name: {} skill_lvl: {} level_increase: {} percent: {}'
-    RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG = 'PIERCING_POWER_RANDOMIZATION: skill_name {}, percent {}'
-    PIERCING_DISTRIBUTION_BOUND = {}
-
-    @classmethod
-    def getBaseSkillPercent(cls, skill_name):
-        percent = cls.PIERCING_DISTRIBUTION_BOUND.get(skill_name, 0)
-        if not percent:
-            try:
-                descrArgs = getSkillsConfig().getSkill(skill_name).uiSettings.descrArgs
-                for name, descr in descrArgs:
-                    if name == KPI.Name.DAMAGE_AND_PIERCING_DISTRIBUTION_LOWER_BOUND:
-                        percent = cls.PIERCING_DISTRIBUTION_BOUND[skill_name] = round(descr.value, 4)
-                        logDebug(config.ID, True, cls.RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG, skill_name, percent)
-                        break
-            except (AttributeError, TypeError):
-                percent = 0
-        return percent
-
-    @classmethod
-    def getCurrentSkillEfficiency(cls, tman, skill_name):
-        skill = tman.skillsMap.get(skill_name)
-        if skill is None:
-            return 0
-        try:
-            level_increase, bonuses = tman.crewLevelIncrease
-            result = (skill.level + level_increase) * tman.skillsEfficiency * cls.getBaseSkillPercent(skill_name)
-            logDebug(config.ID, True, cls.RND_SKILL_DIFF_DEBUG, skill_name, skill.level, level_increase, result)
-            return result
-        except (AttributeError, TypeError):
-            return 0
-
-    @classmethod
-    def _updateRandomization(cls, vehicle):
-        randomization_min, randomization_max = DEFAULT_RANDOMIZATION
-        if config.data['enabled'] and vehicle is not None:
-            data = {cls.GUNNER_ARMORER: [], cls.LOADER_AMMUNITION_IMPROVE: []}
-            try:
-                for _, tman in vehicle.crew:
-                    if not tman or not tman.canUseSkillsInCurrentVehicle:
-                        continue
-                    for skill_name in tman.getPossibleSkills().intersection(data):
-                        data[skill_name].append(cls.getCurrentSkillEfficiency(tman, skill_name))
-
-                for skill_name, value in data.items():
-                    if value and len(value) > 0:
-                        percent = sum(value) / float(len(value))
-                        randomization_min += percent
-                        if skill_name == cls.GUNNER_ARMORER:
-                            randomization_max -= percent
-            except (AttributeError, TypeError):
-                pass
-
-        _ShotResult.RANDOMIZATION = MinMax(round(randomization_min, 4), round(randomization_max, 4))
-        logDebug(config.ID, True, cls.RND_MIN_MAX_DEBUG, _ShotResult.RANDOMIZATION, vehicle.userName)
-
-
 @override(plugins, 'createPlugins')
 def createPlugins(func, *args):
     _plugins = func(*args)
@@ -485,17 +332,68 @@ def createPlugins(func, *args):
     return _plugins
 
 
+class Randomizer(object):
+    GUNNER_ARMORER = 'gunner_armorer'
+    LOADER_AMMUNITION_IMPROVE = 'loader_ammunitionImprove'
+    RND_MIN_MAX_DEBUG = 'PIERCING_POWER_RANDOMIZATION: {}, vehicle: {}'
+    RND_SKILL_DIFF_DEBUG = 'PIERCING_POWER_RANDOMIZATION: skill_name: {} skill_lvl: {} level_increase: {} percent: {}'
+    RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG = 'PIERCING_POWER_RANDOMIZATION: skill_name {}, percent {}'
+
+    PIERCING_DISTRIBUTION_BOUND = {}
+
+    @classmethod
+    def getBaseSkillPercent(cls, skill_name):
+        percent = cls.PIERCING_DISTRIBUTION_BOUND.get(skill_name, 0)
+        if not percent:
+            descrArgs = getSkillsConfig().getSkill(skill_name).uiSettings.descrArgs
+            for name, descr in descrArgs:
+                if name == KPI.Name.DAMAGE_AND_PIERCING_DISTRIBUTION_LOWER_BOUND:
+                    percent = cls.PIERCING_DISTRIBUTION_BOUND[skill_name] = round(descr.value, 4)
+                    logDebug(cls.RND_SET_PIERCING_DISTRIBUTION_BOUND_DEBUG, skill_name, percent)
+                break
+        return percent
+
+    @classmethod
+    def getCurrentSkillEfficiency(cls, tman, skill_name):
+        skill = tman.skillsMap.get(skill_name)
+        if skill is None:
+            return 0
+        level_increase, bonuses = tman.crewLevelIncrease
+        result = (skill.level + level_increase) * tman.skillsEfficiency * cls.getBaseSkillPercent(skill_name)
+        logDebug(cls.RND_SKILL_DIFF_DEBUG, skill_name, skill.level, level_increase, result)
+        return result
+
+    @classmethod
+    def _updateRandomization(cls, vehicle):
+        if vehicle is None or not config.data['enabled']:
+            _ShotResult.RANDOMIZATION = DEFAULT_RANDOMIZATION
+            return
+        data = {cls.GUNNER_ARMORER: [], cls.LOADER_AMMUNITION_IMPROVE: []}
+        for _, tman in vehicle.crew:
+            if not tman or not tman.canUseSkillsInCurrentVehicle:
+                continue
+            for skill_name in tman.getPossibleSkills().intersection(data):
+                data[skill_name].append(cls.getCurrentSkillEfficiency(tman, skill_name))
+        randomization_min, randomization_max = DEFAULT_RANDOMIZATION
+        for skill_name, value in data.items():
+            if value:
+                percent = sum(value) / len(value)
+                randomization_min += percent
+                if skill_name == cls.GUNNER_ARMORER:
+                    randomization_max -= percent
+        _ShotResult.RANDOMIZATION = MinMax(round(randomization_min, 4), round(randomization_max, 4))
+        logDebug(config.ID, True, cls.RND_MIN_MAX_DEBUG, _ShotResult.RANDOMIZATION, vehicle.userName)
+
+
 def init():
     global _isInitialized
     if _isInitialized:
         return
     g_events.onVehicleChangedDelayed += Randomizer._updateRandomization
     if g_entitiesFactories.getSettings(AS_INJECTOR) is None:
-        g_entitiesFactories.addSettings(
-            ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
+        g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
     if g_entitiesFactories.getSettings(AS_BATTLE) is None:
-        g_entitiesFactories.addSettings(
-            ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
+        g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, ArmorCalculator, None, WindowLayer.UNDEFINED, None, ScopeTemplates.DEFAULT_SCOPE))
     _isInitialized = True
 
 

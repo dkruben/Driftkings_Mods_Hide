@@ -5,6 +5,7 @@ from random import choice
 
 import ResMgr
 from PlayerEvents import g_playerEvents
+from SoundGroups import g_instance
 from chat_commands_consts import BATTLE_CHAT_COMMAND_NAMES
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.indicators import SixthSenseIndicator
@@ -13,7 +14,6 @@ from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
 from gui.app_loader.settings import APP_NAME_SPACE
 from gui.battle_control.battle_constants import VEHICLE_VIEW_STATE
 from gui.shared.personality import ServicesLocator
-from SoundGroups import g_instance
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, callback, getPlayer, square_position, sendChatMessage, calculate_version
 from DriftkingsInject import DriftkingsInjector, SixthSenseMeta, g_events
@@ -44,7 +44,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.6.6 (%(file_compile_date)s)'
+        self.version = '1.6.7 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'defaultIcon': True,
@@ -284,7 +284,7 @@ g_entitiesFactories.addSettings(ViewSettings(AS_BATTLE, SixthSense, None, Window
 
 
 @override(SixthSenseIndicator, '_sixthSenseToggle')
-def new__show(func, self, isVisible, force):
+def new__sixthSenseToggle(func, self, isVisible, force):
     func(self, isVisible, force)
     if not isVisible:
         return

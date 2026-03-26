@@ -8,15 +8,17 @@ from Queue import Queue
 from functools import partial
 
 import BattleReplay
-from Event import SafeEvent
 import Keys
 import ResMgr
 from Avatar import PlayerAvatar
 from BattleFeedbackCommon import BATTLE_EVENT_TYPE
 from CurrentVehicle import g_currentVehicle
+from Event import SafeEvent
 from PlayerEvents import g_playerEvents
 from constants import ARENA_BONUS_TYPE
 from frameworks.wulf import WindowLayer
+from gambiter import g_guiFlash
+from gambiter.flash import COMPONENT_ALIGN, COMPONENT_EVENT, COMPONENT_TYPE
 from gui import InputHandler
 from gui.Scaleform.daapi.view.lobby.LobbyView import LobbyView
 from gui.Scaleform.daapi.view.meta.CrewOperationsPopOverMeta import CrewOperationsPopOverMeta
@@ -35,11 +37,8 @@ from gui.shared.gui_items import Vehicle
 from gui.shared.personality import ServicesLocator
 from helpers import getLanguageCode
 from messenger.formatters.service_channel import BattleResultsFormatter
-from gambiter import g_guiFlash
-from gambiter.flash import COMPONENT_ALIGN, COMPONENT_EVENT, COMPONENT_TYPE
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, getEntity, callback, calculate_version
-
 
 CHASSIS_ALL_ITEMS = frozenset(VEHICLE_DEVICE_IN_COMPLEX_ITEM.keys() + VEHICLE_DEVICE_IN_COMPLEX_ITEM.values())
 DAMAGE_EVENTS = frozenset([BATTLE_EVENT_TYPE.RADIO_ASSIST, BATTLE_EVENT_TYPE.TRACK_ASSIST, BATTLE_EVENT_TYPE.STUN_ASSIST, BATTLE_EVENT_TYPE.DAMAGE, BATTLE_EVENT_TYPE.TANKING, BATTLE_EVENT_TYPE.RECEIVED_DAMAGE])
@@ -51,7 +50,7 @@ DEBUG_COEFF = True
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.1 (%(file_compile_date)s)'
         self.author = '(spoter) re-coded by Driftkings'
         self.data = {
             'enabled': True,

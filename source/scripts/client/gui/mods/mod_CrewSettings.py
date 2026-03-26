@@ -6,11 +6,11 @@ from io import open
 import BigWorld
 from CurrentVehicle import g_currentVehicle
 from external_strings_utils import unicode_from_utf8
-from gui.shared.utils.requesters import REQ_CRITERIA
 from gui import SystemMessages
 from gui.Scaleform.daapi.view.lobby.cyberSport.VehicleSelectorPopup import VehicleSelectorPopup
 from gui.shared.gui_items.processors.tankman import TankmanReturn, TankmanUnload
 from gui.shared.utils import decorators
+from gui.shared.utils.requesters import REQ_CRITERIA
 from helpers import dependency
 from skeletons.gui.app_loader import IAppLoader, GuiGlobalSpaceID
 from skeletons.gui.shared import IItemsCache
@@ -91,7 +91,7 @@ ignored_vehicles = openIgnoredVehicles()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.2.1 (%(file_compile_date)s)'  # Updated version
+        self.version = '1.2.2 (%(file_compile_date)s)'  # Updated version
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,

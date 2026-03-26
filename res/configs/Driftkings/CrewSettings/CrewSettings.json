@@ -1,5 +1,8 @@
-﻿{
-    "crewAutoReturn": true,
-    "crewReturnByDefault": true,
-    "enabled": true
+{
+    "enabled": true,
+    "crewAutoReturn": false,
+    "crewReturnByDefault": false,
+    "autoReturnDelay": 1.5,
+    "showNotifications": true,
+    "excludePremiumVehicles": false
 }

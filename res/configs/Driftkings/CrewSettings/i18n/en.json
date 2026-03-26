@@ -1,8 +1,16 @@
-﻿{
-    "UI_description": "CrewSettings",
+{
+    "UI_description": "Crew Settings",
+    "UI_version": "1.2.1 (%(file_compile_date)s)",
     "UI_setting_crewAutoReturn_text": "Crew Auto Return",
-    "UI_setting_crewAutoReturn_tooltip": "",
+    "UI_setting_crewAutoReturn_tooltip": "Automatically return crew to their vehicle",
     "UI_setting_crewReturnByDefault_text": "Crew Return By Default",
-    "UI_setting_crewReturnByDefault_tooltip": "",
-    "UI_version": 105
+    "UI_setting_crewReturnByDefault_tooltip": "Return crew by default when switching vehicles",
+    "UI_setting_autoReturnDelay_text": "Auto Return Delay (seconds)",
+    "UI_setting_autoReturnDelay_tooltip": "Delay before automatically returning crew",
+    "UI_setting_showNotifications_text": "Show Notifications",
+    "UI_setting_showNotifications_tooltip": "Show system notifications when crew is returned",
+    "UI_setting_excludePremiumVehicles_text": "Exclude Premium Vehicles",
+    "UI_setting_excludePremiumVehicles_tooltip": "Do not auto-return crew for premium vehicles",
+    "UI_message_crewReturned": "Crew has been returned to vehicle",
+    "UI_message_crewNotAvailable": "Crew is not available for return"
 }

@@ -1,0 +1,221 @@
+{
+    "enabled": true,
+    "global": {
+        "anonymizer": {
+            "textColor": "FFFFFF",
+            "textPrefix": "<b>**</b>"
+        }
+    },
+    "playersPanel": {
+        "playerNameCut": {
+            "left": "<font color='#{c_wn8}'>{nick}</font>",
+            "right": "<font color='#{c_wn8}'>{nick}</font>",
+            "width": 160
+        },
+        "playerNameFull": {
+            "left": "<font color='#{c_wn8}'>{wn8}</font> <font color='#{c_wn8}'>{nick}</font>",
+            "right": "<font color='#{c_wn8}'>{wn8}</font> <font color='#{c_wn8}'>{nick}</font>",
+            "width": 150
+        },
+        "vehicleName": {
+            "left": "<font color='#{c_wn8}'>{vehicle}</font>",
+            "right": "<font color='#{c_wn8}'>{vehicle}</font>",
+            "width": 75
+        }
+    },
+    "colorRating": {
+        "average": "F8F400",
+        "b_average": "FF6600",
+        "bad": "FF0000",
+        "good": "99CC00",
+        "great": "66BBFF",
+        "normal": "F8F400",
+        "not_available": "E8E8E8",
+        "s_unique": "FF00FF",
+        "unique": "CC66CC",
+        "very_bad": "BB0000",
+        "very_good": "00CC00"
+    },
+    "colors": {
+        "wn8": [
+            {
+                "value": 300,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 600,
+                "color": "color:bad"
+            },
+            {
+                "value": 900,
+                "color": "color:b_average"
+            },
+            {
+                "value": 1200,
+                "color": "color:normal"
+            },
+            {
+                "value": 1500,
+                "color": "color:good"
+            },
+            {
+                "value": 1750,
+                "color": "color:very_good"
+            },
+            {
+                "value": 2300,
+                "color": "color:great"
+            },
+            {
+                "value": 2900,
+                "color": "color:unique"
+            },
+            {
+                "value": 9999,
+                "color": "color:s_unique"
+            }
+        ],
+        "eff": [
+            {
+                "value": 615,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 870,
+                "color": "color:bad"
+            },
+            {
+                "value": 1175,
+                "color": "color:normal"
+            },
+            {
+                "value": 1525,
+                "color": "color:good"
+            },
+            {
+                "value": 1850,
+                "color": "color:very_good"
+            },
+            {
+                "value": 9999,
+                "color": "color:unique"
+            }
+        ],
+        "winrate": [
+            {
+                "value": 43,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 45,
+                "color": "color:bad"
+            },
+            {
+                "value": 47,
+                "color": "color:b_average"
+            },
+            {
+                "value": 51,
+                "color": "color:normal"
+            },
+            {
+                "value": 53,
+                "color": "color:good"
+            },
+            {
+                "value": 55,
+                "color": "color:very_good"
+            },
+            {
+                "value": 59,
+                "color": "color:great"
+            },
+            {
+                "value": 93,
+                "color": "color:unique"
+            },
+            {
+                "value": 101,
+                "color": "color:s_unique"
+            }
+        ],
+        "t_winrate": [
+            {
+                "value": 46.5,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 48.5,
+                "color": "color:bad"
+            },
+            {
+                "value": 52.5,
+                "color": "color:normal"
+            },
+            {
+                "value": 57.5,
+                "color": "color:good"
+            },
+            {
+                "value": 64.5,
+                "color": "color:very_good"
+            },
+            {
+                "value": 101,
+                "color": "color:unique"
+            }
+        ],
+        "battles": [
+            {
+                "value": 2000,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 6000,
+                "color": "color:bad"
+            },
+            {
+                "value": 16000,
+                "color": "color:normal"
+            },
+            {
+                "value": 30000,
+                "color": "color:good"
+            },
+            {
+                "value": 43000,
+                "color": "color:very_good"
+            },
+            {
+                "value": 900000,
+                "color": "color:unique"
+            }
+        ],
+        "t_battles": [
+            {
+                "value": 100,
+                "color": "color:very_bad"
+            },
+            {
+                "value": 250,
+                "color": "color:bad"
+            },
+            {
+                "value": 500,
+                "color": "color:normal"
+            },
+            {
+                "value": 1000,
+                "color": "color:good"
+            },
+            {
+                "value": 1800,
+                "color": "color:very_good"
+            },
+            {
+                "value": 900000,
+                "color": "color:unique"
+            }
+        ]
+    }
+}

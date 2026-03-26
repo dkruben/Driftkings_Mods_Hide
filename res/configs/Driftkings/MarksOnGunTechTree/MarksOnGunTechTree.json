@@ -1,12 +1,12 @@
-﻿{
-    "colorRatting": 0,
+{
     "enabled": true,
-    "showInHangar": true,
+    "colorRating": 0,
     "showInTechTree": true,
     "showInTechTreeMarkOfGunPercent": true,
     "showInTechTreeMastery": true,
-    "techTreeHeight": 16,
-    "techTreeWidth": 54,
+    "showInHangar": true,
     "techTreeX": 75,
-    "techTreeY": -12
+    "techTreeY": -12,
+    "techTreeHeight": 16,
+    "techTreeWidth": 54
 }
