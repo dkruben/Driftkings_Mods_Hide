@@ -1,6 +1,6 @@
 #!/bin/sh
-if [ -d "$(git rev-parse --git-path rebase-merge)" ] || [ -d "$(git rev-parse --git-path rebase-apply)" ]; then
-    echo "Rebase in progress, compilation skipped"
-else
-    start debug &
+# Builds publish tracked SWFs, so they must normally run before committing.
+# Explicit opt-in retains the local convenience without launching GUI tools.
+if [ "$DK_BUILD_AFTER_COMMIT" = "1" ]; then
+    powershell.exe -NoProfile -File build_tools/run_build.ps1 -Mode debug -NoSync
 fi

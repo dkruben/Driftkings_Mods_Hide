@@ -1,5 +1,5 @@
 ﻿1746635193|audioww/_aaa_BanksLoader_audioMods.wotmod
-1790045381|audioww/driftkings_sixthsense.wotmod
+1790045805|audioww/driftkings_sixthsense.wotmod
 1790045593|configs/Driftkings/AccountManager/AccountManager.json
 1790045593|configs/Driftkings/AccountManager/i18n/cs.json
 1790045593|configs/Driftkings/AccountManager/i18n/de.json
@@ -532,7 +532,7 @@
 1790045593|configs/Driftkings/ZoomExtended/i18n/tr.json
 1790045593|configs/Driftkings/ZoomExtended/i18n/uk.json
 1607459026|flash/.gitignore
-1790045673|flash/AccountsManager.swf
+1790045775|flash/AccountsManager.swf
 1746834103|flash/AccountsManager/AccountsManager.as3proj
 1746834130|flash/AccountsManager/AccountsManagerLoginButton.as3proj
 1746834159|flash/AccountsManager/AccountsManagerWindow.as3proj
@@ -542,9 +542,9 @@
 1747439436|flash/AccountsManager/src/DebugUtils.as
 1747439504|flash/AccountsManager/src/components/AMButton.as
 1713224004|flash/AccountsManager/src/components/AM_MODES.as
-1790045674|flash/AccountsManagerLoginButton.swf
-1790045675|flash/AccountsManagerWindow.swf
-1790045676|flash/ArmorCalculator.swf
+1790045777|flash/AccountsManagerLoginButton.swf
+1790045778|flash/AccountsManagerWindow.swf
+1790045779|flash/ArmorCalculator.swf
 1746834216|flash/ArmorCalculator/ArmorCalculator.as3proj
 1747439894|flash/ArmorCalculator/src/driftkings/ArmorCalculatorInjector.as
 1747439793|flash/ArmorCalculator/src/driftkings/views/battle/ArmorCalculatorUI.as
@@ -557,7 +557,7 @@
 1747179736|flash/CreditCalc/CreditCalc.as3proj
 1747440031|flash/CreditCalc/src/views/hangar/CreditCalc.as
 1712888519|flash/CreditCalculator.swf
-1790045679|flash/DispersionTimer.swf
+1790045782|flash/DispersionTimer.swf
 1710377546|flash/DispersionTimer/DispersionTimer.as3proj
 1747440198|flash/DispersionTimer/src/driftkings/DispersionTimerInjector.as
 1747440078|flash/DispersionTimer/src/driftkings/views/battle/DispersionTimerUI.as
@@ -581,14 +581,14 @@
 1710344394|flash/DistanceToEnemy/src/mods/common/AbstractViewInjector.as
 1710344394|flash/DistanceToEnemy/src/mods/common/BattleDisplayable.as
 1710344394|flash/DistanceToEnemy/src/mods/common/IAbstractInjector.as
-1790045683|flash/DriftkingsPlayersPanelAPI.swf
+1790045787|flash/DriftkingsPlayersPanelAPI.swf
 1746833907|flash/DriftkingsPlayersPanelAPI/DriftkingsPlayersPanelAPI.as3proj
 1744236519|flash/DriftkingsPlayersPanelAPI/src/driftkings/DriftkingsPlayersPanelUI.as
 1746833366|flash/DriftkingsPlayersPanelAPI/src/driftkings/views/battle/DriftkingsPlayersPanelAPI.as
 1745790533|flash/DriftkingsPlayersPanelAPI/src/driftkings/views/battle/utils/Utils.as
 1738886554|flash/DriftkingsPlayersPanelAPI/src/mods/common/AbstractViewInjector.as
 1738886561|flash/DriftkingsPlayersPanelAPI/src/mods/common/BattleDisplayable.as
-1790045684|flash/FlightTimer.swf
+1790045788|flash/FlightTimer.swf
 1734996342|flash/FlightTimer/FlightTimer.as3proj
 1747438763|flash/FlightTimer/src/driftkings/FlightTimerInjector.as
 1747438797|flash/FlightTimer/src/driftkings/views/battle/FlightTimerUI.as
@@ -599,7 +599,7 @@
 1727048053|flash/FlightTimer/src/mods/common/AbstractViewInjector.as
 1727048053|flash/FlightTimer/src/mods/common/BattleDisplayable.as
 1727048053|flash/FlightTimer/src/mods/common/IAbstractInjector.as
-1790045686|flash/MainGun.swf
+1790045790|flash/MainGun.swf
 1711479785|flash/MainGun/MainGun.as3proj
 1710969428|flash/MainGun/src/driftkings/MainGunInjector.as
 1711483557|flash/MainGun/src/driftkings/views/battle/MainGunUI.as
@@ -626,8 +626,8 @@
 1747439218|flash/Minimap/src/driftkings/injector/AbstractViewInjector.as
 1747439237|flash/Minimap/src/driftkings/injector/BattleDisplayable.as
 1747439270|flash/Minimap/src/driftkings/views/battle/MinimapCentred.as
-1790045688|flash/MinimapCentred.swf
-1790045689|flash/OwnHealth.swf
+1790045792|flash/MinimapCentred.swf
+1790045794|flash/OwnHealth.swf
 1711315119|flash/OwnHealth/OwnHealth.as3proj
 1747439403|flash/OwnHealth/src/driftkings/OwnHealthInjector.as
 1740607410|flash/OwnHealth/src/driftkings/views/battle/OwnHealthUI.as
@@ -652,8 +652,8 @@
 1747440586|flash/SixthSense/src/driftkings/views/utils/tween/TweenEvent.as
 1738886554|flash/SixthSense/src/mods/common/AbstractViewInjector.as
 1738886561|flash/SixthSense/src/mods/common/BattleDisplayable.as
-1790045692|flash/SixthSenseIcon.swf
-1790045693|flash/TotalLog.swf
+1790045796|flash/SixthSenseIcon.swf
+1790045798|flash/TotalLog.swf
 1711757382|flash/TotalLog/TotalLog.as3proj
 1711757429|flash/TotalLog/src/driftkings/TotalLogInjector.as
 1747440338|flash/TotalLog/src/driftkings/views/battle/TotalLogUI.as
