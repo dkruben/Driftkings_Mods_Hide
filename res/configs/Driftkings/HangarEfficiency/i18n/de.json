@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Prozentsatz der Schussspuren anzeigen",
     "UI_setting_winRate_text": "Gewinnrate",
     "UI_setting_winRate_tooltip": "Gewinnprozentsatz anzeigen",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Horizontale Position (X)",
+    "UI_setting_positionX_tooltip": "Kleiner: links. Größer: richtig.",
+    "UI_setting_positionY_text": "Vertikale Position (Y)",
+    "UI_setting_positionY_tooltip": "Kleiner: oben. Größer: unten."
 }

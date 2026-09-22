@@ -1,0 +1,12 @@
+{
+    "enabled": false,
+    "ext": ".wotmod",
+    "files": {
+        "res/scripts/client/gui/mods/mod_HangarEfficiency.pyc": "build/scripts/client/gui/mods/mod_HangarEfficiency.pyc",
+        "res/gui/gameface/mods/Driftkings/HangarEfficiency/model.html": "res/gui/gameface/mods/Driftkings/HangarEfficiency/model.html",
+        "res/gui/gameface/mods/Driftkings/HangarEfficiency/efficiency.js": "res/gui/gameface/mods/Driftkings/HangarEfficiency/efficiency.js",
+        "res/gui/gameface/mods/Driftkings/HangarEfficiency/efficiency.css": "res/gui/gameface/mods/Driftkings/HangarEfficiency/efficiency.css",
+        "res/mods/configs/res_map/DriftkingsHangarEfficiency.json": "res/mods/configs/res_map/DriftkingsHangarEfficiency.json",
+        "res/gui/maps/icons/HangarEfficiency/**": "res/res/maps/icons/HangarEfficiency/**"
+    }
+}

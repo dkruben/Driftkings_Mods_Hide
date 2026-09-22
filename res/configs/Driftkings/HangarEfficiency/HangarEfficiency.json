@@ -1,4 +1,4 @@
-﻿{
+{
     "avgAssist": true,
     "avgBlocked": true,
     "avgDamage": true,
@@ -6,5 +6,7 @@
     "battles": true,
     "enabled": true,
     "gunMarks": true,
-    "winRate": true
+    "winRate": true,
+    "positionX": 0,
+    "positionY": 0
 }

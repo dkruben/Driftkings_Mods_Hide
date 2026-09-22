@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Wyświetl procent znaku pistoletu",
     "UI_setting_winRate_text": "Współczynnik wygranych",
     "UI_setting_winRate_tooltip": "Pokaż procent wygranej",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Pozycja pozioma (X)",
+    "UI_setting_positionX_tooltip": "Mniejszy: lewy. Większy: prawda.",
+    "UI_setting_positionY_text": "Pozycja pionowa (Y)",
+    "UI_setting_positionY_tooltip": "Mniejszy: w górę. Większy: w dół."
 }

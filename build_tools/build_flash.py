@@ -2,7 +2,6 @@
 
 Set DK_FLEX_HOME, DK_MXMLC_JAR, DK_PLAYERGLOBAL and DK_JAVA to override defaults.
 Validation outputs go to build/flash; --publish also updates code-only SWFs.
-Legacy MarksOnGunTechTree and MarksOnGunHangar targets use Gameface instead.
 """
 from __future__ import print_function
 import argparse
@@ -21,8 +20,6 @@ FLASH = os.path.join(ROOT, 'res', 'flash')
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--publish', action='store_true')
-    parser.add_argument('--include-legacy', action='store_true',
-                        help='Also compile legacy MarksOnGunTechTree and MarksOnGunHangar targets')
     args = parser.parse_args()
     adobe = os.path.join(os.environ.get('ProgramFiles', r'C:\Program Files'),
                          'Adobe', 'Adobe Animate 2024', 'Common', 'Configuration', 'ActionScript 3.0')
@@ -42,9 +39,6 @@ def main():
     jobs = []
     for project in sorted(glob.glob(os.path.join(FLASH, '*', '*.as3proj'))):
         tree = ET.parse(project)
-        if os.path.basename(project) in ('MarksOnGunTechTree.as3proj', 'MarksOnGunHangar.as3proj') and not args.include_legacy:
-            print('%s: using Gameface implementation; legacy AS3 target excluded.' % os.path.splitext(os.path.basename(project))[0])
-            continue
         folder = os.path.dirname(project)
         movie = {}
         for element in tree.findall('./output/movie'):
@@ -56,11 +50,6 @@ def main():
                  for x in tree.findall('./classpaths/class') if x.get('path')]
         jobs.append((os.path.splitext(os.path.basename(project))[0],
                      os.path.join(folder, target), paths, output, movie))
-    # This source has no FlashDevelop project but is part of the AS3 audit.
-    jobs.append(('BigTextConsumablesPanel', os.path.join(FLASH, 'BigTextConsumablesPanel', 'src',
-                 'driftkings', 'views', 'battle', 'BigTextConsumablesPanel.as'),
-                 [os.path.join(FLASH, 'BigTextConsumablesPanel', 'src')],
-                 os.path.join(FLASH, 'BigTextConsumablesPanel.swf'), {}))
     results = []
     for name, target, paths, output, movie in jobs:
         staged = os.path.join(outdir, os.path.basename(output))
@@ -79,8 +68,7 @@ def main():
         with open(log, 'wb') as handle:
             code = subprocess.call(command, stdout=handle, stderr=subprocess.STDOUT)
         results.append({'project': name, 'success': code == 0, 'log': os.path.relpath(log, ROOT),
-                        'output': os.path.relpath(output, ROOT),
-                        'timeline': name == 'MarksOnGunTechTree'})
+                        'output': os.path.relpath(output, ROOT)})
         print('{}: {}'.format(name, 'OK' if code == 0 else 'FAILED (see ' + log + ')'))
         sys.stdout.flush()
     with open(os.path.join(outdir, 'results.json'), 'w') as handle:
@@ -89,9 +77,6 @@ def main():
         return 1
     if args.publish:
         for name, target, paths, output, movie in jobs:
-            if name == 'MarksOnGunTechTree':
-                print('MarksOnGunTechTree: keeping timeline SWF; publish through Animate.')
-                continue
             shutil.copy2(os.path.join(outdir, os.path.basename(output)), output)
     return 0
 

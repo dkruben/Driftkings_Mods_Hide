@@ -1,5 +1,7 @@
 # temp files and folders
 
 *.swf
+# Published assets belong in version control.
+!/*.swf
 .later
 swc/*.swc

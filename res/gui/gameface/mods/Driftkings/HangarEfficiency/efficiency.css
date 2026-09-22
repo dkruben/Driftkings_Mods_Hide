@@ -1,0 +1,7 @@
+.dk-hangar-efficiency { position: absolute; z-index: 8; max-width: 94vw; padding: 12rem 18rem; border-radius: 5rem; background: rgba(65, 68, 72, .55); color: #f2f2f2; font-family: "$FieldFont", Arial, sans-serif; pointer-events: none; }
+.dk-he-vehicle { margin-bottom: 8rem; color: #d7c8a5; font-size: 14rem; }
+.dk-he-stats { display: flex; flex-wrap: wrap; }
+.dk-he-stat { display: flex; align-items: center; margin: 4rem 14rem 4rem 0; }
+.dk-he-icon { width: 22rem; height: 22rem; margin-right: 7rem; object-fit: contain; }
+.dk-he-label { color: #c7c9cc; font-size: 12rem; }
+.dk-he-value { margin-top: 3rem; font-size: 19rem; font-weight: bold; }

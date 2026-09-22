@@ -1,0 +1,12 @@
+[
+  {
+    "itemID": "mods/Driftkings/HangarEfficiency/model",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/Driftkings/HangarEfficiency/model.html",
+    "parameters": {
+      "extension": "",
+      "entrance": "main",
+      "impl": "gameface"
+    }
+  }
+]

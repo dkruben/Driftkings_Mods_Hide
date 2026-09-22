@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Zobrazit procento značky pistole",
     "UI_setting_winRate_text": "Míra výhry",
     "UI_setting_winRate_tooltip": "Zobrazit procento výher",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Horizontální poloha (X)",
+    "UI_setting_positionX_tooltip": "Menší: vlevo. Větší: vpravo.",
+    "UI_setting_positionY_text": "Vertikální poloha (Y)",
+    "UI_setting_positionY_tooltip": "Menší: nahoru. Větší: dolů."
 }

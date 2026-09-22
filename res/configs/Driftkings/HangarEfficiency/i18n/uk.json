@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Показати відсоток марок зброї",
     "UI_setting_winRate_text": "Коефіцієнт виграшу",
     "UI_setting_winRate_tooltip": "Показати відсоток перемог",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Горизонтальне положення (X)",
+    "UI_setting_positionX_tooltip": "Менший: ліворуч. Більше: справа.",
+    "UI_setting_positionY_text": "Вертикальне положення (Y)",
+    "UI_setting_positionY_tooltip": "Менший: вгору. Більше: вниз."
 }

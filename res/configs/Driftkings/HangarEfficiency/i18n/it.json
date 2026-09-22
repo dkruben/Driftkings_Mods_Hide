@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Visualizza la percentuale del contrassegno della pistola",
     "UI_setting_winRate_text": "Tasso di vincita",
     "UI_setting_winRate_tooltip": "Mostra la percentuale di vincita",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Posizione orizzontale (X)",
+    "UI_setting_positionX_tooltip": "Più piccolo: a sinistra. Più grande: giusto.",
+    "UI_setting_positionY_text": "Posizione verticale (Y)",
+    "UI_setting_positionY_tooltip": "Più piccolo: in alto. Più grande: giù."
 }

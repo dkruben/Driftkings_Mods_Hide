@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Afficher le pourcentage de marques d'armes à feu",
     "UI_setting_winRate_text": "Taux de victoire",
     "UI_setting_winRate_tooltip": "Afficher le pourcentage de victoire",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Position horizontale (X)",
+    "UI_setting_positionX_tooltip": "Plus petit : à gauche. Plus grand : à droite.",
+    "UI_setting_positionY_text": "Position verticale (Y)",
+    "UI_setting_positionY_tooltip": "Plus petit : vers le haut. Plus grand : vers le bas."
 }

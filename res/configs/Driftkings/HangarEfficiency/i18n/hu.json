@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "A pisztolynyom százalékos megjelenítése",
     "UI_setting_winRate_text": "Nyerési arány",
     "UI_setting_winRate_tooltip": "Nyerési százalék megjelenítése",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Vízszintes helyzet (X)",
+    "UI_setting_positionX_tooltip": "Kisebb: bal. Nagyobb: jobb.",
+    "UI_setting_positionY_text": "Függőleges helyzet (Y)",
+    "UI_setting_positionY_tooltip": "Kisebb: fel. Nagyobb: lent."
 }

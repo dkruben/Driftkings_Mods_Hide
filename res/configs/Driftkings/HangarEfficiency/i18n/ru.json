@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Отображать процент следов оружия",
     "UI_setting_winRate_text": "Процент побед",
     "UI_setting_winRate_tooltip": "Показать процент побед",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Горизонтальное положение (X)",
+    "UI_setting_positionX_tooltip": "Меньший: левый. Больше: верно.",
+    "UI_setting_positionY_text": "Вертикальное положение (Y)",
+    "UI_setting_positionY_tooltip": "Меньший: вверх. Больше: вниз."
 }

@@ -2,9 +2,9 @@ name: Validate mod sources and configurations
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
-    branches: [main]
+    branches: [main, master]
 
 permissions:
   contents: read

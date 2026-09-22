@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Silah işareti yüzdesini görüntüle",
     "UI_setting_winRate_text": "Kazanma Oranı",
     "UI_setting_winRate_tooltip": "Kazanma yüzdesini göster",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Yatay konum (X)",
+    "UI_setting_positionX_tooltip": "Daha küçük: sol. Daha büyük: doğru.",
+    "UI_setting_positionY_text": "Dikey konum (Y)",
+    "UI_setting_positionY_tooltip": "Daha küçük: yukarı. Daha büyük: aşağı."
 }

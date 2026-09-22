@@ -14,5 +14,9 @@
     "UI_setting_gunMarks_tooltip": "Mostrar porcentaje de marca de pistola",
     "UI_setting_winRate_text": "Tasa de victorias",
     "UI_setting_winRate_tooltip": "Mostrar porcentaje de victorias",
-    "UI_version": 115
+    "UI_version": 120,
+    "UI_setting_positionX_text": "Posición horizontal (X)",
+    "UI_setting_positionX_tooltip": "Más pequeño: izquierda. Más grande: derecha.",
+    "UI_setting_positionY_text": "Posición vertical (Y)",
+    "UI_setting_positionY_tooltip": "Más pequeño: arriba. Más grande: abajo."
 }
