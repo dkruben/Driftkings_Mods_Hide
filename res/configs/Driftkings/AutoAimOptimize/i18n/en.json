@@ -1,6 +1,6 @@
 {
     "UI_description": "AutoAimOptimize",
-    "UI_version": "1.7.0 (%(file_compile_date)s)",
+    "UI_version": 171,
     "UI_setting_angle_text": "Set angle to catch target",
     "UI_setting_angle_value": "x",
     "UI_setting_catchHiddenTarget_text": "Catch target hidden behind an obstacle",

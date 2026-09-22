@@ -1,6 +1,6 @@
 {
     "UI_description": "ArtySplash",
-    "UI_version": "1.5.1 (%(file_compile_date)s)",
+    "UI_version": 152,
     "UI_setting_buttonShowDot_text": "Button: show|hide Dot",
     "UI_setting_buttonShowDot_tooltip": "",
     "UI_setting_buttonShowSplash_text": "Button: show|hide Splash",

@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Choisissez la couleur d'Ally Dead :",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Couleur appliquée au Tank.",
+    "UI_setting_colorCheckEnemyDead_text": "Choisissez la couleur pour Enemy Dead :",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Couleur appliquée au Tank.",
+    "UI_setting_colorCheckSquadManAlive_text": "Choisissez la couleur de SquadMan Alive :",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Couleur appliquée au Tank.",
+    "UI_setting_colorCheckEnemyAlive_text": "Choisissez la couleur pour Enemy Alive :",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Couleur appliquée au Tank.",
+    "UI_setting_colorCheckAllyAlive_text": "Choisissez la couleur pour Ally Alive :",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Couleur appliquée au Tank.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Choisissez la couleur de TeamKiller :",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00EAFF</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Couleur appliquée au Tank."
+}

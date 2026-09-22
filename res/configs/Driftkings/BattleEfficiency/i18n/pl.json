@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Blokada tekstu",
+    "UI_setting_textLock_tooltip": "Przeciągnij tekst w bitwie",
+    "UI_setting_format_text": "Format tekstu, dostępne makra:",
+    "UI_setting_format_tooltip": "Dostępne makra:\n WN8:'{wn8}', Kolor:'{c:wn8}'\nXWN8:'{xwn8}', Kolor:'{c:x}'\nEFR:”{eff}', Kolor:'{c:eff}'\nXEFF:”{xeff}', Kolor:'{c:x}'\nRÓŻNICA:'{diff}', Kolor:'{c:diff}'\nDMG:{dmg}', Kolor:'{c:dmg}'\nXTE:'{xte}', Kolor:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Okno wyników bitwy",
+    "UI_setting_battleResultsWindow_tooltip": "Włącz okno wyników bitwy.",
+    "UI_setting_battleResultsFormat_text": "Modyfikacja okna wyników bitwy",
+    "UI_setting_battleResultsFormat_tooltip": "Dostępne makra:\nWN8:'{wn8}', Kolor: '{c:wn8}'\nXWN8:'{xwn8}', Kolor: '{c:x}'\nEFR:”{eff}', Kolor: '{c:eff}'\nXEFF:”{xeff}', Kolor: '{c:x}'\nRÓŻNICA:'{diff}', Kolor: '{c:diff}'\nDMG:{dmg}', Kolor: '{c:dmg}'\nXTE:'{xte}', Kolor: '{c:x}'\n{mapName} - Nazwa mapy\n{battleType} - Rodzaj bitwy",
+    "UI_setting_colorRatting_text": "Wybierz opcję Ocena kolorów",
+    "UI_setting_colorRatting_tooltip": "Wybierz schemat kolorów ocen",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

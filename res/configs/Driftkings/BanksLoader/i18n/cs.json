@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Banks Loader od Driftkings : Restartujte",
+    "UI_restart_reason_new": "Nainstalovali jste nové zvukové mody, takže konfigurace hry byla změněna.",
+    "UI_restart_reason_update": "Byla zjištěna aktualizace herního klienta, takže změny konfigurace hry byly znovu použity jako nové.",
+    "UI_restart_text": "{reason}{reasons}\nK přijetí změn je nutný restart herního klienta.\nSprávné chování zvukových modů <b>NENÍ ZARUČENO</b> do příštího spuštění hry.\nToto bude <b>ne</b> být vyžadován později.\nChcete hru restartovat nyní?",
+    "UI_restart_button_restart": "Restartujte",
+    "UI_restart_button_shutdown": "Vypnutí",
+    "UI_restart_button_close": "Pokračovat",
+    "UI_restart_reason": " Přesné změny:\n{}.",
+    "UI_restart_create": " • sekce <b>vytvořené</b> pro banky: ",
+    "UI_restart_delete": " • sekce <b>smazáno</b> pro banky: ",
+    "UI_restart_move": " • sekce <b>přesunuto</b> pro banky: ",
+    "UI_restart_section": " • sekce <b>posunuto</b> pro banky: ",
+    "UI_restart_memory": " • hodnoty <b>změněno</b> pro nastavení paměti: ",
+    "UI_restart_remap": " • sekce <b>změněno</b> pro nastavení: ",
+    "UI_restart_wotmod": " • konfigurace <b>odstraněno</b> z balíčků: "
+}

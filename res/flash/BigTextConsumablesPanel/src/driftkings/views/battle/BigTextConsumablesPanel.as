@@ -47,6 +47,7 @@
 		{
 			try
 			{
+				if (viewPage == null) { return; }
 				var consumablesPanel:* = viewPage["consumablesPanel"];
 				if (consumablesPanel == null) {
 					return;
@@ -54,7 +55,7 @@
 				var tf:TextFormat = new TextFormat("ZurichCond", 24, null, null, null, null, null, null, TextFormatAlign.CENTER);
 				for (var i:int = 0; i < consumablesPanel.numChildren; i++) {
 					var obj:* = consumablesPanel.getChildAt(i);
-					var textField:TextField = obj["quantityField"];
+					var textField:TextField = "quantityField" in obj ? obj["quantityField"] as TextField : null;
 					if (textField != null) {
 						textField.defaultTextFormat = tf;
 						textField.setTextFormat(tf);
@@ -62,7 +63,7 @@
 						textField.x = 6.0;
 						textField.y = 10.5;
 					}
-					textField = obj["cooldownTimerTf"];
+					textField = "cooldownTimerTf" in obj ? obj["cooldownTimerTf"] as TextField : null;
 					if (textField != null) {
 						textField.defaultTextFormat = tf;
 						textField.setTextFormat(tf);

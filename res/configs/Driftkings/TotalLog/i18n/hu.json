@@ -1,0 +1,12 @@
+{
+    "UI_description": "TotalLog",
+    "UI_version": 100,
+    "UI_setting_separate_text": "Külön",
+    "UI_setting_separate_tooltip": "",
+    "UI_setting_inCenter_text": "Központban",
+    "UI_setting_inCenter_tooltip": "Jelenítse meg a naplót a képernyő közepén",
+    "UI_setting_x_text": "X pozíció",
+    "UI_setting_x_tooltip": "Vízszintes helyzet",
+    "UI_setting_y_text": "Y pozíció",
+    "UI_setting_y_tooltip": "Függőleges helyzet"
+}

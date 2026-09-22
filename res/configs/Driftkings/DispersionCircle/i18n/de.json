@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Client- und Server-Reticle (Beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Zeigen Sie sowohl das Client- als auch das Server-Fadenkreuz gleichzeitig an",
+    "UI_setting_showServerSpgStrategicReticle_text": "Strategisches Selbstfahrlafettenabsehen",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Aktivieren Sie das Server-Fadenkreuz für den SPG-Strategiemodus",
+    "UI_setting_gunMarkerMinimumSize_text": "Mindestgröße des Waffenmarkierers",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Mindestgröße der Waffenmarkierung in Pixel",
+    "UI_setting_percentCorrection_text": "Korrektur der Absehengröße",
+    "UI_setting_percentCorrection_tooltip": "Passen Sie den Skalierungsfaktor des Absehens an",
+    "UI_setting_serverReticleAimingCircleShape_text": "Zielende Kreisform",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Wählen Sie die Form des Server-Zielkreises",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Zielkreis-Deckkraft",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Passen Sie die Deckkraft des Server-Zielkreises an",
+    "UI_setting_serverReticleGunMarkerShape_text": "Form des Waffenmarkierers",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Wählen Sie die Form der Server-Waffenmarkierung aus",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Deckkraft der Waffenmarkierung",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Passen Sie die Deckkraft der Server-Waffenmarkierung an"
+}

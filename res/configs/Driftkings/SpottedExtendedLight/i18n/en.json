@@ -1,6 +1,6 @@
 {
     "UI_description": "SpottedExtendedLight",
-    "UI_version": "1.8.6 (%(file_compile_date)s)",
+    "UI_version": 186,
     "UI_setting_sound_text": "Enable battle sounds",
     "UI_setting_sound_tooltip": "Toggle sound notifications for spotted enemies and assist damage",
     "UI_setting_sound_default": "Default: Enabled",

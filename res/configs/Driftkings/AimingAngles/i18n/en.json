@@ -1,6 +1,6 @@
 {
     "UI_description": "AimingAngles",
-    "UI_version": "1.1.0 (%(file_compile_date)s)",
+    "UI_version": 110,
     "UI_setting_horizontal_text": "Horizontal marker type",
     "UI_setting_horizontal_tooltip": "Type of markers to the left and right of the crosshair showing horizontal edge positions of your gun.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
     "UI_setting_horizontal_0": "Disabled",

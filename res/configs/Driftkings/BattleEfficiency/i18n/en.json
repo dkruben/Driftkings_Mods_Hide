@@ -1,6 +1,6 @@
 {
     "UI_description": "BattleEfficiency",
-    "UI_version": "2.7.0 %(file_compile_date)s",
+    "UI_version": 271,
     "UI_setting_textLock_text": "Text Lock",
     "UI_setting_textLock_tooltip": "Drag Text in battle",
     "UI_setting_format_text": "Text Format, Available Macros:",

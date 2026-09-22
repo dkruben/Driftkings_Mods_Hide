@@ -1,12 +1,10 @@
 {
     "enabled": true,
-    "colorRating": 0,
     "showInTechTree": true,
     "showInTechTreeMarkOfGunPercent": true,
     "showInTechTreeMastery": true,
-    "showInHangar": true,
-    "techTreeX": 75,
-    "techTreeY": -12,
-    "techTreeHeight": 16,
-    "techTreeWidth": 54
+    "showInTechTreeMarkOfGunTankNameColored": false,
+    "badgeOffsetX": 0,
+    "badgeOffsetY": -18,
+    "badgeFontSize": 14
 }

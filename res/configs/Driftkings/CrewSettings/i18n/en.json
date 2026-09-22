@@ -1,6 +1,6 @@
 {
     "UI_description": "Crew Settings",
-    "UI_version": "1.2.1 (%(file_compile_date)s)",
+    "UI_version": 122,
     "UI_setting_crewAutoReturn_text": "Crew Auto Return",
     "UI_setting_crewAutoReturn_tooltip": "Automatically return crew to their vehicle",
     "UI_setting_crewReturnByDefault_text": "Crew Return By Default",

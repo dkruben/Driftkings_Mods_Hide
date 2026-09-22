@@ -1,0 +1,12 @@
+{
+    "UI_description": "TotalLog",
+    "UI_version": 100,
+    "UI_setting_separate_text": "Oddělit",
+    "UI_setting_separate_tooltip": "",
+    "UI_setting_inCenter_text": "V centru",
+    "UI_setting_inCenter_tooltip": "Zobrazte protokol uprostřed obrazovky",
+    "UI_setting_x_text": "Pozice X",
+    "UI_setting_x_tooltip": "Horizontální poloha",
+    "UI_setting_y_text": "Pozice Y",
+    "UI_setting_y_tooltip": "Vertikální poloha"
+}

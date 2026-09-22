@@ -1,0 +1,15 @@
+{
+    "UI_description": "MarksOnGunTechTree (Gameface)",
+    "UI_setting_showInTechTree_text": "Технодерево: включено",
+    "UI_setting_showInTechTree_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunPercent_text": "TechTree: показать % MoE",
+    "UI_setting_showInTechTreeMarkOfGunPercent_tooltip": "",
+    "UI_setting_showInTechTreeMastery_text": "TechTree: показать мастерство",
+    "UI_setting_showInTechTreeMastery_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_text": "TechTree: МО раскрашивает название автомобиля",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_tooltip": "",
+    "UI_setting_badgeOffsetX_text": "Позиция X (слева/справа)",
+    "UI_setting_badgeOffsetX_tooltip": "Отрицательное: слева. Положительное: верно.",
+    "UI_setting_badgeOffsetY_text": "Положение Y (вверх/вниз)",
+    "UI_setting_badgeOffsetY_tooltip": "Отрицательное: вверх. Положительное: вниз."
+}

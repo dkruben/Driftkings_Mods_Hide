@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Wyłącz lornetkę.",
+    "UI_setting_noBinoculars_tooltip": "Usuń zaciemnienie w trybie snajperskim.",
+    "UI_setting_noFlashBang_text": "Wyłącz czerwony błysk.",
+    "UI_setting_noFlashBang_tooltip": "Usuń czerwony błysk w przypadku otrzymania obrażeń.",
+    "UI_setting_noShockWave_text": "Fala uderzeniowa",
+    "UI_setting_noShockWave_tooltip": "Usuń drżenie kamery po uderzeniu czołgiem.",
+    "UI_setting_noSniperDynamic_text": "Dynamika Snajpera",
+    "UI_setting_noSniperDynamic_tooltip": "Wyłącz dynamiczną kamerę w trybie snajperskim.",
+    "UI_setting_disableCamAfterShot_text": "Wyłącz kamerę po wykonaniu zdjęcia",
+    "UI_setting_disableCamAfterShot_tooltip": "Wyłącz tryb snajperski po strzale.",
+    "UI_setting_disableCamAfterShotLatency_text": "Wyłącz opóźnienie kamery po oddaniu strzału",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Opóźnij automatyczne wyłączenie aparatu.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Wyłącz klip pomijania kamery po zdjęciu",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Nie wychodź z systemu ładowania magazynka."
+}

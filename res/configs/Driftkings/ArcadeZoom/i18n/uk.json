@@ -1,0 +1,12 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_version": 111,
+    "UI_setting_min_text": "Мінімальне зменшення",
+    "UI_setting_min_tooltip": "Мінімальна відстань камери від автомобіля",
+    "UI_setting_max_text": "Максимальне зменшення",
+    "UI_setting_max_tooltip": "Максимальна відстань камери від автомобіля",
+    "UI_setting_scrollSensitivity_text": "Чутливість прокрутки",
+    "UI_setting_scrollSensitivity_tooltip": "Відрегулюйте чутливість масштабування коліщатка миші",
+    "UI_setting_startDeadDist_text": "Початок мертвої дистанції",
+    "UI_setting_startDeadDist_tooltip": "Початкова відстань камери в посмертному режимі"
+}

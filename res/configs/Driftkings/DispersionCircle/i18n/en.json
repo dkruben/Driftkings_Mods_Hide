@@ -1,6 +1,6 @@
 {
     "UI_description": "Reticle",
-    "UI_version": "1.1.1 (%(file_compile_date)s)",
+    "UI_version": 112,
     "UI_setting_showClientAndServerReticleBeta_text": "Client and Server Reticle (Beta)",
     "UI_setting_showClientAndServerReticleBeta_tooltip": "Show both client and server reticle simultaneously",
     "UI_setting_showServerSpgStrategicReticle_text": "SPG Strategic Reticle",

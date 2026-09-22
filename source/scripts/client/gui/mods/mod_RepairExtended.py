@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import random
 from functools import partial
 
@@ -16,12 +16,17 @@ from gui.shared.personality import ServicesLocator
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, checkKeys, getPlayer, callback, cancelCallback, calculate_version
 
+try:
+    string_types = (basestring,)
+except NameError:
+    string_types = (str,)
+
 
 class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.1.0 (%(file_compile_date)s)'
+        self.version = '2.1.6 (%(file_compile_date)s)'
         self.author = ' (orig by spoter, refactored by DriftKings)'
         self.defaultKeys = {'buttonRepair': [Keys.KEY_SPACE], 'buttonChassis': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {
@@ -90,7 +95,6 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_autoRepair_text': 'Auto usage',
             'UI_setting_autoRepair_tooltip': ''
         }
-
         super(ConfigInterface, self).init()
 
     def createTemplate(self):
@@ -128,11 +132,23 @@ class Repair(object):
         self.ctrl = None
         self.consumablesPanel = None
         self.battleStarted = False
+        self._inputRetryCallback = None
+        self._inputBound = False
         self.pendingAutoCallbacks = {}
         self.items = {
             'extinguisher': [251, 251, None, None],
             'medkit': [763, 1019, None, None],
             'repairkit': [1275, 1531, None, None]
+        }
+        self.base_markers = {
+            'extinguisher': set(['handExtinguishers']),
+            'medkit': set(['smallMedkit']),
+            'repairkit': set(['smallRepairkit'])
+        }
+        self.gold_markers = {
+            'extinguisher': set(['autoExtinguishers']),
+            'medkit': set(['largeMedkit']),
+            'repairkit': set(['largeRepairkit'])
         }
         self.complex_item = {
             'leftTrack0': 'chassis',
@@ -163,12 +179,10 @@ class Repair(object):
         if self.player is None or not hasattr(self.player, 'guiSessionProvider'):
             return
         self.ctrl = self.player.guiSessionProvider.shared
-        if self.ctrl is None or self.battleStarted or InputHandler.g_instance is None:
+        if self.ctrl is None or self.battleStarted:
             return
         self.battleStarted = True
-        #
-        InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
-        InputHandler.g_instance.onKeyUp += self.onHotkeyPressed
+        self._bindInputHandlers()
         # auto use
         if self.ctrl.vehicleState is not None:
             self.ctrl.vehicleState.onVehicleStateUpdated += self.autoUse
@@ -178,9 +192,7 @@ class Repair(object):
         self.checkBattleStarted()
 
     def stopBattle(self):
-        if self.battleStarted and InputHandler.g_instance is not None:
-            InputHandler.g_instance.onKeyDown -= self.onHotkeyPressed
-            InputHandler.g_instance.onKeyUp -= self.onHotkeyPressed
+        self._unbindInputHandlers()
         # auto use
         if self.ctrl is not None and self.ctrl.vehicleState is not None:
             self.ctrl.vehicleState.onVehicleStateUpdated -= self.autoUse
@@ -202,13 +214,7 @@ class Repair(object):
         if self.ctrl is None or self.player is None:
             return
         if hasattr(self.player, 'arena') and self.player.arena and self.player.arena.period == 3:
-            for equipment_tag in self.items:
-                self.items[equipment_tag][2] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][0]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][0]) else None
-                self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
-            equipment_tag = 'repairkit'
-            if self.ctrl.equipments.hasEquipment(46331):
-                self.items[equipment_tag][1] = 46331
-                self.items[equipment_tag][3] = self.ctrl.equipments.getEquipment(self.items[equipment_tag][1]) if self.ctrl.equipments.hasEquipment(self.items[equipment_tag][1]) else None
+            self._refreshEquipmentCache()
         else:
             callback(0.1, self.checkBattleStarted)
 
@@ -311,7 +317,7 @@ class Repair(object):
             self.repairChassis()
 
     def onEquipmentUpdated(self, *_):
-        self.repairAll()
+        self._refreshEquipmentCache()
 
     def repairChassis(self):
         if self.ctrl is None:
@@ -342,46 +348,53 @@ class Repair(object):
             return
         if not self._canUseConsumable(requireControl=True):
             return
-        time = random.uniform(config.data['timerMin'], config.data['timerMax'])
-        if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE:
+        time = self._getAutoDelay()
+        if config.data['extinguishFire'] and state == VEHICLE_VIEW_STATE.FIRE and bool(value):
             self._scheduleAutoUse('extinguisher', time)
             time += 0.1
 
         if state == VEHICLE_VIEW_STATE.DEVICES:
-            deviceName, deviceState, actualState = value
-            if deviceState in DEVICE_STATE_AS_DAMAGE:
-                itemName = self.complex_item.get(deviceName, deviceName)
-                equipmentTag = 'medkit' if itemName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
-                # noinspection PyTypeChecker
-                specific = self._getRepairPriority(equipmentTag)
-                if itemName in specific:
-                    if config.data['healCrew'] and equipmentTag == 'medkit':
-                        self._scheduleAutoUse('medkit', time, deviceName)
-                    if config.data['repairDevices'] and equipmentTag == 'repairkit':
-                        self._scheduleAutoUse('repairkit', time, deviceName)
-                        time += 0.1
+            for deviceName, deviceState in self._extractDeviceUpdates(value):
+                if deviceState in DEVICE_STATE_AS_DAMAGE:
+                    itemName = self.complex_item.get(deviceName, deviceName)
+                    equipmentTag = 'medkit' if itemName in TANKMEN_ROLES_ORDER_DICT['enum'] else 'repairkit'
+                    # noinspection PyTypeChecker
+                    specific = self._getRepairPriority(equipmentTag)
+                    if itemName in specific:
+                        if config.data['healCrew'] and equipmentTag == 'medkit':
+                            self._scheduleAutoUse('medkit', time, deviceName)
+                        if config.data['repairDevices'] and equipmentTag == 'repairkit':
+                            self._scheduleAutoUse('repairkit', time, deviceName)
+                            time += 0.1
 
-        if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN:
+        stunDuration = getattr(value, 'duration', None)
+        hasStun = stunDuration > 0 if stunDuration is not None else bool(value)
+        if config.data['removeStun'] and state == VEHICLE_VIEW_STATE.STUN and hasStun:
             self._scheduleAutoUse('medkit', time)
 
     def _canUseConsumable(self, requireControl=False):
         if not config.data['enabled']:
             return False
-        if BattleReplay.g_replayCtrl.isPlaying:
+        replayCtrl = getattr(BattleReplay, 'g_replayCtrl', None)
+        if replayCtrl is not None and replayCtrl.isPlaying:
             return False
         if self.ctrl is None or self.player is None:
             return False
         self_vehicle = self.player.getVehicleAttached()
         if self_vehicle is None:
             return False
-        if requireControl and self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id:
+        if requireControl and (self.ctrl.vehicleState is None or self.ctrl.vehicleState.getControllingVehicleID() != self_vehicle.id):
             return False
         return True
 
     def _activateEquipment(self, intCD, item=None):
         if self.ctrl is None or self.player is None:
             return False
-        result, error = self.ctrl.equipments.changeSetting(intCD, entityName=item, avatar=self.player)
+        changeResult = self.ctrl.equipments.changeSetting(intCD, entityName=item, avatar=self.player)
+        if isinstance(changeResult, tuple):
+            result = bool(changeResult[0])
+        else:
+            result = bool(changeResult)
         if result:
             sound = SoundGroups.g_instance.getSound2D('vo_flt_repair')
             callback(1.0, sound.play)
@@ -394,18 +407,107 @@ class Repair(object):
 
     def _processAutoUse(self, equipment_tag, item=None):
         self.pendingAutoCallbacks.pop(equipment_tag, None)
+        if not config.data['autoRepair'] or not self._canUseConsumable(requireControl=True):
+            return
+        if self.items[equipment_tag][2] is None and self.items[equipment_tag][3] is None:
+            self._refreshEquipmentCache()
         self.useItem(equipment_tag, item)
 
     def _clearPendingAutoCallbacks(self):
-        for callbackID in self.pendingAutoCallbacks.itervalues():
+        for callbackID in self.pendingAutoCallbacks.values():
             cancelCallback(callbackID)
         self.pendingAutoCallbacks.clear()
+
+    def _bindInputHandlers(self):
+        if self._inputRetryCallback is not None:
+            cancelCallback(self._inputRetryCallback)
+            self._inputRetryCallback = None
+        if InputHandler.g_instance is None:
+            self._inputRetryCallback = callback(0.2, self._bindInputHandlers)
+            return
+        if not self._inputBound:
+            InputHandler.g_instance.onKeyDown += self.onHotkeyPressed
+            InputHandler.g_instance.onKeyUp += self.onHotkeyPressed
+            self._inputBound = True
+
+    def _unbindInputHandlers(self):
+        if self._inputRetryCallback is not None:
+            cancelCallback(self._inputRetryCallback)
+            self._inputRetryCallback = None
+        if self._inputBound and InputHandler.g_instance is not None:
+            InputHandler.g_instance.onKeyDown -= self.onHotkeyPressed
+            InputHandler.g_instance.onKeyUp -= self.onHotkeyPressed
+        self._inputBound = False
 
     def _getRepairPriority(self, equipment_tag):
         vehicle_class = Vehicle.getVehicleClassTag(self.player.vehicleTypeDescriptor.type.tags)
         priorities = config.data['repairPriority']
         class_priorities = priorities.get(vehicle_class, priorities['AllAvailableVariables'])
         return class_priorities[equipment_tag]
+
+    def _refreshEquipmentCache(self):
+        if self.ctrl is None or self.ctrl.equipments is None:
+            return
+        for equipment_tag in self.items:
+            self.items[equipment_tag][2] = None
+            self.items[equipment_tag][3] = None
+            for intCD, equipment in self.ctrl.equipments.iterEquipmentsByTag(equipment_tag):
+                marker = self._getEquipmentMarker(equipment)
+                if marker in self.base_markers[equipment_tag] and self.items[equipment_tag][2] is None:
+                    self.items[equipment_tag][0] = intCD
+                    self.items[equipment_tag][2] = equipment
+                    continue
+                if marker in self.gold_markers[equipment_tag] and self.items[equipment_tag][3] is None:
+                    self.items[equipment_tag][1] = intCD
+                    self.items[equipment_tag][3] = equipment
+                    continue
+                if self.items[equipment_tag][2] is None:
+                    self.items[equipment_tag][0] = intCD
+                    self.items[equipment_tag][2] = equipment
+                elif self.items[equipment_tag][3] is None:
+                    self.items[equipment_tag][1] = intCD
+                    self.items[equipment_tag][3] = equipment
+
+    @staticmethod
+    def _extractDeviceUpdates(value):
+        updates = []
+        if isinstance(value, dict):
+            iterable = value.itervalues() if hasattr(value, 'itervalues') else value.values()
+        elif isinstance(value, (list, tuple)):
+            if len(value) >= 2 and isinstance(value[0], string_types):
+                iterable = (value,)
+            else:
+                iterable = value
+        else:
+            iterable = ()
+
+        for entry in iterable:
+            if isinstance(entry, (list, tuple)) and len(entry) >= 2 and isinstance(entry[0], string_types):
+                updates.append((entry[0], entry[1]))
+        return updates
+
+    @staticmethod
+    def _getAutoDelay():
+        min_delay = config.data.get('timerMin', 0.3)
+        max_delay = config.data.get('timerMax', 0.8)
+        try:
+            min_delay = float(min_delay)
+        except (TypeError, ValueError):
+            min_delay = 0.3
+        try:
+            max_delay = float(max_delay)
+        except (TypeError, ValueError):
+            max_delay = 0.8
+        if min_delay > max_delay:
+            min_delay, max_delay = max_delay, min_delay
+        return random.uniform(min_delay, max_delay)
+
+    @staticmethod
+    def _getEquipmentMarker(equipment):
+        getter = getattr(equipment, 'getMarker', None)
+        if callable(getter):
+            return getter()
+        return None
 
     def __onComponentRegistered(self, event):
         if event.alias == BATTLE_VIEW_ALIASES.CONSUMABLES_PANEL:

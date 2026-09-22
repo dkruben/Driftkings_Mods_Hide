@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Mostra messaggio di attivazione",
+    "UI_setting_activateMessage_tooltip": "Mostra il messaggio di attivazione in battaglia",
+    "UI_setting_fixAccuracyInMove_text": "Correggi la precisione",
+    "UI_setting_fixAccuracyInMove_tooltip": "Quando ti muovi e poi ti fermi, usa la precisione fissa per non perdere la mira",
+    "UI_setting_serverTurret_text": "Torretta del server",
+    "UI_setting_serverTurret_tooltip": "Sposta la torretta sulle coordinate di mira del server (è necessario abilitare la vista del server nelle impostazioni di gioco)",
+    "UI_battle_activateMessage": "'Torretta server estesa': attivata",
+    "UI_setting_fixWheelCruiseControl_text": "Correggi il controllo della velocità di crociera sulle ruote",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Quando si attiva la modalità volante con Cruise Control, il veicolo è fermo, questa impostazione lo disabilita",
+    "UI_setting_maxWheelMode_text": "Ruote: mantenere la velocità massima",
+    "UI_setting_maxWheelMode_tooltip": "Al raggiungimento della velocità massima, non disattiva la modalità velocità durante la manovra",
+    "UI_setting_buttonMaxMode_text": "Pulsante: le ruote mantengono la velocità massima",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Ruote: modalità velocità automatica",
+    "UI_setting_autoActivateWheelMode_tooltip": "Attiva automaticamente la modalità velocità o manovra",
+    "UI_setting_buttonAutoMode_text": "Pulsante: modalità velocità automatica delle ruote",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "ON",
+    "UI_battle_OFF": "SPENTO"
+}

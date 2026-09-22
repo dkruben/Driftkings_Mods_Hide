@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Zeigen Sie Teamchancen auf",
+    "UI_setting_teamChances_tooltip": "Zeigt den Prozentsatz der Siegchance für jedes Team während des Kampfes an",
+    "UI_setting_format_text": "Textformat",
+    "UI_setting_format_tooltip": "Legt das Format des Textes fest"
+}

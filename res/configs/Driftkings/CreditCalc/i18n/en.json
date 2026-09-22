@@ -1,6 +1,6 @@
 {
     "UI_description": "CreditCalc",
-    "UI_version": "1.0.0 (%(file_compile_date)s)",
+    "UI_version": 101,
     "UI_setting_label_text": "Calc Credits in Battle:",
     "UI_setting_label_tooltip": "+1000 or -1000 silver difference: that's normal dispersion, if greater: Play one battle without damage.",
     "UI_setting_label1_text": "Wait until the battle:",

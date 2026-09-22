@@ -22,7 +22,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.0 (%(file_compile_date)s)'
+        self.version = '1.0.1 (%(file_compile_date)s)'
         self.author = 'orig: Archie-osu, refactor: Driftkings'
         self.data = {
             'enabled': True,
@@ -77,21 +77,24 @@ class Flash(object):
     def __init__(self):
         self.name = {}
         self.data = {}
+        self.started = False
 
     def startBattle(self):
-        if not config.data['enabled']:
+        if self.started or not config.data['enabled'] or g_guiFlash is None:
             return
         self.data = self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
         self.createObject(COMPONENT_TYPE.LABEL, self.data[COMPONENT_TYPE.LABEL])
         g_guiResetters.add(self.screenResize)
+        self.started = True
 
     def stopBattle(self):
-        if not config.data['enabled']:
+        if not self.started:
             return
         g_guiResetters.remove(self.screenResize)
         COMPONENT_EVENT.UPDATED -= self.__updatePosition
         self.deleteObject(COMPONENT_TYPE.LABEL)
+        self.started = False
 
     def deleteObject(self, name):
         g_guiFlash.deleteComponent(self.name[name])
@@ -100,16 +103,17 @@ class Flash(object):
         g_guiFlash.createComponent(self.name[name], name, data)
 
     def updateObject(self, name, data):
-        g_guiFlash.updateComponent(self.name[name], data)
+        if self.started:
+            g_guiFlash.updateComponent(self.name[name], data)
 
     def __updatePosition(self, alias, props):
         if str(alias) == str(config.ID):
             x = props.get('x', config.data['textPosition']['x'])
-            if x and x != config.data['textPosition']['x']:
+            if x is not None and x != config.data['textPosition']['x']:
                 config.data['textPosition']['x'] = x
                 self.data[COMPONENT_TYPE.LABEL]['x'] = x
             y = props.get('y', config.data['textPosition']['y'])
-            if y and y != config.data['textPosition']['y']:
+            if y is not None and y != config.data['textPosition']['y']:
                 config.data['textPosition']['y'] = y
                 self.data[COMPONENT_TYPE.LABEL]['y'] = y
             config.onApplySettings({'textPosition': {'x': x, 'y': y}})
@@ -157,7 +161,7 @@ class Flash(object):
             return float(min(0, max(value, -screen)))
         scr = screen / 2.0
         if align == 0:
-            return float(max(scr, min(value, -scr)))
+            return float(max(-scr, min(value, scr)))
         return value
 
     def screenResize(self):
@@ -235,7 +239,9 @@ class ReticleManager(object):
         aimingStartTime = avatar._PlayerAvatar__aimingInfo[0]
         aimingStartFactor = avatar._PlayerAvatar__aimingInfo[1]
         multFactor = avatar._PlayerAvatar__dispersionInfo[0]
-        totalAimingTime = avatar._PlayerAvatar__dispersionInfo[4]
+        totalAimingTime = avatar._PlayerAvatar__dispersionInfo[5]
+        if aimingStartFactor <= 0.0 or multFactor <= 0.0 or totalAimingTime <= 0.0:
+            return 0.0, totalAimingTime
         currentTime = BigWorld.time()
         aimingTimeRemaining = max(aimingStartTime + (totalAimingTime * math.log(aimingStartFactor / multFactor)) - currentTime, 0)
         return aimingTimeRemaining, totalAimingTime
@@ -253,8 +259,15 @@ g_work = ReticleManager()
 def new__getOwnVehicleShotDispersionAngle(func, self, turretRotationSpeed, withShot=0):
     result = func(self, turretRotationSpeed, withShot)
     if not config.data.get('enabled', False):
+        g_work.easingFactor = 1.0
+        g_flash.setVisible(False)
         return result
     currentDispersion = result[0] * 100
+    if currentDispersion <= 0.0:
+        g_work.easingFactor = 1.0
+        g_flash.setVisible(False)
+        return result
+    g_work.easingFactor = 1.0
     reticleScaling = config.data.get('reticleScaling', False)
     if reticleScaling and config.data.get('scalingType', 0) == 0:
         realDispersion = currentDispersion / 1.71
@@ -265,8 +278,7 @@ def new__getOwnVehicleShotDispersionAngle(func, self, turretRotationSpeed, withS
         # fullyAimedDispersion = currentDispersion * math.exp(-aimingTimeRemaining / totalAimingTime)
         g_work.easingFactor = 1 - g_work.easeAiming(min(aimingTimeRemaining / 4.5, 1))
         realDispersion = currentDispersion / max((1.71 * g_work.easingFactor), 1)
-    g_work.easingFactor = min(g_work.easingFactor, currentDispersion)
-    dispersionPercent = int(math.ceil((g_work.easingFactor / currentDispersion) * 100))
+    dispersionPercent = int(math.ceil(max(0.0, min(1.0, result[1] / result[0])) * 100))
     color = g_work.getColor(dispersionPercent)
     data = {
         'color': color,
@@ -281,25 +293,27 @@ def new__getOwnVehicleShotDispersionAngle(func, self, turretRotationSpeed, withS
     return result
 
 
+def _scaleGunMarker(self, gunMarkerInfo, dualAccuracy=False):
+    if gunMarkerInfo is None or self.ctrlModeName not in whitelisted_modes or not config.data['enabled'] or not config.data['reticleScaling']:
+        return gunMarkerInfo
+    factor = 1.71 if dualAccuracy else max(1.71 * g_work.easingFactor, 1.0)
+    return gunMarkerInfo._replace(size=gunMarkerInfo.size / factor,
+                                  dualAccSize=gunMarkerInfo.dualAccSize / factor)
+
+
 @override(AvatarInputHandler, 'updateClientGunMarker')
-def new__updateClientGunMarker(func, self, pos, direction, size, sizeOffset, relaxTime, collData):
-    if (self._AvatarInputHandler__ctrlModeName in whitelisted_modes) and config.data['enabled'] and config.data['reticleScaling']:
-        size = size / max((1.71 * g_work.easingFactor, 1))
-    return func(self, pos, direction, size, sizeOffset, relaxTime, collData)
+def new__updateClientGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
+    return func(self, _scaleGunMarker(self, gunMarkerInfo), supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler, 'updateServerGunMarker')
-def new__updateServerGunMarker(func, self, pos, direction, size, sizeOffset, relaxTime, collData):
-    if (self._AvatarInputHandler__ctrlModeName in whitelisted_modes) and config.data['enabled'] and config.data['reticleScaling']:
-        size = size / max((1.71 * g_work.easingFactor, 1))
-    return func(self, pos, direction, size, sizeOffset, relaxTime, collData)
+def new__updateServerGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
+    return func(self, _scaleGunMarker(self, gunMarkerInfo), supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler, 'updateDualAccGunMarker')
-def new__updateDualAccGunMarker(func, self, pos, direction, size, sizeOffset, relaxTime, collData):
-    if (self._AvatarInputHandler__ctrlModeName in whitelisted_modes) and config.data['enabled'] and config.data['reticleScaling']:
-        size = size / 1.71
-    return func(self, pos, direction, size, sizeOffset, relaxTime, collData)
+def new__updateDualAccGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
+    return func(self, _scaleGunMarker(self, gunMarkerInfo, True), supportMarkersInfo, relaxTime)
 
 
 @override(VehicleGunRotator, 'setShotPosition')
@@ -313,10 +327,12 @@ def new__setShotPosition(func, self, vehicleID, shotPos, shotVec, dispersionAngl
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new__startGUI(func, self):
     func(self)
+    g_work.easingFactor = 1.0
+    g_work.macro.clear()
     g_flash.startBattle()
 
 
 @override(PlayerAvatar, '_PlayerAvatar__destroyGUI')
 def new__destroyGUI(func, self):
-    func(self)
     g_flash.stopBattle()
+    return func(self)

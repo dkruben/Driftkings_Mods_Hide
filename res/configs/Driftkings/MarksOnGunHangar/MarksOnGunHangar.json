@@ -25,5 +25,8 @@
         "accentColor": "#E2C07A",
         "accentSoftColor": "#3A2B17",
         "warningColor": "#F3B14B"
-    }
+    },
+    "goalSelection": 0,
+    "compactMode": false,
+    "historyBattles": 10
 }

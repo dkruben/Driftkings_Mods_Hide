@@ -1,0 +1,19 @@
+{
+    "UI_description": "AccountManager",
+    "UI_version": 106,
+    "UI_setting_delete": "Видалити",
+    "UI_setting_cancel": "Скасувати",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Введіть</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Редагувати</font>",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Видалити</font>",
+    "UI_setting_accountManager": "Менеджер по роботі з клієнтами",
+    "UI_setting_add": "додати",
+    "UI_setting_autoEnter": "Автоматичний вхід",
+    "UI_setting_acceptDeleteAccount": "Прийняти видалення облікового запису",
+    "UI_setting_accountDelete": "Видалити акаунт",
+    "UI_setting_save": "зберегти",
+    "UI_setting_server": "сервер:",
+    "UI_setting_showPassword": "Показати пароль",
+    "UI_setting_nick": "Нік:",
+    "UI_setting_manageYourAccount": "Керуйте своїм обліковим записом"
+}

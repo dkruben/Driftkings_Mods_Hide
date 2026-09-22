@@ -1,0 +1,12 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_version": 111,
+    "UI_setting_min_text": "Minimum Uzaklaştırma",
+    "UI_setting_min_tooltip": "Araçtan minimum kamera mesafesi",
+    "UI_setting_max_text": "Maksimum Uzaklaştırma",
+    "UI_setting_max_tooltip": "Araçtan maksimum kamera mesafesi",
+    "UI_setting_scrollSensitivity_text": "Kaydırma Hassasiyeti",
+    "UI_setting_scrollSensitivity_tooltip": "Fare tekerleği yakınlaştırma hassasiyetini ayarlayın",
+    "UI_setting_startDeadDist_text": "Ölü Mesafeyi Başlat",
+    "UI_setting_startDeadDist_tooltip": "Ölüm sonrası modda ilk kamera mesafesi"
+}

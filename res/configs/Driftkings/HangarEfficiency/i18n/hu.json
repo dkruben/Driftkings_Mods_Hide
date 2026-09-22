@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Átl. assziszt",
+    "UI_setting_avgAssist_tooltip": "Jelenítse meg az Ön közreműködésével okozott átlagos károkat",
+    "UI_setting_avgBlocked_text": "Átl. blokkolva",
+    "UI_setting_avgBlocked_tooltip": "Az átlagos páncél blokkolt sebzés megjelenítése",
+    "UI_setting_avgDamage_text": "Átlagos kár",
+    "UI_setting_avgDamage_tooltip": "Az átlagos sebzés megjelenítése",
+    "UI_setting_avgStun_text": "Átl. kábítás",
+    "UI_setting_avgStun_tooltip": "Átlagos sebzés megjelenítése azon célpontokon, amelyek legénységét elkábította (SPG)",
+    "UI_setting_battles_text": "Csaták",
+    "UI_setting_battles_tooltip": "Mutasd a csaták számát",
+    "UI_setting_gunMarks_text": "Fegyvernyomok",
+    "UI_setting_gunMarks_tooltip": "A pisztolynyom százalékos megjelenítése",
+    "UI_setting_winRate_text": "Nyerési arány",
+    "UI_setting_winRate_tooltip": "Nyerési százalék megjelenítése",
+    "UI_version": 115
+}

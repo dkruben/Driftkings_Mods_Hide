@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Włącz naprawę rotacji pistoletu",
+    "UI_setting_gunRotationFix_tooltip": "Naprawiono desynchronizację rotacji broni z serwerem, nawet jeśli używany jest celownik serwera.\nMoże to powodować szarpanie lub zacinanie się animacji.\nNie działa, jeśli ustawienie „Włącz siatkę serwera” jest wyłączone!",
+    "UI_setting_reticleScaling_text": "Włącz skalowanie siatki",
+    "UI_setting_reticleScaling_tooltip": "Skaluje celownik do jego prawdziwego rozmiaru zgodnie z rozkładem strzałów.\nProwadzi to do tego, że siatka celownicza jest mniejsza, ale strzały mogą teraz trafiać w samą jej krawędź.",
+    "UI_setting_format_text": "Sformatuj",
+    "UI_setting_template_tooltip": "Makra: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Typ skalowania siatki",
+    "UI_setting_scalingType_tooltip": "Kontroluje sposób skalowania siatki celowniczej.\nSkalowanie liniowe najlepiej nadaje się do stabilnych połączeń internetowych o małych opóźnieniach.\nInterpolowane skalowanie zapobiega wypadaniu strzałów poza celownik w niestabilnym Internecie,\n dając jednocześnie wrażenie szybszego czasu celowania."
+}

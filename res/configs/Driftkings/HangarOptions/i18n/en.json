@@ -1,6 +1,6 @@
 {
     "UI_description": "HangarOptions",
-    "UI_version": "3.7.5 (%(file_compile_date)s)",
+    "UI_version": 377,
     "UI_setting_autoLogin_text": "Automatic Login",
     "UI_setting_autoLogin_tooltip": "Automatically log into the game",
     "UI_setting_clock_text": "Clock Display",

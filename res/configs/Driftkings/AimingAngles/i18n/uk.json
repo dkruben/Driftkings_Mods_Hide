@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Горизонтальний тип маркера",
+    "UI_setting_horizontal_tooltip": "Тип маркерів ліворуч і праворуч від перехрестя прицілу, що показує горизонтальне положення країв вашої рушниці.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Вимкнено",
+    "UI_setting_horizontal_1": "Кути",
+    "UI_setting_horizontal_2": "Квадратні дужки",
+    "UI_setting_horizontal_3": "Великий півколо",
+    "UI_setting_horizontal_4": "Півколо",
+    "UI_setting_horizontal_5": "Восьмикутник",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Вертикальний тип маркера",
+    "UI_setting_vertical_tooltip": "Тип маркерів над і під перехрестям прицілу, що вказує на вертикальне положення країв вашої рушниці.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Вимкнено",
+    "UI_setting_vertical_1": "Вертикальна риска",
+    "UI_setting_vertical_2": "Крапка",
+    "UI_setting_vertical_3": "Трикутник",
+    "UI_setting_vertical_4": "діод",
+    "UI_setting_vertical_5": "Восьмикутник",
+    "UI_setting_vertical_6": "ktulho"
+}

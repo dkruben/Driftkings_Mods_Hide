@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Habilitar corrección de rotación de pistola",
+    "UI_setting_gunRotationFix_tooltip": "Se corrige la rotación del arma que se desincroniza del servidor incluso si se usa la retícula del servidor.\nEsto puede provocar que las animaciones se vuelvan entrecortadas o entrecortadas.\n¡No funciona si la configuración \"Habilitar retícula del servidor\" está desactivada!",
+    "UI_setting_reticleScaling_text": "Habilitar escala de retícula",
+    "UI_setting_reticleScaling_tooltip": "Reduce la retícula a su tamaño real según la distribución del disparo.\nEsto hace que la retícula sea más pequeña, pero ahora es posible que los disparos alcancen su borde.",
+    "UI_setting_format_text": "Formato",
+    "UI_setting_template_tooltip": "Macros: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Tipo de escala de retícula",
+    "UI_setting_scalingType_tooltip": "Controla cómo se escala la retícula.\nEl escalado lineal es más adecuado para conexiones a Internet estables de baja latencia.\nLa escala interpolada evita que los disparos salgan de la retícula en Internet inestable,\n al mismo tiempo que da la impresión de un tiempo de puntería más rápido."
+}

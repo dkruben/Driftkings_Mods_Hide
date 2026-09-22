@@ -1,0 +1,12 @@
+{
+    "UI_description": "TotalLog",
+    "UI_version": 100,
+    "UI_setting_separate_text": "Отдельный",
+    "UI_setting_separate_tooltip": "",
+    "UI_setting_inCenter_text": "В центре",
+    "UI_setting_inCenter_tooltip": "Отображение журнала в центре экрана",
+    "UI_setting_x_text": "Позиция X",
+    "UI_setting_x_tooltip": "Горизонтальное положение",
+    "UI_setting_y_text": "Позиция Y",
+    "UI_setting_y_tooltip": "Вертикальное положение"
+}

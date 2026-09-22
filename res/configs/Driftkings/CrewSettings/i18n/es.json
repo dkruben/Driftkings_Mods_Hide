@@ -1,0 +1,16 @@
+{
+    "UI_description": "Configuración de la tripulación",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Regreso automático de la tripulación",
+    "UI_setting_crewAutoReturn_tooltip": "Devolver automáticamente a la tripulación a su vehículo",
+    "UI_setting_crewReturnByDefault_text": "Regreso de la tripulación por defecto",
+    "UI_setting_crewReturnByDefault_tooltip": "Equipo de regreso por defecto al cambiar de vehículo",
+    "UI_setting_autoReturnDelay_text": "Retardo de retorno automático (segundos)",
+    "UI_setting_autoReturnDelay_tooltip": "Retraso antes del regreso automático de la tripulación",
+    "UI_setting_showNotifications_text": "Mostrar notificaciones",
+    "UI_setting_showNotifications_tooltip": "Mostrar notificaciones del sistema cuando la tripulación regresa",
+    "UI_setting_excludePremiumVehicles_text": "Excluir vehículos premium",
+    "UI_setting_excludePremiumVehicles_tooltip": "No devuelva automáticamente el equipo para vehículos premium",
+    "UI_message_crewReturned": "La tripulación ha sido devuelta al vehículo.",
+    "UI_message_crewNotAvailable": "La tripulación no está disponible para regresar."
+}

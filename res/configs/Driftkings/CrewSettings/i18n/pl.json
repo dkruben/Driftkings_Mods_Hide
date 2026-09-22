@@ -1,0 +1,16 @@
+{
+    "UI_description": "Ustawienia załogi",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Automatyczny powrót załogi",
+    "UI_setting_crewAutoReturn_tooltip": "Automatycznie wróć załogę do pojazdu",
+    "UI_setting_crewReturnByDefault_text": "Domyślny powrót załogi",
+    "UI_setting_crewReturnByDefault_tooltip": "Domyślnie przywróć załogę przy zmianie pojazdu",
+    "UI_setting_autoReturnDelay_text": "Opóźnienie automatycznego powrotu (sekundy)",
+    "UI_setting_autoReturnDelay_tooltip": "Opóźnienie przed automatycznym powrotem załogi",
+    "UI_setting_showNotifications_text": "Pokaż powiadomienia",
+    "UI_setting_showNotifications_tooltip": "Pokaż powiadomienia systemowe po powrocie załogi",
+    "UI_setting_excludePremiumVehicles_text": "Wyklucz pojazdy premium",
+    "UI_setting_excludePremiumVehicles_tooltip": "Nie zwracaj automatycznie załogi w przypadku pojazdów premium",
+    "UI_message_crewReturned": "Załoga wróciła do pojazdu",
+    "UI_message_crewNotAvailable": "Załoga nie jest dostępna do zwrotu"
+}

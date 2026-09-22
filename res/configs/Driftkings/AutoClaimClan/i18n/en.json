@@ -1,6 +1,6 @@
 {
     "UI_description": "AutoClaimClan",
-    "UI_version": "1.1.1 (%(file_compile_date)s)",
+    "UI_version": 112,
     "UI_setting_enabled_text": "Enabled",
     "UI_setting_enabled_tooltip": "Enable/disable the mod."
 }

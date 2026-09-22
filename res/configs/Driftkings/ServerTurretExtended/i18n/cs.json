@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Zobrazit aktivační zprávu",
+    "UI_setting_activateMessage_tooltip": "Zobrazit aktivační zprávu v bitvě",
+    "UI_setting_fixAccuracyInMove_text": "Opravit přesnost",
+    "UI_setting_fixAccuracyInMove_tooltip": "Když se tank pohnete a poté zastavíte, použijete fixní přesnost, abyste neztratili míření",
+    "UI_setting_serverTurret_text": "Serverová věž",
+    "UI_setting_serverTurret_tooltip": "Přesunout věž na server Souřadnice cíle (je třeba povolit Server Sight v nastavení hry)",
+    "UI_battle_activateMessage": "'Server Turret Extended': Aktivováno",
+    "UI_setting_fixWheelCruiseControl_text": "Opravte tempomat na kolech",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Když aktivujete režim kola s tempomatem, vozidlo stojí, toto nastavení to deaktivuje",
+    "UI_setting_maxWheelMode_text": "Kola: Udržujte maximální rychlost",
+    "UI_setting_maxWheelMode_tooltip": "Při dosažení maximální rychlosti nedeaktivuje režim rychlosti při manévrování",
+    "UI_setting_buttonMaxMode_text": "Tlačítko: Kola udržují maximální rychlost",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Kola: Režim automatické rychlosti",
+    "UI_setting_autoActivateWheelMode_tooltip": "Automaticky zapne režim rychlosti nebo manévrování",
+    "UI_setting_buttonAutoMode_text": "Tlačítko: Kolečka v režimu automatické rychlosti",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "ON",
+    "UI_battle_OFF": "VYPNUTO"
+}

@@ -1,0 +1,12 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_version": 111,
+    "UI_setting_min_text": "Min. Verkleinern",
+    "UI_setting_min_tooltip": "Mindestabstand der Kamera zum Fahrzeug",
+    "UI_setting_max_text": "Maximales Verkleinern",
+    "UI_setting_max_tooltip": "Maximaler Kameraabstand vom Fahrzeug",
+    "UI_setting_scrollSensitivity_text": "Scroll-Empfindlichkeit",
+    "UI_setting_scrollSensitivity_tooltip": "Passen Sie die Zoomempfindlichkeit des Mausrads an",
+    "UI_setting_startDeadDist_text": "Starten Sie Dead Distance",
+    "UI_setting_startDeadDist_tooltip": "Anfänglicher Kameraabstand im Post-Mortem-Modus"
+}

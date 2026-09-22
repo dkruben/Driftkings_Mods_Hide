@@ -1,6 +1,6 @@
 {
     "UI_description": "AccountManager",
-    "UI_version": "1.0.5 (%(file_compile_date)s)",
+    "UI_version": 106,
     "UI_setting_delete": "Delete",
     "UI_setting_cancel": "Cancel",
     "UI_setting_enter": "<font color='#FFFF33' size='18'>Enter</font>",

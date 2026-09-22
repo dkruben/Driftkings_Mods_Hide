@@ -1,0 +1,12 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_version": 111,
+    "UI_setting_min_text": "Minimalne pomniejszenie",
+    "UI_setting_min_tooltip": "Minimalna odległość kamery od pojazdu",
+    "UI_setting_max_text": "Maksymalne pomniejszenie",
+    "UI_setting_max_tooltip": "Maksymalna odległość kamery od pojazdu",
+    "UI_setting_scrollSensitivity_text": "Przewiń czułość",
+    "UI_setting_scrollSensitivity_tooltip": "Dostosuj czułość powiększenia kółka myszy",
+    "UI_setting_startDeadDist_text": "Rozpocznij martwy dystans",
+    "UI_setting_startDeadDist_tooltip": "Początkowa odległość kamery w trybie pośmiertnym"
+}

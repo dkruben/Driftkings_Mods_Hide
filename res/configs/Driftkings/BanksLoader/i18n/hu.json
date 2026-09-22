@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Banks Loader a Driftkingstől: Indítsa újra",
+    "UI_restart_reason_new": "Új audio modokat telepített, ezért a játék konfigurációja megváltozott.",
+    "UI_restart_reason_update": "A rendszer játékkliens frissítést észlelt, ezért a játék konfigurációs módosításait újra alkalmaztuk.",
+    "UI_restart_text": "{reason}{reasons}\nA módosítások elfogadásához a játékkliens újraindítása szükséges.\nA hangmodellek megfelelő viselkedése <b>NEM GARANTÁLT</b> a következő játékindításig.\nEz lesz <b>nem</b> később szükséges.\nMost újra akarod indítani a játékot?",
+    "UI_restart_button_restart": "Indítsa újra",
+    "UI_restart_button_shutdown": "Leállítás",
+    "UI_restart_button_close": "Folytatás",
+    "UI_restart_reason": " Pontos változások:\n{}.",
+    "UI_restart_create": " • szakaszok <b>létre</b> bankok számára: ",
+    "UI_restart_delete": " • szakaszok <b>törölve</b> bankok számára: ",
+    "UI_restart_move": " • szakaszok <b>megmozdult</b> bankok számára: ",
+    "UI_restart_section": " • szakaszok <b>eltolódott</b> bankok számára: ",
+    "UI_restart_memory": " • értékek <b>megváltozott</b> memória beállításokhoz: ",
+    "UI_restart_remap": " • szakaszok <b>megváltozott</b> beállításokhoz: ",
+    "UI_restart_wotmod": " • konfigurációk <b>eltávolították</b> csomagokból: "
+}

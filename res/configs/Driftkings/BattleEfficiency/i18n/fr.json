@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Verrouillage du texte",
+    "UI_setting_textLock_tooltip": "Faites glisser le texte au combat",
+    "UI_setting_format_text": "Format texte, macros disponibles :",
+    "UI_setting_format_tooltip": "Macros disponibles :\n WN8 : »{wn8}', Couleur :'{c:wn8}'\nXWN8 : »{xwn8}', Couleur :'{c:x}'\nEFF : »{eff}', Couleur :'{c:eff}'\nXEFF : »{xeff}', Couleur :'{c:x}'\nDIFF:'{diff}', Couleur :'{c:diff}'\nDMG : »{dmg}', Couleur :'{c:dmg}'\nXTE : »{xte}', Couleur :'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Fenêtre des résultats de bataille",
+    "UI_setting_battleResultsWindow_tooltip": "Activez la fenêtre des résultats de la bataille.",
+    "UI_setting_battleResultsFormat_text": "Modification de la fenêtre des résultats de bataille",
+    "UI_setting_battleResultsFormat_tooltip": "Macros disponibles :\nWN8 : »{wn8}', Couleur : '{c:wn8}'\nXWN8 : »{xwn8}', Couleur : '{c:x}'\nEFF : »{eff}', Couleur : '{c:eff}'\nXEFF : »{xeff}', Couleur : '{c:x}'\nDIFF:'{diff}', Couleur : '{c:diff}'\nDMG : »{dmg}', Couleur : '{c:dmg}'\nXTE : »{xte}', Couleur : '{c:x}'\n{mapName} - Nom de la carte\n{battleType} - Type de bataille",
+    "UI_setting_colorRatting_text": "Choisissez l'évaluation des couleurs",
+    "UI_setting_colorRatting_tooltip": "Sélectionnez la palette de couleurs pour les notes",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

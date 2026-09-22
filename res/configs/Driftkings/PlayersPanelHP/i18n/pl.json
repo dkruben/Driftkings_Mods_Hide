@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Wybierz swoją opcję",
+    "UI_setting_mode_tooltip": " • <b>Zawsze</b> - Znaczniki HP będą zawsze wyświetlane.\n • <b>Przełącz</b> - Znaczniki HP będą włączane/wyłączane po naciśnięciu klawisza przełączającego.\n • <b>Trzymanie</b> - Wyświetlane będą tylko znaczniki HP <b>podczas gdy</b> naciśnięty zostanie klawisz przełączania.",
+    "UI_setting_mode_always": "Zawsze",
+    "UI_setting_mode_toggle": "Przełącz",
+    "UI_setting_mode_holding": "Trzymanie",
+    "UI_setting_toggleKey_text": "Przełącz klawisz skrótu",
+    "UI_setting_toggleKey_tooltip": "Naciśnięcie tego przycisku podczas bitwy przełącza wyświetlanie znaczników HP."
+}

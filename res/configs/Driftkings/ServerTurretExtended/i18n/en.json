@@ -1,6 +1,6 @@
 {
     "UI_description": "ServerTurretExtended",
-    "UI_version": "1.7.6 (%(file_compile_date)s)",
+    "UI_version": 176,
     "UI_setting_activateMessage_text": "Show Activation Message",
     "UI_setting_activateMessage_tooltip": "Show Activation Message in battle",
     "UI_setting_fixAccuracyInMove_text": "Fix Accuracy",

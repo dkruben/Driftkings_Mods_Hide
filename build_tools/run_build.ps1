@@ -1,6 +1,7 @@
 param(
     [ValidateSet("debug", "release")]
-    [string]$Mode = "debug"
+    [string]$Mode = "debug",
+    [switch]$NoSync
 )
 
 $ErrorActionPreference = "Stop"
@@ -69,14 +70,21 @@ if (-not $pythonExe) {
 
 function Invoke-Python27 {
     param([string[]]$PythonArgs)
-    $null = & $pythonExe @pythonPrefix @PythonArgs
+    & $pythonExe @pythonPrefix @PythonArgs | Out-Host
     return [int]$LASTEXITCODE
 }
 
 function Prepare-Wotmods {
-    Write-Host "[1/4] Compiling Python sources..."
+    & py -3 build_tools/sync_configs_from_mods.py --check | Out-Host
+    if ($LASTEXITCODE -ne 0) { return [int]$LASTEXITCODE }
+    & py -3 build_tools/localize_configs.py --check | Out-Host
+    if ($LASTEXITCODE -ne 0) { return [int]$LASTEXITCODE }
+    Write-Host "[1/5] Compiling ActionScript against EU SWCs..."
+    $code = Invoke-Python27 -PythonArgs @("build_tools/build_flash.py", "--publish")
+    if ($code -ne 0) { return $code }
+    Write-Host "[2/5] Compiling Python sources..."
     $compileArgs = @(
-        "build_tools/compiler.py"
+        "build_tools/compiler.py", "-f"
     )
     if ($protectWithPjOrion) {
         $compileArgs += @("-p", $env:DK_PJORION)
@@ -85,7 +93,7 @@ function Prepare-Wotmods {
     $code = Invoke-Python27 -PythonArgs $compileArgs
     if ($code -ne 0) { return $code }
 
-    Write-Host "[2/4] Packing wotmods..."
+    Write-Host "[3/5] Packing wotmods..."
     $code = Invoke-Python27 -PythonArgs @("build_tools/packer.py", "-q", "-v", "build_data/build_config.json", "build_data/wotmods/", "build/wotmods/")
     return $code
 }
@@ -101,8 +109,8 @@ if ($code -ne 0) {
 }
 
 if ($Mode -eq "debug") {
-    Write-Host "[3/4] Optional debug sync..."
-    if (Test-Path $env:DK_BCOMPARE_DEBUG) {
+    Write-Host "[4/5] Optional debug sync..."
+    if (-not $NoSync -and (Test-Path $env:DK_BCOMPARE_DEBUG)) {
         if ($debugTargets.Count -gt 0) {
             foreach ($target in $debugTargets) {
                 & $env:DK_BCOMPARE_DEBUG "build\wotmods\" "$target\mods\$gameVersion\" "/solo"
@@ -111,10 +119,10 @@ if ($Mode -eq "debug") {
             Write-Host "No debug targets configured. Skipping debug sync."
         }
     } else {
-        Write-Host "Beyond Compare for debug not found. Skipping debug sync."
+        Write-Host "Debug sync disabled or Beyond Compare unavailable."
     }
 
-    Write-Host "[4/4] Optional Sixth Sense audio package..."
+    Write-Host "[5/5] Optional Sixth Sense audio package..."
     $bankPath = "res\sound_bank_wwise\SixthSense\GeneratedSoundBanks\Windows\driftkings_sixthsense.bnk"
     if (Test-Path $bankPath) {
         if (Test-Path $env:DK_7ZIP) {
@@ -126,24 +134,24 @@ if ($Mode -eq "debug") {
         Write-Host "Generated Sixth Sense bank not found. Skipping audio package step."
     }
 } else {
-    Write-Host "[3/4] Packing release archives..."
+    Write-Host "[4/5] Packing release archives..."
     $code = Invoke-Python27 -PythonArgs @("build_tools/packer.py", "-q", "-v", "build_data/build_config.json", "build_data/archives/", "build/archives/")
     if ($code -ne 0) {
         Write-Host "Build failed."
         exit 1
     }
 
-    Write-Host "[4/4] Optional release comparison..."
-    if (Test-Path $env:DK_BCOMPARE_RELEASE) {
+    Write-Host "[5/5] Optional release comparison..."
+    if (-not $NoSync -and (Test-Path $env:DK_BCOMPARE_RELEASE)) {
         if ($releaseTargets.Count -gt 0) {
             foreach ($target in $releaseTargets) {
-                Start-Process -FilePath $env:DK_BCOMPARE_RELEASE -ArgumentList @("build\archives\", $target) | Out-Null
+                Start-Process -FilePath $env:DK_BCOMPARE_RELEASE -ArgumentList @("build\archives\", $target) -WindowStyle Hidden | Out-Null
             }
         } else {
             Write-Host "No release targets configured. Skipping release comparison."
         }
     } else {
-        Write-Host "Beyond Compare for release not found. Skipping release comparison."
+        Write-Host "Release comparison disabled or Beyond Compare unavailable."
     }
 }
 

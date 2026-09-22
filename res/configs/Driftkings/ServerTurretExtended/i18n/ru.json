@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Показать сообщение активации",
+    "UI_setting_activateMessage_tooltip": "Показывать сообщение активации в бою",
+    "UI_setting_fixAccuracyInMove_text": "Исправить точность",
+    "UI_setting_fixAccuracyInMove_tooltip": "Когда танк движется, а затем останавливается, используется исправление точности, чтобы не потерять прицеливание.",
+    "UI_setting_serverTurret_text": "Серверная турель",
+    "UI_setting_serverTurret_tooltip": "Переместить турель в координаты прицела сервера (необходимо включить Server Sight в настройках игры)",
+    "UI_battle_activateMessage": "«Расширенная серверная турель»: активировано.",
+    "UI_setting_fixWheelCruiseControl_text": "Исправить круиз-контроль на колесах",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Когда вы активируете режим «Колесо» с помощью круиз-контроля, автомобиль останавливается, эта настройка отключает эту функцию.",
+    "UI_setting_maxWheelMode_text": "Колеса: сохраняйте максимальную скорость",
+    "UI_setting_maxWheelMode_tooltip": "При достижении максимальной скорости не отключает скоростной режим при маневрировании",
+    "UI_setting_buttonMaxMode_text": "Кнопка: Колеса сохраняют максимальную скорость.",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Колеса: автоматический режим скорости.",
+    "UI_setting_autoActivateWheelMode_tooltip": "Автоматически включает режим скорости или маневрирования",
+    "UI_setting_buttonAutoMode_text": "Кнопка: режим автоматической скорости колес.",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "ВКЛ.",
+    "UI_battle_OFF": "ВЫКЛ."
+}

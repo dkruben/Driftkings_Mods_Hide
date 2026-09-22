@@ -1,0 +1,12 @@
+{
+    "UI_description": "ArcadeZoom",
+    "UI_version": 111,
+    "UI_setting_min_text": "Minimális kicsinyítés",
+    "UI_setting_min_tooltip": "A kamera minimális távolsága a járműtől",
+    "UI_setting_max_text": "Max Kicsinyítés",
+    "UI_setting_max_tooltip": "A kamera maximális távolsága a járműtől",
+    "UI_setting_scrollSensitivity_text": "Görgetési érzékenység",
+    "UI_setting_scrollSensitivity_tooltip": "Állítsa be az egérgörgő zoom érzékenységét",
+    "UI_setting_startDeadDist_text": "Indítsa el a Holt távolságot",
+    "UI_setting_startDeadDist_tooltip": "A kamera kezdeti távolsága post mortem módban"
+}

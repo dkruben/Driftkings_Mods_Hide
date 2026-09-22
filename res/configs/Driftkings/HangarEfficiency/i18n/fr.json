@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Assistance moyenne",
+    "UI_setting_avgAssist_tooltip": "Afficher les dégâts moyens causés avec votre aide",
+    "UI_setting_avgBlocked_text": "Moy. bloquée",
+    "UI_setting_avgBlocked_tooltip": "Afficher les dégâts bloqués par l'armure moyenne",
+    "UI_setting_avgDamage_text": "Dégâts moyens",
+    "UI_setting_avgDamage_tooltip": "Afficher les dégâts moyens infligés",
+    "UI_setting_avgStun_text": "Étourdissement moyen",
+    "UI_setting_avgStun_tooltip": "Afficher les dégâts moyens aux cibles dont vous avez étourdi les équipages (SPG)",
+    "UI_setting_battles_text": "Batailles",
+    "UI_setting_battles_tooltip": "Afficher le nombre de batailles",
+    "UI_setting_gunMarks_text": "Marques d'armes à feu",
+    "UI_setting_gunMarks_tooltip": "Afficher le pourcentage de marques d'armes à feu",
+    "UI_setting_winRate_text": "Taux de victoire",
+    "UI_setting_winRate_tooltip": "Afficher le pourcentage de victoire",
+    "UI_version": 115
+}

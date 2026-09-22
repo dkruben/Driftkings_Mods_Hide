@@ -36,7 +36,7 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.1 (%(file_compile_date)s)'
+        self.version = '1.1.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU_'
         self.data = {
             'enabled': True,
@@ -92,11 +92,13 @@ class AutoClaimClanReward(DriftkingsConfigInterface):
     @adisp_process
     def __claimRewards(self):
         self.__claim_started = True
-        response = yield self.__webController.sendRequest(ctx=ClaimRewardsCtx())
-        if not response.isSuccess():
-            SystemMessages.pushMessage('Battle Observer: Auto Claim Clan Reward - ' + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error)
-            logWarning(self.ID, 'Failed to claim rewards. Code: {}', response.getCode())
-        self.__claim_started = False
+        try:
+            response = yield self.__webController.sendRequest(ctx=ClaimRewardsCtx())
+            if not response.isSuccess():
+                SystemMessages.pushMessage('Battle Observer: Auto Claim Clan Reward - ' + backport.text(R.strings.clan_supply.messages.claimRewards.error()), type=SystemMessages.SM_TYPE.Error)
+                logWarning(self.ID, 'Failed to claim rewards. Code: {}', response.getCode())
+        finally:
+            self.__claim_started = False
 
     @adisp_process
     def __claimProgression(self, stageID, price):

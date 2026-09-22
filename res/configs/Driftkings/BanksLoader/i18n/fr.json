@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Banks Loader par Driftkings : Redémarrer",
+    "UI_restart_reason_new": "Vous avez installé de nouveaux mods audio, la configuration du jeu a donc été modifiée.",
+    "UI_restart_reason_update": "La mise à jour du client de jeu a été détectée, les modifications de configuration du jeu ont donc été réappliquées.",
+    "UI_restart_text": "{reason}{reasons}\nLe redémarrage du client du jeu est nécessaire pour accepter les modifications.\nComportement correct des mods sonores <b>NON GARANTI</b> jusqu'au prochain lancement du jeu.\nCela va <b>pas</b> être requis plus tard.\nVoulez-vous redémarrer le jeu maintenant ?",
+    "UI_restart_button_restart": "Redémarrer",
+    "UI_restart_button_shutdown": "Arrêt",
+    "UI_restart_button_close": "Continuer",
+    "UI_restart_reason": " Modifications exactes :\n{}.",
+    "UI_restart_create": " • rubriques <b>créé</b> pour les banques : ",
+    "UI_restart_delete": " • rubriques <b>supprimé</b> pour les banques : ",
+    "UI_restart_move": " • rubriques <b>déplacé</b> pour les banques : ",
+    "UI_restart_section": " • rubriques <b>décalé</b> pour les banques : ",
+    "UI_restart_memory": " • valeurs <b>changé</b> pour les paramètres de mémoire : ",
+    "UI_restart_remap": " • rubriques <b>changé</b> pour les paramètres : ",
+    "UI_restart_wotmod": " • configurations <b>supprimé</b> à partir des forfaits : "
+}

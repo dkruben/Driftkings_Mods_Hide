@@ -1,0 +1,12 @@
+{
+    "UI_description": "FlightTimer",
+    "UI_version": 106,
+    "UI_setting_template_text": "Modèle",
+    "UI_setting_template_tooltip": "Macro'%(flightTime).1fs', %(distance)dm",
+    "UI_setting_spgOnly_text": "Juste pour le SPG ?",
+    "UI_setting_spgOnly_tooltip": "Si cette case est cochée, la minuterie ne sera visible que pour SPG.",
+    "UI_setting_x_text": "Poste X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Poste Y",
+    "UI_setting_y_tooltip": ""
+}

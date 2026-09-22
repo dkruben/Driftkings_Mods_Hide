@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Typ znacznika poziomego",
+    "UI_setting_horizontal_tooltip": "Rodzaj znaczników po lewej i prawej stronie celownika, pokazujących poziome położenie krawędzi broni.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Niepełnosprawny",
+    "UI_setting_horizontal_1": "Narożniki",
+    "UI_setting_horizontal_2": "Nawiasy kwadratowe",
+    "UI_setting_horizontal_3": "Duże półkole",
+    "UI_setting_horizontal_4": "Półkole",
+    "UI_setting_horizontal_5": "Ośmiokąt",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Typ znacznika pionowego",
+    "UI_setting_vertical_tooltip": "Rodzaj znaczników nad i pod celownikiem, pokazujących pionowe położenie krawędzi broni.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Niepełnosprawny",
+    "UI_setting_vertical_1": "Pionowa kreska",
+    "UI_setting_vertical_2": "Kropka",
+    "UI_setting_vertical_3": "Trójkąt",
+    "UI_setting_vertical_4": "Dioda",
+    "UI_setting_vertical_5": "Ośmiokąt",
+    "UI_setting_vertical_6": "ktulho"
+}

@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Fordított napló engedélyezése.",
+    "UI_setting_logSwapper_tooltip": "Megfordítja a sebzésnapló helyzetét a harci felületen.",
+    "UI_setting_wgLogHideCritics_text": "WG Log Kritikusok elrejtése",
+    "UI_setting_wgLogHideCritics_tooltip": "Elrejti a kritikus találatokat a szabványos WG csatanaplóban.",
+    "UI_setting_wgLogHideBlock_text": "WG Log Hide Block",
+    "UI_setting_wgLogHideBlock_tooltip": "Elrejti a blokkolt sebzésüzeneteket a szabványos WG csatanaplóban.",
+    "UI_setting_wgLogHideAssist_text": "WG Log Hide Assist",
+    "UI_setting_wgLogHideAssist_tooltip": "Elrejti a sebzést segítő üzeneteket a szabványos WG csatanaplóban."
+}

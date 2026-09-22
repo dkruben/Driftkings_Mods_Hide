@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Disattiva il binocolo.",
+    "UI_setting_noBinoculars_tooltip": "Rimuovi il blackout in modalità cecchino.",
+    "UI_setting_noFlashBang_text": "Disattiva il flash rosso.",
+    "UI_setting_noFlashBang_tooltip": "Rimuovi il lampo rosso quando subisci danni.",
+    "UI_setting_noShockWave_text": "Onda d'urto",
+    "UI_setting_noShockWave_tooltip": "Rimuovi il tremolio della fotocamera quando viene colpito dal carro armato.",
+    "UI_setting_noSniperDynamic_text": "Dinamica da cecchino",
+    "UI_setting_noSniperDynamic_tooltip": "Disabilita la telecamera dinamica in modalità cecchino.",
+    "UI_setting_disableCamAfterShot_text": "Disabilita cam dopo lo scatto",
+    "UI_setting_disableCamAfterShot_tooltip": "Disabilita la modalità cecchino dopo lo sparo.",
+    "UI_setting_disableCamAfterShotLatency_text": "Disabilita la latenza della telecamera dopo lo scatto",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Ritarda lo spegnimento automatico della fotocamera.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Disattiva la clip di salto della videocamera dopo lo scatto",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Non uscire dal sistema di caricamento del caricatore."
+}

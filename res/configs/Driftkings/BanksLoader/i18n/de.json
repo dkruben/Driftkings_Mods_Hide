@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Banks Loader von Driftkings: Neustart",
+    "UI_restart_reason_new": "Du hast neue Audio-Mods installiert, daher wurde die Spielkonfiguration geändert.",
+    "UI_restart_reason_update": "Es wurde ein Spielclient-Update erkannt, daher wurden die Änderungen an der Spielkonfiguration erneut angewendet.",
+    "UI_restart_text": "{reason}{reasons}\nUm die Änderungen zu übernehmen, ist ein Neustart des Spielclients erforderlich.\nDas richtige Verhalten von Sound-Mods <b>NICHT GARANTIERT</b> bis zum nächsten Spielstart.\nDas wird <b>nicht</b> später erforderlich sein.\nMöchten Sie das Spiel jetzt neu starten?",
+    "UI_restart_button_restart": "Neustart",
+    "UI_restart_button_shutdown": "Herunterfahren",
+    "UI_restart_button_close": "Weiter",
+    "UI_restart_reason": " Genaue Änderungen:\n{}.",
+    "UI_restart_create": " • Abschnitte <b>erstellt</b> für Banken: ",
+    "UI_restart_delete": " • Abschnitte <b>gelöscht</b> für Banken: ",
+    "UI_restart_move": " • Abschnitte <b>bewegt</b> für Banken: ",
+    "UI_restart_section": " • Abschnitte <b>verschoben</b> für Banken: ",
+    "UI_restart_memory": " • Werte <b>geändert</b> für Speichereinstellungen: ",
+    "UI_restart_remap": " • Abschnitte <b>geändert</b> für Einstellungen: ",
+    "UI_restart_wotmod": " • Konfigurationen <b>entfernt</b> aus Paketen: "
+}

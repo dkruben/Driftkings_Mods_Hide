@@ -1,6 +1,6 @@
 {
     "UI_description": "LogsSwapper",
-    "UI_version": "1.5.5 (%(file_compile_date)s)",
+    "UI_version": 156,
     "UI_setting_logSwapper_text": "Enable Reverse Log.",
     "UI_setting_logSwapper_tooltip": "Reverses the position of the damage log in the battle interface.",
     "UI_setting_wgLogHideCritics_text": "WG Log Hide Critics",

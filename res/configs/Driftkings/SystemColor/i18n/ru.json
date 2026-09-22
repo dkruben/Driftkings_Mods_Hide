@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Выберите цвет для союзника мертвого:",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Цвет, примененный к танку.",
+    "UI_setting_colorCheckEnemyDead_text": "Выберите цвет для смерти врага:",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Цвет, примененный к танку.",
+    "UI_setting_colorCheckSquadManAlive_text": "Выберите цвет для SquadMan Alive:",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Цвет, примененный к танку.",
+    "UI_setting_colorCheckEnemyAlive_text": "Выберите цвет для живого врага:",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Цвет, примененный к танку.",
+    "UI_setting_colorCheckAllyAlive_text": "Выберите цвет для Ally Alive:",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Цвет, примененный к танку.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Выберите цвет для TeamKiller:",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00ЕАФФ</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Цвет, примененный к танку."
+}

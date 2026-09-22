@@ -19,6 +19,8 @@ from gui.game_control.AwardController import ProgressiveItemsRewardHandler
 from gui.game_control.PromoController import PromoController
 from gui.game_control.achievements_earning_controller import EarningAnimationCommand, RewardScreenCommand
 from gui.impl.lobby.hangar.presenters.user_missions_presenter import UserMissionsPresenter
+from gui.impl.lobby.user_missions.hangar_widget.presenters.battle_pass_presenter import BattlePassPresenter
+from gui.impl.lobby.user_missions.hangar_widget.services import IBattlePassService, IUserMissionWidgetService
 from gui.impl.lobby.page.lobby_header import LobbyHeader
 # from gui.impl.lobby.page.referral_program_presenter import ReferralProgramPresenter
 from gui.impl.lobby.page.session_stats_presenter import SessionStatsPresenter
@@ -43,7 +45,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '3.7.6 (%(file_compile_date)s)'
+        self.version = '3.7.7 (%(file_compile_date)s)'
         self.author = 'orig by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -228,6 +230,10 @@ class ConfigInterface(DriftkingsConfigInterface):
                 Vehicle.NOT_FULL_AMMO_MULTIPLIER = max(0.0, float(self.data.get('lowAmmoPercentage', 20))) / 100.0
             except Exception as err:
                 logError(self.ID, 'onApplySettings', str(err))
+        visible = dependency.instance(IBattlePassService).isVisible()
+        if self.data['enabled'] and not self.data['showBattlePassWidget']:
+            visible = False
+        dependency.instance(IUserMissionWidgetService).setGroupVisibility(BattlePassPresenter.GROUP, visible)
         # if g_flash is not None:
         #    g_flash.onApplySettings()
 
@@ -625,19 +631,19 @@ def new__updateCarouselEventEntryStateS(func, self, isVisible):
     return func(self, isVisible)
 
 
-# Hide Battle Pass Widget
-@override(HangarHeader, '_HangarHeader__getBPWidget')
-def new__getBPWidget(func, self):
+# The current hangar renders Battle Pass through the user missions presenter.
+@override(BattlePassPresenter, 'isVisible')
+def new__battlePassIsVisible(func, self):
     if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
-        return ''
+        return False
     return func(self)
 
 
-@override(HangarHeader, '_HangarHeader__updateBattlePassSmallWidget')
-def new__updateBattlePassSmallWidget(func, self):
-    if config.data.get('enabled', True) and not config.data.get('showBattlePassWidget', True):
-        return
-    return func(self)
+@override(UserMissionsPresenter, '_onGroupVisibilityChanged')
+def new__missionGroupVisibility(func, self, groupName, isVisible):
+    if groupName == BattlePassPresenter.GROUP and config.data['enabled'] and not config.data['showBattlePassWidget']:
+        isVisible = False
+    return func(self, groupName, isVisible)
 
 
 # Handlers
@@ -665,9 +671,9 @@ class Flash(object):
         self.isBattle = False
         self.updateCallback = None
         self.timerEvent = CyclicTimerEvent(1.0, self.updateTimeData)
-        self.startTimer()
         self.setup()
         COMPONENT_EVENT.UPDATED += self.__updatePosition
+        self.startTimer()
 
     def startTimer(self):
         if config.data.get('enabled') and config.data.get('clock'):

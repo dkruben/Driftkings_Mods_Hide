@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Fernglas deaktivieren.",
+    "UI_setting_noBinoculars_tooltip": "Beseitigen Sie den Blackout im Scharfschützenmodus.",
+    "UI_setting_noFlashBang_text": "Deaktivieren Sie den roten Blitz.",
+    "UI_setting_noFlashBang_tooltip": "Entfernen Sie den roten Blitz, wenn Sie Schaden erleiden.",
+    "UI_setting_noShockWave_text": "Schockwelle",
+    "UI_setting_noShockWave_tooltip": "Beseitigen Sie Kamerawackeln, wenn sie von einem Panzer getroffen werden.",
+    "UI_setting_noSniperDynamic_text": "Scharfschützendynamik",
+    "UI_setting_noSniperDynamic_tooltip": "Deaktivieren Sie die dynamische Kamera im Scharfschützenmodus.",
+    "UI_setting_disableCamAfterShot_text": "Deaktivieren Sie die Kamera nach der Aufnahme",
+    "UI_setting_disableCamAfterShot_tooltip": "Deaktivieren Sie den Scharfschützenmodus nach dem Schuss.",
+    "UI_setting_disableCamAfterShotLatency_text": "Deaktivieren Sie die Cam-After-Shot-Latenz",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Verzögern Sie das automatische Herunterfahren der Kamera.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Deaktivieren Sie den Clip „Kamera nach Aufnahme überspringen“.",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Beenden Sie das Magazinladesystem nicht."
+}

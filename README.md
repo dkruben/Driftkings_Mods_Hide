@@ -1,6 +1,6 @@
 # Driftkings Mods for World of Tanks
 
-![WOT Version](https://img.shields.io/badge/WOT-2.2.0.1-red.svg)
+![WOT Version](https://img.shields.io/badge/WOT-2.4.0.1-red.svg)
 [![Python 2.7.18](https://img.shields.io/badge/Python-2.7.18-blue.svg)](https://www.python.org/downloads/release/python-2718/)
 [![PyCharm 2024.3](https://img.shields.io/badge/PyCharm-2024.3-green.svg)](https://www.jetbrains.com/pycharm/)
 [![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-](https://code.visualstudio.com/)
@@ -16,7 +16,7 @@ A collection of Driftkings mods for World of Tanks, covering battle UI, hangar i
 
 ## Overview
 - **Project period:** 2020 - 2026
-- **Supported WOT version:** 2.2.0.1
+- **Supported WOT version:** 2.4.0.1
 - **Support:** driftkingsmods@gmail.com
 - **Patreon:** [patreon.com/driftkings_mods](https://www.patreon.com/driftkings_mods/)
 
@@ -27,6 +27,16 @@ This repository contains the source, assets, configs, and build data used to mai
 2. Enter the `zip` folder.
 3. Download the desired mod archive.
 4. Extract the archive into your `World_of_Tanks` directory.
+
+## Build and configurations
+
+Run `build_tools/run_build.ps1 -Mode release -NoSync` to build without copying packages to a game installation. Python 2.7 compiles client modules; Python 3 checks configuration defaults and translations. Compiled SWFs are published to `res/flash`; temporary compiler output stays in `build/flash`.
+
+Configuration sources live in `res/configs/Driftkings/<mod>/`, with translations in `i18n/<locale>.json`. Release ZIPs include the complete configuration directories under `mods/configs/Driftkings`. Existing repository settings are retained when missing defaults are added using `python build_tools/sync_configs_from_mods.py`; extracting a ZIP can replace installed configuration files.
+
+The EU client currently declares these languages in `game_info.xml`: `cs`, `de`, `en`, `es`, `fr`, `hu`, `it`, `pl`, `ru`, `tr`, `uk`. The list is recorded in `build_data/locales.json`. All 43 catalog groups include these 11 languages. Translations are machine-generated and need native-speaker terminology review. `python build_tools/localize_configs.py --check` validates catalogs offline; `--translate` explicitly regenerates them online and sends only UI text fragments to the translation service.
+
+Use `python build_tools/sync_configs_from_mods.py --check` and `python build_tools/audit_project.py --check all` before publishing. The package audit also compares shipped JSON files and SWFs with their repository sources. Runtime behavior still requires testing inside the EU client.
 
 ## Active Mods
 - **AccountManager** - Quick account switching for login management.
@@ -51,7 +61,8 @@ This repository contains the source, assets, configs, and build data used to mai
 - **LogsSwapper** - Reorders the damage log for XVM-style layouts.
 - **MainGun** - Displays Main Gun progress in battle.
 - **MarksOnGunBattle** - Shows Marks of Excellence progress in battle.
-- **MarksOnGunHangar** - Shows Marks of Excellence progress in the hangar.
+- **MarksOnGunHangar** - Gameface hangar card with MoE objectives, observed progress, mastery icons, WN8 and win rate. Its calculations are included in the main Python module; no separate progress module or SWF is packaged.
+- **MarksOnGunTechTree** - Shows MoE percentages and mastery badges in the EU Gameface tech tree.
 - **MinimapPlugins** - Adds names, destroyed vehicles, and extra minimap tools.
 - **OwnHealth** - Displays the player's HP.
 - **PlayersPanelHP** - Shows HP values in the players panel.

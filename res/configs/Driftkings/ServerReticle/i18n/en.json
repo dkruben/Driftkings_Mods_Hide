@@ -1,6 +1,6 @@
 {
     "UI_description": "ServerReticle",
-    "UI_version": "1.0.0 (%(file_compile_date)s)",
+    "UI_version": 101,
     "UI_setting_gunRotationFix_text": "Enable gun rotation fix",
     "UI_setting_gunRotationFix_tooltip": "Fixes gun rotation being desynced from the server even if using server reticle.\nThis may cause animations to become jerky or stuttery.\nDoesn't work if the \"Enable Server Reticle\" setting is off!",
     "UI_setting_reticleScaling_text": "Enable reticle scaling",

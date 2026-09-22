@@ -1,0 +1,19 @@
+{
+    "UI_description": "AccountManager",
+    "UI_version": 106,
+    "UI_setting_delete": "Удалить",
+    "UI_setting_cancel": "Отмена",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Войти</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Редактировать</font>",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Удалить</font>",
+    "UI_setting_accountManager": "Менеджер по работе с клиентами",
+    "UI_setting_add": "Добавить",
+    "UI_setting_autoEnter": "Автоматический ввод",
+    "UI_setting_acceptDeleteAccount": "Принять удаление аккаунта",
+    "UI_setting_accountDelete": "Удалить аккаунт",
+    "UI_setting_save": "Сохранить",
+    "UI_setting_server": "Сервер:",
+    "UI_setting_showPassword": "Показать пароль",
+    "UI_setting_nick": "Ник:",
+    "UI_setting_manageYourAccount": "Управляйте своей учетной записью"
+}

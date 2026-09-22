@@ -1,0 +1,19 @@
+{
+    "UI_description": "AccountManager",
+    "UI_version": 106,
+    "UI_setting_delete": "Sil",
+    "UI_setting_cancel": "İptal",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Girin</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Düzenle</font>",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Sil</font>",
+    "UI_setting_accountManager": "Hesap yöneticisi",
+    "UI_setting_add": "Ekle",
+    "UI_setting_autoEnter": "Otomatik Giriş",
+    "UI_setting_acceptDeleteAccount": "Hesabı silmeyi kabul et",
+    "UI_setting_accountDelete": "Hesabı Sil",
+    "UI_setting_save": "Kaydet",
+    "UI_setting_server": "Sunucu:",
+    "UI_setting_showPassword": "Şifreyi göster",
+    "UI_setting_nick": "Nick:",
+    "UI_setting_manageYourAccount": "Hesabınızı Yönetin"
+}

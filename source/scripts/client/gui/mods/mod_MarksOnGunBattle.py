@@ -24,6 +24,7 @@ from helpers import getFullClientVersion
 from skeletons.account_helpers.settings_core import ISettingsCore
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, loadJson, checkKeys, getPlayer, callback, sendPanelMessage, calculate_version
+from DriftkingsCore.utils.achievement_dossiers import getAchievementDossier
 
 is_lesta = u'Мир' in getFullClientVersion()
 
@@ -82,7 +83,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.6.6 (%(file_compile_date)s)'
+        self.version = '1.6.7 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.defaultKeys = {
             'buttonShow': [Keys.KEY_NUMPAD9, [Keys.KEY_LALT, Keys.KEY_RALT]],
@@ -1259,8 +1260,8 @@ def new_destroyGUI(func, *args):
 @override(MarkOnGunAchievement, 'getUserCondition')
 def new_getUserCondition(func, *args):
     if config.data['enabled'] and config.data['showInStatistic']:
-        if worker.dossier is not None:
-            targetData = worker.dossier
+        targetData = getAchievementDossier(args[0])
+        if targetData is not None:
             damage = ProfileUtils.getValueOrUnavailable(ProfileUtils.getValueOrUnavailable(targetData.getRandomStats().getAvgDamage()))
             track = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedTrack))
             radio = ProfileUtils.getValueOrUnavailable(targetData.getRandomStats()._getAvgValue(targetData.getRandomStats().getBattlesCountVer2, targetData.getRandomStats().getDamageAssistedRadio))
@@ -1288,12 +1289,6 @@ def new_getUserCondition(func, *args):
                 temp = config.i18n['UI_tooltips'].format(**data)
                 return temp
     return func(*args)
-
-
-@override(MarkOnGunAchievement, '__init__')
-def new_init(func, *args):
-    func(*args)
-    worker.dossier = args[1]
 
 
 BigWorld.MoESetupSize = g_flash.setupSize

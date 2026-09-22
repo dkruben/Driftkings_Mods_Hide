@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Vízszintes marker típus",
+    "UI_setting_horizontal_tooltip": "A szálkereszttől balra és jobbra található jelzők típusa, amelyek a fegyvere vízszintes élhelyzetét mutatják.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Letiltva",
+    "UI_setting_horizontal_1": "Sarkok",
+    "UI_setting_horizontal_2": "Szögletes zárójelek",
+    "UI_setting_horizontal_3": "Nagy félkör",
+    "UI_setting_horizontal_4": "Félkör",
+    "UI_setting_horizontal_5": "Nyolcszög",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Függőleges marker típus",
+    "UI_setting_vertical_tooltip": "A szálkereszt felett és alatt lévő jelzők típusa, amelyek a fegyvere függőleges élhelyzetét mutatják.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Letiltva",
+    "UI_setting_vertical_1": "Függőleges kötőjel",
+    "UI_setting_vertical_2": "Dot",
+    "UI_setting_vertical_3": "Háromszög",
+    "UI_setting_vertical_4": "Dióda",
+    "UI_setting_vertical_5": "Nyolcszög",
+    "UI_setting_vertical_6": "ktulho"
+}

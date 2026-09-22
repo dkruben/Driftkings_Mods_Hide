@@ -1,6 +1,6 @@
 {
     "UI_description": "ZoomExtended",
-    "UI_version": "1.1.0 (%(file_compile_date)s)",
+    "UI_version": 111,
     "UI_setting_noBinoculars_text": "Disable Binoculars.",
     "UI_setting_noBinoculars_tooltip": "Remove the blackout in sniper mode.",
     "UI_setting_noFlashBang_text": "Disable Red Flash.",

@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Abilita la correzione della rotazione della pistola",
+    "UI_setting_gunRotationFix_tooltip": "Risolto il problema con la desincronizzazione della rotazione della pistola dal server anche se si utilizza il reticolo del server.\nCiò potrebbe far sì che le animazioni diventino a scatti o intermittenti.\nNon funziona se l'impostazione \"Abilita reticolo server\" è disattivata!",
+    "UI_setting_reticleScaling_text": "Abilita il ridimensionamento del reticolo",
+    "UI_setting_reticleScaling_tooltip": "Ridimensiona il reticolo fino alle sue dimensioni reali in base alla distribuzione dei colpi.\nCiò fa sì che il reticolo sia più piccolo, ma i colpi ora potrebbero colpirne il bordo.",
+    "UI_setting_format_text": "Formato",
+    "UI_setting_template_tooltip": "Macro: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Tipo di scala del reticolo",
+    "UI_setting_scalingType_tooltip": "Controlla il modo in cui viene ridimensionato il reticolo.\nIl ridimensionamento lineare è più adatto per connessioni Internet stabili a bassa latenza.\nIl ridimensionamento interpolato impedisce ai colpi di uscire dal reticolo su Internet instabile,\n dando l'impressione di un tempo di mira più veloce."
+}

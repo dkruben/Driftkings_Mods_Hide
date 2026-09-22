@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Средняя помощь",
+    "UI_setting_avgAssist_tooltip": "Отображение среднего урона, нанесенного с вашей помощью",
+    "UI_setting_avgBlocked_text": "Среднее число заблокированных",
+    "UI_setting_avgBlocked_tooltip": "Отображение среднего заблокированного урона броней",
+    "UI_setting_avgDamage_text": "Средний урон",
+    "UI_setting_avgDamage_tooltip": "Отображение среднего нанесенного урона",
+    "UI_setting_avgStun_text": "Среднее оглушение",
+    "UI_setting_avgStun_tooltip": "Отображение среднего урона по целям, экипажи которых вы оглушили (САУ)",
+    "UI_setting_battles_text": "Битвы",
+    "UI_setting_battles_tooltip": "Показать количество боев",
+    "UI_setting_gunMarks_text": "Знаки оружия",
+    "UI_setting_gunMarks_tooltip": "Отображать процент следов оружия",
+    "UI_setting_winRate_text": "Процент побед",
+    "UI_setting_winRate_tooltip": "Показать процент побед",
+    "UI_version": 115
+}

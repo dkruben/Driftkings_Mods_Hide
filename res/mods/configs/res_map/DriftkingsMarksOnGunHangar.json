@@ -1,0 +1,8 @@
+[
+  {
+    "itemID": "mods/Driftkings/MarksOnGunHangar/model",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/Driftkings/MarksOnGunHangar/model.html",
+    "parameters": {"extension": "", "entrance": "main", "impl": "gameface"}
+  }
+]

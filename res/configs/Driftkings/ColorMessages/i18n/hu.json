@@ -1,0 +1,21 @@
+{
+    "UI_description": "ColorMessages",
+    "UI_setting_color_header_tooltip_header_text": "Fejléc színe:",
+    "UI_setting_color_xp_tooltip_header_text": "XP szín:",
+    "UI_setting_color_credits_tooltip_header_text": "Kredit színe:",
+    "UI_setting_color_damage_tooltip_header_text": "Sérülés színe:",
+    "UI_setting_color_free_xp_tooltip_header_text": "Ingyenes XP szín:",
+    "UI_setting_color_medals_tooltip_header_text": "Az érmek színe:",
+    "UI_setting_color_header_text": "Aktuális <font color='#%(color)s'>fejléc</font> szín: #%(color)s",
+    "UI_setting_color_xp_text": "Aktuális <font color='#%(color)s'>xp</font> szín: #%(color)s",
+    "UI_setting_color_credits_text": "Aktuális <font color='#%(color)s'>krediteket</font> szín: #%(color)s",
+    "UI_setting_color_damage_text": "Aktuális <font color='#%(color)s'>kárt</font> szín: #%(color)s",
+    "UI_setting_color_free_xp_text": "Aktuális <font color='#%(color)s'>ingyenes xp</font> szín: #%(color)s",
+    "UI_setting_color_medals_text": "Aktuális <font color='#%(color)s'>érmeket</font> szín: #%(color)s",
+    "UI_setting_color_header_tooltip": "Ez a szín az összes csataeredmény fejlécére vonatkozik.\n\n%(example)s",
+    "UI_setting_color_xp_tooltip": "Ez a szín minden csataeredmény xp értékre vonatkozik.\n\n%(example)s",
+    "UI_setting_color_credits_tooltip": "Ez a szín az összes csataeredmény kreditértékére vonatkozik.\n\n%(example)s",
+    "UI_setting_color_damage_tooltip": "Ez a szín minden csataeredmény-sebzés értékre vonatkozik.\n\n%(example)s",
+    "UI_setting_color_free_xp_tooltip": "Ez a szín minden csataeredmény nélküli xp értékre vonatkozik.\n\n%(example)s",
+    "UI_setting_color_medals_tooltip": "Ez a szín minden harci eredményéremre vonatkozik.\n\n%(example)s"
+}

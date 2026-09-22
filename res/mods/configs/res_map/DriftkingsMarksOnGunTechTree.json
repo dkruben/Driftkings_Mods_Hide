@@ -1,0 +1,8 @@
+[
+  {
+    "itemID": "mods/Driftkings/MarksOnGunTechTree/model",
+    "type": "Layout",
+    "path": "coui://gui/gameface/mods/Driftkings/MarksOnGunTechTree/model.html",
+    "parameters": {"extension": "", "entrance": "main", "impl": "gameface"}
+  }
+]

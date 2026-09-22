@@ -1,0 +1,32 @@
+.dk-hangar-marks {
+    position: absolute; display: none; z-index: 10; box-sizing: border-box;
+    padding: 16rem 18rem; border: 1rem solid #4b515b; border-radius: 4rem;
+    background: rgba(12, 15, 20, .94); color: #f5f1e8;
+    font-family: "Warhelios", Arial, sans-serif; font-size: 13rem;
+    box-shadow: 0 6rem 24rem rgba(0, 0, 0, .35);
+    pointer-events: auto; user-select: none; -webkit-user-select: none;
+}
+.dk-hangar-marks__header {display: flex; justify-content: space-between; align-items: center; cursor: move; margin-bottom: 8rem;}
+.dk-hangar-marks--locked .dk-hangar-marks__header {cursor: default;}
+.dk-hangar-marks__eyebrow {font-size: 10rem; letter-spacing: 1.5rem; color: #c7a86a;}
+.dk-hangar-marks__hint {font-size: 10rem; opacity: .55;}
+.dk-hangar-marks__vehicle {font-size: 20rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 10rem;}
+.dk-hangar-marks__main {display: flex; align-items: center; justify-content: space-between; margin-bottom: 7rem;}
+.dk-hangar-marks__percent {font-size: 32rem; font-weight: bold; line-height: 36rem;}
+.dk-hangar-marks__marks {display: flex;}
+.dk-hangar-marks__mark {padding: 4rem 7rem; margin-left: 4rem; border: 1rem solid #4b515b; border-radius: 2rem; color: #8c919a; font-size: 11rem;}
+.dk-hangar-marks__mark--earned {background: rgba(226, 192, 122, .12);}
+.dk-hangar-marks__mark--near {animation: dk-hangar-marks-glow 2s ease-in-out infinite;}
+.dk-hangar-marks__bar {position: relative; height: 4rem; background: rgba(255, 255, 255, .12); margin-bottom: 9rem;}
+.dk-hangar-marks__fill {height: 4rem; background: #e2c07a;}
+.dk-hangar-marks__tick {position: absolute; top: -2rem; width: 1rem; height: 8rem; background: #c7a86a;}
+.dk-hangar-marks__target {font-size: 12rem; color: #e2c07a; margin-bottom: 8rem;}
+.dk-hangar-marks__detail {font-size: 11rem; margin-bottom: 4rem;}
+.dk-hangar-marks__muted {color: #8c919a; font-size: 10rem;}
+.dk-hangar-marks__stats {display: flex; align-items: center; justify-content: space-between; border-top: 1rem solid #4b515b; margin-top: 10rem; padding-top: 9rem;}
+.dk-hangar-marks__stat {display: flex; flex-direction: column; font-size: 12rem;}
+.dk-hangar-marks__mastery {display: flex; align-items: center;}
+.dk-hangar-marks__mastery img {width: 32rem; height: 32rem; margin-right: 5rem;}
+.dk-hangar-marks__footer {margin-top: 7rem; font-size: 10rem; color: #8c919a;}
+.dk-hangar-marks--compact .dk-hangar-marks__secondary {display: none;}
+@keyframes dk-hangar-marks-glow {0%, 100% {opacity: .6;} 50% {opacity: 1;}}

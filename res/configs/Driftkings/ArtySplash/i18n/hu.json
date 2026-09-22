@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Gomb: pont megjelenítése|elrejtése",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Gomb: Splash megjelenítése|elrejtése",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Splash megjelenítése alapértelmezés szerint",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "A Pont megjelenítése alapértelmezés szerint",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Árkád mód elérhető",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Sniper mód elérhető",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Művészi mód elérhető",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "HE Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Show Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Hide Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Show Dot",
+    "UI_artySplash_messageDotOff": "HE Splash: Hide Dot"
+}

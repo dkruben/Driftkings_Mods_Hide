@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "A pisztolyforgatás javításának engedélyezése",
+    "UI_setting_gunRotationFix_tooltip": "Javítja a kiszolgálóról deszinkronizált fegyverforgatást, még akkor is, ha a szerver irányzékát használja.\nEmiatt az animációk szaggatottá vagy akadozóvá válhatnak.\nNem működik, ha az \"Enable Server Reticle\" beállítás ki van kapcsolva!",
+    "UI_setting_reticleScaling_text": "Irányító méretezés engedélyezése",
+    "UI_setting_reticleScaling_tooltip": "A lövéseloszlásnak megfelelően leskálázza az irányzékot a valódi méretére.\nEz ahhoz vezet, hogy az irányzék kisebb, de a lövések most már a szélét is elérhetik.",
+    "UI_setting_format_text": "Formátum",
+    "UI_setting_template_tooltip": "Makrók: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Reticle skálázási típus",
+    "UI_setting_scalingType_tooltip": "Szabályozza, hogyan legyen méretezve az irányzék.\nA lineáris skálázás a legalkalmasabb alacsony késleltetésű, stabil internetkapcsolatokhoz.\nAz interpolált skálázás megakadályozza, hogy a felvételek az irányzékon kívülre kerüljenek instabil interneten,\n miközben gyorsabb célzási idő benyomását keltik."
+}

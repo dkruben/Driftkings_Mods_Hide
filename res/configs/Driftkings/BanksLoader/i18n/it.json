@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Banks Loader di Driftkings: riavvia",
+    "UI_restart_reason_new": "Hai installato nuove modifiche audio, quindi la configurazione del gioco è stata modificata.",
+    "UI_restart_reason_update": "È stato rilevato l'aggiornamento del client di gioco, quindi le modifiche alla configurazione del gioco sono state riapplicate.",
+    "UI_restart_text": "{reason}{reasons}\nPer accettare le modifiche è necessario riavviare il client di gioco.\nComportamento corretto dei mod audio <b>NON GARANTITO</b> fino al prossimo lancio del gioco.\nQuesto lo farà <b>no</b> essere richiesto in seguito.\nVuoi riavviare il gioco adesso?",
+    "UI_restart_button_restart": "Ricominciare",
+    "UI_restart_button_shutdown": "Spegnimento",
+    "UI_restart_button_close": "Continua",
+    "UI_restart_reason": " Modifiche esatte:\n{}.",
+    "UI_restart_create": " • sezioni <b>creato</b> per le banche: ",
+    "UI_restart_delete": " • sezioni <b>cancellato</b> per le banche: ",
+    "UI_restart_move": " • sezioni <b>spostato</b> per le banche: ",
+    "UI_restart_section": " • sezioni <b>spostato</b> per le banche: ",
+    "UI_restart_memory": " • valori <b>cambiato</b> per le impostazioni della memoria: ",
+    "UI_restart_remap": " • sezioni <b>cambiato</b> per le impostazioni: ",
+    "UI_restart_wotmod": " • configurazioni <b>rimosso</b> dai pacchetti: "
+}

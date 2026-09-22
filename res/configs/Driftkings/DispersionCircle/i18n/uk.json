@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Сітка клієнта та сервера (бета-версія)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Показати прицільну сітку клієнта та сервера одночасно",
+    "UI_setting_showServerSpgStrategicReticle_text": "Стратегічна прицільна сітка САУ",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Увімкнути прицільну сітку сервера для стратегічного режиму SPG",
+    "UI_setting_gunMarkerMinimumSize_text": "Мінімальний розмір маркера зброї",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Мінімальний розмір маркера гармати в пікселях",
+    "UI_setting_percentCorrection_text": "Корекція розміру візирної сітки",
+    "UI_setting_percentCorrection_tooltip": "Відрегулюйте масштабний коефіцієнт прицільної сітки",
+    "UI_setting_serverReticleAimingCircleShape_text": "Форма прицільного кола",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Виберіть форму прицільного кола сервера",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Непрозорість кола прицілювання",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Налаштуйте непрозорість прицільного кола сервера",
+    "UI_setting_serverReticleGunMarkerShape_text": "Форма маркера пістолета",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Виберіть форму маркера гармати сервера",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Непрозорість маркера пістолета",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Налаштуйте непрозорість маркера серверної зброї"
+}

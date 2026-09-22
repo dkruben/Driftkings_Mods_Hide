@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Aktiválási üzenet megjelenítése",
+    "UI_setting_activateMessage_tooltip": "Aktiválási üzenet megjelenítése csatában",
+    "UI_setting_fixAccuracyInMove_text": "Pontosság javítása",
+    "UI_setting_fixAccuracyInMove_tooltip": "Amikor tankot mozgatsz, majd megállsz, fix pontossággal használod a célzás elvesztését",
+    "UI_setting_serverTurret_text": "Szervertorony",
+    "UI_setting_serverTurret_tooltip": "A torony áthelyezése a szerver cél koordinátáira (engedélyezni kell a Server Sight-ot a játék beállításaiban)",
+    "UI_battle_activateMessage": "'Server Turret Extended': Aktiválva",
+    "UI_setting_fixWheelCruiseControl_text": "Javítsa meg a sebességtartó automatikát a kerekeken",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Ha aktiválja a Kerekes üzemmódot a sebességtartó automatikával, a jármű leállt, ez a beállítás letiltja ezt",
+    "UI_setting_maxWheelMode_text": "Kerekek: Tartsa a maximális sebességet",
+    "UI_setting_maxWheelMode_tooltip": "A maximális sebesség elérésekor nem tiltja le a sebesség üzemmódot manőverezés közben",
+    "UI_setting_buttonMaxMode_text": "Gomb: A kerekek tartják a maximális sebességet",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Kerekek: Automatikus sebesség mód",
+    "UI_setting_autoActivateWheelMode_tooltip": "Automatikusan bekapcsolja a sebességet vagy a manőverezési módot",
+    "UI_setting_buttonAutoMode_text": "Gomb: Kerekek automatikus sebessége",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "BE",
+    "UI_battle_OFF": "KI"
+}

@@ -84,10 +84,11 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.1 (%(file_compile_date)s)'
+        self.version = '1.1.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
+            'showClientAndServerReticle': False,
             'gunMarkerMinimumSize': 0,
             'percentCorrection': 100,
             'showClientAndServerReticleBeta': False,
@@ -139,13 +140,19 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def onApplySettings(self, settings):
         super(ConfigInterface, self).onApplySettings(settings)
+        self._applyReticleSettings()
+
+    def readCurrentSettings(self, quiet=True):
+        self._applyReticleSettings()
+
+    def _applyReticleSettings(self):
         if not self.data['enabled']:
             aih_constants.GUN_MARKER_MIN_SIZE = DEFAULT_GUN_MARKER_MIN_SIZE
             self.reticleScaleFactor = 1
             self.data['showClientAndServerReticle'] = False
         else:
             aih_constants.GUN_MARKER_MIN_SIZE = self.data['gunMarkerMinimumSize']
-            correctionFactor = self.data['percentCorrection'] / 100
+            correctionFactor = self.data['percentCorrection'] / 100.0
             self.reticleScaleFactor = 1.71 * correctionFactor + (1 - correctionFactor)
             self.data['showClientAndServerReticle'] = self.data['showClientAndServerReticleBeta']
         if self.data['showClientAndServerReticle']:
@@ -291,17 +298,17 @@ def _scaleGunMarkerInfo(gunMarkerInfo):
 
 
 @override(AvatarInputHandler.AvatarInputHandler, 'updateClientGunMarker')
-def new_AvatarInputHandler_updateClientGunMarker(_, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
+def new_AvatarInputHandler_updateClientGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
     if self.ctrlModeName in (CTRL_MODE_NAME.ARCADE, CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.SNIPER):
         gunMarkerInfo = _scaleGunMarkerInfo(gunMarkerInfo)
-    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.CLIENT, gunMarkerInfo, supportMarkersInfo, relaxTime)
+    return func(self, gunMarkerInfo, supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler.AvatarInputHandler, 'updateServerGunMarker')
-def new_AvatarInputHandler_updateServerGunMarker(_, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
+def new_AvatarInputHandler_updateServerGunMarker(func, self, gunMarkerInfo, supportMarkersInfo, relaxTime):
     if self.ctrlModeName in (CTRL_MODE_NAME.ARCADE, CTRL_MODE_NAME.STRATEGIC, CTRL_MODE_NAME.SNIPER):
         gunMarkerInfo = _scaleGunMarkerInfo(gunMarkerInfo)
-    self.ctrl.updateGunMarker(GUN_MARKER_TYPE.SERVER, gunMarkerInfo, supportMarkersInfo, relaxTime)
+    return func(self, gunMarkerInfo, supportMarkersInfo, relaxTime)
 
 
 @override(AvatarInputHandler.AvatarInputHandler, 'updateDualAccGunMarker')
@@ -386,8 +393,6 @@ def new_ControlMarkersFactory_getMarkerType(func, self):
         return func(self)
 
 
-# @override(VehicleGunRotator.VehicleGunRotator, 'clientMode', (lambda self: self._VehicleGunRotator__clientMode))
-@override(VehicleGunRotator.VehicleGunRotator, 'clientMode')
 def new_VehicleGunRotator_clientMode_setter(func, self, value):
     if config.data['showClientAndServerReticle'] is True:
         if self.clientMode == value:
@@ -399,7 +404,10 @@ def new_VehicleGunRotator_clientMode_setter(func, self, value):
             self._VehicleGunRotator__time = BigWorld.time()
             self.stopTrackingOnServer()
     else:
-        func.fset(self, value)
+        return func(self, value)
+
+
+override(VehicleGunRotator.VehicleGunRotator, 'clientMode', setter=new_VehicleGunRotator_clientMode_setter)
 
 
 @override(VehicleGunRotator.VehicleGunRotator, 'setShotPosition')

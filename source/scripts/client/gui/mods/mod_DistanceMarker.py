@@ -20,7 +20,7 @@ g_distanceMarkerFlash = None
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.0.6 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -339,10 +339,10 @@ class DistanceMarkerFlash(ExternalFlashComponent, DistanceMarkerFlashMeta):
 
 
 @override(AvatarInputHandler, 'handleMouseEvent')
-def handleMouseEvent(func, self, dx, dy, dz):
-    result = func(self, dx, dy, dz)
+def handleMouseEvent(func, self, event):
+    result = func(self, event)
     if g_distanceMarkerFlash is not None:
-        DistanceMarkerFlash.onMouseEvent(dx, dy)
+        DistanceMarkerFlash.onMouseEvent(event.dx, event.dy)
     return result
 
 

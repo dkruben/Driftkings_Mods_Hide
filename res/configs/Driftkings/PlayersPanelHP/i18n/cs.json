@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Vyberte si svou možnost",
+    "UI_setting_mode_tooltip": " • <b>Vždy</b> - Značky HP budou vždy zobrazeny.\n • <b>Přepnout</b> - Značky HP se zapnou/vypnou po stisknutí přepínací klávesy.\n • <b>Holding</b> - Zobrazí se pouze značky HP <b>zatímco</b> je stisknuto přepínací tlačítko.",
+    "UI_setting_mode_always": "Vždy",
+    "UI_setting_mode_toggle": "Přepnout",
+    "UI_setting_mode_holding": "Holding",
+    "UI_setting_toggleKey_text": "Přepnout klávesovou zkratku",
+    "UI_setting_toggleKey_tooltip": "Stisknutím tohoto tlačítka v bitvě přepnete zobrazení značek HP."
+}

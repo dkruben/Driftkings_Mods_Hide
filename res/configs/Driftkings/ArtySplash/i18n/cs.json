@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Tlačítko: zobrazit|skrýt tečku",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Tlačítko: zobrazit|skrýt Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Ve výchozím nastavení zobrazit Splash",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Ve výchozím nastavení zobrazovat tečku",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "K dispozici je arkádový režim",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "K dispozici je odstřelovací režim",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Arty režim k dispozici",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "ON Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Zobrazit Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Skryjte Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Zobrazit tečku",
+    "UI_artySplash_messageDotOff": "HE Splash: Skryjte tečku"
+}

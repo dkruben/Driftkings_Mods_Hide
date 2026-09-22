@@ -1,0 +1,16 @@
+{
+    "UI_description": "Настройки экипажа",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Автоматический возврат экипажа",
+    "UI_setting_crewAutoReturn_tooltip": "Автоматически возвращать экипаж в свою машину",
+    "UI_setting_crewReturnByDefault_text": "Возвращение экипажа по умолчанию",
+    "UI_setting_crewReturnByDefault_tooltip": "Возврат экипажа по умолчанию при смене техники",
+    "UI_setting_autoReturnDelay_text": "Задержка автоматического возврата (секунды)",
+    "UI_setting_autoReturnDelay_tooltip": "Задержка перед автоматическим возвращением экипажа",
+    "UI_setting_showNotifications_text": "Показать уведомления",
+    "UI_setting_showNotifications_tooltip": "Показывать системные уведомления при возвращении экипажа",
+    "UI_setting_excludePremiumVehicles_text": "Исключить премиум-автомобили",
+    "UI_setting_excludePremiumVehicles_tooltip": "Не выполнять автовозврат экипажа для премиумной техники",
+    "UI_message_crewReturned": "Экипаж возвращен в машину",
+    "UI_message_crewNotAvailable": "Экипаж не доступен для возврата"
+}

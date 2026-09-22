@@ -1,6 +1,6 @@
 {
     "UI_description": "MinimapPlugins",
-    "UI_version": "1.3.0 (%(file_compile_date)s)",
+    "UI_version": 131,
     "UI_setting_permanentMinimapDeath_text": "Permanent Minimap Death",
     "UI_setting_permanentMinimapDeath_tooltip": "Always show the destroyed on the map",
     "UI_setting_showNames_text": "Show Names",

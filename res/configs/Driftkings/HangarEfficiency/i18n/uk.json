@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Середня допомога",
+    "UI_setting_avgAssist_tooltip": "Показати середню шкоду, завдану з вашою допомогою",
+    "UI_setting_avgBlocked_text": "Сер. заблоковано",
+    "UI_setting_avgBlocked_tooltip": "Відображення середньої шкоди, заблокованої бронею",
+    "UI_setting_avgDamage_text": "Середня шкода",
+    "UI_setting_avgDamage_tooltip": "Показати середню завдану шкоду",
+    "UI_setting_avgStun_text": "Середнє оглушення",
+    "UI_setting_avgStun_tooltip": "Відображення середньої шкоди цілям, екіпаж яких ви приголомшили (SPG)",
+    "UI_setting_battles_text": "Битви",
+    "UI_setting_battles_tooltip": "Показати кількість битв",
+    "UI_setting_gunMarks_text": "Знаки зброї",
+    "UI_setting_gunMarks_tooltip": "Показати відсоток марок зброї",
+    "UI_setting_winRate_text": "Коефіцієнт виграшу",
+    "UI_setting_winRate_tooltip": "Показати відсоток перемог",
+    "UI_version": 115
+}

@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Вимкнути бінокль.",
+    "UI_setting_noBinoculars_tooltip": "Прибрати затемнення в снайперському режимі.",
+    "UI_setting_noFlashBang_text": "Вимкніть червоний спалах.",
+    "UI_setting_noFlashBang_tooltip": "Прибрати червоний спалах під час отримання шкоди.",
+    "UI_setting_noShockWave_text": "Ударна хвиля",
+    "UI_setting_noShockWave_tooltip": "Усунути тремтіння камери при попаданні танка.",
+    "UI_setting_noSniperDynamic_text": "Снайпер Динаміка",
+    "UI_setting_noSniperDynamic_tooltip": "Вимкніть динамічну камеру в режимі снайпера.",
+    "UI_setting_disableCamAfterShot_text": "Вимкнути Cam After Shot",
+    "UI_setting_disableCamAfterShot_tooltip": "Вимкніть режим снайпера після пострілу.",
+    "UI_setting_disableCamAfterShotLatency_text": "Вимкнути затримку камери після зйомки",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Затримка автоматичного вимкнення камери.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Вимкнути Cam After Shot Skip Clip",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Не виходьте, якщо система завантаження магазину."
+}

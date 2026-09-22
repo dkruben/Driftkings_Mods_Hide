@@ -6,6 +6,7 @@
         "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
         "mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*",
-        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod"
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/configs/Driftkings/Driftkings_GUI/**": "res/configs/Driftkings/Driftkings_GUI/**"
     }
 }

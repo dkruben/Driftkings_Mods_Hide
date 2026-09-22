@@ -1,0 +1,10 @@
+{
+    "UI_description": "AutoAimOptimize",
+    "UI_version": 171,
+    "UI_setting_angle_text": "Ustaw kąt, aby złapać cel",
+    "UI_setting_angle_value": "x",
+    "UI_setting_catchHiddenTarget_text": "Złap cel ukryty za przeszkodą",
+    "UI_setting_catchHiddenTarget_tooltip": "",
+    "UI_setting_disableArtyMode_text": "Wyłącz w trybie Arty",
+    "UI_setting_disableArtyMode_tooltip": ""
+}

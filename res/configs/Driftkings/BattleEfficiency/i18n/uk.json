@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Блокування тексту",
+    "UI_setting_textLock_tooltip": "Перетягніть текст у бою",
+    "UI_setting_format_text": "Текстовий формат, доступні макроси:",
+    "UI_setting_format_tooltip": "Доступні макроси:\n WN8:'{wn8}', Колір:'{c:wn8}'\nXWN8:'{xwn8}', Колір:'{c:x}'\nEFF:'{eff}', Колір:'{c:eff}'\nXEFF:'{xeff}', Колір:'{c:x}'\nРІЗНИЦЯ:'{diff}', Колір:'{c:diff}'\nDMG:'{dmg}', Колір:'{c:dmg}'\nXTE:'{xte}', Колір:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Вікно результатів битви",
+    "UI_setting_battleResultsWindow_tooltip": "Увімкнути вікно результатів бою.",
+    "UI_setting_battleResultsFormat_text": "Модифікація вікна результатів битви",
+    "UI_setting_battleResultsFormat_tooltip": "Доступні макроси:\nWN8:'{wn8}', Колір: '{c:wn8}'\nXWN8:'{xwn8}', Колір: '{c:x}'\nEFF:'{eff}', Колір: '{c:eff}'\nXEFF:'{xeff}', Колір: '{c:x}'\nРІЗНИЦЯ:'{diff}', Колір: '{c:diff}'\nDMG:'{dmg}', Колір: '{c:dmg}'\nXTE:'{xte}', Колір: '{c:x}'\n{mapName} - Назва карти\n{battleType} - Бойовий тип",
+    "UI_setting_colorRatting_text": "Виберіть рейтинг кольорів",
+    "UI_setting_colorRatting_tooltip": "Виберіть колірну схему для оцінок",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

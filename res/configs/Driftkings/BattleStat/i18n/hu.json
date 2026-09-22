@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Mutasd meg a csapat esélyeit",
+    "UI_setting_teamChances_tooltip": "Megjeleníti az egyes csapatok nyerési esélyeinek százalékát a csata során",
+    "UI_setting_format_text": "Szövegformátum",
+    "UI_setting_format_tooltip": "Beállítja a szöveg formátumát"
+}

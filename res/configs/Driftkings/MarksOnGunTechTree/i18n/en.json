@@ -1,16 +1,15 @@
 {
-    "UI_description": "MarksOnGunTechTree",
-    "UI_version": "1.2.2 (%(file_compile_date)s)",
+    "UI_description": "MarksOnGunTechTree (Gameface)",
     "UI_setting_showInTechTree_text": "TechTree: enabled",
     "UI_setting_showInTechTree_tooltip": "",
-    "UI_setting_showInTechTreeMastery_text": "TechTree: show Mastery",
-    "UI_setting_showInTechTreeMastery_tooltip": "",
     "UI_setting_showInTechTreeMarkOfGunPercent_text": "TechTree: show MoE %",
     "UI_setting_showInTechTreeMarkOfGunPercent_tooltip": "",
+    "UI_setting_showInTechTreeMastery_text": "TechTree: show Mastery",
+    "UI_setting_showInTechTreeMastery_tooltip": "",
     "UI_setting_showInTechTreeMarkOfGunTankNameColored_text": "TechTree: MoE colorize vehicle name",
     "UI_setting_showInTechTreeMarkOfGunTankNameColored_tooltip": "",
-    "UI_setting_showInHangar_text": "Hangar: Show MoE mod",
-    "UI_setting_showInHangar_tooltip": "",
-    "UI_HangarStatsStart": "<b>{currentPercent}<font size='14'>[{currentDamage}]</font> </b>",
-    "UI_HangarStatsEnd": "{c_damageToMark65}, {c_damageToMark85}\n{c_damageToMark95}, {c_damageToMark100}"
+    "UI_setting_badgeOffsetX_text": "Position X (left / right)",
+    "UI_setting_badgeOffsetX_tooltip": "Negative: left. Positive: right.",
+    "UI_setting_badgeOffsetY_text": "Position Y (up / down)",
+    "UI_setting_badgeOffsetY_tooltip": "Negative: up. Positive: down."
 }

@@ -4,11 +4,13 @@ import json
 import os
 import time
 import traceback
+import base64
+import zlib
 
 import BigWorld
 from external_strings_utils import unicode_from_utf8
 from frameworks.wulf import WindowLayer
-from gui import DialogsInterface
+from gui import DialogsInterface, SystemMessages
 from gui.Scaleform.daapi.view.dialogs import SimpleDialogMeta, DIALOG_BUTTON_ID
 from gui.Scaleform.daapi.view.lobby.LobbyView import LobbyView
 from gui.Scaleform.daapi.view.login.LoginView import LoginView
@@ -22,6 +24,7 @@ from predefined_hosts import g_preDefinedHosts
 from skeletons.gui.app_loader import GuiGlobalSpaceID
 
 from DriftkingsCore import DriftkingsConfigInterface, ConfigNoInterface, Analytics, override, callback, calculate_version
+from DriftkingsCore.utils.filesystem import atomicWrite
 
 
 def getPreferencesDir():
@@ -37,7 +40,7 @@ def loadWindow(alias):
 class ConfigsInterface(ConfigNoInterface, DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.0.6 (%(file_compile_date)s)'
         self.author = '[by: S0me0ne, reworked by ShadowHunterRUS & spoter & Driftkings]'
         self.data = {'version': calculate_version(self.version)}
         self.i18n = {
@@ -133,27 +136,14 @@ class UserAccounts:
 
     def write_accounts(self):
         try:
-            directory = os.path.dirname(self.__accounts_manager)
-            if not os.path.exists(directory):
-                try:
-                    os.makedirs(directory)
-                except:
-                    print('[AccountManager]: Failed to create directory: %s' % directory)
-                    return
-            try:
-                data = BigWorld.wg_cpdata(json.dumps(self.accounts).encode('zlib').encode('base64'))
-                with open(self.__accounts_manager, 'w') as f:
-                    f.write(data)
-            except Exception as e:
-                print('[AccountManager]: Error encoding account data: %s' % e)
-                try:
-                    with open(self.__accounts_manager, 'w') as f:
-                        json.dump(self.accounts, f)
-                except Exception as e2:
-                    print('[AccountManager]: Fallback write failed: %s' % e2)
+            payload = json.dumps(self.accounts).encode('utf-8')
+            data = BigWorld.wg_cpdata(base64.b64encode(zlib.compress(payload)))
+            atomicWrite(self.__accounts_manager, data)
+            return True
         except Exception as e:
             print('[AccountManager]: Error in write_accounts: %s' % e)
             print(traceback.format_exc())
+            return False
 
 
 class RemoveConfirmDialogButtons:
@@ -241,7 +231,10 @@ class AccountsManager(AbstractWindowView):
                     if str(it['id']) != str(data.id):
                         continue
                     BigWorld.wh_data.accounts.remove(it)
-                    BigWorld.wh_data.write_accounts()
+                    if not BigWorld.wh_data.write_accounts():
+                        BigWorld.wh_data.renew_accounts()
+                        SystemMessages.pushMessage('Could not save accounts. The previous file has been kept.', type=SystemMessages.SM_TYPE.Error)
+                        return
                     BigWorld.wh_data.renew_accounts()
                     self.destroy()
                     loadWindow('AccountsManager')
@@ -308,7 +301,10 @@ class AccountsManagerSubWindow(AbstractWindowView):
             'password': BigWorld.wg_cpdata(password),
             'id': hashlib.md5('id = %s' % time.time()).hexdigest()
         })
-        BigWorld.wh_data.write_accounts()
+        if not BigWorld.wh_data.write_accounts():
+            BigWorld.wh_data.renew_accounts()
+            SystemMessages.pushMessage('Could not save accounts. The previous file has been kept.', type=SystemMessages.SM_TYPE.Error)
+            return
         BigWorld.wh_data.renew_accounts()
         self.destroy()
         loadWindow('AccountsManager')
@@ -322,7 +318,10 @@ class AccountsManagerSubWindow(AbstractWindowView):
             it['email'] = BigWorld.wg_cpdata(email)
             it['password'] = BigWorld.wg_cpdata(password)
             break
-        BigWorld.wh_data.write_accounts()
+        if not BigWorld.wh_data.write_accounts():
+            BigWorld.wh_data.renew_accounts()
+            SystemMessages.pushMessage('Could not save accounts. The previous file has been kept.', type=SystemMessages.SM_TYPE.Error)
+            return
         BigWorld.wh_data.renew_accounts()
         self.destroy()
         loadWindow('AccountsManager')

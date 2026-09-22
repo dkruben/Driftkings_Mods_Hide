@@ -1,6 +1,6 @@
 {
     "modDisplayName": "DistanceMarker",
-    "UI_version": "1.0.5 (%(file_compile_date)s)",
+    "UI_version": 106,
     "UI_setting_displayMode_text": "Display Mode",
     "UI_setting_displayMode_tooltip": "Defines when the distance marker will be displayed",
     "UI_setting_markerTarget_text": "Marker Targets",

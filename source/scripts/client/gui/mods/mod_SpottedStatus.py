@@ -25,7 +25,7 @@ class SpottedStatusController(DriftkingsConfigInterface, CallbackDelayer):
 
     def init(self):
         self.ID = 'SpottedStatus'
-        self.version = '1.5.0 (%(file_compile_date)s)'
+        self.version = '1.5.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -157,4 +157,4 @@ try:
     config = SpottedStatusController()
     statistic_mod = Analytics(config.ID, config.version)
 except ImportError:
-    logWarning(config.ID, 'Battle Flash API not found.')
+    logWarning('SpottedStatus', 'Battle Flash API not found.')

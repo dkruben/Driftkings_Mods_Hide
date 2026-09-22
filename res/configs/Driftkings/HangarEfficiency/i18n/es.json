@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Asistencia promedio",
+    "UI_setting_avgAssist_tooltip": "Muestra el daño promedio causado con tu ayuda.",
+    "UI_setting_avgBlocked_text": "Promedio bloqueado",
+    "UI_setting_avgBlocked_tooltip": "Mostrar daño promedio de armadura bloqueada",
+    "UI_setting_avgDamage_text": "Daño promedio",
+    "UI_setting_avgDamage_tooltip": "Mostrar daño promedio infligido",
+    "UI_setting_avgStun_text": "Aturdimiento promedio",
+    "UI_setting_avgStun_tooltip": "Muestra el daño promedio a los objetivos cuyas tripulaciones has aturdido (AAP)",
+    "UI_setting_battles_text": "Batallas",
+    "UI_setting_battles_tooltip": "Mostrar recuento de batallas",
+    "UI_setting_gunMarks_text": "Marcas de armas",
+    "UI_setting_gunMarks_tooltip": "Mostrar porcentaje de marca de pistola",
+    "UI_setting_winRate_text": "Tasa de victorias",
+    "UI_setting_winRate_tooltip": "Mostrar porcentaje de victorias",
+    "UI_version": 115
+}

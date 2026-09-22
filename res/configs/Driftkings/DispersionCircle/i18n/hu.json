@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Ügyfél- és szerverhálózat (béta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Egyszerre jelenítse meg a kliens és a kiszolgáló hálóját",
+    "UI_setting_showServerSpgStrategicReticle_text": "SPG Stratégiai Reticle",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Engedélyezze a kiszolgáló hálóját az SPG stratégiai módhoz",
+    "UI_setting_gunMarkerMinimumSize_text": "Fegyverjelző minimális mérete",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "A fegyverjelölő minimális mérete pixelben",
+    "UI_setting_percentCorrection_text": "Reticle méret korrekció",
+    "UI_setting_percentCorrection_tooltip": "Állítsa be az irányzék léptéktényezőjét",
+    "UI_setting_serverReticleAimingCircleShape_text": "Célzó kör alakú",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Válassza ki a szerver célzókör alakját",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Cél a kör átlátszatlansága",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Állítsa be a kiszolgáló célzókörének átlátszatlanságát",
+    "UI_setting_serverReticleGunMarkerShape_text": "Fegyverjelölő alakja",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Válassza ki a kiszolgáló fegyverjelölő alakját",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Fegyverjelző átlátszatlansága",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Állítsa be a kiszolgáló pisztolyjelző átlátszatlanságát"
+}

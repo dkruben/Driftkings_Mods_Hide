@@ -5,7 +5,7 @@ import BigWorld
 from notification.NotificationsCollection import NotificationsCollection
 from notification.actions_handlers import NotificationsActionsHandlers
 
-from ... import override
+from DriftkingsCore.utils.monkeypatch import override
 
 __all__ = ()
 

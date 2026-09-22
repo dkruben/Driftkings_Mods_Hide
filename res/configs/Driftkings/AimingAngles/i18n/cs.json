@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Horizontální typ značky",
+    "UI_setting_horizontal_tooltip": "Typ značek nalevo a napravo od zaměřovacího kříže zobrazující vodorovné okraje vaší zbraně.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Zakázáno",
+    "UI_setting_horizontal_1": "Rohy",
+    "UI_setting_horizontal_2": "Hranaté závorky",
+    "UI_setting_horizontal_3": "Velký půlkruh",
+    "UI_setting_horizontal_4": "Půlkruh",
+    "UI_setting_horizontal_5": "Osmiúhelník",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Vertikální typ značky",
+    "UI_setting_vertical_tooltip": "Typ značek nad a pod zaměřovacím křížem zobrazující vertikální polohy hran vaší zbraně.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Zakázáno",
+    "UI_setting_vertical_1": "Vertikální pomlčka",
+    "UI_setting_vertical_2": "Tečka",
+    "UI_setting_vertical_3": "Trojúhelník",
+    "UI_setting_vertical_4": "Dioda",
+    "UI_setting_vertical_5": "Osmiúhelník",
+    "UI_setting_vertical_6": "ktulho"
+}

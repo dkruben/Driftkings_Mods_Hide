@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Désactivez les jumelles.",
+    "UI_setting_noBinoculars_tooltip": "Supprimez la panne de courant en mode tireur d'élite.",
+    "UI_setting_noFlashBang_text": "Désactivez le flash rouge.",
+    "UI_setting_noFlashBang_tooltip": "Supprimez le flash rouge lorsque vous subissez des dégâts.",
+    "UI_setting_noShockWave_text": "Onde de choc",
+    "UI_setting_noShockWave_tooltip": "Supprimez les tremblements de la caméra lorsqu'ils sont touchés par un char.",
+    "UI_setting_noSniperDynamic_text": "Dynamique des tireurs d'élite",
+    "UI_setting_noSniperDynamic_tooltip": "Désactivez la caméra dynamique en mode tireur d'élite.",
+    "UI_setting_disableCamAfterShot_text": "Désactiver la caméra après la prise de vue",
+    "UI_setting_disableCamAfterShot_tooltip": "Désactivez le mode tireur d’élite après le tir.",
+    "UI_setting_disableCamAfterShotLatency_text": "Désactiver la latence de la caméra après la prise de vue",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Retarder l’arrêt automatique de la caméra.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Désactiver le clip de saut de caméra après prise de vue",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Ne sortez pas si le système de chargement du magazine."
+}

@@ -1,6 +1,6 @@
 {
     "UI_description": "PlayersPanelHP",
-    "UI_version": "1.9.1 (%(file_compile_date)s)",
+    "UI_version": 195,
     "UI_setting_mode_text": "Choose your option",
     "UI_setting_mode_tooltip": " • <b>Always</b> - HP markers will always be displayed.\n • <b>Toggle</b> - HP markers will be toggled on/off upon toggle key press.\n • <b>Holding</b> - HP markers will only be displayed <b>while</b> the toggle key is pressed.",
     "UI_setting_mode_always": "Always",

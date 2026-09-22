@@ -1,0 +1,21 @@
+{
+    "UI_description": "ColorMessages",
+    "UI_setting_color_header_tooltip_header_text": "Barva záhlaví:",
+    "UI_setting_color_xp_tooltip_header_text": "Barva XP:",
+    "UI_setting_color_credits_tooltip_header_text": "Barva kreditů:",
+    "UI_setting_color_damage_tooltip_header_text": "Barva poškození:",
+    "UI_setting_color_free_xp_tooltip_header_text": "Barva XP zdarma:",
+    "UI_setting_color_medals_tooltip_header_text": "Barva medaile:",
+    "UI_setting_color_header_text": "Aktuální <font color='#%(color)s'>záhlaví</font> barva: #%(color)s",
+    "UI_setting_color_xp_text": "Aktuální <font color='#%(color)s'>xp</font> barva: #%(color)s",
+    "UI_setting_color_credits_text": "Aktuální <font color='#%(color)s'>kredity</font> barva: #%(color)s",
+    "UI_setting_color_damage_text": "Aktuální <font color='#%(color)s'>poškození</font> barva: #%(color)s",
+    "UI_setting_color_free_xp_text": "Aktuální <font color='#%(color)s'>xp zdarma</font> barva: #%(color)s",
+    "UI_setting_color_medals_text": "Aktuální <font color='#%(color)s'>medailí</font> barva: #%(color)s",
+    "UI_setting_color_header_tooltip": "Tato barva bude aplikována na všechny záhlaví bitevních výsledků.\n\n%(example)s",
+    "UI_setting_color_xp_tooltip": "Tato barva bude aplikována na všechny hodnoty xp výsledků bitvy.\n\n%(example)s",
+    "UI_setting_color_credits_tooltip": "Tato barva bude aplikována na všechny hodnoty kreditů za výsledky bitvy.\n\n%(example)s",
+    "UI_setting_color_damage_tooltip": "Tato barva bude aplikována na všechny hodnoty poškození ve výsledku bitvy.\n\n%(example)s",
+    "UI_setting_color_free_xp_tooltip": "Tato barva bude aplikována na všechny hodnoty xp bez výsledků bitvy.\n\n%(example)s",
+    "UI_setting_color_medals_tooltip": "Tato barva bude použita na všechny medaile za výsledky bitvy.\n\n%(example)s"
+}

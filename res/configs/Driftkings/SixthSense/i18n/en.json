@@ -1,6 +1,6 @@
 {
     "UI_description": "SixthSense",
-    "UI_version": "1.6.6 (%(file_compile_date)s)",
+    "UI_version": 167,
     "UI_setting_defaultIcon_text": "Default Icon",
     "UI_setting_defaultIcon_tooltip": "Use embedded image.",
     "UI_setting_lampShowTime_text": "Lamp Show Time",

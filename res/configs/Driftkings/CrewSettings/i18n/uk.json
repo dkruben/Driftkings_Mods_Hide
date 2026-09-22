@@ -1,0 +1,16 @@
+{
+    "UI_description": "Налаштування команди",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Автоматичне повернення екіпажу",
+    "UI_setting_crewAutoReturn_tooltip": "Автоматичне повернення екіпажу до транспортного засобу",
+    "UI_setting_crewReturnByDefault_text": "Повернення команди за замовчуванням",
+    "UI_setting_crewReturnByDefault_tooltip": "Повернути екіпаж за замовчуванням під час зміни транспортних засобів",
+    "UI_setting_autoReturnDelay_text": "Затримка автоматичного повернення (секунди)",
+    "UI_setting_autoReturnDelay_tooltip": "Затримка перед автоматичним поверненням екіпажу",
+    "UI_setting_showNotifications_text": "Показати сповіщення",
+    "UI_setting_showNotifications_tooltip": "Показувати системні сповіщення, коли екіпаж повертається",
+    "UI_setting_excludePremiumVehicles_text": "Виключити транспортні засоби преміум-класу",
+    "UI_setting_excludePremiumVehicles_tooltip": "Не повертайте екіпаж автоматично для автомобілів преміум-класу",
+    "UI_message_crewReturned": "Екіпаж повернуто в машину",
+    "UI_message_crewNotAvailable": "Екіпаж не доступний для повернення"
+}

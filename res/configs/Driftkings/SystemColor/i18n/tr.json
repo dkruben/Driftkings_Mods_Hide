@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Ally Dead'e Renk Seçin:",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Tanka uygulanan renk.",
+    "UI_setting_colorCheckEnemyDead_text": "Düşmanın Ölmesi İçin Renk Seçin:",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Tanka uygulanan renk.",
+    "UI_setting_colorCheckSquadManAlive_text": "SquadMan Alive'a Renk Seçin:",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Tanka uygulanan renk.",
+    "UI_setting_colorCheckEnemyAlive_text": "Canlı Düşmana Renk Seçin:",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Tanka uygulanan renk.",
+    "UI_setting_colorCheckAllyAlive_text": "Ally Alive'a Renk Seçin:",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Tanka uygulanan renk.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "TeamKiller'a Renk Seçin:",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00EAFF</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Tanka uygulanan renk."
+}

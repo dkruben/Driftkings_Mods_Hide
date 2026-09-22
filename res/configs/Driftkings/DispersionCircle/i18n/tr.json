@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "İstemci ve Sunucu Ağı (Beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Hem istemci hem de sunucu retikülünü aynı anda göster",
+    "UI_setting_showServerSpgStrategicReticle_text": "SPG Stratejik Nişangâh",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "SPG stratejik modu için sunucu retikülünü etkinleştirin",
+    "UI_setting_gunMarkerMinimumSize_text": "Tabanca İşaretleyici Minimum Boyutu",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Silah işaretleyicisinin piksel cinsinden minimum boyutu",
+    "UI_setting_percentCorrection_text": "Retikül Boyutu Düzeltme",
+    "UI_setting_percentCorrection_tooltip": "Retikülün ölçek faktörünü ayarlayın",
+    "UI_setting_serverReticleAimingCircleShape_text": "Hedefleyen Daire Şekli",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Sunucu hedefleme çemberinin şeklini seçin",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Hedefleme Çemberi Opaklığı",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Sunucu hedefleme çemberinin opaklığını ayarlayın",
+    "UI_setting_serverReticleGunMarkerShape_text": "Silah İşaretleme Şekli",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Sunucu silahı işaretleyicisinin şeklini seçin",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Silah İşaretinin Opaklığı",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Sunucu tabancası işaretçisinin opaklığını ayarlayın"
+}

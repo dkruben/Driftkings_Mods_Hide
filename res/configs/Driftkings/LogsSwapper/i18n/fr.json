@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Activez le journal inversé.",
+    "UI_setting_logSwapper_tooltip": "Inverse la position du journal des dégâts dans l'interface de combat.",
+    "UI_setting_wgLogHideCritics_text": "Journal WG Masquer les critiques",
+    "UI_setting_wgLogHideCritics_tooltip": "Masque les messages de coups critiques dans le journal de combat standard de WG.",
+    "UI_setting_wgLogHideBlock_text": "Bloc de masquage du journal WG",
+    "UI_setting_wgLogHideBlock_tooltip": "Masque les messages de dégâts bloqués dans le journal de combat standard de WG.",
+    "UI_setting_wgLogHideAssist_text": "Aide au masquage du journal WG",
+    "UI_setting_wgLogHideAssist_tooltip": "Masque les messages d'assistance aux dégâts dans le journal de combat standard de WG."
+}

@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Tipo di marcatore orizzontale",
+    "UI_setting_horizontal_tooltip": "Tipo di indicatori a sinistra e a destra del mirino che mostrano le posizioni dei bordi orizzontali della pistola.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Disabilitato",
+    "UI_setting_horizontal_1": "Angoli",
+    "UI_setting_horizontal_2": "Parentesi quadre",
+    "UI_setting_horizontal_3": "Semicerchio grande",
+    "UI_setting_horizontal_4": "Semicerchio",
+    "UI_setting_horizontal_5": "Ottagono",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Tipo di marcatore verticale",
+    "UI_setting_vertical_tooltip": "Tipo di indicatori sopra e sotto il mirino che mostrano le posizioni del bordo verticale della tua pistola.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Disabilitato",
+    "UI_setting_vertical_1": "Trattino verticale",
+    "UI_setting_vertical_2": "Punto",
+    "UI_setting_vertical_3": "Triangolo",
+    "UI_setting_vertical_4": "Diodo",
+    "UI_setting_vertical_5": "Ottagono",
+    "UI_setting_vertical_6": "ktulho"
+}

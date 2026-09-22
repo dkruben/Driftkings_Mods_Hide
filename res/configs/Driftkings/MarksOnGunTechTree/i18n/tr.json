@@ -1,0 +1,15 @@
+{
+    "UI_description": "MarksOnGunTechTree (Oyun Yüzü)",
+    "UI_setting_showInTechTree_text": "TechTree: etkin",
+    "UI_setting_showInTechTree_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunPercent_text": "TechTree: MoE yüzdesini göster",
+    "UI_setting_showInTechTreeMarkOfGunPercent_tooltip": "",
+    "UI_setting_showInTechTreeMastery_text": "TechTree: Ustalığı göster",
+    "UI_setting_showInTechTreeMastery_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_text": "TechTree: MEB araç adını renklendiriyor",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_tooltip": "",
+    "UI_setting_badgeOffsetX_text": "X konumu (sol / sağ)",
+    "UI_setting_badgeOffsetX_tooltip": "Olumsuz: sol. Olumlu: doğru.",
+    "UI_setting_badgeOffsetY_text": "Y Konumu (yukarı/aşağı)",
+    "UI_setting_badgeOffsetY_tooltip": "Negatif: yukarı. Olumlu: aşağı."
+}

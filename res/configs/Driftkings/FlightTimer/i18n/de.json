@@ -1,0 +1,12 @@
+{
+    "UI_description": "FlightTimer",
+    "UI_version": 106,
+    "UI_setting_template_text": "Vorlage",
+    "UI_setting_template_tooltip": "Makros '%(flightTime).1fs', %(distance)dm",
+    "UI_setting_spgOnly_text": "Nur für SPG?",
+    "UI_setting_spgOnly_tooltip": "Wenn diese Option aktiviert ist, ist der Timer nur für SPG sichtbar.",
+    "UI_setting_x_text": "Position X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Position Y",
+    "UI_setting_y_tooltip": ""
+}

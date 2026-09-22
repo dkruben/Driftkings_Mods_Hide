@@ -1,10 +1,12 @@
 {
-  "game_version": "2.2.0.1",
-  "protect_with_pjorion": true,
+  "game_version": "2.4.0.1",
+  "protect_with_pjorion": false,
   "debug_targets": [
     "C:\\Games\\World_of_Tanks_EU"
   ],
   "release_targets": [
     "E:\\Wot_Mods_\\Drift_Kings_ModPack\\driftkings_mods\\Driftkings_Mods\\released"
-  ]
+  ],
+  "reference_source_version": "2.4.0.5450",
+  "reference_source": "C:\\Users\\Ruben\\Desktop\\wot-src-EU"
 }

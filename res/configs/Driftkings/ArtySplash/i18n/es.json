@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Botón: mostrar|ocultar punto",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Botón: mostrar|ocultar Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Mostrar Splash de forma predeterminada",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Mostrar punto por defecto",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Modo arcade disponible",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Modo francotirador disponible",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Modo artístico disponible",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "Él salpica",
+    "UI_artySplash_messageSplashOn": "HE Splash: Mostrar Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Ocultar Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Mostrar punto",
+    "UI_artySplash_messageDotOff": "HE Splash: Ocultar punto"
+}

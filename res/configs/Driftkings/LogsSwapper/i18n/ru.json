@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Включить обратный журнал.",
+    "UI_setting_logSwapper_tooltip": "Меняет положение журнала повреждений в боевом интерфейсе.",
+    "UI_setting_wgLogHideCritics_text": "Журнал WG Скрыть критиков",
+    "UI_setting_wgLogHideCritics_tooltip": "Скрывает сообщения о критических попаданиях в стандартный журнал боя WG.",
+    "UI_setting_wgLogHideBlock_text": "Блок сокрытия журнала WG",
+    "UI_setting_wgLogHideBlock_tooltip": "Скрывает сообщения о заблокированных повреждениях в стандартном журнале боя WG.",
+    "UI_setting_wgLogHideAssist_text": "Помощник по скрытию журнала WG",
+    "UI_setting_wgLogHideAssist_tooltip": "Скрывает сообщения о нанесении урона в стандартном журнале боя WG."
+}

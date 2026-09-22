@@ -40,5 +40,5 @@
     },
     "backgroundEnabled": true,
     "backgroundAlpha": 0.78,
-    "version": "2.0.1 (%(file_compile_date)s)"
+    "version": 202
 }

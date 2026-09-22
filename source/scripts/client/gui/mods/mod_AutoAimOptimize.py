@@ -20,7 +20,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.7.0 (%(file_compile_date)s)'
+        self.version = '1.7.1 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU (spoter mods)'
         self.data = {
             'enabled': True,
@@ -74,13 +74,14 @@ class ConfigInterface(DriftkingsConfigInterface):
                 vehicle = getEntity(vId)
                 if vehicle is not None and vehicle.isStarted and vehicle.isAlive():
                     radian = self.calc_radian(vehicle.position, self.angle)
-                    if radian:
+                    if radian is not None:
                         length = Math.Vector3(vehicle.position - playerPosition).length
                         if result_len is None:
                             result_len = length
                             result = vehicle
                         if radian < minRadian and result_len >= length:
                             minRadian = radian
+                            result_len = length
                             result = vehicle
         if self.data['catchHiddenTarget']:
             self.player.autoAim(result)
@@ -95,11 +96,13 @@ class ConfigInterface(DriftkingsConfigInterface):
         cameraDir, cameraPos = cameras.getWorldRayAndPoint(0, 0)
         cameraDir.normalise()
         cameraToTarget = target_position - cameraPos
+        if cameraToTarget.lengthSquared <= 0.0:
+            return
         dot = cameraToTarget.dot(cameraDir)
         if dot < 0:
             return
-        targetRadian = cameraToTarget.lengthSquared
-        radian = 1.0 - dot * dot / targetRadian
+        cosine = dot / math.sqrt(cameraToTarget.lengthSquared)
+        radian = math.acos(max(-1.0, min(1.0, cosine)))
         if radian > angle:
             return
         return radian
@@ -118,33 +121,34 @@ analytics = Analytics(config.ID, config.version)
 
 @override(PlayerAvatar, '_PlayerAvatar__startGUI')
 def new_startGUI(func, *args):
-    func(*args)
+    result = func(*args)
     config.startBattle()
+    return result
 
 
 @override(SniperControlMode, 'handleKeyEvent')
 def new_keyEventSniper(func, *args):
     if config.injectButton(args[1], args[2]):
         return True
-    func(*args)
+    return func(*args)
 
 
 @override(StrategicControlMode, 'handleKeyEvent')
 def new_keyEventStrategic(func, *args):
     if not config.data['disableArtyMode'] and config.injectButton(args[1], args[2]):
         return True
-    func(*args)
+    return func(*args)
 
 
 @override(ArtyControlMode, 'handleKeyEvent')
 def new_keyEventArty(func, *args):
     if not config.data['disableArtyMode'] and config.injectButton(args[1], args[2]):
         return True
-    func(*args)
+    return func(*args)
 
 
 @override(ArcadeControlMode, 'handleKeyEvent')
 def new_keyEventArcade(func, *args):
     if config.injectButton(args[1], args[2]):
         return True
-    func(*args)
+    return func(*args)

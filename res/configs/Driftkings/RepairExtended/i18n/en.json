@@ -1,6 +1,6 @@
 {
     "UI_description": "RepairExtended",
-    "UI_version": "2.1.0 (%(file_compile_date)s)",
+    "UI_version": 216,
     "UI_setting_buttonChassis_text": "Button: Restore Chassis",
     "UI_setting_buttonChassis_tooltip": "",
     "UI_setting_buttonRepair_text": "Button: Smart Repair",

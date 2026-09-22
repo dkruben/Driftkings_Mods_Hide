@@ -1,0 +1,10 @@
+{
+    "UI_description": "AutoAimOptimize",
+    "UI_version": 171,
+    "UI_setting_angle_text": "Hedefi yakalamak için açıyı ayarlayın",
+    "UI_setting_angle_value": "x",
+    "UI_setting_catchHiddenTarget_text": "Bir engelin arkasına gizlenmiş hedefi yakalayın",
+    "UI_setting_catchHiddenTarget_tooltip": "",
+    "UI_setting_disableArtyMode_text": "Arty modunda devre dışı bırak",
+    "UI_setting_disableArtyMode_tooltip": ""
+}

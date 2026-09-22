@@ -1,6 +1,6 @@
 {
     "UI_description": "SpottedStatus",
-    "UI_version": "1.5.0 (%(file_compile_date)s)",
+    "UI_version": 151,
     "UI_setting_neverSeen_text": "Never Seen",
     "UI_setting_neverSeen_tooltip": "",
     "UI_setting_spotted_text": "Spotted",

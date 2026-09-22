@@ -2,16 +2,18 @@ package driftkings.views.battle
 {
 	import driftkings.injector.BattleDisplayable;
 	import net.wg.gui.battle.components.*;
+	import net.wg.gui.battle.views.minimap.BaseMinimap;
 	import net.wg.infrastructure.interfaces.IGraphicsOptimizationComponent;
 
 	public class MinimapCentred extends BattleDisplayable
 	{
-		private var minimap:* = null;
+		private var minimap:BaseMinimap = null;
+		private var centered:Boolean = false;
 		private var oldX:Number = 0;
 		private var oldY:Number = 0;
 		private var oldscaleX:Number = 0;
 		private var oldscaleY:Number = 0;
-		private var oldSize:Number = 0;
+		private var oldSize:int = 0;
 
 		public function MinimapCentred()
 		{
@@ -42,19 +44,24 @@ package driftkings.views.battle
 			{
 				if(isEnabled)
 				{
+					if (!centered)
+					{
 					oldSize = minimap.currentSizeIndex;
 					oldX = minimap.x;
 					oldY = minimap.y;
 					oldscaleX = minimap.scaleX;
 					oldscaleY = minimap.scaleY;
+					}
+					centered = true;
 					minimap.setAllowedSizeIndex(5);
 					minimap.scaleX = scale;
 					minimap.scaleY = scale;
 					minimap.x = App.appWidth * 0.5 - minimap.currentWidth * 0.5 * scale;
 					minimap.y = App.appHeight * 0.5 - minimap.currentHeight * 0.5 * scale;
 				}
-				else
+				else if (centered)
 				{
+					centered = false;
 					minimap.scaleX = oldscaleX;
 					minimap.scaleY = oldscaleY;
 					minimap.setAllowedSizeIndex(oldSize);

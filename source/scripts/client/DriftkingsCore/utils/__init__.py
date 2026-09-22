@@ -20,5 +20,6 @@ def __import_delayed():
     globals()['delayed'] = sys.modules['DriftkingsCore.delayed'] = DriftkingsCore.delayed = delayed
 
 
-BigWorld.callback(0, __import_delayed)
-del __import_delayed
+def initializeDelayedImports():
+    # Called by the root package after its public functions are available.
+    BigWorld.callback(0, __import_delayed)

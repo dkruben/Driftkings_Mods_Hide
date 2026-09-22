@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Aktivierungsnachricht anzeigen",
+    "UI_setting_activateMessage_tooltip": "Aktivierungsnachricht im Kampf anzeigen",
+    "UI_setting_fixAccuracyInMove_text": "Korrigieren Sie die Genauigkeit",
+    "UI_setting_fixAccuracyInMove_tooltip": "Wenn Sie den Panzer bewegen und dann anhalten, verwenden Sie die Fixgenauigkeit, um das Zielen nicht zu verlieren",
+    "UI_setting_serverTurret_text": "Serverturm",
+    "UI_setting_serverTurret_tooltip": "Bewegen Sie den Turm zu den Zielkoordinaten des Servers (in den Spieleinstellungen muss die Serversicht aktiviert sein).",
+    "UI_battle_activateMessage": "„Server Turret Extended“: Aktiviert",
+    "UI_setting_fixWheelCruiseControl_text": "Befestigen Sie den Tempomat auf Rädern",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Wenn Sie den Radmodus mit Tempomat aktivieren, wird das Fahrzeug bei stehendem Fahrzeug durch diese Einstellung deaktiviert",
+    "UI_setting_maxWheelMode_text": "Räder: Maximale Geschwindigkeit beibehalten",
+    "UI_setting_maxWheelMode_tooltip": "Beim Erreichen der Höchstgeschwindigkeit wird der Geschwindigkeitsmodus beim Manövrieren nicht deaktiviert",
+    "UI_setting_buttonMaxMode_text": "Taste: Räder behalten maximale Geschwindigkeit",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Räder: Automatischer Geschwindigkeitsmodus",
+    "UI_setting_autoActivateWheelMode_tooltip": "Schaltet automatisch den Geschwindigkeits- oder Manövriermodus ein",
+    "UI_setting_buttonAutoMode_text": "Taste: Automatischer Geschwindigkeitsmodus der Räder",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "EIN",
+    "UI_battle_OFF": "AUS"
+}

@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Pulsante: mostra|nascondi punto",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Pulsante: mostra|nascondi Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Mostra Splash per impostazione predefinita",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Mostra punto per impostazione predefinita",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Modalità arcade disponibile",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Modalità cecchino disponibile",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Modalità artistica disponibile",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "LUI Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Mostra Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Nascondi Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Mostra Dot",
+    "UI_artySplash_messageDotOff": "HE Splash: Nascondi punto"
+}

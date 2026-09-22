@@ -1,11 +1,13 @@
 {
     "files": {
-        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
+        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
-		"mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*", 
-        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod", 
-        "mods/{GAME_VERSION}/Driftkings/ArcadeZoom.wotmod": "build/wotmods/Driftkings/ArcadeZoom.wotmod"
-    }, 
-    "ext": ".zip", 
+        "mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*",
+        "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
+        "mods/{GAME_VERSION}/Driftkings/ArcadeZoom.wotmod": "build/wotmods/Driftkings/ArcadeZoom.wotmod",
+        "mods/configs/Driftkings/ArcadeZoom/**": "res/configs/Driftkings/ArcadeZoom/**",
+        "mods/configs/Driftkings/Driftkings_GUI/**": "res/configs/Driftkings/Driftkings_GUI/**"
+    },
+    "ext": ".zip",
     "enabled": true
 }

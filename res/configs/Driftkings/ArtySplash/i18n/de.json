@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Schaltfläche: Punkt ein-/ausblenden",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Schaltfläche: Splash ein-/ausblenden",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Splash standardmäßig anzeigen",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Standardmäßig Punkt anzeigen",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Arcade-Modus verfügbar",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Scharfschützenmodus verfügbar",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Arty-Modus verfügbar",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "ER Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Splash anzeigen",
+    "UI_artySplash_messageSplashOff": "HE Splash: Splash ausblenden",
+    "UI_artySplash_messageDotOn": "HE Splash: Punkt anzeigen",
+    "UI_artySplash_messageDotOff": "HE Splash: Punkt ausblenden"
+}

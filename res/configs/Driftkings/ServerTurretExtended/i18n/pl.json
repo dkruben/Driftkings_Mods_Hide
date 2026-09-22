@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Pokaż wiadomość aktywacyjną",
+    "UI_setting_activateMessage_tooltip": "Pokaż wiadomość aktywacyjną w bitwie",
+    "UI_setting_fixAccuracyInMove_text": "Napraw dokładność",
+    "UI_setting_fixAccuracyInMove_tooltip": "Kiedy czołg się porusza, a następnie zatrzymuje, używana jest poprawa celności, aby nie utracić celowania",
+    "UI_setting_serverTurret_text": "Wieża serwerowa",
+    "UI_setting_serverTurret_tooltip": "Przesuń wieżyczkę na współrzędne celowania serwera (potrzebujesz włączonego widoku serwera w ustawieniach gry)",
+    "UI_battle_activateMessage": "„Rozszerzona wieża serwerowa”: Aktywowana",
+    "UI_setting_fixWheelCruiseControl_text": "Napraw tempomat na kołach",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Kiedy aktywujesz tryb koła z tempomatem, pojazd się zatrzyma, to ustawienie wyłącza tę opcję",
+    "UI_setting_maxWheelMode_text": "Koła: Utrzymuj maksymalną prędkość",
+    "UI_setting_maxWheelMode_tooltip": "Po osiągnięciu maksymalnej prędkości nie wyłącza trybu prędkości podczas manewrowania",
+    "UI_setting_buttonMaxMode_text": "Przycisk: Koła utrzymują maksymalną prędkość",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Koła: tryb automatycznej prędkości",
+    "UI_setting_autoActivateWheelMode_tooltip": "Automatycznie włącza tryb prędkości lub manewrowania",
+    "UI_setting_buttonAutoMode_text": "Przycisk: tryb automatycznej prędkości kół",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "WŁ",
+    "UI_battle_OFF": "WYŁ"
+}

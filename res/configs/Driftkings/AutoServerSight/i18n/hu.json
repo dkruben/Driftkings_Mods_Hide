@@ -1,0 +1,14 @@
+{
+    "UI_description": "AutoServerSight",
+    "UI_setting_AT-SPG_text": "hogy AT",
+    "UI_setting_AT-SPG_tooltip": "",
+    "UI_setting_SPG_text": "hogy Arty",
+    "UI_setting_SPG_tooltip": "",
+    "UI_setting_heavyTank_text": "HT-nek",
+    "UI_setting_heavyTank_tooltip": "",
+    "UI_setting_lightTank_text": "LT-nek",
+    "UI_setting_lightTank_tooltip": "",
+    "UI_setting_mediumTank_text": "MT-nek",
+    "UI_setting_mediumTank_tooltip": "",
+    "UI_version": "1.0.0 (09.04.2024)"
+}

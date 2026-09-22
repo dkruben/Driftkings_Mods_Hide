@@ -1,0 +1,15 @@
+{
+    "UI_description": "ArmorCalculator",
+    "UI_version": 132,
+    "UI_setting_displayOnAllies_text": "Відображення на союзниках",
+    "UI_setting_displayOnAllies_tooltip": "",
+    "UI_noDamage": "Критичний удар, без пошкоджень.",
+    "UI_ricochet": "Рикошет",
+    "UI_colors": {
+        "green": "#60CB00",
+        "orange": "#FF9900",
+        "purple": "#6F6CD3",
+        "red": "#ED070A",
+        "yellow": "#FFC900"
+    }
+}

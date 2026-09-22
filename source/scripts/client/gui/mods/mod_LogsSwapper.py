@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from functools import partial
 from gui.Scaleform.daapi.view.battle.shared.damage_log_panel import _LogViewComponent, DamageLogPanel
 from gui.battle_control.battle_constants import PERSONAL_EFFICIENCY_TYPE
 
@@ -10,7 +11,7 @@ class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
         self.author = 'Maintenance by: _DKRuben_EU'
-        self.version = '1.5.5 (%(file_compile_date)s)'
+        self.version = '1.5.6 (%(file_compile_date)s)'
         self.data = {
             'enabled': True,
             'logSwapper': True,
@@ -51,26 +52,30 @@ analytics = Analytics(config.ID, config.version)
 
 
 class WGLogs(object):
-    BASE_WG_LOGS = (DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog)
-
     def __init__(self):
-        self.validated = {
-            PERSONAL_EFFICIENCY_TYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
-            PERSONAL_EFFICIENCY_TYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
-            PERSONAL_EFFICIENCY_TYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
-            PERSONAL_EFFICIENCY_TYPE.STUN: config.data['wgLogHideAssist']
-        }
         override(_LogViewComponent, 'addToLog', self.new__addToLog)
-        
+        # Route the final Flash calls, preserving BattleOptions and other log hooks.
+        for top, bottom in (('as_addDetailMessageTopS', 'as_addDetailMessageBottomS'),
+                            ('as_detailStatsTopS', 'as_detailStatsBottomS')):
+            originalTop = getattr(DamageLogPanel, top)
+            originalBottom = getattr(DamageLogPanel, bottom)
+            override(DamageLogPanel, top, partial(self.routeLog, originalBottom))
+            override(DamageLogPanel, bottom, partial(self.routeLog, originalTop))
+
+    def routeLog(self, opposite, func, panel, *args, **kwargs):
+        target = opposite if config.data['enabled'] and config.data['logSwapper'] else func
+        return target(panel, *args, **kwargs)
 
     def new__addToLog(self, func, component, event):
         if not config.data['enabled']:
             return func(component, event)
-        filtered_events = [e for e in event if not self.validated.get(e.getType(), False)]
+        validated = self.getFilters()
+        filtered_events = [e for e in event if not validated.get(e.getType(), False)]
         return func(component, filtered_events)
 
-    def update_settings(self):
-        self.validated = {
+    @staticmethod
+    def getFilters():
+        return {
             PERSONAL_EFFICIENCY_TYPE.RECEIVED_CRITICAL_HITS: config.data['wgLogHideCritics'],
             PERSONAL_EFFICIENCY_TYPE.BLOCKED_DAMAGE: config.data['wgLogHideBlock'],
             PERSONAL_EFFICIENCY_TYPE.ASSIST_DAMAGE: config.data['wgLogHideAssist'],
@@ -79,6 +84,3 @@ class WGLogs(object):
 
 
 g_logs = WGLogs()
-
-
-DamageLogPanel._addToTopLog, DamageLogPanel._updateTopLog, DamageLogPanel._updateBottomLog, DamageLogPanel._addToBottomLog = (tuple(reversed(g_logs.BASE_WG_LOGS)) if config.data['logSwapper'] else g_logs.BASE_WG_LOGS)

@@ -45,3 +45,4 @@ def initializeSubsystems():
 
 # Initialize the core when the module is imported
 initializeCore()
+initializeDelayedImports()

@@ -19,7 +19,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-res/flash/*.swf
 
 # Virtual environments
 env/
@@ -63,13 +62,6 @@ Thumbs.db
 *.bak
 *.tmp
 
-# Installer generated artifacts
-installer/DriftkingsInstaller/bin/
-installer/DriftkingsInstaller/obj/
-installer/DriftkingsInstaller/Payload/archives/
-installer/DriftkingsInstaller/Payload/payload_manifest.json
-installer/DriftkingsInstaller/Assets/*.png
-
 
 source/scripts/client/gui/mods/test_1.py
 *.bnk
@@ -82,3 +74,7 @@ res/flash/AccountsManager/obj/AccountsManagerWindowConfig.xml
 /build_tools/configs_generator.py
 res/flash/CreditCalc/obj/CreditCalcConfig.old
 res/flash/CreditCalc/obj/CreditCalcConfig.xml
+
+# Generated local audit snapshots and visual previews
+audit_mods/*.json
+previews/*.png

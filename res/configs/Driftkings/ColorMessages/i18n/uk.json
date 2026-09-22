@@ -1,0 +1,21 @@
+{
+    "UI_description": "ColorMessages",
+    "UI_setting_color_header_tooltip_header_text": "Колір заголовка:",
+    "UI_setting_color_xp_tooltip_header_text": "Колір XP:",
+    "UI_setting_color_credits_tooltip_header_text": "Колір кредитів:",
+    "UI_setting_color_damage_tooltip_header_text": "Колір пошкодження:",
+    "UI_setting_color_free_xp_tooltip_header_text": "Безкоштовний колір XP:",
+    "UI_setting_color_medals_tooltip_header_text": "Колір медалей:",
+    "UI_setting_color_header_text": "поточний <font color='#%(color)s'>заголовок</font> колір: #%(color)s",
+    "UI_setting_color_xp_text": "поточний <font color='#%(color)s'>xp</font> колір: #%(color)s",
+    "UI_setting_color_credits_text": "поточний <font color='#%(color)s'>кредити</font> колір: #%(color)s",
+    "UI_setting_color_damage_text": "поточний <font color='#%(color)s'>пошкодження</font> колір: #%(color)s",
+    "UI_setting_color_free_xp_text": "поточний <font color='#%(color)s'>безкоштовний xp</font> колір: #%(color)s",
+    "UI_setting_color_medals_text": "поточний <font color='#%(color)s'>медалі</font> колір: #%(color)s",
+    "UI_setting_color_header_tooltip": "Цей колір буде застосовано до всіх заголовків результатів битви.\n\n%(example)s",
+    "UI_setting_color_xp_tooltip": "Цей колір буде застосовано до всіх значень досвіду результатів бою.\n\n%(example)s",
+    "UI_setting_color_credits_tooltip": "Цей колір буде застосовано до всіх значень результатів бою.\n\n%(example)s",
+    "UI_setting_color_damage_tooltip": "Цей колір буде застосовано до всіх значень шкоди результату бою.\n\n%(example)s",
+    "UI_setting_color_free_xp_tooltip": "Цей колір буде застосовано до всіх безкоштовних значень досвіду в боях.\n\n%(example)s",
+    "UI_setting_color_medals_tooltip": "Цей колір буде застосовано до всіх медалей за результати битв.\n\n%(example)s"
+}

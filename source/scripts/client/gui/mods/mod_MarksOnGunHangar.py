@@ -1,27 +1,95 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import math
+import json
+import logging
+import weakref
+import BigWorld
 
 from CurrentVehicle import g_currentVehicle
 from dossiers2.ui.achievements import ACHIEVEMENT_BLOCK, MARK_OF_MASTERY_RECORD
-from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.lobby.profile.ProfileUtils import ProfileUtils
-from gui.Scaleform.framework import ScopeTemplates, ViewSettings, g_entitiesFactories
-from gui.Scaleform.framework.entities.View import View
-from gui.Scaleform.framework.managers.loaders import SFViewLoadParams
-from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
-from gui.app_loader.settings import APP_NAME_SPACE
-from gui.shared import EVENT_BUS_SCOPE, events, g_eventBus
 from gui.shared.gui_items.dossier.achievements.mark_on_gun import MarkOnGunAchievement
 from gui.shared.personality import ServicesLocator
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logException, logError, calculate_version, color_tables, getColor
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, logException, calculate_version, color_tables, getColor
+from DriftkingsCore.utils.achievement_dossiers import getAchievementDossier
+from DriftkingsCore import loadJson
 from DriftkingsStats import getVehicleInfoData
 
 
-AS_ALIAS = 'MarksOnGunHangar'
-AS_SWF = 'MarksOnGunHangar.swf'
+LOG = logging.getLogger('Driftkings.MarksOnGunHangar')
+FEATURE = 'DriftkingsMarksOnGunHangar'
+RESOURCE = 'mods/Driftkings/MarksOnGunHangar/model'
+ASSETS = 'coui://gui/gameface/mods/Driftkings/MarksOnGunHangar/'
 
 g_controller = None
+
+
+THRESHOLDS = (65, 85, 95)
+
+
+def finite(value, default=0.0):
+    try:
+        value = float(value)
+        return default if math.isnan(value) or math.isinf(value) else value
+    except (ValueError, TypeError, OverflowError):
+        return default
+
+
+def goal(percent, moving_average, tier, selection=0, earned_marks=0):
+    percent = max(0.0, min(100.0, finite(percent)))
+    earned_marks = max(0, min(3, int(finite(earned_marks))))
+    selection = max(0, min(3, int(finite(selection))))
+    # Awarded marks are retained even if the current percentage later falls.
+    progress_marks = max(earned_marks, sum(percent >= limit for limit in THRESHOLDS))
+    mark = selection or min(3, progress_marks + 1)
+    threshold = THRESHOLDS[mark - 1]
+    eligible = finite(tier) >= 5
+    achieved = eligible and (earned_marks >= mark or percent >= threshold)
+    estimate = None
+    average = finite(moving_average)
+    if eligible and percent > 0 and average > 0:
+        # Local proportional approximation, NOT a server threshold or a forecast
+        # of the damage needed in the next single battle.
+        estimate = int(math.ceil(average * threshold / percent / 10.0) * 10)
+    return {'eligible': eligible, 'mark': mark, 'threshold': threshold,
+            'achieved': achieved, 'gap': max(0.0, threshold - percent),
+            'estimate': estimate, 'percent': percent}
+
+
+def record_snapshot(history, vehicle_id, battles, percent, average):
+    """Store one snapshot per observed battle counter, not per panel repaint."""
+    vehicles = history.setdefault('vehicles', {})
+    key = str(vehicle_id)
+    points = vehicles.setdefault(key, [])
+    sample = {'battles': max(0, int(finite(battles))),
+              'percent': max(0.0, min(100.0, finite(percent))),
+              'average': max(0.0, finite(average))}
+    if points and sample['battles'] < points[-1]['battles']:
+        # Reset/replaced dossier: do not turn a decreasing counter into a battle.
+        points[:] = []
+    if points and sample['battles'] == points[-1]['battles']:
+        if points[-1] == sample:
+            return False
+        points[-1] = sample
+    else:
+        points.append(sample)
+    del points[:-21]
+    return True
+
+
+def trend(history, vehicle_id, last_battles=10):
+    points = history.get('vehicles', {}).get(str(vehicle_id), [])
+    if len(points) < 2:
+        return {'battles': 0, 'delta': None, 'points': [p['percent'] for p in points]}
+    last_battles = max(1, min(20, int(finite(last_battles, 10))))
+    start = len(points) - 2
+    while start > 0 and points[-1]['battles'] - points[start]['battles'] < last_battles:
+        start -= 1
+    selected = points[start:]
+    return {'battles': selected[-1]['battles'] - selected[0]['battles'],
+            'delta': round(selected[-1]['percent'] - selected[0]['percent'], 2),
+            'points': [p['percent'] for p in selected]}
 
 
 class ConfigInterface(DriftkingsConfigInterface):
@@ -40,40 +108,80 @@ class ConfigInterface(DriftkingsConfigInterface):
         super(ConfigInterface, self).__init__()
 
     def init(self):
-        self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
-        self.author = 'Maintenance by: _DKRuben_EU (native hangar Scaleform UI)'
+        self.ID = 'MarksOnGunHangar'
+        self.version = '1.2.0 (%(file_compile_date)s)'
+        self.author = 'Maintenance by: _DKRuben_EU (Gameface hangar UI)'
         self.data = {
             'enabled': True,
             'showInHangar': True,
             'showInStatistic': True,
             'textLock': False,
+            'goalSelection': 0,
+            'compactMode': False,
+            'historyBattles': 10,
             'showTooltipTargets': True,
             'colorRating': 0,
             'starAnimationWindow': 5.0,
             'panel': {
                 'x': 215.0,
                 'y': -246.0,
-                'width': 360.0,
-                'height': 188.0,
+                'width': 362.0,
+                'height': 186.0,
                 'alignX': 'left',
                 'alignY': 'bottom'
             },
             'card': {
-                'backgroundColor': 0x101114,
-                'backgroundAlpha': 0.94,
-                'outlineColor': 0x2B2D33,
+                'backgroundColor': 0x0C0F14,
+                'backgroundAlpha': 0.88,
+                'outlineColor': 0x6E7783,
                 'headerColor': '#C7A86A',
                 'titleColor': '#F5F1E8',
-                'mutedColor': '#8E949F',
-                'lineColor': '#262A31',
+                'mutedColor': '#8C919A',
+                'lineColor': '#4B515B',
                 'accentColor': '#E2C07A',
-                'accentSoftColor': '#3A2B17',
+                'accentSoftColor': '#4A3319',
                 'warningColor': '#F3B14B'
             }
         }
         self.i18n = {
+            'UI_panel_header': 'MARKS OF EXCELLENCE',
+            'UI_panel_drag': 'DRAG',
+            'UI_panel_locked': 'LOCKED',
+            'UI_panel_chooseVehicle': 'Choose a tank',
+            'UI_panel_selectVehicle': 'Select a vehicle in the hangar.',
+            'UI_panel_noDossier': 'Vehicle dossier not available.',
+            'UI_panel_tierLimit': 'Marks available from tier V',
+            'UI_panel_mark': 'Mark',
+            'UI_panel_achieved': 'Achieved',
+            'UI_panel_remaining': 'pp remaining',
+            'UI_panel_average': 'Combined EMA',
+            'UI_panel_estimate': 'Goal estimate',
+            'UI_panel_historyWaiting': 'History: waiting for the next battle',
+            'UI_panel_observedBattles': 'battles observed',
+            'UI_panel_estimateNote': 'Estimate only; not the damage required next battle.',
+            'UI_panel_noStats': 'No statistics loaded',
+            'UI_panel_battles': 'battles',
+            'UI_panel_winRate': 'WIN RATE',
+            'UI_panel_mastery0': 'No mastery',
+            'UI_panel_mastery1': '3rd class',
+            'UI_panel_mastery2': '2nd class',
+            'UI_panel_mastery3': '1st class',
+            'UI_panel_mastery4': 'Ace Tanker',
+            'UI_panel_automatic': 'Automatic',
+            'UI_panel_goal1': '1st mark (65%)',
+            'UI_panel_goal2': '2nd mark (85%)',
+            'UI_panel_goal3': '3rd mark (95%)',
             'UI_description': self.ID,
+            'UI_setting_goalSelection_text': 'Mark objective',
+            'UI_setting_goalSelection_tooltip': 'Automatic selects the next unearned mark. Damage is a proportional estimate, not a server threshold or next-battle prediction.',
+            'UI_setting_compactMode_text': 'Compact panel',
+            'UI_setting_compactMode_tooltip': 'Hide secondary vehicle statistics.',
+            'UI_setting_historyBattles_text': 'Recent battles in history',
+            'UI_setting_historyBattles_tooltip': 'Updates may group several battles. History starts when this version is installed.',
+            'UI_setting_positionX_text': 'Horizontal position (X)',
+            'UI_setting_positionX_tooltip': 'Smaller: left. Larger: right.',
+            'UI_setting_positionY_text': 'Vertical position (Y)',
+            'UI_setting_positionY_tooltip': 'Smaller: up. Larger: down.',
             'UI_version': calculate_version(self.version),
             'UI_setting_showInHangar_text': 'Hangar: enabled',
             'UI_setting_showInHangar_tooltip': '',
@@ -126,24 +234,47 @@ class ConfigInterface(DriftkingsConfigInterface):
             'column1': [
                 self.tb.createControl('showInHangar'),
                 self.tb.createControl('showInStatistic'),
+                self.tb.createOptions('goalSelection', [self.i18n['UI_panel_' + key] for key in ('automatic', 'goal1', 'goal2', 'goal3')]),
+                self.tb.createControl('compactMode'),
                 self.tb.createOptions('colorRating', [self.i18n[x_color_key + x] for x in x_color_list])
             ],
             'column2': [
                 self.tb.createControl('showTooltipTargets'),
-                self.tb.createControl('textLock')
+                self.tb.createControl('textLock'),
+                self.tb.createStepper('historyBattles', 1, 20, 1, manual=True),
+                self.tb.createStepper('positionX', -7680, 7680, 1, manual=True, value=self.data['panel']['x']),
+                self.tb.createStepper('positionY', -4320, 4320, 1, manual=True, value=self.data['panel']['y'])
             ]
         }
 
+    def getData(self):
+        # MSA resolves every template varName from this flat settings mapping.
+        # Keep the persisted position in panel.x/y, shared with Gameface dragging.
+        settings = dict(self.data)
+        settings['positionX'] = self.data['panel']['x']
+        settings['positionY'] = self.data['panel']['y']
+        return settings
+
     def onApplySettings(self, settings):
+        settings = dict(settings)
+        panel = dict(settings.get('panel', self.data['panel']))
+        for setting, axis in (('positionX', 'x'), ('positionY', 'y')):
+            if setting in settings:
+                panel[axis] = float(settings.pop(setting))
+        settings['panel'] = panel
         super(ConfigInterface, self).onApplySettings(settings)
         if g_controller is not None:
             g_controller.onApplySettings()
 
     def get_view_config(self):
         panel = dict(self.data['panel'])
+        panel['compactMode'] = bool(self.data['compactMode'])
+        panel['height'] = 194.0 if panel['compactMode'] else max(260.0, panel['height'])
         panel['locked'] = bool(self.data['textLock'])
         panel['visible'] = bool(self.data['enabled'] and self.data['showInHangar'])
         panel['starAnimationWindow'] = float(self.data.get('starAnimationWindow', 5.0))
+        panel['headerColor'] = self.data['card']['headerColor']
+        panel['titleColor'] = self.data['card']['titleColor']
         panel['backgroundColor'] = self.data['card']['backgroundColor']
         panel['backgroundAlpha'] = self.data['card']['backgroundAlpha']
         panel['outlineColor'] = self.data['card']['outlineColor']
@@ -172,6 +303,9 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def getRatingColor(self, rating_color, rating_value, fallback_key):
         return self.readColors(rating_color, rating_value) or self.getDefaultColor(fallback_key)
+
+    def get_rating_color(self, rating_color, rating_value, fallback_key):
+        return self.getRatingColor(rating_color, rating_value, fallback_key)
 
 
 config = ConfigInterface()
@@ -229,6 +363,15 @@ class MarksOnGunData(object):
 
     def _mastery_label(self, value):
         return self._MASTERY_LABELS.get(int(value or 0), '--')
+
+    def _mastery_compact_label(self, value):
+        labels = {
+            1: '3rd',
+            2: '2nd',
+            3: '1st',
+            4: 'Ace'
+        }
+        return labels.get(int(value or 0), '--')
 
     def _pick_color(self, value, levels):
         colors = [
@@ -340,6 +483,8 @@ class MarksOnGunData(object):
             if not vehicle:
                 return None
             dossier = g_currentVehicle.getDossier()
+        else:
+            vehicle = ServicesLocator.itemsCache.items.getItemByCD(dossier.getCompactDescriptor())
         if dossier is None:
             return None
 
@@ -362,6 +507,10 @@ class MarksOnGunData(object):
 
         result = {
             'vehicleName': vehicle.shortUserName,
+            'vehicleID': vehicle.intCD,
+            'tier': vehicle.level,
+            'earnedMarks': dossier.getRecordValue(ACHIEVEMENT_BLOCK.TOTAL, 'marksOnGun'),
+            'randomBattles': int(self._safe(random_stats.getBattlesCount(), 0)),
             'battles': battles,
             'wins': wins,
             'winRate': winrate,
@@ -370,7 +519,7 @@ class MarksOnGunData(object):
             'wn8Color': self._color_by_wn8(wn8) if wn8 else config.data['card']['mutedColor'],
             'masteryValue': mastery['value'],
             'masteryIcon': mastery['icon'],
-            'hasMoE': damage_rating > 0.0
+            'hasMoE': vehicle.level >= 5 and damage_rating > 0.0
         }
 
         if damage_rating <= 0.0:
@@ -439,235 +588,188 @@ class MarksOnGunData(object):
         template = config.i18n['UI_tooltipsFull'] if config.data['showTooltipTargets'] else config.i18n['UI_tooltips']
         return template.format(**ctx)
 
-    def _build_chip_html(self, label, value, value_color, icon_path=''):
-        muted = config.data['card']['mutedColor']
-        title = config.data['card']['titleColor']
-        icon_html = ''
-        if icon_path:
-            icon_html = '<img src="%s" width="18" height="18" vspace="-4" /> ' % icon_path
-        return (
-            "<font face='$FieldFont' size='10' color='%s'>%s</font><br>"
-            "<font face='$FieldFont' size='13' color='%s'><b>%s%s</b></font>" % (
-                muted,
-                label,
-                value_color or title,
-                icon_html,
-                value
-            )
-        )
-
     def build_panel_model(self):
-        header_html = "<font face='$FieldFont' size='10' color='%s' letterSpacing='1.2'><b>MARKS ON GUN</b></font>" % config.data['card']['headerColor']
-        muted = config.data['card']['mutedColor']
-        title = config.data['card']['titleColor']
-        accent = config.data['card']['accentColor']
-        c65 = config.get_rating_color('mog', 65.0, 'good')
-        c85 = config.get_rating_color('mog', 85.0, 'very_good')
-        c95 = config.get_rating_color('mog', 95.0, 'unique')
-
-        if not g_currentVehicle.item:
-            return {
-                'state': 'empty',
-                'headerHtml': header_html,
-                'vehicleHtml': "<font face='$TitleFont' size='20' color='%s'><b>No vehicle selected</b></font>" % title,
-                'percentHtml': "<font face='$TitleFont' size='30' color='%s'><b>--</b></font>" % title,
-                'nextHtml': "<font face='$FieldFont' size='12' color='%s'>Choose a tank in the hangar</font>" % muted,
-                'statsHtml': "<font face='$FieldFont' size='13' color='%s'>The card updates automatically when you switch vehicle.</font>" % muted,
-                'targetsHtml': "<font face='$FieldFont' size='12' color='%s'>MoE, Mastery Badge, WN8 and winrate are shown here.</font>" % muted,
-                'masteryHtml': self._build_chip_html('Mastery', '--', title),
-                'wn8Html': self._build_chip_html('WN8', '--', title),
-                'winrateHtml': self._build_chip_html('Winrate', '--', title),
-                'battlesHtml': "<font face='$FieldFont' size='11' color='%s'>No battles loaded</font>" % muted,
-                'damageRating': 0.0
-            }
-
+        result = {'config': config.get_view_config(), 'state': 'empty',
+                  'vehicle': config.i18n['UI_panel_chooseVehicle'], 'message': config.i18n['UI_panel_selectVehicle'],
+                  'labels': {key[9:]: value for key, value in config.i18n.items() if key.startswith('UI_panel_')}}
+        if not g_currentVehicle.isPresent():
+            return result
         data = self.collect()
         if data is None:
-            return {
-                'state': 'empty',
-                'headerHtml': header_html,
-                'vehicleHtml': "<font face='$TitleFont' size='20' color='%s'><b>%s</b></font>" % (title, g_currentVehicle.item.shortUserName),
-                'percentHtml': "<font face='$TitleFont' size='30' color='%s'><b>--</b></font>" % title,
-                'nextHtml': "<font face='$FieldFont' size='12' color='%s'>Vehicle dossier not available</font>" % muted,
-                'statsHtml': "<font face='$FieldFont' size='13' color='%s'>Play at least one battle on this tank to populate the stats.</font>" % muted,
-                'targetsHtml': "<font face='$FieldFont' size='12' color='%s'>MoE data will appear here once available.</font>" % muted,
-                'masteryHtml': self._build_chip_html('Mastery', '--', title),
-                'wn8Html': self._build_chip_html('WN8', '--', title),
-                'winrateHtml': self._build_chip_html('Winrate', '--', title),
-                'battlesHtml': "<font face='$FieldFont' size='11' color='%s'>No dossier data</font>" % muted,
-                'damageRating': 0.0
-            }
+            result.update(vehicle=unicode(g_currentVehicle.item.shortUserName),
+                          message=config.i18n['UI_panel_noDossier'])
+            return result
+        target = goal(data['damageRating'], data['movingAvgDamage'], data['tier'],
+                      config.data['goalSelection'], data['earnedMarks'])
+        recent = g_history.observe(data) if target['eligible'] else {'delta': None, 'battles': 0}
+        mastery = max(0, min(4, int(finite(data['masteryValue']))))
+        icon = ('gui/maps/icons/achievement/32x32/markOfMastery%s.png' % mastery
+                if mastery else 'gui/maps/icons/achievements/summary/mastery/mastery_empty_small.png')
+        result.update({
+            'state': 'data', 'vehicle': unicode(data['vehicleName']), 'tier': data['tier'],
+            'target': target, 'recent': recent,
+            'earnedMarks': max(0, min(3, int(finite(data['earnedMarks'])))),
+            'average': self._format_int(data['movingAvgDamage']),
+            'estimate': '~' + self._format_int(target['estimate']) if target['estimate'] is not None else '--',
+            'mastery': config.i18n['UI_panel_mastery%s' % mastery],
+            'masteryIcon': 'coui://' + icon,
+            'wn8': self._format_int(data['wn8']) if data['wn8'] else '--',
+            'wn8Color': data['wn8Color'], 'winRateColor': data['winRateColor'],
+            'winRate': ('%.2f%%' % data['winRate']) if data['battles'] else '--',
+            'battles': self._format_int(data['battles'])
+        })
+        return result
 
-        if data.get('hasMoE'):
-            percent_html = "<font face='$TitleFont' size='31' color='%s'><b>%s%%</b></font>" % (title, self._format_float(data['damageRating']))
-            next_html = "<font face='$FieldFont' size='12' color='%s'>Next breakpoint: <font color='%s'><b>%s%%</b></font></font>" % (
-                muted, accent, data['nextPercent'])
-            stats_html = (
-                "<font face='$FieldFont' size='12' color='%s'>Current</font> "
-                "<font face='$FieldFont' size='14' color='%s'><b>%s</b></font>"
-                "<font face='$FieldFont' size='12' color='%s'>   EMA</font> "
-                "<font face='$FieldFont' size='14' color='%s'><b>%s</b></font>"
-                "<font face='$FieldFont' size='12' color='%s'>   Need</font> "
-                "<font face='$FieldFont' size='14' color='%s'><b>%s</b></font>" % (
-                    muted,
-                    data['currentDamageColor'], self._format_int(data['currentDamage']),
-                    muted,
-                    data['movingAvgDamageColor'], self._format_int(data['movingAvgDamage']),
-                    muted,
-                    data['needDamageColor'], self._format_int(data['needDamage'])
-                )
-            )
-            targets_html = (
-                "<font face='$FieldFont' size='11' color='%s'>Marks</font> "
-                "<font face='$FieldFont' size='11' color='%s'><b>65%%</b></font>  "
-                "<font face='$FieldFont' size='11' color='%s'><b>85%%</b></font>  "
-                "<font face='$FieldFont' size='11' color='%s'><b>95%%</b></font>" % (
-                    muted,
-                    c65,
-                    c85,
-                    c95
-                )
-            )
-        else:
-            percent_html = "<font face='$TitleFont' size='31' color='%s'><b>--</b></font>" % title
-            next_html = "<font face='$FieldFont' size='12' color='%s'>No valid MoE data yet for this tank</font>" % muted
-            stats_html = "<font face='$FieldFont' size='13' color='%s'>Play more battles on this vehicle to unlock mark progress.</font>" % muted
-            targets_html = "<font face='$FieldFont' size='11' color='%s'>Thresholds: 65%% / 85%% / 95%%</font>" % muted
 
-        battles_label = '%s battles' % self._format_int(data['battles']) if data['battles'] else 'No battles'
-        return {
-            'state': 'data',
-            'headerHtml': header_html,
-            'vehicleHtml': "<font face='$TitleFont' size='19' color='%s'><b>%s</b></font>" % (title, self._escape_html(data['vehicleName'])),
-            'percentHtml': percent_html,
-            'nextHtml': next_html,
-            'statsHtml': stats_html,
-            'targetsHtml': targets_html,
-            'masteryHtml': self._build_chip_html('Mastery', self._mastery_label(data['masteryValue']), accent, data['masteryIcon']),
-            'wn8Html': self._build_chip_html('WN8', data['wn8'] if data['wn8'] else '--', data['wn8Color']),
-            'winrateHtml': self._build_chip_html('Winrate', '%s%%' % self._format_float(data['winRate']) if data['battles'] else '--', data['winRateColor']),
-            'battlesHtml': "<font face='$FieldFont' size='11' color='%s'>%s</font>" % (muted, battles_label),
-            'damageRating': data['damageRating']
-        }
+class ProgressHistory(object):
+    def __init__(self):
+        self.account = None
+        self.data = {'vehicles': {}}
 
+    def observe(self, data):
+        account = getattr(BigWorld.player(), 'databaseID', None)
+        if not account:
+            return {'delta': None, 'battles': 0}
+        name = 'progress_%s' % int(account)
+        if account != self.account:
+            self.account = account
+            loaded = loadJson(config.ID, name, {'vehicles': {}}, config.configPath)
+            self.data = {'vehicles': {}}
+            if isinstance(loaded, dict) and isinstance(loaded.get('vehicles'), dict):
+                for vehicle, points in loaded['vehicles'].items():
+                    if isinstance(points, list):
+                        for point in points[-21:]:
+                            if isinstance(point, dict) and all(k in point for k in ('battles', 'percent', 'average')):
+                                record_snapshot(self.data, vehicle, point['battles'], point['percent'], point['average'])
+        if record_snapshot(self.data, data['vehicleID'], data['randomBattles'], data['damageRating'], data['movingAvgDamage']):
+            loadJson(config.ID, name, self.data, config.configPath, True, quiet=True)
+        return trend(self.data, data['vehicleID'], config.data['historyBattles'])
+
+
+g_history = ProgressHistory()
 
 g_data = MarksOnGunData()
 
 
-class MarksOnGunHangarView(View):
-    def _populate(self):
-        super(MarksOnGunHangarView, self)._populate()
-        if g_controller is not None:
-            g_controller.attach(self)
-
-    def _dispose(self):
-        if g_controller is not None:
-            g_controller.detach(self)
-        super(MarksOnGunHangarView, self)._dispose()
-
-    def py_savePosition(self, x, y):
-        panel = dict(config.data['panel'])
-        panel['x'] = float(x)
-        panel['y'] = float(y)
-        config.onApplySettings({'panel': panel})
-
-    def py_log(self, text):
-        logError(config.ID, '{}', text)
-
-    def as_applyConfigS(self, data):
-        if self._isDAAPIInited():
-            self.flashObject.as_applyConfig(data)
-
-    def as_updateDataS(self, data):
-        if self._isDAAPIInited():
-            try:
-                self.flashObject.as_updateData(data)
-            except Exception:
-                # Flash side may still be initializing on first frame; next update will retry.
-                logError(config.ID, '{}', 'Skipped early as_updateData call: flash view not ready yet')
-
-    def as_setVisibleS(self, visible):
-        if self._isDAAPIInited():
-            self.flashObject.as_setVisible(visible)
-
-
 class MarksOnGunHangarController(object):
     def __init__(self):
-        self._view = None
-        self._viewRequested = False
-        g_entitiesFactories.addSettings(ViewSettings(AS_ALIAS, MarksOnGunHangarView, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))
-        g_eventBus.addListener(events.AppLifeCycleEvent.INITIALIZED, self._onAppInitialized, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_eventBus.addListener(events.ComponentEvent.COMPONENT_REGISTERED, self._onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_currentVehicle.onChanged += self.update
-        self._loadView()
-
-    def destroy(self):
-        g_eventBus.removeListener(events.AppLifeCycleEvent.INITIALIZED, self._onAppInitialized, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_eventBus.removeListener(events.ComponentEvent.COMPONENT_REGISTERED, self._onComponentRegistered, scope=EVENT_BUS_SCOPE.GLOBAL)
-        g_currentVehicle.onChanged -= self.update
-        self._view = None
-
-    def attach(self, view):
-        self._view = view
-        self._viewRequested = True
-        self.onApplySettings()
-        self.update()
-
-    def detach(self, view):
-        if self._view is view:
-            self._view = None
-
-    def _loadView(self):
-        if self._viewRequested:
-            return
-        app = ServicesLocator.appLoader.getApp(APP_NAME_SPACE.SF_LOBBY)
-        if app is not None:
-            self._viewRequested = True
-            app.loadView(SFViewLoadParams(AS_ALIAS))
-
-    def _onAppInitialized(self, event):
-        if event.ns == APP_NAME_SPACE.SF_LOBBY:
-            self._loadView()
-
-    def _onComponentRegistered(self, event):
-        if event.alias == HANGAR_ALIASES.AMMUNITION_PANEL:
-            self.onApplySettings()
-            self.update()
+        self.views = weakref.WeakKeyDictionary()
+        self.visible = weakref.WeakKeyDictionary()
 
     def onApplySettings(self):
-        if self._view is None:
-            return
-        self._view.as_applyConfigS(config.get_view_config())
-        self._view.as_setVisibleS(config.data['enabled'] and config.data['showInHangar'])
+        for child in list(self.views.values()):
+            child.refresh()
 
-    def update(self, *args):
-        if self._view is None:
-            return
-        visible = config.data['enabled'] and config.data['showInHangar']
-        self._view.as_setVisibleS(visible)
-        if visible:
-            self._view.as_updateDataS(g_data.build_panel_model())
+    def setVisible(self, parent, visible):
+        self.visible[parent] = visible
+        child = self.views.get(parent)
+        if child is not None:
+            child.refresh()
 
 
-worker = type('Worker', (object,), {'dossier': None})()
+def install_gameface():
+    from frameworks.wulf import ViewModel
+    from gui.impl.pub.view_component import ViewComponent
+    from gui.impl.gen_utils import INVALID_RES_ID
+    from gui.impl.lobby.hangar.random.random_hangar import RandomHangar
+    from openwg_gameface import gf_mod_inject, res_id_by_key
 
+    class MarksModel(ViewModel):
+        def __init__(self):
+            super(MarksModel, self).__init__(properties=2, commands=1)
 
-@override(MarkOnGunAchievement, '__init__')
-@logException
-def new__init(func, *args):
-    func(*args)
-    if len(args) > 1:
-        worker.dossier = args[1]
+        def _initialize(self):
+            super(MarksModel, self)._initialize()
+            self._addStringProperty('payload', '{}')
+            self.onSavePosition = self._addCommand('onSavePosition')
+            gf_mod_inject(self, FEATURE, styles=[ASSETS + 'marks.css'], scripts=[ASSETS + 'marks.js'])
+
+    class MarksView(ViewComponent):
+        def __init__(self, parent, resource_id):
+            self._hangarRef = weakref.ref(parent)
+            self._marksActive = False
+            super(MarksView, self).__init__(layoutID=resource_id, model=MarksModel)
+            g_controller.views[parent] = self
+
+        def _getEvents(self):
+            return ((g_currentVehicle.onChanged, self.refresh),
+                    (ServicesLocator.itemsCache.onSyncCompleted, self.refresh),
+                    (self.getViewModel().onSavePosition, self.savePosition))
+
+        def _onLoading(self, *args, **kwargs):
+            super(MarksView, self)._onLoading(*args, **kwargs)
+            self._marksActive = True
+            self.refresh()
+
+        def _finalize(self):
+            self._marksActive = False
+            parent = self._hangarRef()
+            if parent is not None and g_controller.views.get(parent) is self:
+                g_controller.views.pop(parent, None)
+            super(MarksView, self)._finalize()
+
+        def refresh(self, *args):
+            if not self._marksActive:
+                return
+            try:
+                parent = self._hangarRef()
+                visible = bool(parent is not None and g_controller.visible.get(parent, False)
+                               and config.data['enabled'] and config.data['showInHangar'])
+                payload = g_data.build_panel_model() if visible else {'config': config.get_view_config()}
+                payload['config']['visible'] = visible
+                with self.getViewModel().transaction() as model:
+                    model._setString(0, json.dumps(payload, separators=(',', ':'), allow_nan=False))
+            except Exception:
+                LOG.exception('Could not update Gameface hangar card')
+                with self.getViewModel().transaction() as model:
+                    model._setString(0, '{"config":{"visible":false}}')
+
+        def savePosition(self, args):
+            if config.data['textLock'] or not isinstance(args, dict):
+                return
+            panel = dict(config.data['panel'])
+            panel['x'] = max(-7680, min(7680, finite(args.get('x'), panel['x'])))
+            panel['y'] = max(-4320, min(4320, finite(args.get('y'), panel['y'])))
+            config.onApplySettings({'panel': panel})
+
+    @override(RandomHangar, '_getChildComponents')
+    def get_children(original, parent, *args, **kwargs):
+        children = dict(original(parent, *args, **kwargs))
+        try:
+            resource_id = res_id_by_key(RESOURCE)
+            if resource_id == INVALID_RES_ID:
+                LOG.warning('Missing Gameface resource: %s. Check OpenWG 1.1.6 and the resource map.', RESOURCE)
+            else:
+                children[resource_id] = lambda: MarksView(parent, resource_id)
+        except Exception:
+            LOG.exception('Could not attach Gameface hangar card')
+        return children
+
+    @override(RandomHangar, '_onShown')
+    def on_shown(original, parent, *args, **kwargs):
+        result = original(parent, *args, **kwargs)
+        g_controller.setVisible(parent, True)
+        return result
+
+    @override(RandomHangar, '_onHidden')
+    def on_hidden(original, parent, *args, **kwargs):
+        g_controller.setVisible(parent, False)
+        return original(parent, *args, **kwargs)
 
 
 @override(MarkOnGunAchievement, 'getUserCondition')
 @logException
 def new__getUserCondition(func, *args):
-    if config.data['enabled'] and config.data['showInStatistic'] and worker.dossier is not None:
-        tooltip = g_data.build_tooltip(worker.dossier)
+    dossier = getAchievementDossier(args[0])
+    if config.data['enabled'] and config.data['showInStatistic'] and dossier is not None:
+        tooltip = g_data.build_tooltip(dossier)
         if tooltip:
             return tooltip
     return func(*args)
 
 
 g_controller = MarksOnGunHangarController()
+try:
+    install_gameface()
+except Exception:
+    LOG.exception('Gameface hangar integration unavailable')

@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Takım şansını göster",
+    "UI_setting_teamChances_tooltip": "Savaş sırasında her takımın kazanma şansı yüzdesini görüntüler",
+    "UI_setting_format_text": "Metin Formatı",
+    "UI_setting_format_tooltip": "Metnin formatını ayarlar"
+}

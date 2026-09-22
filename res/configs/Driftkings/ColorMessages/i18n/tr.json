@@ -1,0 +1,21 @@
+{
+    "UI_description": "ColorMessages",
+    "UI_setting_color_header_tooltip_header_text": "Başlık rengi:",
+    "UI_setting_color_xp_tooltip_header_text": "XP'nin rengi:",
+    "UI_setting_color_credits_tooltip_header_text": "Kredi rengi:",
+    "UI_setting_color_damage_tooltip_header_text": "Hasar rengi:",
+    "UI_setting_color_free_xp_tooltip_header_text": "Serbest XP rengi:",
+    "UI_setting_color_medals_tooltip_header_text": "Madalya rengi:",
+    "UI_setting_color_header_text": "Mevcut <font color='#%(color)s'>başlık</font> renk: #%(color)s",
+    "UI_setting_color_xp_text": "Mevcut <font color='#%(color)s'>xp</font> renk: #%(color)s",
+    "UI_setting_color_credits_text": "Mevcut <font color='#%(color)s'>kredi</font> renk: #%(color)s",
+    "UI_setting_color_damage_text": "Mevcut <font color='#%(color)s'>hasar</font> renk: #%(color)s",
+    "UI_setting_color_free_xp_text": "Mevcut <font color='#%(color)s'>bedava deneyim</font> renk: #%(color)s",
+    "UI_setting_color_medals_text": "Mevcut <font color='#%(color)s'>madalyalar</font> renk: #%(color)s",
+    "UI_setting_color_header_tooltip": "Bu renk tüm savaş sonucu başlıklarına uygulanacaktır.\n\n%(example)s",
+    "UI_setting_color_xp_tooltip": "Bu renk tüm savaş sonucu XP değerlerine uygulanacaktır.\n\n%(example)s",
+    "UI_setting_color_credits_tooltip": "Bu renk tüm savaş sonucu kredi değerlerine uygulanacaktır.\n\n%(example)s",
+    "UI_setting_color_damage_tooltip": "Bu renk tüm savaş sonucu hasar değerlerine uygulanacaktır.\n\n%(example)s",
+    "UI_setting_color_free_xp_tooltip": "Bu renk tüm savaş sonucu ücretsiz XP değerlerine uygulanacaktır.\n\n%(example)s",
+    "UI_setting_color_medals_tooltip": "Bu renk tüm savaş sonucu madalyalarına uygulanacaktır.\n\n%(example)s"
+}

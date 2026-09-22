@@ -1,6 +1,6 @@
 {
     "UI_description": "SafeShot",
-    "UI_version": "1.8.1 (%(file_compile_date)s)",
+    "UI_version": 181,
     "UI_setting_wasteShotBlock_text": "Waste Shot Block",
     "UI_setting_wasteShotBlock_tooltip": "Prevents shooting when no target is selected",
     "UI_setting_teamShotBlock_text": "Team Shot Block",

@@ -9,7 +9,8 @@ __all__ = ('logDebug', 'logInfo', 'logError', 'logWarning', 'logException')  # ,
 SHOW_DEBUG = False
 
 def _formatMessage(message, *args, **kwargs):
-    message = unicode(str(message), 'utf-8', 'ignore')
+    if not isinstance(message, unicode):
+        message = unicode(str(message), 'utf-8', 'replace')
     if args or kwargs:
         return message.format(*args, **kwargs)
     return message

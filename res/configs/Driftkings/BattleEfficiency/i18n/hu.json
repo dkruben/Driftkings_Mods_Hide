@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Szövegzár",
+    "UI_setting_textLock_tooltip": "Húzza a szöveget a csatában",
+    "UI_setting_format_text": "Szövegformátum, elérhető makrók:",
+    "UI_setting_format_tooltip": "Elérhető makrók:\n WN8:'{wn8}', Szín:'{c:wn8}'\nXWN8:'{xwn8}', Szín:'{c:x}'\nEFF:'{eff}', Szín:'{c:eff}'\nXEFF:'{xeff}', Szín:'{c:x}'\nDIFF:'{diff}', Szín:'{c:diff}'\nDMG:'{dmg}', Szín:'{c:dmg}'\nXTE:'{xte}', Szín:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Csata eredmények ablak",
+    "UI_setting_battleResultsWindow_tooltip": "A csata eredménye ablak engedélyezése.",
+    "UI_setting_battleResultsFormat_text": "Csata eredmények ablak módosítása",
+    "UI_setting_battleResultsFormat_tooltip": "Elérhető makrók:\nWN8:'{wn8}', Szín:'{c:wn8}'\nXWN8:'{xwn8}', Szín:'{c:x}'\nEFF:'{eff}', Szín:'{c:eff}'\nXEFF:'{xeff}', Szín:'{c:x}'\nDIFF:'{diff}', Szín:'{c:diff}'\nDMG:'{dmg}', Szín:'{c:dmg}'\nXTE:'{xte}', Szín:'{c:x}'\n{mapName} - Térkép neve\n{battleType} - Harc típus",
+    "UI_setting_colorRatting_text": "Válassza a Színbesorolás lehetőséget",
+    "UI_setting_colorRatting_tooltip": "Válassza ki a színsémát az értékelésekhez",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

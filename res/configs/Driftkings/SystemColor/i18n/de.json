@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Wählen Sie die Farbe, um die Toten zu verbünden:",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Farbe auf den Tank aufgetragen.",
+    "UI_setting_colorCheckEnemyDead_text": "Wählen Sie die Farbe für tote Feinde:",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Farbe auf den Tank aufgetragen.",
+    "UI_setting_colorCheckSquadManAlive_text": "Wählen Sie die Farbe für SquadMan Alive:",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Farbe auf den Tank aufgetragen.",
+    "UI_setting_colorCheckEnemyAlive_text": "Wählen Sie eine Farbe für den lebendigen Feind:",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Farbe auf den Tank aufgetragen.",
+    "UI_setting_colorCheckAllyAlive_text": "Wählen Sie die Farbe, um Alive Alive zu erhalten:",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Farbe auf den Tank aufgetragen.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Wählen Sie die Farbe für TeamKiller:",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00EAFF</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Farbe auf den Tank aufgetragen."
+}

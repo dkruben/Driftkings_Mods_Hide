@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from PlayerEvents import g_playerEvents
 from aih_constants import CTRL_MODE_NAME
 from constants import ARENA_PERIOD
@@ -27,7 +27,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.0.6 (%(file_compile_date)s)'
         self.author = 'DriftKing\'s'
         self.data = {
             'enabled': True,
@@ -43,7 +43,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                 'ally': '#60CB00',
                 'bgColor': '#000000',
                 'enemy': '#ED070A',
-                'enemyColorBlind': "#6F6CD3"
+                'enemyColorBlind': '#6F6CD3'
             }
         }
         self.i18n = {
@@ -52,7 +52,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_x_text': 'Position X',
             'UI_setting_x_tooltip': '',
             'UI_setting_y_text': 'Position Y',
-            'UI_setting_y_tooltip': '',
+            'UI_setting_y_tooltip': ''
         }
         super(ConfigInterface, self).init()
 
@@ -62,7 +62,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'enabled': self.data['enabled'],
             'column1': [
                 self.tb.createSlider('x', -2000, 2000, 1, '{{value}}%s' % ' px'),
-                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' py')
+                self.tb.createSlider('y', -2000, 2000, 1, '{{value}}%s' % ' px')
             ],
             'column2': []
         }
@@ -75,9 +75,14 @@ class ConfigInterface(DriftkingsConfigInterface):
             return
         app.loadView(SFViewLoadParams(AS_INJECTOR))
 
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        _updateOwnHealthUI()
+
 
 config = ConfigInterface()
 analytics = Analytics(config.ID, config.version)
+g_own_health = None
 
 
 class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
@@ -86,18 +91,24 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         self.is_alive_mode = True
         self.is_battle_period = False
         self.maxHealth = 0
-        self.template = '{} • {:.2%}'
+        self.currentHealth = 0
+        self.template = '%d - %.2f%%'
 
     def getSettings(self):
         return config.data
 
     def updateVehicleParams(self, vehicle, *_):
+        if vehicle is None or getattr(vehicle, 'descriptor', None) is None:
+            return
         if self.maxHealth != vehicle.descriptor.maxHealth:
             self.maxHealth = vehicle.descriptor.maxHealth
-            self._updateHealth(self.maxHealth)
+        self._updateHealth(self.maxHealth)
 
     def _populate(self):
+        global g_own_health
         super(OwnHealth, self)._populate()
+        g_own_health = self
+        self._applySettings()
         handler = avatar_getter.getInputHandler()
         if handler is not None and hasattr(handler, 'onCameraChanged'):
             handler.onCameraChanged += self.onCameraChanged
@@ -106,17 +117,23 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         if ctrl is not None:
             ctrl.onVehicleControlling += self.__onVehicleControlling
             ctrl.onVehicleStateUpdated += self.__onVehicleStateUpdated
+            vehicle = ctrl.getControllingVehicle()
+            if vehicle is not None:
+                self.__onVehicleControlling(vehicle)
         arena = self._arenaVisitor.getArenaSubscription()
         if arena is not None:
             self.is_battle_period = arena.period == ARENA_PERIOD.BATTLE
-            self.is_alive_mode = self.getVehicleInfo().isAlive()
-            self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
+        vInfo = self.getVehicleInfo()
+        if vInfo is not None:
+            self.is_alive_mode = vInfo.isAlive()
+        self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
 
     def onArenaPeriodChange(self, period, *_):
         self.is_battle_period = period == ARENA_PERIOD.BATTLE
-        self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
+        self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
 
     def _dispose(self):
+        global g_own_health
         handler = avatar_getter.getInputHandler()
         if handler is not None and hasattr(handler, 'onCameraChanged'):
             handler.onCameraChanged -= self.onCameraChanged
@@ -125,35 +142,63 @@ class OwnHealth(OwnHealthMeta, IPrebattleSetupsListener):
         if ctrl is not None:
             ctrl.onVehicleControlling -= self.__onVehicleControlling
             ctrl.onVehicleStateUpdated -= self.__onVehicleStateUpdated
+        if g_own_health is self:
+            g_own_health = None
         super(OwnHealth, self)._dispose()
 
+    def _applySettings(self):
+        self.as_updateSettingsS()
+        self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
+
     def __onVehicleControlling(self, vehicle):
+        if vehicle is None:
+            return
         if self.maxHealth != vehicle.maxHealth:
             self.maxHealth = vehicle.maxHealth
+        self.is_alive_mode = vehicle.health > 0
+        self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
         self._updateHealth(vehicle.health)
 
     def __onVehicleStateUpdated(self, state, value):
         if state == VEHICLE_VIEW_STATE.HEALTH:
+            self.is_alive_mode = value > 0
+            self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
             self._updateHealth(value)
 
     def onCameraChanged(self, ctrlMode, *_, **__):
-        self.is_alive_mode = ctrlMode not in {CTRL_MODE_NAME.KILL_CAM, CTRL_MODE_NAME.POSTMORTEM, CTRL_MODE_NAME.DEATH_FREE_CAM, CTRL_MODE_NAME.RESPAWN_DEATH, CTRL_MODE_NAME.VEHICLES_SELECTION, CTRL_MODE_NAME.LOOK_AT_KILLER}
-        self.as_BarVisibleS(self.is_battle_period and self.is_alive_mode)
+        self.is_alive_mode = ctrlMode not in {
+            CTRL_MODE_NAME.KILL_CAM,
+            CTRL_MODE_NAME.POSTMORTEM,
+            CTRL_MODE_NAME.DEATH_FREE_CAM,
+            CTRL_MODE_NAME.RESPAWN_DEATH,
+            CTRL_MODE_NAME.VEHICLES_SELECTION,
+            CTRL_MODE_NAME.LOOK_AT_KILLER
+        }
+        self.as_BarVisibleS(config.data['enabled'] and self.is_battle_period and self.is_alive_mode)
 
     @staticmethod
     def getAVGColor(percent=1.0):
         return percentToRgb(percent, **config.data['avgColor'])
 
     def _updateHealth(self, health):
-        if not isinstance(health, (int, float)) or health < 0:
+        if not isinstance(health, (int, long, float)) or health < 0:
             return
+        self.currentHealth = health
         if health > self.maxHealth:
             self.maxHealth = health
         if self.maxHealth <= 0:
             return
         percent = getHealthPercent(health, self.maxHealth)
-        text = self.template.format(int(normalizeHealth(health)), percent)
+        text = self.template % (int(normalizeHealth(health)), percent * 100.0)
         self.as_setOwnHealthS(percent, text, self.getAVGColor(percent))
+
+
+def _updateOwnHealthUI():
+    if g_own_health is None:
+        return
+    g_own_health._applySettings()
+    if g_own_health.currentHealth > 0:
+        g_own_health._updateHealth(g_own_health.currentHealth)
 
 
 g_entitiesFactories.addSettings(ViewSettings(AS_INJECTOR, DriftkingsInjector, AS_SWF, WindowLayer.WINDOW, None, ScopeTemplates.GLOBAL_SCOPE))

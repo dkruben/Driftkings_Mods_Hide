@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Povolit opravu rotace pistole",
+    "UI_setting_gunRotationFix_tooltip": "Opravuje desynchronizaci rotace pistole ze serveru, i když používáte zaměřovač serveru.\nTo může způsobit, že se animace budou trhat nebo zadrhávat.\nNefunguje, pokud je vypnuto nastavení \"Povolit zaměřování serveru\"!",
+    "UI_setting_reticleScaling_text": "Povolit škálování nitkového kříže",
+    "UI_setting_reticleScaling_tooltip": "Zmenší nitkový kříž na jeho skutečnou velikost podle rozložení záběru.\nTo vede k tomu, že záměrný kříž je menší, ale výstřely nyní mohou zasáhnout jeho samotný okraj.",
+    "UI_setting_format_text": "Formát",
+    "UI_setting_template_tooltip": "Makra: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Typ škálování nitkového kříže",
+    "UI_setting_scalingType_tooltip": "Řídí, jak se měřítko zaměřovacího kříže.\nLineární škálování je nejvhodnější pro stabilní připojení k internetu s nízkou latencí.\nInterpolované škálování zabraňuje tomu, aby záběry šly mimo zaměřovací kříž na nestabilním internetu,\n a zároveň působí dojmem rychlejšího zaměřování."
+}

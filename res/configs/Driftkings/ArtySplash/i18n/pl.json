@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Przycisk: pokaż|ukryj kropkę",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Przycisk: pokaż|ukryj Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Pokaż Splash domyślnie",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Pokaż kropkę domyślnie",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Dostępny tryb zręcznościowy",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Dostępny tryb snajperski",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Dostępny tryb artystyczny",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "ON Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash: Pokaż Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Ukryj Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Pokaż kropkę",
+    "UI_artySplash_messageDotOff": "HE Splash: Ukryj kropkę"
+}

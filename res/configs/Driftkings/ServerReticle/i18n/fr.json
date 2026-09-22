@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Activer le correctif de rotation du pistolet",
+    "UI_setting_gunRotationFix_tooltip": "Corrige la rotation des armes à feu désynchronisée du serveur même si vous utilisez le réticule du serveur.\nCela peut provoquer des animations saccadées ou saccadées.\nNe fonctionne pas si le paramètre « Activer le réticule du serveur » est désactivé !",
+    "UI_setting_reticleScaling_text": "Activer la mise à l'échelle du réticule",
+    "UI_setting_reticleScaling_tooltip": "Réduit le réticule à sa taille réelle en fonction de la répartition des tirs.\nCela conduit à un réticule plus petit, mais les tirs peuvent désormais atteindre son bord.",
+    "UI_setting_format_text": "Formater",
+    "UI_setting_template_tooltip": "Macro : '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Type de mise à l'échelle du réticule",
+    "UI_setting_scalingType_tooltip": "Contrôle la façon dont le réticule est mis à l'échelle.\nLa mise à l'échelle linéaire est la mieux adaptée aux connexions Internet stables à faible latence.\nLa mise à l'échelle interpolée empêche les tirs de sortir du réticule sur Internet instable,\n tout en donnant une impression de temps de visée plus rapide."
+}

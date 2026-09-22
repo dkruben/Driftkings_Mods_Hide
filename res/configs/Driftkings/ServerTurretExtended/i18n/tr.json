@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Etkinleştirme Mesajını Göster",
+    "UI_setting_activateMessage_tooltip": "Savaşta Etkinleştirme Mesajını Göster",
+    "UI_setting_fixAccuracyInMove_text": "Doğruluğu Düzelt",
+    "UI_setting_fixAccuracyInMove_tooltip": "Tankı hareket ettirip sonra durdurduğunuzda, nişan almayı kaybetmemek için düzeltme doğruluğu kullanıldı",
+    "UI_setting_serverTurret_text": "Sunucu Taret",
+    "UI_setting_serverTurret_tooltip": "Taret'i Sunucu Hedefi koordinatlarına taşıyın (oyun ayarlarında Sunucu Görüşü'nün etkinleştirilmesi gerekir)",
+    "UI_battle_activateMessage": "'Sunucu Taret Genişletilmiş': Etkinleştirildi",
+    "UI_setting_fixWheelCruiseControl_text": "Tekerleklerdeki Hız Sabitleyiciyi Düzeltme",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Hız Sabitleyici ile Tekerlek modunu etkinleştirdiğinizde araç durdurulur, bu ayar bu özelliği devre dışı bırakır.",
+    "UI_setting_maxWheelMode_text": "Tekerlekler: Maksimum hızı koruyun",
+    "UI_setting_maxWheelMode_tooltip": "Maksimum hıza ulaşıldığında manevra yaparken hız modunu devre dışı bırakmaz",
+    "UI_setting_buttonMaxMode_text": "Düğme: Tekerlekler maksimum hızı korur",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Tekerlekler: Otomatik hız modu",
+    "UI_setting_autoActivateWheelMode_tooltip": "Hız veya manevra modunu otomatik olarak açar",
+    "UI_setting_buttonAutoMode_text": "Düğme: Tekerlekler otomatik hız modu",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "AÇIK",
+    "UI_battle_OFF": "KAPALI"
+}

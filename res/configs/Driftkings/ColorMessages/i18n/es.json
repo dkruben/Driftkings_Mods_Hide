@@ -1,0 +1,21 @@
+{
+    "UI_description": "ColorMessages",
+    "UI_setting_color_header_tooltip_header_text": "Color del encabezado:",
+    "UI_setting_color_xp_tooltip_header_text": "Color XP:",
+    "UI_setting_color_credits_tooltip_header_text": "Color de créditos:",
+    "UI_setting_color_damage_tooltip_header_text": "Color del daño:",
+    "UI_setting_color_free_xp_tooltip_header_text": "Color de XP libre:",
+    "UI_setting_color_medals_tooltip_header_text": "Color de medallas:",
+    "UI_setting_color_header_text": "Actual <font color='#%(color)s'>encabezado</font> color: #%(color)s",
+    "UI_setting_color_xp_text": "Actual <font color='#%(color)s'>XP</font> color: #%(color)s",
+    "UI_setting_color_credits_text": "Actual <font color='#%(color)s'>créditos</font> color: #%(color)s",
+    "UI_setting_color_damage_text": "Actual <font color='#%(color)s'>daño</font> color: #%(color)s",
+    "UI_setting_color_free_xp_text": "Actual <font color='#%(color)s'>XP gratis</font> color: #%(color)s",
+    "UI_setting_color_medals_text": "Actual <font color='#%(color)s'>medallas</font> color: #%(color)s",
+    "UI_setting_color_header_tooltip": "Este color se aplicará a todos los encabezados de resultados de batalla.\n\n%(example)s",
+    "UI_setting_color_xp_tooltip": "Este color se aplicará a todos los valores de XP de resultados de batalla.\n\n%(example)s",
+    "UI_setting_color_credits_tooltip": "Este color se aplicará a todos los valores de créditos de resultados de batalla.\n\n%(example)s",
+    "UI_setting_color_damage_tooltip": "Este color se aplicará a todos los valores de daño resultantes de la batalla.\n\n%(example)s",
+    "UI_setting_color_free_xp_tooltip": "Este color se aplicará a todos los valores de XP gratuitos de resultados de batalla.\n\n%(example)s",
+    "UI_setting_color_medals_tooltip": "Este color se aplicará a todas las medallas de resultados de batalla.\n\n%(example)s"
+}

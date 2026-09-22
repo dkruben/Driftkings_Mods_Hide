@@ -1,0 +1,18 @@
+{
+  "locales": [
+    "cs",
+    "de",
+    "en",
+    "es",
+    "fr",
+    "hu",
+    "it",
+    "pl",
+    "ru",
+    "tr",
+    "uk"
+  ],
+  "source": "WoT EU game_info.xml: available_content_languages",
+  "game_version": "2.4.0.1",
+  "translation_method": "Machine translation of UI text; markup, paths and formatting placeholders preserved. Native-speaker terminology review pending."
+}

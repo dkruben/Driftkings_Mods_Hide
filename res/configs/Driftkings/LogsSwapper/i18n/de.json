@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Aktivieren Sie Reverse Log.",
+    "UI_setting_logSwapper_tooltip": "Kehrt die Position des Schadensprotokolls in der Kampfoberfläche um.",
+    "UI_setting_wgLogHideCritics_text": "WG-Protokoll Kritiker ausblenden",
+    "UI_setting_wgLogHideCritics_tooltip": "Versteckt Meldungen zu kritischen Treffern im Standard-WG-Kampfprotokoll.",
+    "UI_setting_wgLogHideBlock_text": "WG Log Hide Block",
+    "UI_setting_wgLogHideBlock_tooltip": "Versteckt blockierte Schadensmeldungen im Standard-WG-Kampfprotokoll.",
+    "UI_setting_wgLogHideAssist_text": "WG Log Hide Assist",
+    "UI_setting_wgLogHideAssist_tooltip": "Versteckt Meldungen zur Schadensunterstützung im Standard-WG-Kampfprotokoll."
+}

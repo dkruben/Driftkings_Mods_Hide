@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Type de marqueur horizontal",
+    "UI_setting_horizontal_tooltip": "Type de marqueurs à gauche et à droite du réticule indiquant les positions des bords horizontaux de votre arme.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Désactivé",
+    "UI_setting_horizontal_1": "Coins",
+    "UI_setting_horizontal_2": "Crochets",
+    "UI_setting_horizontal_3": "Grand demi-cercle",
+    "UI_setting_horizontal_4": "Demi-cercle",
+    "UI_setting_horizontal_5": "Octogone",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Type de marqueur vertical",
+    "UI_setting_vertical_tooltip": "Type de marqueurs au-dessus et au-dessous du réticule indiquant les positions des bords verticaux de votre arme.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Désactivé",
+    "UI_setting_vertical_1": "Tiret vertical",
+    "UI_setting_vertical_2": "Point",
+    "UI_setting_vertical_3": "Triangle",
+    "UI_setting_vertical_4": "Diodes",
+    "UI_setting_vertical_5": "Octogone",
+    "UI_setting_vertical_6": "ktulho"
+}

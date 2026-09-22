@@ -1,0 +1,14 @@
+{
+    "UI_description": "SpottedStatus",
+    "UI_version": 151,
+    "UI_setting_neverSeen_text": "Nunca visto",
+    "UI_setting_neverSeen_tooltip": "",
+    "UI_setting_spotted_text": "manchado",
+    "UI_setting_spotted_tooltip": "",
+    "UI_setting_lost_text": "perdido",
+    "UI_setting_lost_tooltip": "",
+    "UI_setting_dead_text": "muerto",
+    "UI_setting_dead_tooltip": "",
+    "UI_setting_help_text": "Ayuda:",
+    "UI_setting_help_tooltip": " â¢ Puede cambiar imágenes a texto o íconos.\n â¢ Para ver los íconos, vaya a la carpeta del juego \"mods/configs/Driftkings/SpottedStatus/icons/*.png\" y reemplace los nombres.\n<img src='img://gui/maps/uiKit/dialogs/icons/alert.png' width='18' height='18'>\n<font color='#'>No cambie el texto en el cuadro de texto si no sabe lo que está haciendo.</font>"
+}

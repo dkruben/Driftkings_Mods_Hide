@@ -1,0 +1,15 @@
+{
+    "UI_description": "MarksOnGunTechTree (face de jeu)",
+    "UI_setting_showInTechTree_text": "TechTree : activé",
+    "UI_setting_showInTechTree_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunPercent_text": "TechTree : afficher le % du MoE",
+    "UI_setting_showInTechTreeMarkOfGunPercent_tooltip": "",
+    "UI_setting_showInTechTreeMastery_text": "TechTree : montrer la maîtrise",
+    "UI_setting_showInTechTreeMastery_tooltip": "",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_text": "TechTree : le MoE colorise le nom du véhicule",
+    "UI_setting_showInTechTreeMarkOfGunTankNameColored_tooltip": "",
+    "UI_setting_badgeOffsetX_text": "Position X (gauche / droite)",
+    "UI_setting_badgeOffsetX_tooltip": "Négatif : à gauche. Positif : c’est vrai.",
+    "UI_setting_badgeOffsetY_text": "Position Y (haut/bas)",
+    "UI_setting_badgeOffsetY_tooltip": "Négatif : vers le haut. Positif : en baisse."
+}

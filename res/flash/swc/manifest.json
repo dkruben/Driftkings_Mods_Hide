@@ -1,0 +1,38 @@
+{
+  "source_version": "2.4.0.5450",
+  "game_version": "2.4.0.1",
+  "libraries": [
+    {
+      "name": "base_app-1.0-SNAPSHOT.swc",
+      "sha256": "5FA8F035EA0F1E657A75EA8DCE00670BA02F8EB668ED396322A75E355DE74FB2"
+    },
+    {
+      "name": "battle.swc",
+      "sha256": "7FA90A823CCE81CF696509EBE5386C2D087AA106D9ECAD85007E20239BDB7A63"
+    },
+    {
+      "name": "common_i18n_library-1.0-SNAPSHOT.swc",
+      "sha256": "362FF38A4938EBCD2BAC080FB3E4D74F652BFB4B86D71E2036E9A9FE471A9D0C"
+    },
+    {
+      "name": "common-1.0-SNAPSHOT.swc",
+      "sha256": "48899F9F261857A7DFCBD50F7A159095A74505C5687908BD619B6D5F52AD496D"
+    },
+    {
+      "name": "gui_base-1.0-SNAPSHOT.swc",
+      "sha256": "BA65D0DC19DBF7463592E0CCF84EDC7D128BDBDB02A354E6D60C63A2B11C8DE0"
+    },
+    {
+      "name": "gui_battle-1.0-SNAPSHOT.swc",
+      "sha256": "7E3D7F87515F03CFB767E2E31549B93855BB500DDCD2739120881413278AEA85"
+    },
+    {
+      "name": "gui_lobby-1.0-SNAPSHOT.swc",
+      "sha256": "AC76DB938BD48D482E8E51BA75573A609AFED963ECD2B80150F13408E50E7EF3"
+    },
+    {
+      "name": "lobby.swc",
+      "sha256": "FE2CB739599F142D15DAC5516E645D1DF9D9EDB4F8009E709250E45743CE280E"
+    }
+  ]
+}

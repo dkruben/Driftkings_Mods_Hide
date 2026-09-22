@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Abilita registro inverso.",
+    "UI_setting_logSwapper_tooltip": "Inverte la posizione del registro dei danni nell'interfaccia di battaglia.",
+    "UI_setting_wgLogHideCritics_text": "WG Log Nascondi critici",
+    "UI_setting_wgLogHideCritics_tooltip": "Nasconde i messaggi di colpo critico nel registro di battaglia standard del WG.",
+    "UI_setting_wgLogHideBlock_text": "Blocco Nascondi registro WG",
+    "UI_setting_wgLogHideBlock_tooltip": "Nasconde i messaggi di danno bloccati nel registro di battaglia standard del WG.",
+    "UI_setting_wgLogHideAssist_text": "Assistente per nascondere il registro WG",
+    "UI_setting_wgLogHideAssist_tooltip": "Nasconde i messaggi di assistenza ai danni nel registro di battaglia standard del WG."
+}

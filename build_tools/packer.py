@@ -8,6 +8,8 @@ import subprocess
 import sys
 import time
 import zipfile
+import zlib
+import tempfile
 from datetime import datetime
 
 folder_ix_all = re.compile(r'mods/[.\d]*( Common Test)?/')
@@ -20,7 +22,7 @@ except NameError:
 
 def get_git_date(path):
     try:
-        return subprocess.check_output('git log -n 1 --format="%ct" --'.split() + [path])[1:-2]
+        return subprocess.check_output(['git', 'log', '-n', '1', '--format=%ct', '--', path]).strip()
     except subprocess.CalledProcessError:
         return ''
 
@@ -32,7 +34,7 @@ def pack_dir(path, o_dir, max_levels=10, v_str=None, v_date=None, force=False, q
         names = os.listdir(path)
     except OSError:
         print("Can't list {0}".format(path))
-        names = []
+        return False
     success = True
     for name in sorted(names):
         f_name = os.path.join(path, name).replace(os.sep, '/')
@@ -122,8 +124,8 @@ def compute_names(fp, paths, v_str, quiet):
                         mismatched.append(mismatch)
                         ch_print(fp, quiet, 'Updating versioned folder: {0}'.format(mismatch))
                 new = folder_ix_all.sub('mods/{GAME_VERSION}/', filename)
-            for api_type in ('modsettingsapi', 'guiflash', 'modslistapi'):
-                if api_type in os.path.basename(filename):
+            for api_type in ('modsSettingsapi', 'guiflash', 'modslistapi', 'gameface'):
+                if api_type.lower() in os.path.basename(filename).lower():
                     file_names['{0}/*{1}*'.format(os.path.dirname(new or filename), api_type)] = filename
                     break
             else:
@@ -171,10 +173,14 @@ def check_identical(fp, arc_data, v_str, quiet=False):
                             act_path = files[0]
                         else:
                             ch_print(fp, quiet, 'Could not find file: {0}'.format(arc_data[f_path]))
-                            continue
+                            return False
                         if (info.file_size, info.date_time) != get_stat_size_time(act_path):
                             identical = False
                             ch_print(fp, quiet, 'Updating file {0}'.format(info.filename))
+                        else:
+                            with open(act_path, 'rb') as source_file:
+                                if (zlib.crc32(source_file.read()) & 0xffffffff) != info.CRC:
+                                    identical = False
                     else:
                         ch_print(fp, quiet, 'Adding missing file: {0}'.format(f_path))
             for f_path in sorted(act_data):
@@ -249,7 +255,7 @@ def pack_stuff(zf_new, mode, tree, arc_data, v_str, v_date, v_was, cur_path):
                         path = path.replace('{GAME_VERSION}', v_str)
                     zf_new.writestr(zipfile.ZipInfo(path, st_time), f.read(), mode)
             except (IOError, ValueError) as e:
-                print("Error packing {0}: {1}".format(sub_path, e))
+                raise ValueError("Error packing {0}: {1}".format(sub_path, e))
     if cur_path:
         v_was |= pack_directory(zf_new, mode, cur_path, min_time.timetuple()[:6], v_str, v_date)
     return min_time, max_time, v_was
@@ -260,16 +266,25 @@ def do_pack(fp, arc_data, mode, v_str, v_date):
     if not os.path.isdir(fd):
         os.makedirs(fd)
     tree = make_tree(sorted(arc_data))
+    temp_fd, temp_path = tempfile.mkstemp(prefix='pack_', suffix='.tmp', dir=fd or '.')
+    os.close(temp_fd)
     try:
-        with zipfile.ZipFile(fp, 'w', mode) as zf_new:
+        with zipfile.ZipFile(temp_path, 'w', mode) as zf_new:
             _, max_time, v_was = pack_stuff(zf_new, mode, tree, arc_data, v_str, v_date, False, '')
         if v_str is not None and v_was:
             max_time = max(max_time, v_date)
-        os.utime(fp, (time.time(), time.mktime(max_time.timetuple())))
+        os.utime(temp_path, (time.time(), time.mktime(max_time.timetuple())))
+        # Only replace the previous archive after all inputs were packed.
+        if os.path.exists(fp):
+            os.remove(fp)
+        os.rename(temp_path, fp)
         return True
-    except (IOError, zipfile.BadZipfile) as e:
+    except (IOError, OSError, ValueError, zipfile.BadZipfile) as e:
         print("Error creating archive {0}: {1}".format(fp, e))
         return False
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
 
 def read_version_info(version_file):

@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Тип горизонтального маркера",
+    "UI_setting_horizontal_tooltip": "Тип маркеров слева и справа от перекрестия, показывающий горизонтальное положение края вашего оружия.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Отключено",
+    "UI_setting_horizontal_1": "Углы",
+    "UI_setting_horizontal_2": "Квадратные скобки",
+    "UI_setting_horizontal_3": "Большой полукруг",
+    "UI_setting_horizontal_4": "Полукруг",
+    "UI_setting_horizontal_5": "Октагон",
+    "UI_setting_horizontal_6": "Ктулхо",
+    "UI_setting_vertical_text": "Тип вертикального маркера",
+    "UI_setting_vertical_tooltip": "Тип маркеров над и под перекрестием, показывающий вертикальное положение края вашего пистолета.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Отключено",
+    "UI_setting_vertical_1": "Вертикальное тире",
+    "UI_setting_vertical_2": "Точка",
+    "UI_setting_vertical_3": "Треугольник",
+    "UI_setting_vertical_4": "Диод",
+    "UI_setting_vertical_5": "Октагон",
+    "UI_setting_vertical_6": "Ктулхо"
+}

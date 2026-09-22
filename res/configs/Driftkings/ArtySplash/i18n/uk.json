@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Кнопка: показати|сховати крапку",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Кнопка: показати|сховати Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Показувати сплеск за умовчанням",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Показувати крапку за умовчанням",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Доступний аркадний режим",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Доступний режим снайпера",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Доступний режим Arty",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "ВІН Сплеск",
+    "UI_artySplash_messageSplashOn": "HE Splash: Показати Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash: Приховати Splash",
+    "UI_artySplash_messageDotOn": "HE Splash: Show Dot",
+    "UI_artySplash_messageDotOff": "HE Splash: Hide Dot"
+}

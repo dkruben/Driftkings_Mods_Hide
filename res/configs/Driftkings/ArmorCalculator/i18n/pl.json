@@ -1,0 +1,15 @@
+{
+    "UI_description": "ArmorCalculator",
+    "UI_version": 132,
+    "UI_setting_displayOnAllies_text": "Wyświetlanie na sojusznikach",
+    "UI_setting_displayOnAllies_tooltip": "",
+    "UI_noDamage": "Trafienie krytyczne, bez obrażeń.",
+    "UI_ricochet": "Rykoszet",
+    "UI_colors": {
+        "green": "#60CB00",
+        "orange": "#FF9900",
+        "purple": "#6F6CD3",
+        "red": "#ED070A",
+        "yellow": "#FFC900"
+    }
+}

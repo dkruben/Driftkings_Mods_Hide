@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Desactivar binoculares.",
+    "UI_setting_noBinoculars_tooltip": "Elimina el apagón en modo francotirador.",
+    "UI_setting_noFlashBang_text": "Desactiva el destello rojo.",
+    "UI_setting_noFlashBang_tooltip": "Elimina el destello rojo al recibir daño.",
+    "UI_setting_noShockWave_text": "Onda de choque",
+    "UI_setting_noShockWave_tooltip": "Elimina el temblor de la cámara al ser golpeada por un tanque.",
+    "UI_setting_noSniperDynamic_text": "Francotirador dinámico",
+    "UI_setting_noSniperDynamic_tooltip": "Desactiva la cámara dinámica en modo francotirador.",
+    "UI_setting_disableCamAfterShot_text": "Desactivar cámara después del disparo",
+    "UI_setting_disableCamAfterShot_tooltip": "Desactiva el modo francotirador después del disparo.",
+    "UI_setting_disableCamAfterShotLatency_text": "Desactivar la latencia de cámara después del disparo",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Retraso en el apagado automático de la cámara.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Desactivar cámara después de disparo Saltar clip",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "No salga del sistema de carga del cargador."
+}

@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Elige tu opción",
+    "UI_setting_mode_tooltip": " • <b>siempre</b> - Los marcadores de HP siempre se mostrarán.\n • <b>Alternar</b> - Los marcadores HP se activarán o desactivarán al presionar la tecla de alternancia.\n • <b>sosteniendo</b> - Los marcadores HP solo se mostrarán <b>mientras</b> se presiona la tecla de alternancia.",
+    "UI_setting_mode_always": "siempre",
+    "UI_setting_mode_toggle": "Alternar",
+    "UI_setting_mode_holding": "sosteniendo",
+    "UI_setting_toggleKey_text": "Alternar tecla de acceso rápido",
+    "UI_setting_toggleKey_tooltip": "Al presionar este botón en la batalla se alterna la visualización de los marcadores de HP."
+}

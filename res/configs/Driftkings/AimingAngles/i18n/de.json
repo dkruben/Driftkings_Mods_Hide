@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Horizontaler Markierungstyp",
+    "UI_setting_horizontal_tooltip": "Art von Markierungen links und rechts vom Fadenkreuz, die die horizontalen Kantenpositionen Ihrer Waffe anzeigen.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Deaktiviert",
+    "UI_setting_horizontal_1": "Ecken",
+    "UI_setting_horizontal_2": "Eckige Klammern",
+    "UI_setting_horizontal_3": "Großer Halbkreis",
+    "UI_setting_horizontal_4": "Halbkreis",
+    "UI_setting_horizontal_5": "Achteck",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Vertikaler Markierungstyp",
+    "UI_setting_vertical_tooltip": "Art der Markierungen über und unter dem Fadenkreuz, die die vertikalen Kantenpositionen Ihrer Waffe anzeigen.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Deaktiviert",
+    "UI_setting_vertical_1": "Vertikaler Strich",
+    "UI_setting_vertical_2": "Punkt",
+    "UI_setting_vertical_3": "Dreieck",
+    "UI_setting_vertical_4": "Diode",
+    "UI_setting_vertical_5": "Achteck",
+    "UI_setting_vertical_6": "ktulho"
+}

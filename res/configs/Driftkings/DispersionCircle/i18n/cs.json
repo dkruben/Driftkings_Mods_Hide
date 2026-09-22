@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Reticle klienta a serveru (Beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Zobrazte současně klientský i serverový záměrný kříž",
+    "UI_setting_showServerSpgStrategicReticle_text": "SPG Strategic Reticle",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Povolit zaměřovač serveru pro strategický režim SPG",
+    "UI_setting_gunMarkerMinimumSize_text": "Minimální velikost značkovače zbraní",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Minimální velikost značky zbraně v pixelech",
+    "UI_setting_percentCorrection_text": "Korekce velikosti nitkového kříže",
+    "UI_setting_percentCorrection_tooltip": "Upravte faktor měřítka nitkového kříže",
+    "UI_setting_serverReticleAimingCircleShape_text": "Tvar zaměřovacího kruhu",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Vyberte tvar zaměřovacího kruhu serveru",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Neprůhlednost zaměřovacího kruhu",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Upravte neprůhlednost zaměřovacího kruhu serveru",
+    "UI_setting_serverReticleGunMarkerShape_text": "Tvar značky zbraně",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Vyberte tvar značky serverové pistole",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Neprůhlednost značek zbraní",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Upravte krytí značky serverové pistole"
+}

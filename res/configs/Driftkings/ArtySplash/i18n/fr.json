@@ -1,0 +1,23 @@
+{
+    "UI_description": "ArtySplash",
+    "UI_version": 152,
+    "UI_setting_buttonShowDot_text": "Bouton : afficher|masquer le point",
+    "UI_setting_buttonShowDot_tooltip": "",
+    "UI_setting_buttonShowSplash_text": "Bouton : afficher|masquer Splash",
+    "UI_setting_buttonShowSplash_tooltip": "",
+    "UI_setting_showSplashOnDefault_text": "Afficher Splash par défaut",
+    "UI_setting_showSplashOnDefault_tooltip": "",
+    "UI_setting_showDotOnDefault_text": "Afficher le point par défaut",
+    "UI_setting_showDotOnDefault_tooltip": "",
+    "UI_setting_showModeArcade_text": "Mode Arcade disponible",
+    "UI_setting_showModeArcade_tooltip": "",
+    "UI_setting_showModeSniper_text": "Mode tireur d'élite disponible",
+    "UI_setting_showModeSniper_tooltip": "",
+    "UI_setting_showModeArty_text": "Mode Arty disponible",
+    "UI_setting_showModeArty_tooltip": "",
+    "UI_artySplash_name": "IL Splash",
+    "UI_artySplash_messageSplashOn": "HE Splash : Afficher Splash",
+    "UI_artySplash_messageSplashOff": "HE Splash : Masquer les éclaboussures",
+    "UI_artySplash_messageDotOn": "HE Splash : Afficher le point",
+    "UI_artySplash_messageDotOff": "HE Splash : Masquer le point"
+}

@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Textový zámek",
+    "UI_setting_textLock_tooltip": "Přetáhněte text v bitvě",
+    "UI_setting_format_text": "Formát textu, dostupná makra:",
+    "UI_setting_format_tooltip": "Dostupná makra:\n WN8:'{wn8}', Barva:'{c:wn8}'\nXWN8:'{xwn8}', Barva:'{c:x}'\nEFF:'{eff}', Barva:'{c:eff}'\nXEFF:'{xeff}', Barva:'{c:x}'\nDIFF:'{diff}', Barva:'{c:diff}'\nDMG:'{dmg}', Barva:'{c:dmg}'\nXTE:'{xte}', Barva:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Okno s výsledky bitvy",
+    "UI_setting_battleResultsWindow_tooltip": "Povolit okno s výsledky bitvy.",
+    "UI_setting_battleResultsFormat_text": "Úprava okna výsledků bitvy",
+    "UI_setting_battleResultsFormat_tooltip": "Dostupná makra:\nWN8:'{wn8}', Barva: '{c:wn8}'\nXWN8:'{xwn8}', Barva: '{c:x}'\nEFF:'{eff}', Barva: '{c:eff}'\nXEFF:'{xeff}', Barva: '{c:x}'\nDIFF:'{diff}', Barva: '{c:diff}'\nDMG:'{dmg}', Barva: '{c:dmg}'\nXTE:'{xte}', Barva: '{c:x}'\n{mapName} - Název mapy\n{battleType} - Typ bitvy",
+    "UI_setting_colorRatting_text": "Vyberte Hodnocení barev",
+    "UI_setting_colorRatting_tooltip": "Vyberte barevné schéma pro hodnocení",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Dürbünleri devre dışı bırakın.",
+    "UI_setting_noBinoculars_tooltip": "Keskin nişancı modunda karartmayı kaldırın.",
+    "UI_setting_noFlashBang_text": "Kırmızı Flaş'ı devre dışı bırakın.",
+    "UI_setting_noFlashBang_tooltip": "Hasar alırken kırmızı flaşı kaldırın.",
+    "UI_setting_noShockWave_text": "Şok Dalgası",
+    "UI_setting_noShockWave_tooltip": "Tank çarptığında kameranın titremesini ortadan kaldırın.",
+    "UI_setting_noSniperDynamic_text": "Keskin Nişancı Dinamik",
+    "UI_setting_noSniperDynamic_tooltip": "Keskin nişancı modunda dinamik kamerayı devre dışı bırakın.",
+    "UI_setting_disableCamAfterShot_text": "Çekimden Sonra Kamerayı Devre Dışı Bırak",
+    "UI_setting_disableCamAfterShot_tooltip": "Atıştan sonra keskin nişancı modunu devre dışı bırakın.",
+    "UI_setting_disableCamAfterShotLatency_text": "Çekim Sonrası Kamera Gecikmesini Devre Dışı Bırak",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Kameranın otomatik kapanmasını geciktirin.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Çekim Sonrası Kamerayı Devre Dışı Bırak Klibi Atla",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Şarjör yükleme sistemi varsa çıkmayın."
+}

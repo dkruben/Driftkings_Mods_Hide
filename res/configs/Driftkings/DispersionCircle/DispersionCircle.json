@@ -7,5 +7,6 @@
     "serverReticleAimingCircleShape": 0,
     "serverReticleAimingCircleOpacity": 50,
     "serverReticleGunMarkerShape": 0,
-    "serverReticleGunMarkerOpacity": 50
+    "serverReticleGunMarkerOpacity": 50,
+    "showClientAndServerReticle": false
 }

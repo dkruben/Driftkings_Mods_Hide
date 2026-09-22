@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Блокировка текста",
+    "UI_setting_textLock_tooltip": "Перетаскивание текста в бою",
+    "UI_setting_format_text": "Текстовый формат, доступные макросы:",
+    "UI_setting_format_tooltip": "Доступные макросы:\n ВН8:'{wn8}', Цвет:'{c:wn8}'\nXWN8:'{xwn8}', Цвет:'{c:x}'\nЭФФ:'{eff}', Цвет:'{c:eff}'\nКСЕФФ:'{xeff}', Цвет:'{c:x}'\nРАЗНИЦА:'{diff}', Цвет:'{c:diff}'\nДМГ:'{dmg}', Цвет:'{c:dmg}'\nХТЕ:'{xte}', Цвет:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Окно результатов боя",
+    "UI_setting_battleResultsWindow_tooltip": "Включить окно результатов боя.",
+    "UI_setting_battleResultsFormat_text": "Изменение окна результатов боя",
+    "UI_setting_battleResultsFormat_tooltip": "Доступные макросы:\nВН8:'{wn8}', Цвет: '{c:wn8}'\nXWN8:'{xwn8}', Цвет: '{c:x}'\nЭФФ:'{eff}', Цвет: '{c:eff}'\nКСЕФФ:'{xeff}', Цвет: '{c:x}'\nРАЗНИЦА:'{diff}', Цвет: '{c:diff}'\nДМГ:'{dmg}', Цвет: '{c:dmg}'\nХТЕ:'{xte}', Цвет: '{c:x}'\n{mapName} - Название карты\n{battleType} - Тип боя",
+    "UI_setting_colorRatting_text": "Выберите рейтинг цвета",
+    "UI_setting_colorRatting_tooltip": "Выберите цветовую схему для оценок",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

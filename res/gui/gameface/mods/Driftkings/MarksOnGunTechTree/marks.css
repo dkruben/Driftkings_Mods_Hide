@@ -1,0 +1,21 @@
+.dk-tech-marks {
+    position: absolute;
+    left: 0;
+    top: -18rem;
+    display: flex;
+    align-items: center;
+    color: #f8f4e8;
+    font-size: 14rem;
+    font-weight: bold;
+    line-height: 18rem;
+    white-space: nowrap;
+    text-shadow: 0 1rem 3rem #000;
+    pointer-events: none;
+    z-index: 5;
+}
+.dk-tech-marks__mastery {
+    width: 24rem;
+    height: 24rem;
+    object-fit: contain;
+    margin-left: 5rem;
+}

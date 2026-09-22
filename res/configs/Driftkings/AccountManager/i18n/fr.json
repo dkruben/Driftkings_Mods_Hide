@@ -1,0 +1,19 @@
+{
+    "UI_description": "AccountManager",
+    "UI_version": 106,
+    "UI_setting_delete": "Supprimer",
+    "UI_setting_cancel": "Annuler",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Entrez</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Modifier</font>",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Supprimer</font>",
+    "UI_setting_accountManager": "Gestionnaire de comptes",
+    "UI_setting_add": "Ajouter",
+    "UI_setting_autoEnter": "Entrée automatique",
+    "UI_setting_acceptDeleteAccount": "Accepter la suppression du compte",
+    "UI_setting_accountDelete": "Supprimer le compte",
+    "UI_setting_save": "Enregistrer",
+    "UI_setting_server": "Serveur :",
+    "UI_setting_showPassword": "Afficher le mot de passe",
+    "UI_setting_nick": "Pseudonyme :",
+    "UI_setting_manageYourAccount": "Gérer votre compte"
+}

@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Silah döndürme düzeltmesini etkinleştir",
+    "UI_setting_gunRotationFix_tooltip": "Sunucu retikülü kullanıldığında bile silah dönüşünün sunucudan senkronizasyonunun bozulması düzeltildi.\nBu, animasyonların sarsıntılı veya takılmalı olmasına neden olabilir.\n\"Sunucu Retikülünü Etkinleştir\" ayarı kapalıysa çalışmaz!",
+    "UI_setting_reticleScaling_text": "Retikül ölçeklendirmeyi etkinleştir",
+    "UI_setting_reticleScaling_tooltip": "Atış dağılımına göre retikülü gerçek boyutuna küçültür.\nBu, nişangahın daha küçük olmasına yol açar, ancak atışlar artık en uç noktasına çarpabilir.",
+    "UI_setting_format_text": "Biçim",
+    "UI_setting_template_tooltip": "Makrolar: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Retikül ölçeklendirme türü",
+    "UI_setting_scalingType_tooltip": "Retikülün nasıl ölçeklendirileceğini kontrol eder.\nDoğrusal ölçeklendirme, düşük gecikme süreli kararlı internet bağlantıları için en uygunudur.\nEnterpolasyonlu ölçeklendirme, kararsız internette çekimlerin nişangahın dışına çıkmasını önler,\n daha hızlı nişan alma süresi izlenimi verirken."
+}

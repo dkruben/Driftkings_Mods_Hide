@@ -1,0 +1,7 @@
+{
+    "enableButtonTooltip": "{HEADER}ON/OFF{/HEADER}{BODY}Enable/Disable this mod{/BODY}",
+    "modsListApiDescription": "<font color='#DD7700'><b>Driftkings</b></font>módosítási beállításait",
+    "modsListApiIcon": "gui/maps/icons/Driftkings/small.png",
+    "modsListApiName": "A Driftking Mods beállításai",
+    "windowTitle": "A Driftking Mods beállításai"
+}

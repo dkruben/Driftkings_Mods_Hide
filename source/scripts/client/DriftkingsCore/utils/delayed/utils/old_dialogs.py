@@ -2,7 +2,7 @@
 from gui.Scaleform.daapi.view.dialogs import ConfirmDialogButtons, DIALOG_BUTTON_ID
 from gui.Scaleform.daapi.view.dialogs.SimpleDialog import SimpleDialog
 
-from ... import override
+from DriftkingsCore.utils.monkeypatch import override
 
 __all__ = ('showConfirmDialog', 'showI18nDialog', 'showInfoDialog')
 

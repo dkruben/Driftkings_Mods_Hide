@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Afficher le message d'activation",
+    "UI_setting_activateMessage_tooltip": "Afficher le message d'activation en combat",
+    "UI_setting_fixAccuracyInMove_text": "Correction de la précision",
+    "UI_setting_fixAccuracyInMove_tooltip": "Lorsque votre tank bouge puis s'arrête, utilisez la précision fixe pour ne pas perdre la visée",
+    "UI_setting_serverTurret_text": "Tourelle de serveur",
+    "UI_setting_serverTurret_tooltip": "Déplacez la tourelle vers les coordonnées du serveur (nécessité d'activer Server Sight dans les paramètres du jeu)",
+    "UI_battle_activateMessage": "« Tourelle de serveur étendue » : activé",
+    "UI_setting_fixWheelCruiseControl_text": "Réparer le régulateur de vitesse sur roues",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Lorsque vous activez le mode Roue avec le Régulateur de Vitesse, véhicule à l'arrêt, ce paramètre désactive celui-ci.",
+    "UI_setting_maxWheelMode_text": "Roues : Gardez la vitesse maximale",
+    "UI_setting_maxWheelMode_tooltip": "En atteignant la vitesse maximale, ne désactive pas le mode vitesse lors des manœuvres",
+    "UI_setting_buttonMaxMode_text": "Bouton : Les roues maintiennent la vitesse maximale",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Roues : mode vitesse automatique",
+    "UI_setting_autoActivateWheelMode_tooltip": "Active automatiquement le mode vitesse ou manœuvre",
+    "UI_setting_buttonAutoMode_text": "Bouton : mode de vitesse automatique des roues",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "ACTIVÉ",
+    "UI_battle_OFF": "DÉSACTIVÉ"
+}

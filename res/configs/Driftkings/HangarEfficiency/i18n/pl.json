@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Średnia pomoc",
+    "UI_setting_avgAssist_tooltip": "Wyświetl średnie obrażenia zadane przy Twojej pomocy",
+    "UI_setting_avgBlocked_text": "Średnia zablokowana",
+    "UI_setting_avgBlocked_tooltip": "Wyświetl średnie zablokowane obrażenia pancerza",
+    "UI_setting_avgDamage_text": "Średnie obrażenia",
+    "UI_setting_avgDamage_tooltip": "Wyświetla średnie zadawane obrażenia",
+    "UI_setting_avgStun_text": "Średnie ogłuszenie",
+    "UI_setting_avgStun_tooltip": "Wyświetl średnie obrażenia celom, których załogi ogłuszyłeś (SPG)",
+    "UI_setting_battles_text": "Bitwy",
+    "UI_setting_battles_tooltip": "Pokaż liczbę bitew",
+    "UI_setting_gunMarks_text": "Znaki broni",
+    "UI_setting_gunMarks_tooltip": "Wyświetl procent znaku pistoletu",
+    "UI_setting_winRate_text": "Współczynnik wygranych",
+    "UI_setting_winRate_tooltip": "Pokaż procent wygranej",
+    "UI_version": 115
+}

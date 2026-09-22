@@ -1,0 +1,16 @@
+{
+    "UI_description": "Paramètres de l'équipage",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Retour automatique de l'équipage",
+    "UI_setting_crewAutoReturn_tooltip": "Ramenez automatiquement l'équipage à son véhicule",
+    "UI_setting_crewReturnByDefault_text": "Retour de l'équipage par défaut",
+    "UI_setting_crewReturnByDefault_tooltip": "Retourner l'équipage par défaut lors du changement de véhicule",
+    "UI_setting_autoReturnDelay_text": "Délai de retour automatique (secondes)",
+    "UI_setting_autoReturnDelay_tooltip": "Délai avant le retour automatique de l'équipage",
+    "UI_setting_showNotifications_text": "Afficher les notifications",
+    "UI_setting_showNotifications_tooltip": "Afficher les notifications du système lorsque l'équipage est de retour",
+    "UI_setting_excludePremiumVehicles_text": "Exclure les véhicules haut de gamme",
+    "UI_setting_excludePremiumVehicles_tooltip": "Ne pas renvoyer automatiquement l'équipage pour les véhicules haut de gamme",
+    "UI_message_crewReturned": "L'équipage a été ramené au véhicule",
+    "UI_message_crewNotAvailable": "L'équipage n'est pas disponible pour le retour"
+}

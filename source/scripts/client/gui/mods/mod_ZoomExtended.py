@@ -25,7 +25,7 @@ class ConfigsInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.0 (%(file_compile_date)s)'
+        self.version = '1.1.1 (%(file_compile_date)s)'
         self.author = 'by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -189,14 +189,15 @@ camera_mode_changer = ChangeCameraModeAfterShoot()
 
 @override(SniperControlMode, '__setupBinoculars')
 def new__setupBinoculars(func, self, optDevices):
-    if not config.data['noBinoculars']:
-        return func(self, optDevices)
-    return func(self, optDevices)
+    result = func(self, optDevices)
+    if config.data['enabled'] and config.data['noBinoculars']:
+        self._binoculars.resetTextures()
+    return result
 
 
 @override(ModelBoundEffects, 'addNewToNode')
 def new__effectsListPlayer(func, *args, **kwargs):
-    if 'isPlayerVehicle' in kwargs:
+    if config.data['enabled'] and kwargs.get('isPlayerVehicle', False):
         if config.data['noFlashBang'] and 'showFlashBang' in kwargs:
             kwargs['showFlashBang'] = False
         if config.data['noShockWave'] and 'showShockWave' in kwargs:

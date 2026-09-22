@@ -1,0 +1,16 @@
+{
+    "UI_description": "Mürettebat Ayarları",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Mürettebat Otomatik Dönüşü",
+    "UI_setting_crewAutoReturn_tooltip": "Mürettebatın otomatik olarak araçlarına dönmesi",
+    "UI_setting_crewReturnByDefault_text": "Mürettebat Varsayılan Olarak Geri Dönüyor",
+    "UI_setting_crewReturnByDefault_tooltip": "Araç değiştirirken varsayılan olarak mürettebatı iade edin",
+    "UI_setting_autoReturnDelay_text": "Otomatik Geri Dönüş Gecikmesi (saniye)",
+    "UI_setting_autoReturnDelay_tooltip": "Mürettebatın otomatik olarak geri dönmesinden önceki gecikme",
+    "UI_setting_showNotifications_text": "Bildirimleri Göster",
+    "UI_setting_showNotifications_tooltip": "Mürettebat geri döndüğünde sistem bildirimlerini göster",
+    "UI_setting_excludePremiumVehicles_text": "Premium Araçları Hariç Tut",
+    "UI_setting_excludePremiumVehicles_tooltip": "Premium araçlar için mürettebatı otomatik olarak iade etmeyin",
+    "UI_message_crewReturned": "Mürettebat araca geri gönderildi",
+    "UI_message_crewNotAvailable": "Mürettebat geri dönüş için müsait değil"
+}

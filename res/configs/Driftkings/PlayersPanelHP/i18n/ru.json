@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Выберите свой вариант",
+    "UI_setting_mode_tooltip": " • <b>Всегда</b> - Маркеры HP всегда будут отображаться.\n • <b>Переключить</b> - Маркеры HP будут включаться/выключаться при нажатии клавиши переключения.\n • <b>Холдинг</b> - Маркеры HP будут отображаться только <b>пока</b> нажата клавиша переключения.",
+    "UI_setting_mode_always": "Всегда",
+    "UI_setting_mode_toggle": "Переключить",
+    "UI_setting_mode_holding": "Холдинг",
+    "UI_setting_toggleKey_text": "Переключить горячую клавишу",
+    "UI_setting_toggleKey_tooltip": "Нажатие этой кнопки в бою переключает отображение маркеров HP."
+}

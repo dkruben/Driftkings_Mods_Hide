@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Wybierz kolor dla martwego sojusznika:",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Kolor zastosowany do zbiornika.",
+    "UI_setting_colorCheckEnemyDead_text": "Wybierz kolor dla martwego wroga:",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Kolor zastosowany do zbiornika.",
+    "UI_setting_colorCheckSquadManAlive_text": "Wybierz kolor dla SquadMan Alive:",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Kolor zastosowany do zbiornika.",
+    "UI_setting_colorCheckEnemyAlive_text": "Wybierz kolor dla żywego wroga:",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Kolor zastosowany do zbiornika.",
+    "UI_setting_colorCheckAllyAlive_text": "Wybierz kolor, aby sprzymierzyć się z życiem:",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Kolor zastosowany do zbiornika.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Wybierz kolor dla TeamKiller:",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00EAFF</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Kolor zastosowany do zbiornika."
+}

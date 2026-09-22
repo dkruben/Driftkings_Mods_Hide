@@ -35,18 +35,18 @@ class PlayersPanelController(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.9.1 (%(file_compile_date)s)'
+        self.version = '1.9.5 (%(file_compile_date)s)'
         self.author = 'Re-Coded by DriftKing\'s'
         self.defaultKeys = {'toggleKey': [[Keys.KEY_LALT, Keys.KEY_RALT]]}
         self.data = {'enabled': True, 'textFields': {}, 'mode': 0, 'toggleKey': self.defaultKeys['toggleKey']}
         self.i18n = {
             'UI_description': self.ID,
             'UI_version': calculate_version(self.version),
-            'UI_setting_mode_text': 'Choose your option',
+            'UI_setting_mode_text': 'Display mode',
             'UI_setting_mode_tooltip': (
-                ' • <b>Always</b> - HP markers will always be displayed.\n'
-                ' • <b>Toggle</b> - HP markers will be toggled on/off upon toggle key press.\n'
-                ' • <b>Holding</b> - HP markers will only be displayed <b>while</b> the toggle key is pressed.'
+                ' - <b>Always</b> - HP markers will always be displayed.\n'
+                ' - <b>Toggle</b> - HP markers will be toggled on/off upon toggle key press.\n'
+                ' - <b>Holding</b> - HP markers will only be displayed <b>while</b> the toggle key is pressed.'
             ),
             'UI_setting_mode_always': 'Always',
             'UI_setting_mode_toggle': 'Toggle',
@@ -74,6 +74,27 @@ class PlayersPanelController(DriftkingsConfigInterface):
         except (TypeError, ValueError):
             return default
 
+    def _getVehicleMaxHealth(self, vehicleID, default=0):
+        vehicle = getEntity(vehicleID)
+        if hasattr(vehicle, 'maxHealth'):
+            return self._normalizeHealthValue(vehicle.maxHealth, default)
+
+        arena = self._getArena()
+        if arena is not None:
+            vehicleData = arena.vehicles.get(vehicleID)
+            if vehicleData is not None and vehicleData.get('vehicleType') is not None:
+                return self._normalizeHealthValue(vehicleData['vehicleType'].maxHealth, default)
+
+        try:
+            arenaDP = self.sessionProvider.getArenaDP()
+            if arenaDP is not None:
+                vInfoVO = arenaDP.getVehicleInfo(vehicleID)
+                if vInfoVO is not None and vInfoVO.vehicleType is not None:
+                    return self._normalizeHealthValue(vInfoVO.vehicleType.maxHealth, default)
+        except Exception:
+            pass
+        return self._normalizeHealthValue(default)
+
     def _clearDisplayedFields(self):
         if not g_driftkingsPlayersPanels.viewLoad:
             return
@@ -85,27 +106,30 @@ class PlayersPanelController(DriftkingsConfigInterface):
         return {
             'modDisplayName': self.ID,
             'enabled': self.data['enabled'],
-            'column1': [self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])],
-            'column2': [self.tb.createHotKey('toggleKey')]
+            'column1': [
+                self.tb.createOptions('mode', [self.i18n['UI_setting_mode_' + x] for x in ('always', 'toggle', 'holding')])
+            ],
+            'column2': [
+                self.tb.createHotKey('toggleKey')
+            ]
         }
 
     def onApplySettings(self, settings):
         super(PlayersPanelController, self).onApplySettings(settings)
-        self.displayed = not settings['mode']
+        self.displayed = not self.data['mode']
         for vehicleID in self.__hpCache:
             self.setHPField(vehicleID)
 
-    @staticmethod
-    def getVehicleHealth(vehicleID):
+    def getVehicleHealth(self, vehicleID):
         if hasattr(getEntity(vehicleID), 'health'):
             vehicle = getEntity(vehicleID)
             return vehicle.health if vehicle.isCrewActive and vehicle.health >= 0 else 0
-        arena = PlayersPanelController._getArena()
+        arena = self._getArena()
         if arena is None:
             return 0
         vehicle = arena.vehicles.get(vehicleID)
-        if vehicle is not None and vehicle['vehicleType'] is not None:
-            return vehicle['vehicleType'].maxHealth
+        if vehicle is not None and vehicle.get('vehicleType') is not None:
+            return self._getVehicleMaxHealth(vehicleID, vehicle['vehicleType'].maxHealth)
         return 0
 
     def hasOwnProperty(self):
@@ -128,9 +152,10 @@ class PlayersPanelController(DriftkingsConfigInterface):
         collection = vos_collections.VehiclesInfoCollection().iterator(self.sessionProvider.getArenaDP())
         for vInfoVO in collection:
             vehicleID = vInfoVO.vehicleID
+            maxHealth = self._getVehicleMaxHealth(vehicleID, vInfoVO.vehicleType.maxHealth)
             self.__hpCache[vehicleID] = {
                 'current': self.getVehicleHealth(vehicleID),
-                'max': vInfoVO.vehicleType.maxHealth
+                'max': maxHealth
             }
             self.setHPField(vehicleID)
 
@@ -142,14 +167,24 @@ class PlayersPanelController(DriftkingsConfigInterface):
         team = arena.vehicles[vehicleID]['team']
         panelSide = 'left' if player.team == team else 'right'
         currentHP = self._normalizeHealthValue(self.__hpCache[vehicleID]['current'])
-        maxHP = self._normalizeHealthValue(self.__hpCache[vehicleID]['max'])
+        cachedMaxHP = self._normalizeHealthValue(self.__hpCache[vehicleID]['max'])
+        maxHP = self._getVehicleMaxHealth(vehicleID, cachedMaxHP)
+        if currentHP > maxHP:
+            maxHP = currentHP
         self.__hpCache[vehicleID]['current'] = currentHP
         self.__hpCache[vehicleID]['max'] = maxHP
         for fieldName, fieldData in sorted(self.data['textFields'].iteritems()):
             barWidth = currentHP
             if 'width' in fieldData[panelSide]:
                 try:
-                    barWidth = int(math.ceil(fieldData[panelSide]['width'] * (float(currentHP) / float(maxHP)))) if maxHP > 0 else 0
+                    widthCfg = float(fieldData[panelSide]['width'])
+                    ratio = float(currentHP) / float(maxHP) if maxHP > 0 else 0.0
+                    ratio = max(0.0, min(1.0, ratio))
+                    barWidth = int(math.ceil(abs(widthCfg) * ratio))
+                    if widthCfg < 0:
+                        barWidth = -barWidth
+                    elif panelSide == 'right':
+                        barWidth = -barWidth
                 except (TypeError, ValueError, ZeroDivisionError):
                     barWidth = 0
             if g_driftkingsPlayersPanels.viewLoad:
@@ -177,13 +212,13 @@ class PlayersPanelController(DriftkingsConfigInterface):
         arena = self._getArena()
         if not g_driftkingsPlayersPanels.viewLoad or arena is None or vehicleID not in arena.vehicles:
             return
+        currentMaxHealth = self._getVehicleMaxHealth(vehicleID, self.__hpCache.get(vehicleID, {}).get('max', 0))
         if vehicleID not in self.__hpCache or newHealth == -1:
-            vehicle = arena.vehicles.get(vehicleID)
-            maxHealth = vehicle['vehicleType'].maxHealth if vehicle and vehicle['vehicleType'] else 0
-            self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': maxHealth}
+            self.__hpCache[vehicleID] = {'current': self.getVehicleHealth(vehicleID), 'max': currentMaxHealth}
         else:
             health = self._normalizeHealthValue(newHealth)
-            self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else self.__hpCache[vehicleID]['max']
+            self.__hpCache[vehicleID]['max'] = currentMaxHealth
+            self.__hpCache[vehicleID]['current'] = health if vehicleID in self.__vCache else currentMaxHealth
         self.setHPField(vehicleID)
 
     def validateCache(self, vehicleID):
@@ -191,7 +226,7 @@ class PlayersPanelController(DriftkingsConfigInterface):
             self.__vCache.add(vehicleID)
 
     def onHotkeyPressed(self, event):
-        if not hasattr(getPlayer(), 'arena') or not self.data['enabled'] or not self.data['mode']:
+        if not self.__battleStarted or not self._isSupportedBattle() or not self.data['enabled'] or not self.data['mode']:
             return
         if self.data['mode'] == 1 and checkKeys(self.data['toggleKey'], event.key) and event.isKeyDown():
             self.displayed = not self.displayed

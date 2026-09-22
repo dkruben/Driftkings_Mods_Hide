@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Seçeneğinizi seçin",
+    "UI_setting_mode_tooltip": " • <b>Her zaman</b> - HP işaretleri her zaman görüntülenecektir.\n • <b>Değiştir</b> - Geçiş tuşuna basıldığında HP işaretleri açılıp kapatılacaktır.\n • <b>Tutma</b> - HP işaretleri yalnızca görüntülenecektir <b>süre</b> geçiş tuşuna basılır.",
+    "UI_setting_mode_always": "Her zaman",
+    "UI_setting_mode_toggle": "Değiştir",
+    "UI_setting_mode_holding": "Tutma",
+    "UI_setting_toggleKey_text": "Kısayol tuşunu aç/kapat",
+    "UI_setting_toggleKey_tooltip": "Savaş sırasında bu düğmeye basmak, HP işaretlerinin görüntülenmesini değiştirir."
+}

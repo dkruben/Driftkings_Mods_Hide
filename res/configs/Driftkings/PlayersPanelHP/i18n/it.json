@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Scegli la tua opzione",
+    "UI_setting_mode_tooltip": " • <b>Sempre</b> - Gli indicatori HP verranno sempre visualizzati.\n • <b>Attiva/disattiva</b> - I marcatori HP verranno attivati/disattivati premendo il tasto di attivazione/disattivazione.\n • <b>Tenendo</b> - Verranno visualizzati solo gli indicatori HP <b>mentre</b> viene premuto il tasto di commutazione.",
+    "UI_setting_mode_always": "Sempre",
+    "UI_setting_mode_toggle": "Attiva/disattiva",
+    "UI_setting_mode_holding": "Tenendo",
+    "UI_setting_toggleKey_text": "Attiva/disattiva il tasto di scelta rapida",
+    "UI_setting_toggleKey_tooltip": "Premendo questo pulsante durante la battaglia si attiva/disattiva la visualizzazione degli indicatori HP."
+}

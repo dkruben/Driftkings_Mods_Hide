@@ -3,7 +3,6 @@ package driftkings.views.battle
    import driftkings.views.utils.Constants;
    import driftkings.views.utils.ProgressBar;
    import driftkings.views.utils.Align;
-   import flash.events.Event;
    import flash.text.TextFieldAutoSize;
    import mods.common.BattleDisplayable;
    
@@ -34,19 +33,7 @@ package driftkings.views.battle
       override protected function onPopulate() : void
       {
          super.onPopulate();
-         this.onResizeHandle(null);
-         var settings:Object = this.getSettings();
-         var colors:Object = settings.colors;
-         
-         this.alignX = settings.alignX || Align.CENTER;
-         this.alignY = settings.alignY || Align.BOTTOM;
-         
-         this.own_health = new ProgressBar(settings.x - 90, settings.y, 180, 22, this.getAVGColor(), colors.bgColor, 0.2);
-         this.own_health.setOutline(180, 22);
-         this.own_health.addTextField(90, -3, TextFieldAutoSize.CENTER, Constants.middleText);
-         this.addChild(this.own_health);
-         
-         this.updatePosition();
+         this.applySettings();
       }
       
       private function updatePosition() : void
@@ -77,12 +64,53 @@ package driftkings.views.battle
          this.x = posX;
          this.y = posY;
       }
+
+      private function applySettings() : void
+      {
+         if(this.getSettings == null)
+         {
+            return;
+         }
+
+         var settings:Object = this.getSettings();
+         if(settings == null)
+         {
+            return;
+         }
+
+         this.alignX = settings.alignX || Align.CENTER;
+         this.alignY = settings.alignY || Align.BOTTOM;
+
+         if(this.own_health == null)
+         {
+            this.own_health = new ProgressBar(0, 0, 180, 22, this.getAVGColor(), settings.colors.bgColor, 0.2);
+            this.own_health.setOutline(180, 22);
+            this.own_health.addTextField(90, -3, TextFieldAutoSize.CENTER, Constants.middleText);
+            this.addChild(this.own_health);
+         }
+         else
+         {
+            this.own_health.updateColor(this.getAVGColor());
+         }
+
+         this.own_health.x = Number(settings.x) - 90;
+         this.own_health.y = Number(settings.y);
+         this.updatePosition();
+      }
+
+      override protected function onResized() : void
+      {
+         this.updatePosition();
+      }
       
       override protected function onBeforeDispose() : void
       {
          super.onBeforeDispose();
-         this.own_health.remove();
-         this.own_health = null;
+         if(this.own_health)
+         {
+            this.own_health.remove();
+            this.own_health = null;
+         }
       }
       
       public function as_setOwnHealth(scale:Number, text:String, color:String) : void
@@ -97,12 +125,15 @@ package driftkings.views.battle
       
       public function as_BarVisible(isVisible:Boolean) : void
       {
-         this.own_health.visible = isVisible;
+         if(this.own_health)
+         {
+            this.own_health.visible = isVisible;
+         }
       }
-      
-      private function onResizeHandle(event:Event) : void
+
+      public function as_updateSettings() : void
       {
-         this.updatePosition();
+         this.applySettings();
       }
       
       public function as_onCrosshairPositionChanged(x:Number, y:Number) : void

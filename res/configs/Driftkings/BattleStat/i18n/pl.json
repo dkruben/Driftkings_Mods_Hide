@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Pokaż szanse zespołowi",
+    "UI_setting_teamChances_tooltip": "Wyświetla procent szans na wygraną dla każdej drużyny podczas bitwy",
+    "UI_setting_format_text": "Format tekstowy",
+    "UI_setting_format_tooltip": "Ustawia format tekstu"
+}

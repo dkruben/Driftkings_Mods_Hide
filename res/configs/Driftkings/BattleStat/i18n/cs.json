@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Ukázat týmové šance",
+    "UI_setting_teamChances_tooltip": "Zobrazuje procento šance na výhru pro každý tým během bitvy",
+    "UI_setting_format_text": "Textový formát",
+    "UI_setting_format_tooltip": "Nastavuje formát textu"
+}

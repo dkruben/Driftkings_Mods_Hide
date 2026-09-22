@@ -1,0 +1,12 @@
+{
+    "UI_description": "FlightTimer",
+    "UI_version": 106,
+    "UI_setting_template_text": "Шаблон",
+    "UI_setting_template_tooltip": "Макросы%(flightTime).1fs', %(distance)dm",
+    "UI_setting_spgOnly_text": "Только для САУ?",
+    "UI_setting_spgOnly_tooltip": "Если отмечено, то таймер будет виден только для САУ.",
+    "UI_setting_x_text": "Позиция X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Позиция Y",
+    "UI_setting_y_tooltip": ""
+}

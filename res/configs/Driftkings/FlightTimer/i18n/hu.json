@@ -1,0 +1,12 @@
+{
+    "UI_description": "FlightTimer",
+    "UI_version": 106,
+    "UI_setting_template_text": "Sablon",
+    "UI_setting_template_tooltip": "Makrók%(flightTime).1fs', %(distance)dm",
+    "UI_setting_spgOnly_text": "Csak az SPG-hez?",
+    "UI_setting_spgOnly_tooltip": "Ha be van jelölve, akkor az időzítő csak SPG esetén lesz látható.",
+    "UI_setting_x_text": "X pozíció",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Y pozíció",
+    "UI_setting_y_tooltip": ""
+}

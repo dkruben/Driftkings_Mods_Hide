@@ -1,0 +1,15 @@
+{
+    "UI_description": "ArmorCalculator",
+    "UI_version": 132,
+    "UI_setting_displayOnAllies_text": "Anzeige bei Verbündeten",
+    "UI_setting_displayOnAllies_tooltip": "",
+    "UI_noDamage": "Kritischer Treffer, kein Schaden.",
+    "UI_ricochet": "Querschläger",
+    "UI_colors": {
+        "green": "#60CB00",
+        "orange": "#FF9900",
+        "purple": "#6F6CD3",
+        "red": "#ED070A",
+        "yellow": "#FFC900"
+    }
+}

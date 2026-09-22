@@ -1,6 +1,6 @@
 {
     "UI_description": "MarksOnGunBattle",
-    "UI_version": "1.6.5 (%(file_compile_date)s)",
+    "UI_version": 167,
     "UI_message": "MoE change visual %s",
     "UI_setting_buttonShow_text": "Button: Change Style",
     "UI_setting_buttonShow_tooltip": "",

@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Yatay işaretleyici türü",
+    "UI_setting_horizontal_tooltip": "Artı işaretinin solunda ve sağında, silahınızın yatay kenar konumlarını gösteren işaretlerin türü.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Devre dışı",
+    "UI_setting_horizontal_1": "Köşeler",
+    "UI_setting_horizontal_2": "Köşeli parantezler",
+    "UI_setting_horizontal_3": "Büyük yarım daire",
+    "UI_setting_horizontal_4": "Yarım daire",
+    "UI_setting_horizontal_5": "sekizgen",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Dikey işaretleyici türü",
+    "UI_setting_vertical_tooltip": "Silahınızın dikey kenar konumlarını gösteren artı işaretinin üstündeki ve altındaki işaretlerin türü.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Devre dışı",
+    "UI_setting_vertical_1": "Dikey çizgi",
+    "UI_setting_vertical_2": "Nokta",
+    "UI_setting_vertical_3": "Üçgen",
+    "UI_setting_vertical_4": "Diyot",
+    "UI_setting_vertical_5": "sekizgen",
+    "UI_setting_vertical_6": "ktulho"
+}

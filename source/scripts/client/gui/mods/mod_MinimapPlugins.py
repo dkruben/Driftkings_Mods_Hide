@@ -2,6 +2,7 @@
 from math import degrees
 
 import Keys
+import BigWorld
 from constants import VISIBILITY
 from frameworks.wulf import WindowLayer
 from gui.Scaleform.daapi.view.battle.shared.minimap import plugins
@@ -15,7 +16,7 @@ from gui.shared.personality import ServicesLocator
 from helpers import dependency
 from skeletons.gui.battle_session import IBattleSessionProvider
 
-from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, hexToDecimal, logError, calculate_version, xvmInstalled, battle_range
+from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, checkKeys, hexToDecimal, logError, calculate_version, xvmInstalled, battle_range, callback, cancelCallback
 from DriftkingsInject import DriftkingsInjector, DriftkingsView, g_events
 
 AS_INJECTOR = 'MinimapCentredViewInjector'
@@ -33,7 +34,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.3.0 (%(file_compile_date)s)'  # Updated version number
+        self.version = '1.3.1 (%(file_compile_date)s)'  # Updated version number
         self.author = '_DKRuben__EU'
         self.defaultKeys = {'button': [Keys.KEY_LCONTROL]}
         self.data = {
@@ -206,6 +207,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.DRAW_RANGE
             self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_DRAW_CIRCLE,hexToDecimal(config.data['colorDrawCircle']), config.data['alpha'], 565.0)
+        else:
             return super(PersonalEntriesPlugin, self).__addDrawRangeCircle()
 
     def __addMaxViewRangeCircle(self):
@@ -214,6 +216,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MAX_VIEW_RANGE
             self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MAX_VIEW_CIRCLE,hexToDecimal(config.data['colorMaxViewCircle']), config.data['alpha'], VISIBILITY.MAX_RADIUS)
+        else:
             return super(PersonalEntriesPlugin, self).__addMaxViewRangeCircle()
 
     def __addMinSpottingRangeCircle(self):
@@ -222,6 +225,7 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.MIN_SPOTTING_RANGE
             self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_MIN_SPOTTING_CIRCLE,hexToDecimal(config.data['colorMinSpottingCircle']), config.data['alpha'], VISIBILITY.MIN_RADIUS)
+        else:
             return super(PersonalEntriesPlugin, self).__addMinSpottingRangeCircle()
 
     def __addViewRangeCircle(self):
@@ -230,52 +234,56 @@ class PersonalEntriesPlugin(plugins.PersonalEntriesPlugin):
                 return
             self.__circlesVisibilityState |= CIRCLE_TYPE.VIEW_RANGE
             self._invoke(self.__circlesID, VIEW_RANGE_CIRCLES_AS3_DESCR.AS_ADD_DYN_CIRCLE,hexToDecimal(config.data['colorViewCircle']), config.data['alpha'], self._getViewRangeRadius())
+        else:
             return super(PersonalEntriesPlugin, self).__addViewRangeCircle()
 
 
 class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
     def __init__(self, *args, **kwargs):
         super(ArenaVehiclesPlugin, self).__init__(*args, **kwargs)
-        self.__showDestroyEntries = config.data['showNames']
-        self.__isDestroyImmediately = config.data['permanentMinimapDeath']
+        if config.data['permanentMinimapDeath']:
+            self.__showDestroyEntries = True
+            self.__isDestroyImmediately = True
         self.__showVehicleTypes = config.data['showVehicleTypes']
-        self.__lastPositions = {}
-        self.__lastPositionTimers = {}
+        self._lastPositions = {}
+        self._lastPositionCallback = None
+        self._running = False
 
     def start(self):
+        self._running = True
         super(ArenaVehiclesPlugin, self).start()
-        if config.data['enabled'] and config.data['showLastPositions']:
-            g_events.onMinimapClicked += self.onMinimapClicked
 
     def stop(self):
-        if config.data['enabled'] and config.data['showLastPositions']:
-            g_events.onMinimapClicked -= self.onMinimapClicked
+        self._running = False
+        if self._lastPositionCallback is not None:
+            cancelCallback(self._lastPositionCallback)
+            self._lastPositionCallback = None
+        self._lastPositions.clear()
         super(ArenaVehiclesPlugin, self).stop()
 
     def _showVehicle(self, vehicleID, location):
         entry = self._entries[vehicleID]
-        if entry.isAlive():
-            # Store last position for enemy vehicles
-            if config.data['showLastPositions'] and entry.getTeam() != self._playerTeam:
-                self.__lastPositions[vehicleID] = location
-                self.__lastPositionTimers[vehicleID] = config.data['lastPositionDuration']
-            # noinspection PyProtectedMember
-            super(ArenaVehiclesPlugin, self)._showVehicle(vehicleID, location)
+        self._lastPositions.pop(entry.getID(), None)
+        return super(ArenaVehiclesPlugin, self)._showVehicle(vehicleID, location)
 
     def _hideVehicle(self, entry):
-        if entry.isAlive() and entry.isActive():
-            # noinspection PyProtectedMember
-            super(ArenaVehiclesPlugin, self)._hideVehicle(entry)
+        result = super(ArenaVehiclesPlugin, self)._hideVehicle(entry)
+        if config.data['enabled'] and config.data['showLastPositions'] and entry.isAlive() and entry.isEnemy() and entry.getMatrix() is not None:
+            # The base plugin freezes the matrix at the last observed position.
+            # Use its existing Flash entry, rather than a nonexistent setLastPosition API.
+            if entry.setActive(True):
+                self._setActive(entry.getID(), True)
+            duration = max(0.0, float(config.data['lastPositionDuration']))
+            self._lastPositions[entry.getID()] = (entry, BigWorld.time() + duration)
+            if self._running and self._lastPositionCallback is None:
+                self._lastPositionCallback = callback(0.25, self.updateLastPositions)
+        return result
 
     def __setDestroyed(self, vehicleID, entry):
+        self._lastPositions.pop(entry.getID(), None)
         if self.__isDestroyImmediately:
             self._setInAoI(entry, True)
         super(ArenaVehiclesPlugin, self).__setDestroyed(vehicleID, entry)
-
-    def __switchToVehicle(self, prevCtrlID):
-        if self.__isDestroyImmediately:
-            return
-        super(ArenaVehiclesPlugin, self).__switchToVehicle(prevCtrlID)
 
     def _getDisplayedName(self, vInfo):
         if not vInfo.isAlive() and not config.data['showNames']:
@@ -283,32 +291,21 @@ class ArenaVehiclesPlugin(plugins.ArenaVehiclesPlugin):
         # noinspection PyProtectedMember
         return super(ArenaVehiclesPlugin, self)._getDisplayedName(vInfo)
 
-    def updateLastPositions(self, deltaTime):
-        if not config.data['showLastPositions']:
+    def updateLastPositions(self):
+        self._lastPositionCallback = None
+        if not self._running:
             return
-        for vehicleID in list(self.__lastPositionTimers.keys()):
-            self.__lastPositionTimers[vehicleID] -= deltaTime
-            if self.__lastPositionTimers[vehicleID] <= 0:
-                del self.__lastPositionTimers[vehicleID]
-                del self.__lastPositions[vehicleID]
-            else:
-                opacity = min(100, int(self.__lastPositionTimers[vehicleID] / config.data['lastPositionDuration'] * 100))
-                location = self.__lastPositions[vehicleID]
-                self._invoke(vehicleID, 'setLastPosition', location[0], location[1], opacity)
-
-    def onMinimapClicked(self, x, y):
-        pass
-
-
-# Add the new event handlers to the g_events object
-def init_events():
-    if not hasattr(g_events, 'onToggleZoom'):
-        g_events.onToggleZoom = set()
-    if not hasattr(g_events, 'onMinimapClicked'):
-        g_events.onMinimapClicked = set()
-
-
-init_events()
+        now = BigWorld.time()
+        enabled = config.data['enabled'] and config.data['showLastPositions']
+        for entryID, (entry, expires) in list(self._lastPositions.items()):
+            if not entry.isAlive() or entry.isInAoI() or not entry.getID():
+                self._lastPositions.pop(entryID, None)
+            elif not enabled or now >= expires:
+                if entry.setActive(False):
+                    self._setActive(entryID, False)
+                self._lastPositions.pop(entryID, None)
+        if self._lastPositions:
+            self._lastPositionCallback = callback(0.25, self.updateLastPositions)
 
 
 @override(MinimapComponent, '_setupPlugins')
@@ -317,7 +314,7 @@ def new_setupPlugins(func, self, arenaVisitor):
     try:
         allowedMode = arenaVisitor.gui.guiType in battle_range
         if not xvmInstalled and allowedMode and config.data['enabled']:
-            if config.data['permanentMinimapDeath']:
+            if config.data['permanentMinimapDeath'] or config.data['showLastPositions']:
                 args['vehicles'] = ArenaVehiclesPlugin
             args['personal'] = PersonalEntriesPlugin
     except Exception as err:

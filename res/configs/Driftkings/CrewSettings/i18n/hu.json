@@ -1,0 +1,16 @@
+{
+    "UI_description": "Crew Settings",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Crew automatikus visszatérés",
+    "UI_setting_crewAutoReturn_tooltip": "A személyzet automatikusan visszaküldése a járművéhez",
+    "UI_setting_crewReturnByDefault_text": "A személyzet visszatérése alapértelmezés szerint",
+    "UI_setting_crewReturnByDefault_tooltip": "Alapértelmezés szerint a személyzet visszaküldése járműváltáskor",
+    "UI_setting_autoReturnDelay_text": "Automatikus visszatérés késleltetése (másodperc)",
+    "UI_setting_autoReturnDelay_tooltip": "Késés a személyzet automatikus visszatérése előtt",
+    "UI_setting_showNotifications_text": "Értesítések megjelenítése",
+    "UI_setting_showNotifications_tooltip": "Rendszerértesítések megjelenítése, amikor a személyzet visszatér",
+    "UI_setting_excludePremiumVehicles_text": "Prémium járművek kizárása",
+    "UI_setting_excludePremiumVehicles_tooltip": "Ne küldje vissza automatikusan a személyzetet a prémium járművekhez",
+    "UI_message_crewReturned": "A személyzet visszakerült a járműbe",
+    "UI_message_crewNotAvailable": "A személyzet nem áll rendelkezésre visszaküldésre"
+}

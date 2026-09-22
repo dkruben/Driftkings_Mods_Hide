@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Metin Kilidi",
+    "UI_setting_textLock_tooltip": "Savaşta Metni Sürükleyin",
+    "UI_setting_format_text": "Metin Formatı, Mevcut Makrolar:",
+    "UI_setting_format_tooltip": "Mevcut Makrolar:\n WN8:'{wn8}', Renk:'{c:wn8}'\nXWN8:'{xwn8}', Renk:'{c:x}'\nEFF:'{eff}', Renk:'{c:eff}'\nXEFF:'{xeff}', Renk:'{c:x}'\nFARK:'{diff}', Renk:'{c:diff}'\nDMG:'{dmg}', Renk:'{c:dmg}'\nXTE:'{xte}', Renk:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Savaş Sonuçları Penceresi",
+    "UI_setting_battleResultsWindow_tooltip": "Savaş Sonuçları Penceresini etkinleştirin.",
+    "UI_setting_battleResultsFormat_text": "Savaş sonuçları penceresi değiştiriliyor",
+    "UI_setting_battleResultsFormat_tooltip": "Mevcut Makrolar:\nWN8:'{wn8}', Renk: '{c:wn8}'\nXWN8:'{xwn8}', Renk: '{c:x}'\nEFF:'{eff}', Renk: '{c:eff}'\nXEFF:'{xeff}', Renk: '{c:x}'\nFARK:'{diff}', Renk: '{c:diff}'\nDMG:'{dmg}', Renk: '{c:dmg}'\nXTE:'{xte}', Renk: '{c:x}'\n{mapName} - Harita adı\n{battleType} - Savaş türü",
+    "UI_setting_colorRatting_text": "Renk Derecelendirmesini Seçin",
+    "UI_setting_colorRatting_tooltip": "Derecelendirmeler için renk şemasını seçin",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

@@ -1,0 +1,16 @@
+{
+    "UI_description": "Crew-Einstellungen",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Automatische Rückkehr der Besatzung",
+    "UI_setting_crewAutoReturn_tooltip": "Bringen Sie die Besatzung automatisch zu ihrem Fahrzeug zurück",
+    "UI_setting_crewReturnByDefault_text": "Standardmäßige Rückkehr der Besatzung",
+    "UI_setting_crewReturnByDefault_tooltip": "Beim Fahrzeugwechsel standardmäßig die Besatzung zurückbringen",
+    "UI_setting_autoReturnDelay_text": "Automatische Rückkehrverzögerung (Sekunden)",
+    "UI_setting_autoReturnDelay_tooltip": "Verzögerung vor der automatischen Rückkehr der Besatzung",
+    "UI_setting_showNotifications_text": "Benachrichtigungen anzeigen",
+    "UI_setting_showNotifications_tooltip": "Systembenachrichtigungen anzeigen, wenn die Besatzung zurückgekehrt ist",
+    "UI_setting_excludePremiumVehicles_text": "Premium-Fahrzeuge ausschließen",
+    "UI_setting_excludePremiumVehicles_tooltip": "Führen Sie bei Premium-Fahrzeugen keine automatische Rückführung der Besatzung durch",
+    "UI_message_crewReturned": "Die Besatzung wurde zum Fahrzeug zurückgebracht",
+    "UI_message_crewNotAvailable": "Die Besatzung steht für eine Rückgabe nicht zur Verfügung"
+}

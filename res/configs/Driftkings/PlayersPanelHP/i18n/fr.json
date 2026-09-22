@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Choisissez votre option",
+    "UI_setting_mode_tooltip": " • <b>Toujours</b> - Les marqueurs HP seront toujours affichés.\n • <b>Basculer</b> - Les marqueurs HP seront activés/désactivés lorsque vous appuyez sur la touche bascule.\n • <b>Tenir</b> - Les marqueurs HP ne seront affichés que <b>tandis que</b> la touche bascule est enfoncée.",
+    "UI_setting_mode_always": "Toujours",
+    "UI_setting_mode_toggle": "Basculer",
+    "UI_setting_mode_holding": "Tenir",
+    "UI_setting_toggleKey_text": "Activer/désactiver le raccourci clavier",
+    "UI_setting_toggleKey_tooltip": "Appuyer sur ce bouton pendant le combat fait basculer l'affichage des marqueurs HP."
+}

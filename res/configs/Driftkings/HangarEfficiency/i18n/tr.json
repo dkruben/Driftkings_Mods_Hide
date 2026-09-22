@@ -1,0 +1,18 @@
+{
+    "UI_description": "HangarEfficiency",
+    "UI_setting_avgAssist_text": "Ortalama Yardım",
+    "UI_setting_avgAssist_tooltip": "Yardımınızla yapılan ortalama hasarı görüntüleyin",
+    "UI_setting_avgBlocked_text": "Ort. Engellendi",
+    "UI_setting_avgBlocked_tooltip": "Ortalama zırhın bloke ettiği hasarı göster",
+    "UI_setting_avgDamage_text": "Ortalama Hasar",
+    "UI_setting_avgDamage_tooltip": "Verilen ortalama hasarı göster",
+    "UI_setting_avgStun_text": "Ortalama Sersemletme",
+    "UI_setting_avgStun_tooltip": "Mürettebatını sersemlettiğiniz hedeflere verilen ortalama hasarı görüntüleyin (KMT)",
+    "UI_setting_battles_text": "Savaşlar",
+    "UI_setting_battles_tooltip": "Savaş sayısını göster",
+    "UI_setting_gunMarks_text": "Silah İşaretleri",
+    "UI_setting_gunMarks_tooltip": "Silah işareti yüzdesini görüntüle",
+    "UI_setting_winRate_text": "Kazanma Oranı",
+    "UI_setting_winRate_tooltip": "Kazanma yüzdesini göster",
+    "UI_version": 115
+}

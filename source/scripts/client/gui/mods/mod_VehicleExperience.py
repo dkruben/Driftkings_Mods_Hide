@@ -7,7 +7,8 @@ from CurrentVehicle import g_currentVehicle
 from gui.Scaleform.daapi.view.lobby.hangar.VehicleParameters import VehicleParameters, _VehParamsDataProvider
 from gui.Scaleform.genConsts.HANGAR_ALIASES import HANGAR_ALIASES
 from gui.Scaleform.locale.QUESTS import QUESTS
-from gui.impl.backport.backport_system_locale import getIntegralFormat
+from gui.impl import backport
+from gui.impl.gen import R
 from gui.server_events.personal_missions_cache import vehicleRequirementsCheck
 from gui.server_events.personal_progress.formatters import PMTooltipConditionsFormatters
 from gui.shared.tooltips import getUnlockPrice
@@ -31,7 +32,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.1.6 (%(file_compile_date)s)'
+        self.version = '1.2.0 (%(file_compile_date)s)'
         self.author = 'orig. Spoter, Re-Worked by: DriftKing\'s'
         self.data = {
             'enabled': True,
@@ -81,6 +82,7 @@ class ConfigInterface(DriftkingsConfigInterface):
             'UI_setting_questSettingsLabel_text': 'Personal Mission status:',
             'UI_setting_questsHeader': 'Personal Assignments',
             'UI_setting_questsHeader_pm2': 'Personal Assignments Campaign 2',
+            'UI_setting_questsHeader_pm3': 'Personal Assignments Campaign 3',
             'UI_setting_questsHeader_regular': 'Personal Assignments Campaign 1',
             'UI_text_add_condition': '<font color=\'#aefe57\'>{quest-add-condition}</font>',
             'UI_text_add_condition_extra': 'Secondary condition',
@@ -138,11 +140,30 @@ class ConfigInterface(DriftkingsConfigInterface):
     def getInfo(self):
         result = []
         if g_currentVehicle.isPresent():
-            for branch in PM_BRANCH.ACTIVE_BRANCHES:
+            for branch in self.getActiveBranches():
                 result.extend(self.getQuest(branch))
 
             result.extend(self.getVehicleExperience())
         return result
+
+    def getActiveBranches(self):
+        quests = self.eventsCache.getPersonalMissions()
+        if quests is None:
+            return getattr(PM_BRANCH, 'V1_BRANCHES', ())
+        if hasattr(PM_BRANCH, 'ACTIVE_BRANCHES'):
+            return getattr(PM_BRANCH, 'ACTIVE_BRANCHES')
+
+        all_branches = getattr(PM_BRANCH, 'ALL', ())
+        if not all_branches:
+            return getattr(PM_BRANCH, 'V1_BRANCHES', ())
+
+        active_campaigns = set(quests.getActiveCampaigns() or [])
+        if not active_campaigns:
+            return tuple(all_branches)
+
+        type_to_name = getattr(PM_BRANCH, 'TYPE_TO_NAME', {})
+        active_branches = [branch for branch in all_branches if type_to_name.get(branch) in active_campaigns]
+        return tuple(active_branches) if active_branches else tuple(all_branches)
 
     def getQuest(self, branch):
         data = []
@@ -169,9 +190,11 @@ class ConfigInterface(DriftkingsConfigInterface):
                             data.extend(self.getQuestCondition(condType, conditionsText))
         if not data:
             return []
-        branch_name = PM_BRANCH.TYPE_TO_NAME[branch]
-        header = self.getHeader(self.i18n['UI_setting_questsHeader_' + branch_name])
-        if not self.isExpanded(self.i18n['UI_setting_questsHeader_' + branch_name]):
+        branch_name = PM_BRANCH.TYPE_TO_NAME.get(branch, '')
+        header_key = 'UI_setting_questsHeader_' + branch_name if branch_name else ''
+        header_text = self.i18n.get(header_key, self.i18n['UI_setting_questsHeader'])
+        header = self.getHeader(header_text)
+        if not self.isExpanded(header_text):
             return header
         data = header + data
         return data
@@ -293,7 +316,8 @@ class ConfigInterface(DriftkingsConfigInterface):
         return data
 
     def getNumber(self, number):
-        return self.truncate(number) if self.data['isTruncateNumbers'] else getIntegralFormat(number)
+        from frameworks.wulf import getNumberFormat
+        return self.truncate(number) if self.data['isTruncateNumbers'] else getNumberFormat(int(number))
 
     def getExpStringFormat(self):
         return {
@@ -350,7 +374,7 @@ class ConfigInterface(DriftkingsConfigInterface):
         isEliteReady = False
         isModulesReady = False
         for unlocks in g_currentVehicle.item.descriptor.type.unlocksDescrs:
-            if len(unlocks) > 1:  # Make sure unlocks has at least 2 elements
+            if len(unlocks) > 1:
                 compactDescr = unlocks[1]
                 if compactDescr in vehicles:
                     vehicle = vehicles[compactDescr]
@@ -360,7 +384,7 @@ class ConfigInterface(DriftkingsConfigInterface):
                         eliteNeedXP += fullCost
                         eliteDiscountXP += discount
                         isEliteReady = True
-                        for research in unlocks[2:]:  # Start from index 2 since we already processed index 1
+                        for research in unlocks[2:]:
                             isAvailable, cost, need, fullCost, discount = getUnlockPrice(research, g_currentVehicle.item.intCD, vehicle.level)
                             if not isAvailable:
                                 researchVehicles[compactDescr]['exp'] += fullCost

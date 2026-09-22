@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Zakázat dalekohled.",
+    "UI_setting_noBinoculars_tooltip": "Odstraňte výpadek v odstřelovacím režimu.",
+    "UI_setting_noFlashBang_text": "Zakázat červený blesk.",
+    "UI_setting_noFlashBang_tooltip": "Při poškození odstraňte červený blesk.",
+    "UI_setting_noShockWave_text": "Rázová vlna",
+    "UI_setting_noShockWave_tooltip": "Odstraňte chvění kamery při zásahu tankem.",
+    "UI_setting_noSniperDynamic_text": "Sniper Dynamic",
+    "UI_setting_noSniperDynamic_tooltip": "Zakázat dynamickou kameru v odstřelovacím režimu.",
+    "UI_setting_disableCamAfterShot_text": "Zakázat kameru po výstřelu",
+    "UI_setting_disableCamAfterShot_tooltip": "Po výstřelu deaktivujte režim odstřelovače.",
+    "UI_setting_disableCamAfterShotLatency_text": "Zakázat latenci kamery po záběru",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "Zpoždění automatického vypnutí fotoaparátu.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "Deaktivujte klip přeskočení kamery po záběru",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Neopouštějte systém vkládání zásobníků."
+}

@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Válassza ki a kívánt lehetőséget",
+    "UI_setting_mode_tooltip": " • <b>Mindig</b> - A HP markerek mindig megjelennek.\n • <b>Váltás</b> - A HP markerek be-/kikapcsolódnak a váltógomb megnyomásával.\n • <b>Holding</b> - A HP markerek csak akkor jelennek meg <b>miközben</b> a váltógomb megnyomva.",
+    "UI_setting_mode_always": "Mindig",
+    "UI_setting_mode_toggle": "Váltás",
+    "UI_setting_mode_holding": "Holding",
+    "UI_setting_toggleKey_text": "Váltó gyorsbillentyű",
+    "UI_setting_toggleKey_tooltip": "Ennek a gombnak a csata közbeni megnyomása átkapcsolja a HP markerek megjelenítését."
+}

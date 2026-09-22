@@ -1,0 +1,12 @@
+{
+    "UI_description": "TotalLog",
+    "UI_version": 100,
+    "UI_setting_separate_text": "Oddzielne",
+    "UI_setting_separate_tooltip": "",
+    "UI_setting_inCenter_text": "W Centrum",
+    "UI_setting_inCenter_tooltip": "Wyświetl dziennik na środku ekranu",
+    "UI_setting_x_text": "Pozycja X",
+    "UI_setting_x_tooltip": "Pozycja pozioma",
+    "UI_setting_y_text": "Pozycja Y",
+    "UI_setting_y_tooltip": "Pozycja pionowa"
+}

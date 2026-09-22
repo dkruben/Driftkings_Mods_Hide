@@ -2,7 +2,10 @@
 import traceback
 from functools import partial
 
-from DriftkingsCore import loadJson, override, logError, smart_update
+from DriftkingsCore.config.json_reader import loadJson
+from DriftkingsCore.config.utils import smart_update
+from DriftkingsCore.utils.monkeypatch import override
+from DriftkingsCore.utils.logger import logError
 
 __all__ = ('g_modsListApi', 'registerSettings',)
 

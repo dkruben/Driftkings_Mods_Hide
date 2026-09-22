@@ -28,7 +28,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.0.6 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -170,6 +170,8 @@ class DispersionTimer(DispersionTimerMeta):
         if type_descriptor is None or self.isPostmortem:
             return self.as_updateTimerTextS('')
         aiming_angle = gunRotator.dispersionAngle
+        if aiming_angle <= 0.0:
+            return self.as_updateTimerTextS('')
         if self.min_angle > aiming_angle:
             self.min_angle = aiming_angle
             logDebug(config.ID, False, 'DispersionTimer - renew min dispersion angle {}', self.min_angle)

@@ -1,0 +1,11 @@
+{
+  "enabled": true,
+  "ext": ".wotmod",
+  "files": {
+    "res/scripts/client/gui/mods/mod_MarksOnGunTechTree.pyc": "build/scripts/client/gui/mods/mod_MarksOnGunTechTree.pyc",
+    "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/marks.js": "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/marks.js",
+    "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/marks.css": "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/marks.css",
+    "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/model.html": "res/gui/gameface/mods/Driftkings/MarksOnGunTechTree/model.html",
+    "res/mods/configs/res_map/DriftkingsMarksOnGunTechTree.json": "res/mods/configs/res_map/DriftkingsMarksOnGunTechTree.json"
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Włącz dziennik wsteczny.",
+    "UI_setting_logSwapper_tooltip": "Odwraca położenie dziennika uszkodzeń w interfejsie bitwy.",
+    "UI_setting_wgLogHideCritics_text": "Dziennik WG Ukryj krytyków",
+    "UI_setting_wgLogHideCritics_tooltip": "Ukrywa komunikaty o trafieniach krytycznych w standardowym dzienniku bitew WG.",
+    "UI_setting_wgLogHideBlock_text": "Ukryj blok dziennika WG",
+    "UI_setting_wgLogHideBlock_tooltip": "Ukrywa zablokowane komunikaty o uszkodzeniach w standardowym dzienniku bitwy WG.",
+    "UI_setting_wgLogHideAssist_text": "Asystent ukrywania dziennika WG",
+    "UI_setting_wgLogHideAssist_tooltip": "Ukrywa komunikaty o pomocy w zadawaniu obrażeń w standardowym dzienniku bitwy WG."
+}

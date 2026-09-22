@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Siatka klienta i serwera (beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Wyświetlaj jednocześnie celownik klienta i serwera",
+    "UI_setting_showServerSpgStrategicReticle_text": "Celownik strategiczny SPG",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Włącz celownik serwera dla trybu strategicznego SPG",
+    "UI_setting_gunMarkerMinimumSize_text": "Minimalny rozmiar znacznika pistoletu",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Minimalny rozmiar znacznika pistoletu w pikselach",
+    "UI_setting_percentCorrection_text": "Korekcja rozmiaru siatki",
+    "UI_setting_percentCorrection_tooltip": "Dostosuj współczynnik skali siatki",
+    "UI_setting_serverReticleAimingCircleShape_text": "Celujący kształt okręgu",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Wybierz kształt okręgu celowniczego serwera",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Nieprzezroczystość koła celowania",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Dostosuj przezroczystość koła celowniczego serwera",
+    "UI_setting_serverReticleGunMarkerShape_text": "Kształt znacznika pistoletu",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Wybierz kształt znacznika pistoletu serwerowego",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Nieprzezroczystość znacznika pistoletu",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Dostosuj przezroczystość znacznika pistoletu serwerowego"
+}

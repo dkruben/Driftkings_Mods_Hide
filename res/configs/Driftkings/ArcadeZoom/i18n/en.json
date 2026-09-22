@@ -1,6 +1,6 @@
 {
     "UI_description": "ArcadeZoom",
-    "UI_version": "1.1.0 (%(file_compile_date)s)",
+    "UI_version": 111,
     "UI_setting_min_text": "Min Zoom Out",
     "UI_setting_min_tooltip": "Minimum camera distance from vehicle",
     "UI_setting_max_text": "Max Zoom Out",

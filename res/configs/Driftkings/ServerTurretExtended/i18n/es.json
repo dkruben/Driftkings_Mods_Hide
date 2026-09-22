@@ -1,0 +1,23 @@
+{
+    "UI_description": "ServerTurretExtended",
+    "UI_version": 176,
+    "UI_setting_activateMessage_text": "Mostrar mensaje de activación",
+    "UI_setting_activateMessage_tooltip": "Mostrar mensaje de activación en batalla",
+    "UI_setting_fixAccuracyInMove_text": "Corregir precisión",
+    "UI_setting_fixAccuracyInMove_tooltip": "Cuando el tanque se mueve y luego se detiene, utiliza precisión fija para no perder la puntería.",
+    "UI_setting_serverTurret_text": "Torreta de servidor",
+    "UI_setting_serverTurret_tooltip": "Mueva la torreta a las coordenadas del objetivo del servidor (es necesario habilitar Server Sight en la configuración del juego)",
+    "UI_battle_activateMessage": "'Torreta de Servidor Extendida': Activada",
+    "UI_setting_fixWheelCruiseControl_text": "Reparar el control de crucero sobre ruedas",
+    "UI_setting_fixWheelCruiseControl_tooltip": "Cuando activa el modo Rueda con Control de crucero, con el vehículo detenido, esta configuración desactiva ese",
+    "UI_setting_maxWheelMode_text": "Ruedas: Mantenga la velocidad máxima",
+    "UI_setting_maxWheelMode_tooltip": "Al alcanzar la velocidad máxima, no desactiva el modo velocidad al maniobrar",
+    "UI_setting_buttonMaxMode_text": "Botón: Las ruedas mantienen la velocidad máxima",
+    "UI_setting_buttonMaxMode_tooltip": "",
+    "UI_setting_autoActivateWheelMode_text": "Ruedas: modo de velocidad automática",
+    "UI_setting_autoActivateWheelMode_tooltip": "Activa automáticamente el modo de velocidad o maniobra",
+    "UI_setting_buttonAutoMode_text": "Botón: modo de velocidad automática de las ruedas",
+    "UI_setting_buttonAutoMode_tooltip": "",
+    "UI_battle_ON": "ENCENDIDO",
+    "UI_battle_OFF": "APAGADO"
+}

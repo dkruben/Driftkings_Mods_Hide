@@ -1,6 +1,6 @@
 {
     "UI_description": "DispersionTimer",
-    "UI_version": "1.0.5 (%(file_compile_date)s)",
+    "UI_version": 106,
     "UI_setting_template_text": "Template",
     "UI_setting_template_tooltip": "Macros '%(color)s', %(timer).1fs, %(percent)d%%",
     "UI_setting_colorRed_text": "Choose Color for dispersion timer bad:",

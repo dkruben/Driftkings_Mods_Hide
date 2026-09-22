@@ -1,0 +1,12 @@
+{
+    "UI_description": "FlightTimer",
+    "UI_version": 106,
+    "UI_setting_template_text": "Szablon",
+    "UI_setting_template_tooltip": "Makra%(flightTime).1fs', %(distance)dm",
+    "UI_setting_spgOnly_text": "Tylko dla SPG?",
+    "UI_setting_spgOnly_tooltip": "Jeśli zaznaczone, licznik czasu będzie widoczny tylko dla dział samobieżnych.",
+    "UI_setting_x_text": "Pozycja X",
+    "UI_setting_x_tooltip": "",
+    "UI_setting_y_text": "Pozycja Y",
+    "UI_setting_y_tooltip": ""
+}

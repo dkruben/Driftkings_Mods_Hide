@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 import logging
+import tempfile
+import shutil
 
 # Configure logging
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
@@ -41,7 +43,7 @@ def compile_dir(path, max_levels=10, d_dir=None, o_dir=None, force=False, quiet=
         if not os.path.isdir(f_name):
             success &= compile_file(f_name, d_file, o_file, force, quiet)
         elif (max_levels > 0 and
-              name not in (os.curdir, os.pardir) and
+              not name.startswith('.') and name != '__pycache__' and
               os.path.isdir(f_name) and
               not os.path.islink(f_name)):
             success &= compile_dir(f_name, max_levels - 1, d_file, o_file, force, quiet)
@@ -54,7 +56,7 @@ def compile_file(fullname, d_file=None, o_file=None, force=False, quiet=False):
     name = os.path.basename(fullname)
     head, _ = os.path.splitext(name)
     timeStr = get_git_date(fullname)
-    if not force and head != '__init__':
+    if not force and head != '__init__' and ORION_PATH is None:
         try:
             m_time = int(timeStr) if timeStr else int(os.stat(fullname).st_mtime)
             expect = struct.pack('<4sl', imp.get_magic(), m_time)
@@ -113,25 +115,44 @@ def do_compile(f_path, d_file=None, o_file=None, raises=False, time_str=''):
     compile_date = time.strftime('%d.%m.%Y', time.localtime(max_ts))
     code_string = code_string.replace('%(file_compile_date)s', compile_date)
     code_string = code_string.replace('%(mod_ID)s', mod_id)
-    if '# -*- obfuscated -*-' in code_string:
-        if ORION_PATH is None:
-            logger.error('Obfuscated files present, but Orion path is not specified.')
-            sys.exit(2)
-        obf_path = (o_file or f_path).replace('.py', '_obf.py')
-        obf_dir = os.path.dirname(obf_path)
-        if not os.path.isdir(obf_dir):
-            os.makedirs(obf_dir)
-        with open(obf_path, 'wb') as fo:
-            fo.write(code_string)
+    if ORION_PATH is not None or '# -*- obfuscated -*-' in code_string:
+        if not ORION_PATH or not os.path.isfile(ORION_PATH):
+            logger.error('Protection requested but PJOrion executable is unavailable.')
+            return False
+        target = os.path.abspath((o_file or f_path) + 'c')
+        directory = os.path.dirname(target)
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+        temporary = tempfile.mkdtemp(prefix='orion-', dir=directory)
         try:
-            base_path = os.getcwd() + '/' + obf_path
-            subprocess.check_call([ORION_PATH, '/obfuscate-bytecode-file', base_path, '/exit'])
-            subprocess.check_call([ORION_PATH, '/protect-bytecode-file', base_path + 'c', '/exit'])
-        except subprocess.CalledProcessError as err:
-            logger.error(str(err))
-        else:
-            if time_str:
-                os.utime(obf_path + 'c', (time.time(), timestamp))
+            base_path = os.path.join(temporary, os.path.basename(f_path))
+            with open(base_path, 'wb') as handle:
+                handle.write(code_string)
+            options = {}
+            if os.name == 'nt':
+                startup = subprocess.STARTUPINFO()
+                startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+                startup.wShowWindow = 0
+                options['startupinfo'] = startup
+            subprocess.check_call([ORION_PATH, '/obfuscate-bytecode-file', base_path, '/exit'], **options)
+            protected = base_path + 'c'
+            with open(protected, 'rb') as handle:
+                before = handle.read()
+            subprocess.check_call([ORION_PATH, '/protect-bytecode-file', protected, '/exit'], **options)
+            with open(protected, 'rb') as handle:
+                after = handle.read()
+            if (len(after) < 8 or after[:4] != imp.get_magic() or after == before
+                    or b'pjorion_protected' not in after):
+                raise ValueError('PJOrion did not produce changed Python 2.7 bytecode')
+            # Publish exactly the protected output under the path used by manifests.
+            shutil.copyfile(protected, target)
+            os.utime(target, (time.time(), timestamp))
+            return True
+        except (OSError, IOError, ValueError, subprocess.CalledProcessError) as err:
+            logger.error('Protection failed for %s: %s', f_path, err)
+            return False
+        finally:
+            shutil.rmtree(temporary)
     try:
         code_object = __builtin__.compile(code_string, d_file or f_path, 'exec')
     except Exception as err:
@@ -165,7 +186,7 @@ def parse_args():
     -l: don't recurse into subdirectories
     -f: force rebuild even if timestamps are up-to-date
     -q: output only error messages
-    -p PJOrion_path: path to PJOrion executable, only required if any obfuscated files are present
+    -p PJOrion_path: protect every compiled source using this PJOrion executable
     -d dest_dir: directory to prepend to file paths for use in compile-time and runtime tracebacks in cases where the
         source file is unavailable
     -o output_dir: directory to put compiled files into, defaults to the folder being compiled""" % os.path.basename(sys.argv[0])

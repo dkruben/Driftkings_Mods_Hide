@@ -1,0 +1,18 @@
+{
+    "UI_description": "ZoomExtended",
+    "UI_version": 111,
+    "UI_setting_noBinoculars_text": "Távcső letiltása.",
+    "UI_setting_noBinoculars_tooltip": "Távolítsa el az áramszünetet mesterlövész módban.",
+    "UI_setting_noFlashBang_text": "A Red Flash letiltása.",
+    "UI_setting_noFlashBang_tooltip": "Sérüléskor távolítsa el a piros vakut.",
+    "UI_setting_noShockWave_text": "Shock Wave",
+    "UI_setting_noShockWave_tooltip": "Távolítsa el a kamera remegését, amikor a tank elüti.",
+    "UI_setting_noSniperDynamic_text": "Sniper Dynamic",
+    "UI_setting_noSniperDynamic_tooltip": "A dinamikus kamera letiltása mesterlövész módban.",
+    "UI_setting_disableCamAfterShot_text": "A Cam After Shot kikapcsolása",
+    "UI_setting_disableCamAfterShot_tooltip": "A lövés után kapcsolja ki a mesterlövész módot.",
+    "UI_setting_disableCamAfterShotLatency_text": "A Cam After Shot késleltetés letiltása",
+    "UI_setting_disableCamAfterShotLatency_tooltip": "A kamera automatikus kikapcsolásának késleltetése.",
+    "UI_setting_disableCamAfterShotSkipClip_text": "A Cam After Shot Skip Clip letiltása",
+    "UI_setting_disableCamAfterShotSkipClip_tooltip": "Ne lépjen ki, ha a tárbetöltő rendszer."
+}

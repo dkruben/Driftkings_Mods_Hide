@@ -1,6 +1,7 @@
 package driftkings.views.battle
 {
 	import flash.events.Event;
+	import flash.utils.Dictionary;
     import flash.filters.DropShadowFilter;
     import flash.geom.ColorTransform;
     import flash.text.AntiAliasType;
@@ -18,6 +19,7 @@ package driftkings.views.battle
 
 		private var configs:Object = {};
 		private var textFields:Object = {};
+		private var iconColors:Dictionary = new Dictionary(true);
 
 		public function DriftkingsPlayersPanelAPI()
 		{
@@ -52,6 +54,7 @@ package driftkings.views.battle
 
 		private function createComponent(linkage:String, config:Object) : void
 		{
+			this.deleteComponent(linkage);
 			this.configs[linkage] = config;
 			this.textFields[linkage] = {};
 		}
@@ -78,24 +81,17 @@ package driftkings.views.battle
 
 		private function getListItem(list:*, vehicleID:Number) : *
 		{
-			if (!list || !list._items)
+			if (!list)
 			{
 				return null;
 			}
-			var itemCount:int = int(list._items.length);
-			for (var i:int = 0; i < itemCount; i++)
-			{
-				if (list._items[i] && list._items[i].vehicleID == vehicleID)
-				{
-					return list._items[i]._listItem;
-				}
-			}
-			return null;
+			var holder:* = list.getHolderByVehicleID(int(vehicleID));
+			return holder ? holder.getListItem() : null;
 		}
 
 		public function as_getPPListItem(vehicleID:int) : *
 		{
-			if (!this.battlePage)
+			if (!(this.battlePage is BattlePage) || !(this.battlePage as BattlePage).playersPanel)
 			{
 				return null;
 			}
@@ -110,7 +106,7 @@ package driftkings.views.battle
 
 		private function isRightP(vehicleID:int) : Boolean
 		{
-			if (!this.battlePage)
+			if (!(this.battlePage is BattlePage) || !(this.battlePage as BattlePage).playersPanel)
 			{
 				return false;
 			}
@@ -137,7 +133,8 @@ package driftkings.views.battle
 				return;
 			}
 			config = this.configs[linkage][isRight ? "right" : "left"];
-			if (!config || !this.configs[linkage]["holder"])
+			if (!config || !this.textFields[linkage][vehicleID] ||
+				!this.configs[linkage]["holder"] || !listItem[this.configs[linkage]["holder"]])
 			{
 				return;
 			}
@@ -175,23 +172,23 @@ package driftkings.views.battle
 			if (listItem && listItem.vehicleIcon)
 			{
 				vehicleIcon = listItem.vehicleIcon;
-				vehicleIcon["DriftkingsPlayersPanelAPI"] = {"color":Utils.colorConvert(colorValue)};
-				if(!vehicleIcon.hasEventListener(Event.RENDER))
-				{
-					vehicleIcon.addEventListener(Event.RENDER, this.onRenderHandle);
-				}
+				this.iconColors[vehicleIcon] = Utils.colorConvert(colorValue);
+				vehicleIcon.addEventListener(Event.RENDER, this.onRenderHandle, false, 0, true);
+				var colorTransform:ColorTransform = vehicleIcon.transform.colorTransform;
+				colorTransform.color = this.iconColors[vehicleIcon];
+				vehicleIcon.transform.colorTransform = colorTransform;
 			}
 		}
 
 		private function onRenderHandle(event:Event) : void
 		{
 			var sprite:BattleAtlasSprite = event.target as BattleAtlasSprite;
-			if (!sprite || !sprite["DriftkingsPlayersPanelAPI"] || !sprite["DriftkingsPlayersPanelAPI"]["color"])
+			if (!sprite || this.iconColors[sprite] === undefined)
 			{
 				return;
 			}
 			var colorTransform:ColorTransform = sprite.transform.colorTransform;
-			colorTransform.color = sprite["DriftkingsPlayersPanelAPI"]["color"];
+			colorTransform.color = this.iconColors[sprite];
 			sprite.transform.colorTransform = colorTransform;
 		}
 
@@ -270,6 +267,19 @@ package driftkings.views.battle
 				textField.y = listItem[this.configs[linkage]["holder"]].y + (config.y || 0);
 			}
 			this.textFields[linkage][vehicleID] = textField;
+		}
+
+		override protected function onDispose() : void
+		{
+			for (var icon:Object in this.iconColors)
+			{
+				icon.removeEventListener(Event.RENDER, this.onRenderHandle);
+			}
+			this.iconColors = new Dictionary(true);
+			var linkages:Array = [];
+			for (var linkage:String in this.configs) { linkages.push(linkage); }
+			for each (linkage in linkages) { this.deleteComponent(linkage); }
+			super.onDispose();
 		}
 	}
 }

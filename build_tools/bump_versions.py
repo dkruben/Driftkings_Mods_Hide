@@ -109,7 +109,9 @@ def main():
         with open(normalized, 'r', encoding='utf-8') as handle:
             worktree_version = extract_version(handle.read())
 
-        if head_version is not None and worktree_version != head_version:
+        # New modules already declare their initial version. Repeated staging
+        # must not bump it again after catalogs and release packages were built.
+        if head_version is None or worktree_version != head_version:
             continue
 
         changed, new_version = bump_file_version(normalized)

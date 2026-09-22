@@ -1,0 +1,21 @@
+{
+    "UI_description": "SystemColor",
+    "UI_setting_colorCheckAllyDead_text": "Scegli il colore per Ally Dead:",
+    "UI_setting_allyDead_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_allyDead_tooltip": "Colore applicato al serbatoio.",
+    "UI_setting_colorCheckEnemyDead_text": "Scegli il colore per il nemico morto:",
+    "UI_setting_enemyDead_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_enemyDead_tooltip": "Colore applicato al serbatoio.",
+    "UI_setting_colorCheckSquadManAlive_text": "Scegli il colore per SquadMan Alive:",
+    "UI_setting_squadManAlive_text": "<font color='#FFB964'>FFB964</font>",
+    "UI_setting_squadManAlive_tooltip": "Colore applicato al serbatoio.",
+    "UI_setting_colorCheckEnemyAlive_text": "Scegli il colore per il nemico vivo:",
+    "UI_setting_enemyAlive_text": "<font color='#2C9AFF'>2C9AFF</font>",
+    "UI_setting_enemyAlive_tooltip": "Colore applicato al serbatoio.",
+    "UI_setting_colorCheckAllyAlive_text": "Scegli il colore per allearti vivo:",
+    "UI_setting_allyAlive_text": "<font color='#96FF00'>96FF00</font>",
+    "UI_setting_allyAlive_tooltip": "Colore applicato al serbatoio.",
+    "UI_setting_colorCheckTeamKillerAlive_text": "Scegli il colore per TeamKiller:",
+    "UI_setting_teamKillerAlive_text": "<font color='#00EAFF'>00EAFF</font>",
+    "UI_setting_teamKillerAlive_tooltip": "Colore applicato al serbatoio."
+}

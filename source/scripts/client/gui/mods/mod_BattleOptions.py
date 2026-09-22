@@ -31,7 +31,7 @@ from gui.doc_loaders import GuiColorsLoader
 from gui.game_control.special_sound_ctrl import SpecialSoundCtrl
 from gui.shared.gui_items.processors.vehicle import VehicleAutoBattleBoosterEquipProcessor
 from messenger.gui.Scaleform.data.contacts_data_provider import _ContactsCategories
-from messenger.storage import storage_getter
+from messenger.storage import MessengerStorageDescriptor, UsersStorage
 
 from DriftkingsCore import DriftkingsConfigInterface, Analytics, override, getPlayer, logInfo, square_position, isReplay, calculate_version, callback
 from DriftkingsInject import g_events, CyclicTimerEvent
@@ -42,7 +42,7 @@ _cache = set()
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '2.8.2 (%(file_compile_date)s)'
+        self.version = '2.8.3 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -431,19 +431,19 @@ def _getAttackerName(vehicleName):
 
 # add enemy name to damage log
 @override(DamageLogPanel, '_addToTopLog')
-def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
+def new__addToTopLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG, shellModeImg=None):
     if not config.data['enabled'] or not config.data['addEnemyName']:
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG, shellModeImg)
     attackerName = _getAttackerName(vehicleName)
-    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
+    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG, shellModeImg)
 
 
 @override(DamageLogPanel, '_addToBottomLog')
-def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG):
+def new__addToBottomLog(func, self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG, shellModeImg=None):
     if not config.data['enabled'] or not config.data['addEnemyName']:
-        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG)
+        return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName, shellTypeStr, shellTypeBG, shellModeImg)
     attackerName = _getAttackerName(vehicleName)
-    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG)
+    return func(self, value, actionTypeImg, vehicleTypeImg, vehicleName + ' | ' + attackerName, shellTypeStr, shellTypeBG, shellModeImg)
 
 
 # Vehicle Boosters
@@ -476,7 +476,7 @@ def onVehicleChanged(vehicle):
 
 def onGuiCacheSyncCompleted(_):
     _cache.clear()
-    users = storage_getter('users')().getList(_ContactsCategories().getCriteria())
+    users = MessengerStorageDescriptor(UsersStorage).get().getList(_ContactsCategories().getCriteria())
     _cache.update(user._userID for user in users if not user.isIgnored())
 
 

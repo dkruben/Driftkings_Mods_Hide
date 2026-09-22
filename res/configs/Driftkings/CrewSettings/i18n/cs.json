@@ -1,0 +1,16 @@
+{
+    "UI_description": "Nastavení posádky",
+    "UI_version": 122,
+    "UI_setting_crewAutoReturn_text": "Automatický návrat posádky",
+    "UI_setting_crewAutoReturn_tooltip": "Automaticky vraťte posádku do jejího vozidla",
+    "UI_setting_crewReturnByDefault_text": "Návrat posádky ve výchozím nastavení",
+    "UI_setting_crewReturnByDefault_tooltip": "Při výměně vozidel se ve výchozím nastavení vrátí posádka",
+    "UI_setting_autoReturnDelay_text": "Zpoždění automatického návratu (sekundy)",
+    "UI_setting_autoReturnDelay_tooltip": "Zpoždění před automatickým návratem posádky",
+    "UI_setting_showNotifications_text": "Zobrazit oznámení",
+    "UI_setting_showNotifications_tooltip": "Zobrazovat systémová upozornění, když se posádka vrátí",
+    "UI_setting_excludePremiumVehicles_text": "Vyloučit prémiová vozidla",
+    "UI_setting_excludePremiumVehicles_tooltip": "Nevracejte posádku u prémiových vozidel automaticky",
+    "UI_message_crewReturned": "Posádka byla vrácena do vozidla",
+    "UI_message_crewNotAvailable": "Posádka není k dispozici pro vrácení"
+}

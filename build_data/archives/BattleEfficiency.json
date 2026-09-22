@@ -1,14 +1,16 @@
-﻿{
+{
     "enabled": true,
     "ext": ".zip",
     "files": {
-		"mods/configs/Driftkings/DriftkingsStats/cache/**":  "res/configs/Driftkings/DriftkingsStats/cache/**",
         "mods/{GAME_VERSION}/Driftkings/BattleEfficiency.wotmod": "build/wotmods/Driftkings/BattleEfficiency.wotmod",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsCore.wotmod": "build/wotmods/Driftkings/DriftkingsCore.wotmod",
         "mods/{GAME_VERSION}/Driftkings/DriftkingsStats.wotmod": "build/wotmods/Driftkings/DriftkingsStats.wotmod",
-		"mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*",
-        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*", 
+        "mods/{GAME_VERSION}/*guiflash*": "res/wotmods/*guiflash*",
+        "mods/{GAME_VERSION}/*modsSettingsapi*": "res/wotmods/*modsSettingsapi*",
         "mods/{GAME_VERSION}/*modslistapi*": "res/wotmods/*modslistapi*",
-		"mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*"
+        "mods/{GAME_VERSION}/*gameface*": "res/wotmods/*gameface*",
+        "mods/configs/Driftkings/BattleEfficiency/**": "res/configs/Driftkings/BattleEfficiency/**",
+        "mods/configs/Driftkings/DriftkingsStats/**": "res/configs/Driftkings/DriftkingsStats/**",
+        "mods/configs/Driftkings/Driftkings_GUI/**": "res/configs/Driftkings/Driftkings_GUI/**"
     }
 }

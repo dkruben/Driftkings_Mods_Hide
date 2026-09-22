@@ -1,0 +1,22 @@
+{
+    "UI_description": "AimingAngles",
+    "UI_version": 110,
+    "UI_setting_horizontal_text": "Tipo de marcador horizontal",
+    "UI_setting_horizontal_tooltip": "Tipo de marcadores a la izquierda y derecha de la mira que muestran las posiciones de los bordes horizontales de su arma.\n\n<img src='img://gui/AimingAngles/1/Left.png'> <img src='img://gui/AimingAngles/1/Right.png'>\t<img src='img://gui/AimingAngles/2/Left.png'> <img src='img://gui/AimingAngles/2/Right.png'>\t<img src='img://gui/AimingAngles/3/Left.png'> <img src='img://gui/AimingAngles/3/Right.png'>\t<img src='img://gui/AimingAngles/4/Left.png'> <img src='img://gui/AimingAngles/4/Right.png'>\t<img src='img://gui/AimingAngles/5/Left.png'> <img src='img://gui/AimingAngles/5/Right.png'>\t<img src='img://gui/AimingAngles/6/Left.png'> <img src='img://gui/AimingAngles/6/Right.png'>",
+    "UI_setting_horizontal_0": "Discapacitado",
+    "UI_setting_horizontal_1": "Esquinas",
+    "UI_setting_horizontal_2": "Corchetes",
+    "UI_setting_horizontal_3": "gran semicírculo",
+    "UI_setting_horizontal_4": "semicírculo",
+    "UI_setting_horizontal_5": "Octágono",
+    "UI_setting_horizontal_6": "ktulho",
+    "UI_setting_vertical_text": "Tipo de marcador vertical",
+    "UI_setting_vertical_tooltip": "Tipo de marcadores encima y debajo de la mira que muestran las posiciones de los bordes verticales de su arma.\n\n<img src='img://gui/AimingAngles/1/Bottom.png'>\t<img src='img://gui/AimingAngles/2/Bottom.png'>\t<img src='img://gui/AimingAngles/3/Bottom.png'>\t<img src='img://gui/AimingAngles/4/Bottom.png'>\t<img src='img://gui/AimingAngles/5/Bottom.png'>\t<img src='img://gui/AimingAngles/6/Bottom.png'>",
+    "UI_setting_vertical_0": "Discapacitado",
+    "UI_setting_vertical_1": "guión vertical",
+    "UI_setting_vertical_2": "Punto",
+    "UI_setting_vertical_3": "Triangulo",
+    "UI_setting_vertical_4": "diodo",
+    "UI_setting_vertical_5": "Octágono",
+    "UI_setting_vertical_6": "ktulho"
+}

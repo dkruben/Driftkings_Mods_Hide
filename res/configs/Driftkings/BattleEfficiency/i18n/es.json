@@ -1,0 +1,17 @@
+{
+    "UI_description": "BattleEfficiency",
+    "UI_version": 271,
+    "UI_setting_textLock_text": "Bloqueo de texto",
+    "UI_setting_textLock_tooltip": "Arrastra texto en batalla",
+    "UI_setting_format_text": "Formato de texto, macros disponibles:",
+    "UI_setting_format_tooltip": "Macros disponibles:\n WN8:'{wn8}', Color:'{c:wn8}'\nXWN8:'{xwn8}', Color:'{c:x}'\nEFF:'{eff}', Color:'{c:eff}'\nXEFF:'{xeff}', Color:'{c:x}'\nDIFERENCIA:'{diff}', Color:'{c:diff}'\nDAÑO:'{dmg}', Color:'{c:dmg}'\nXTE:'{xte}', Color:'{c:x}'",
+    "UI_setting_battleResultsWindow_text": "Ventana de resultados de batalla",
+    "UI_setting_battleResultsWindow_tooltip": "Habilitar la ventana de resultados de la batalla.",
+    "UI_setting_battleResultsFormat_text": "Modificación de la ventana de resultados de batalla",
+    "UI_setting_battleResultsFormat_tooltip": "Macros disponibles:\nWN8:'{wn8}', Color: '{c:wn8}'\nXWN8:'{xwn8}', Color: '{c:x}'\nEFF:'{eff}', Color: '{c:eff}'\nXEFF:'{xeff}', Color: '{c:x}'\nDIFERENCIA:'{diff}', Color: '{c:diff}'\nDAÑO:'{dmg}', Color: '{c:dmg}'\nXTE:'{xte}', Color: '{c:x}'\n{mapName} - Nombre del mapa\n{battleType} - Tipo de batalla",
+    "UI_setting_colorRatting_text": "Elija la clasificación de color",
+    "UI_setting_colorRatting_tooltip": "Seleccione el esquema de color para las calificaciones",
+    "UI_setting_colorRatting_NoobMeter": "NoobMeter",
+    "UI_setting_colorRatting_XVM": "XVM",
+    "UI_setting_colorRatting_WotLabs": "WotLabs"
+}

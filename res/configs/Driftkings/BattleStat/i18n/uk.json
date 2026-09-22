@@ -1,0 +1,7 @@
+{
+    "UI_description": "BattleStat",
+    "UI_setting_teamChances_text": "Покажіть командні шанси",
+    "UI_setting_teamChances_tooltip": "Відображає відсоток шансів перемоги для кожної команди під час битви",
+    "UI_setting_format_text": "Текстовий формат",
+    "UI_setting_format_tooltip": "Встановлює формат тексту"
+}

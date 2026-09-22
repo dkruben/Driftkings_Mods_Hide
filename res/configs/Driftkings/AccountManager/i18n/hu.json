@@ -1,0 +1,19 @@
+{
+    "UI_description": "AccountManager",
+    "UI_version": 106,
+    "UI_setting_delete": "Törölje",
+    "UI_setting_cancel": "Mégse",
+    "UI_setting_enter": "<font color='#FFFF33' size='18'>Enter</font>",
+    "UI_setting_edit": "<font color='#9ACD32' size='18'>Szerkesztés</font>",
+    "UI_setting_deleteAccount": "<font color='#FF4500' size='18'>Törölje</font>",
+    "UI_setting_accountManager": "Számlavezető",
+    "UI_setting_add": "Hozzáadás",
+    "UI_setting_autoEnter": "Auto Enter",
+    "UI_setting_acceptDeleteAccount": "Fiók törlésének elfogadása",
+    "UI_setting_accountDelete": "Fiók törlése lehetőségre",
+    "UI_setting_save": "Mentés",
+    "UI_setting_server": "Szerver:",
+    "UI_setting_showPassword": "Jelszó megjelenítése",
+    "UI_setting_nick": "Nick:",
+    "UI_setting_manageYourAccount": "Kezelje fiókját"
+}

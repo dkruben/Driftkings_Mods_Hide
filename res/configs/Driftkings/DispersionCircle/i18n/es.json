@@ -1,0 +1,20 @@
+{
+    "UI_description": "Reticle",
+    "UI_version": 112,
+    "UI_setting_showClientAndServerReticleBeta_text": "Retícula de cliente y servidor (Beta)",
+    "UI_setting_showClientAndServerReticleBeta_tooltip": "Mostrar la retícula del cliente y del servidor simultáneamente",
+    "UI_setting_showServerSpgStrategicReticle_text": "Retícula estratégica SPG",
+    "UI_setting_showServerSpgStrategicReticle_tooltip": "Habilitar la retícula del servidor para el modo estratégico SPG",
+    "UI_setting_gunMarkerMinimumSize_text": "Tamaño mínimo del marcador de pistola",
+    "UI_setting_gunMarkerMinimumSize_tooltip": "Tamaño mínimo del marcador de pistola en píxeles.",
+    "UI_setting_percentCorrection_text": "Corrección del tamaño de la retícula",
+    "UI_setting_percentCorrection_tooltip": "Ajustar el factor de escala de la retícula.",
+    "UI_setting_serverReticleAimingCircleShape_text": "Forma de círculo de puntería",
+    "UI_setting_serverReticleAimingCircleShape_tooltip": "Seleccione la forma del círculo de puntería del servidor.",
+    "UI_setting_serverReticleAimingCircleOpacity_text": "Opacidad del círculo de puntería",
+    "UI_setting_serverReticleAimingCircleOpacity_tooltip": "Ajustar la opacidad del círculo de puntería del servidor.",
+    "UI_setting_serverReticleGunMarkerShape_text": "Forma del marcador de pistola",
+    "UI_setting_serverReticleGunMarkerShape_tooltip": "Seleccione la forma del marcador de pistola del servidor.",
+    "UI_setting_serverReticleGunMarkerOpacity_text": "Opacidad del marcador de pistola",
+    "UI_setting_serverReticleGunMarkerOpacity_tooltip": "Ajustar la opacidad del marcador de pistola del servidor."
+}

@@ -22,8 +22,8 @@ package views.hangar
 
     public class MarksOnGunHangar extends AbstractView
     {
-        private static const CHIP_GAP:Number = 8.0;
-        private static const CHIP_HEIGHT:Number = 34.0;
+        private static const CHIP_GAP:Number = 6.0;
+        private static const CHIP_HEIGHT:Number = 22.0;
 
         private var _container:Sprite;
         private var _card:Sprite;
@@ -129,9 +129,9 @@ package views.hangar
             _nextField = createTextField(12, 18, false);
             _statsField = createTextField(12, 22, false);
             _targetsField = createTextField(11, 18, false);
-            _masteryField = createTextField(11, CHIP_HEIGHT, false);
-            _wn8Field = createTextField(11, CHIP_HEIGHT, false);
-            _winrateField = createTextField(11, CHIP_HEIGHT, false);
+            _masteryField = createTextField(10, CHIP_HEIGHT, false);
+            _wn8Field = createTextField(10, CHIP_HEIGHT, false);
+            _winrateField = createTextField(10, CHIP_HEIGHT, false);
             _battlesField = createTextField(11, 16, false);
 
             _container.addChild(_headerField);
@@ -260,37 +260,40 @@ package views.hangar
                 return;
             }
 
-            var width:Number = Number(_cfg.width || 360);
-            var height:Number = Number(_cfg.height || 188);
+            var width:Number = Number(_cfg.width || 362);
+            var height:Number = Number(_cfg.height || 186);
             var bgColor:uint = uint(_cfg.backgroundColor || 0x101114);
-            var bgAlpha:Number = Number(_cfg.backgroundAlpha || 0.94);
-            var outline:uint = uint(_cfg.outlineColor || 0x2B2D33);
+            var bgAlpha:Number = Number(_cfg.backgroundAlpha || 0.88);
+            var outline:uint = uint(_cfg.outlineColor || 0x6E7783);
             var line:uint = parseColor(String(_cfg.lineColor || "#262A31"));
             var accent:uint = parseColor(String(_cfg.accentColor || "#E2C07A"));
             var accentSoft:uint = parseColor(String(_cfg.accentSoftColor || "#3A2B17"));
 
             _card.graphics.clear();
-            _card.graphics.lineStyle(1, outline, 1);
+            _card.graphics.lineStyle(1, outline, 0.34);
             _card.graphics.beginFill(bgColor, bgAlpha);
-            drawRoundRect(_card.graphics, 0, 0, width, height, 18);
+            drawRoundRect(_card.graphics, 0, 0, width, height, 10);
             _card.graphics.endFill();
-            _card.graphics.lineStyle(1, 0xFFFFFF, 0.03);
-            drawRoundRect(_card.graphics, 1, 1, width - 2, height - 2, 16);
+            _card.graphics.lineStyle(1, 0xFFFFFF, 0.05);
+            drawRoundRect(_card.graphics, 1, 1, width - 2, height - 2, 8);
 
             _accent.graphics.clear();
-            _accent.graphics.beginFill(accentSoft, 0.26);
-            drawRoundRect(_accent.graphics, 0, 0, width, 32, 18);
+            _accent.graphics.beginFill(accentSoft, 0.92);
+            drawRoundRect(_accent.graphics, 0, 0, width, 28, 10);
             _accent.graphics.endFill();
-            _accent.graphics.beginFill(accent, 1);
-            drawRoundRect(_accent.graphics, 18, 13, 52, 3, 3);
+            _accent.graphics.beginFill(accent, 0.32);
+            _accent.graphics.drawRect(0, 27, width, 1);
             _accent.graphics.endFill();
 
             _lineLayer.graphics.clear();
-            _lineLayer.graphics.lineStyle(1, line, 1);
-            _lineLayer.graphics.moveTo(18, 126);
-            _lineLayer.graphics.lineTo(width - 18, 126);
-            _lineLayer.graphics.moveTo(18, height - 24);
-            _lineLayer.graphics.lineTo(width - 18, height - 24);
+            _lineLayer.graphics.lineStyle(1, line, 0.55);
+            _lineLayer.graphics.moveTo(14, 142);
+            _lineLayer.graphics.lineTo(width - 14, 142);
+            if (!_cfg.compactMode)
+            {
+                _lineLayer.graphics.moveTo(14, height - 22);
+                _lineLayer.graphics.lineTo(width - 14, height - 22);
+            }
 
             _chipLayer.graphics.clear();
             layoutFields(width, height);
@@ -300,38 +303,43 @@ package views.hangar
 
         private function layoutFields(width:Number, height:Number) : void
         {
-            _headerField.width = width - 32;
-            _vehicleField.width = width - 140;
-            _percentField.width = width - 160;
-            _nextField.width = width - 160;
-            _statsField.width = width - 32;
-            _targetsField.width = width - 32;
-            _battlesField.width = width - 32;
+            _headerField.width = width - 28;
+            _vehicleField.width = width - 36;
+            _percentField.width = width - 156;
+            _nextField.width = width - 36;
+            _statsField.width = width - 28;
+            _targetsField.width = width - 28;
+            _battlesField.width = width - 28;
 
-            _headerField.x = 18;
-            _headerField.y = 10;
+            _headerField.x = 14;
+            _headerField.y = 6;
             _vehicleField.x = 18;
-            _vehicleField.y = 34;
+            _vehicleField.y = 31;
             _percentField.x = 18;
-            _percentField.y = 54;
+            _percentField.y = 50;
             _nextField.x = 18;
-            _nextField.y = 94;
+            _nextField.y = 88;
             _statsField.x = 18;
-            _statsField.y = 112;
+            _statsField.y = 110;
+            _statsField.height = 32;
             _targetsField.x = 18;
-            _targetsField.y = 130;
+            _targetsField.y = 145;
             _battlesField.x = 18;
-            _battlesField.y = height - 18;
+            _battlesField.y = height - 17;
 
             var chipWidth:Number = (width - 36 - CHIP_GAP * 2) / 3;
-            _masteryField.width = chipWidth - 12;
-            _wn8Field.width = chipWidth - 12;
-            _winrateField.width = chipWidth - 12;
+            _masteryField.width = chipWidth - 6;
+            _wn8Field.width = chipWidth - 6;
+            _winrateField.width = chipWidth - 6;
 
-            _masteryField.x = 18 + 6;
-            _wn8Field.x = 18 + chipWidth + CHIP_GAP + 6;
-            _winrateField.x = 18 + (chipWidth + CHIP_GAP) * 2 + 6;
-            _masteryField.y = 146;
+            _masteryField.x = 18;
+            _wn8Field.x = 18 + chipWidth + CHIP_GAP;
+            _winrateField.x = 18 + (chipWidth + CHIP_GAP) * 2;
+            _masteryField.y = 174;
+            _masteryField.visible = !_cfg.compactMode;
+            _wn8Field.visible = !_cfg.compactMode;
+            _winrateField.visible = !_cfg.compactMode;
+            _battlesField.visible = !_cfg.compactMode;
             _wn8Field.y = _masteryField.y;
             _winrateField.y = _masteryField.y;
         }
@@ -378,25 +386,7 @@ package views.hangar
 
         private function drawChips() : void
         {
-            var width:Number = Number(_cfg.width || 360);
-            var chipWidth:Number = (width - 36 - CHIP_GAP * 2) / 3;
-            var chipY:Number = _masteryField.y - 6;
-            var chipAlpha:Number = 0.92;
-            var fill:uint = mixColor(uint(_cfg.backgroundColor || 0x101114), parseColor(String(_cfg.accentSoftColor || "#3A2B17")), 0.35);
-            var outline:uint = parseColor(String(_cfg.outlineColor || "#2B2D33"));
-
             _chipLayer.graphics.clear();
-            drawChip(_masteryField.x - 6, chipY, chipWidth, CHIP_HEIGHT + 4, fill, outline, chipAlpha);
-            drawChip(_wn8Field.x - 6, chipY, chipWidth, CHIP_HEIGHT + 4, fill, outline, chipAlpha);
-            drawChip(_winrateField.x - 6, chipY, chipWidth, CHIP_HEIGHT + 4, fill, outline, chipAlpha);
-        }
-
-        private function drawChip(x:Number, y:Number, width:Number, height:Number, fill:uint, outline:uint, alpha:Number) : void
-        {
-            _chipLayer.graphics.lineStyle(1, outline, 1);
-            _chipLayer.graphics.beginFill(fill, alpha);
-            drawRoundRect(_chipLayer.graphics, x, y, width, height, 12);
-            _chipLayer.graphics.endFill();
         }
 
         private function updateStars(percent:Number) : void
@@ -413,8 +403,8 @@ package views.hangar
             ];
             var muted:uint = parseColor(String(_cfg.mutedColor || "#8E949F"));
             var transition:Number = Number(_cfg.starAnimationWindow || 5.0);
-            var starY:Number = 62;
-            var starX:Number = Number(_cfg.width || 360) - 108;
+            var starY:Number = 65;
+            var starX:Number = Number(_cfg.width || 362) - 112;
 
             for (var i:int = 0; i < _stars.length; i++)
             {
@@ -422,6 +412,7 @@ package views.hangar
                 var color:uint = mixColor(muted, uint(colors[i]), ratio);
                 var scale:Number = 0.88 + ratio * 0.18;
                 drawStar(_stars[i], color, 0.25 + ratio * 0.75, scale);
+                _stars[i].visible = _data != null && _data.eligible === true;
                 _stars[i].x = starX + i * 30;
                 _stars[i].y = starY;
             }

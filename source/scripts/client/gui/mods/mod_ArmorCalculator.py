@@ -41,7 +41,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.3.1 (%(file_compile_date)s)'
+        self.version = '1.3.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -214,7 +214,7 @@ class _ShotResult(_CrosshairShotResults):
         piercing_power = full_piercing_power
         ignored_materials = set()
         isJet = False
-        jet_loss = cls._SHELL_EXTRA_DATA[shell.kind].jetLossPPByDist
+        jet_loss = shell.type.piercingPowerLossFactorByDistance if cls._SHELL_EXTRA_DATA[shell.kind].hasPenetrationLoss else 0.0
         jet_start_dist = 0.0
         no_damage = True
         ricochet = False

@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Povolit reverzní protokol.",
+    "UI_setting_logSwapper_tooltip": "Obrátí polohu protokolu poškození v rozhraní bitvy.",
+    "UI_setting_wgLogHideCritics_text": "WG Log skrýt kritiky",
+    "UI_setting_wgLogHideCritics_tooltip": "Skryje zprávy o kritických zásahech ve standardním protokolu bitvy WG.",
+    "UI_setting_wgLogHideBlock_text": "WG Log Hide Block",
+    "UI_setting_wgLogHideBlock_tooltip": "Skryje zprávy o zablokovaném poškození ve standardním protokolu bitvy WG.",
+    "UI_setting_wgLogHideAssist_text": "WG Log Hide Assist",
+    "UI_setting_wgLogHideAssist_tooltip": "Skryje zprávy o pomoci při poškození ve standardním protokolu bitvy WG."
+}

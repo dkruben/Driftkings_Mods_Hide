@@ -21,7 +21,7 @@ _COLOR_MASKS = {
 class ConfigInterface(DriftkingsConfigInterface):
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.1 (%(file_compile_date)s)'
+        self.version = '1.0.2 (%(file_compile_date)s)'
         self.author = 'by Polyacov_Yury, updated by Driftkings'
         self.data = {
             'enabled': True,
@@ -80,7 +80,9 @@ analytics = Analytics(g_config.ID, g_config.version)
 
 
 @override(_MessageTemplate, 'format')
-def new__format(func, self, ctx, *a, **k):
+def new__format(func, self, ctx=None, *a, **k):
+    if not g_config.data['enabled']:
+        return func(self, ctx, *a, **k)
     orig_message = self.source['message']
     try:
         if ctx:

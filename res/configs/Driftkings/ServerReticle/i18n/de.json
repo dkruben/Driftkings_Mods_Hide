@@ -1,0 +1,12 @@
+{
+    "UI_description": "ServerReticle",
+    "UI_version": 101,
+    "UI_setting_gunRotationFix_text": "Aktivieren Sie die Korrektur der Pistolenrotation",
+    "UI_setting_gunRotationFix_tooltip": "Behebt, dass die Waffenrotation nicht mehr mit dem Server synchronisiert ist, selbst wenn ein Server-Fadenkreuz verwendet wird.\nDies kann dazu führen, dass Animationen ruckeln oder stottern.\nFunktioniert nicht, wenn die Einstellung „Server-Retikel aktivieren“ deaktiviert ist!",
+    "UI_setting_reticleScaling_text": "Aktivieren Sie die Skalierung des Absehens",
+    "UI_setting_reticleScaling_tooltip": "Skaliert das Absehen entsprechend der Schussverteilung auf seine wahre Größe.\nDies führt dazu, dass das Absehen kleiner wird, aber Schüsse können jetzt bis an den Rand des Absehens treffen.",
+    "UI_setting_format_text": "Formatieren",
+    "UI_setting_template_tooltip": "Makros: '{color}' '{aimingTime:1f}', '{percent}', '{realDispersion:.1f}'",
+    "UI_setting_scalingType_text": "Skalierungstyp des Absehens",
+    "UI_setting_scalingType_tooltip": "Steuert, wie das Absehen skaliert wird.\nDie lineare Skalierung eignet sich am besten für stabile Internetverbindungen mit geringer Latenz.\nDie interpolierte Skalierung verhindert, dass Schüsse bei instabilem Internet über das Absehen hinausgehen.\n und erweckt gleichzeitig den Eindruck einer schnelleren Einzielzeit."
+}

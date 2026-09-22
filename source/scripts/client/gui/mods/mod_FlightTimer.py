@@ -24,7 +24,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.0.5 (%(file_compile_date)s)'
+        self.version = '1.0.6 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': True,
@@ -124,9 +124,14 @@ class FlightTime(FlightTimeMeta):
         player = getPlayer()
         if player is None:
             return self.as_flightTimeS('')
+        if player.gunRotator is None:
+            return self.as_flightTimeS('')
         shotPos, shotVec = player.gunRotator.getCurShotPosition()
         flatDist = position.flatDistTo(shotPos)
-        self.macrosDict['flightTime'] = flatDist / shotVec.flatDistTo(VectorConstant.Vector3Zero)
+        horizontalSpeed = shotVec.flatDistTo(VectorConstant.Vector3Zero)
+        if horizontalSpeed <= 0.0:
+            return self.as_flightTimeS('')
+        self.macrosDict['flightTime'] = flatDist / horizontalSpeed
         self.macrosDict['distance'] = flatDist
         self.as_flightTimeS(config.data['template'] % self.macrosDict)
 

@@ -1,0 +1,19 @@
+{
+    "UI_description": "BanksLoader",
+    "UI_version": 165,
+    "UI_restart_header": "Driftkings'ten Banks Loader: Yeniden Başlat",
+    "UI_restart_reason_new": "Yeni ses modları yüklediğiniz için oyun yapılandırması değiştirildi.",
+    "UI_restart_reason_update": "Oyun istemcisi güncellemesi tespit edildi, bu nedenle oyun yapılandırma değişiklikleri yeni bir şekilde yeniden uygulandı.",
+    "UI_restart_text": "{reason}{reasons}\nDeğişikliklerin kabul edilmesi için oyun istemcisinin yeniden başlatılması gerekiyor.\nSes modlarının doğru davranışı <b>GARANTİ DEĞİL</b> bir sonraki oyun lansmanına kadar.\nBu olacak <b>değil</b> daha sonra gerekli olacaktır.\nOyunu şimdi yeniden başlatmak istiyor musunuz?",
+    "UI_restart_button_restart": "Yeniden başlat",
+    "UI_restart_button_shutdown": "Kapatma",
+    "UI_restart_button_close": "Devam et",
+    "UI_restart_reason": " Kesin değişiklikler:\n{}.",
+    "UI_restart_create": " • bölümler <b>yaratıldı</b> bankalar için: ",
+    "UI_restart_delete": " • bölümler <b>silindi</b> bankalar için: ",
+    "UI_restart_move": " • bölümler <b>taşındı</b> bankalar için: ",
+    "UI_restart_section": " • bölümler <b>kaymış</b> bankalar için: ",
+    "UI_restart_memory": " • değerler <b>değişti</b> hafıza ayarları için: ",
+    "UI_restart_remap": " • bölümler <b>değişti</b> ayarlar için: ",
+    "UI_restart_wotmod": " • yapılandırmalar <b>kaldırıldı</b> paketlerden: "
+}

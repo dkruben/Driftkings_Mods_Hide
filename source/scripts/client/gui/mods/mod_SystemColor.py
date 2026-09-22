@@ -21,7 +21,7 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def init(self):
         self.ID = '%(mod_ID)s'
-        self.version = '1.4.1 (%(file_compile_date)s)'
+        self.version = '1.4.2 (%(file_compile_date)s)'
         self.author = 'Maintenance by: _DKRuben_EU'
         self.data = {
             'enabled': False,
@@ -111,6 +111,8 @@ class ConfigInterface(DriftkingsConfigInterface):
 
     def new_populate(self, func, orig):
         func(orig)
+        if not self.data['enabled']:
+            return
         ally_dead = self.to_html_color(self.data.get('allyDead', None))
         enemy_dead = self.to_html_color(self.data.get('enemyDead', None))
         for k, v in orig._messages.iteritems():
@@ -121,7 +123,9 @@ class ConfigInterface(DriftkingsConfigInterface):
                 elif 'green' in colors and ally_dead is not None:
                     orig._messages[k] = '<font color=\'#%s\'>%s</font>' % (ally_dead, message), colors
 
-    def new__changeColor(self, base, diff):
+    def new__changeColor(self, func, base, diff):
+        if not self.data['enabled']:
+            return func(base, diff)
         if 'isColorBlind' not in diff:
             return
         cType = 'colorBlind' if diff['isColorBlind'] else 'common'
@@ -173,6 +177,12 @@ class ConfigInterface(DriftkingsConfigInterface):
         self.isTeamKill = False
         if ((prevIsSquad or prevIsTeamKill) and
                 EdgeDetectColorController.g_instance is not None):
+            EdgeDetectColorController.g_instance.updateColors()
+
+
+    def onApplySettings(self, settings):
+        super(ConfigInterface, self).onApplySettings(settings)
+        if EdgeDetectColorController.g_instance is not None:
             EdgeDetectColorController.g_instance.updateColors()
 
 

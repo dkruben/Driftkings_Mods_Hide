@@ -1,0 +1,11 @@
+{
+    "UI_description": "PlayersPanelHP",
+    "UI_version": 195,
+    "UI_setting_mode_text": "Wählen Sie Ihre Option",
+    "UI_setting_mode_tooltip": " • <b>Immer</b> - HP-Marker werden immer angezeigt.\n • <b>Umschalten</b> - HP-Marker werden beim Drücken der Umschalttaste ein-/ausgeschaltet.\n • <b>Halten</b> - HP-Marker werden nur angezeigt <b>während</b> die Umschalttaste wird gedrückt.",
+    "UI_setting_mode_always": "Immer",
+    "UI_setting_mode_toggle": "Umschalten",
+    "UI_setting_mode_holding": "Halten",
+    "UI_setting_toggleKey_text": "Hotkey umschalten",
+    "UI_setting_toggleKey_tooltip": "Durch Drücken dieser Taste im Kampf wird die Anzeige der HP-Marker umgeschaltet."
+}

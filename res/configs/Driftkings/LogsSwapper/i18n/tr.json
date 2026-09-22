@@ -1,0 +1,12 @@
+{
+    "UI_description": "LogsSwapper",
+    "UI_version": 156,
+    "UI_setting_logSwapper_text": "Ters Günlüğü Etkinleştir.",
+    "UI_setting_logSwapper_tooltip": "Savaş arayüzündeki hasar günlüğünün konumunu tersine çevirir.",
+    "UI_setting_wgLogHideCritics_text": "WG Günlüğünü Gizleme Eleştirmenleri",
+    "UI_setting_wgLogHideCritics_tooltip": "Standart WG savaş günlüğünde kritik vuruş mesajlarını gizler.",
+    "UI_setting_wgLogHideBlock_text": "WG Günlüğü Gizleme Bloğu",
+    "UI_setting_wgLogHideBlock_tooltip": "Standart WG savaş günlüğünde engellenen hasar mesajlarını gizler.",
+    "UI_setting_wgLogHideAssist_text": "WG Günlüğünü Gizleme Yardımı",
+    "UI_setting_wgLogHideAssist_tooltip": "Standart WG savaş günlüğündeki hasar destek mesajlarını gizler."
+}
